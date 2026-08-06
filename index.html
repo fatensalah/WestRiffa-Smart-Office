@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WestRiffa Smart Office</title>
+<link rel="stylesheet" href="css/app.css">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#075c40">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <img src="assets/school-header.jpg" alt="شعار المدرسة">
+    <div><h1>WestRiffa Smart Office</h1><p>مدرسة الرفاع الغربي الابتدائية للبنين</p></div>
+  </div>
+  <div class="header-actions">
+    <a class="btn btn-soft" href="index.html">🏠 الرئيسية</a>
+    <a class="btn btn-soft" href="pages/archive/index.html">📂 الأرشيف</a>
+  </div>
+</header>
+
+<div class="shell">
+<aside class="sidebar"><h3 class="sidebar-title">القائمة الرئيسية</h3><a class="nav-link active" href="index.html">🏠 لوحة التحكم</a>
+<a class="nav-link " href="pages/meetings/index.html">📅 الاجتماعات</a>
+<a class="nav-link " href="pages/activities/index.html">🎯 الفعاليات</a>
+<a class="nav-link " href="pages/certificates/index.html">🏅 الشهادات</a>
+<a class="nav-link " href="pages/archive/index.html">📂 الأرشيف الذكي</a>
+<a class="nav-link " href="pages/settings/index.html">⚙️ الإعدادات</a></aside>
+<main class="content">
+<div class="page-head"><div><h2>لوحة التحكم</h2><p>الوصول السريع ومتابعة السجلات المحفوظة.</p></div>
+<div class="page-actions"><button class="btn btn-gold" onclick="wrExport()">نسخة احتياطية</button></div></div>
+<div class="sync-strip"><div class="sync-state"><span id="syncDot" class="dot"></span><span id="syncText">حفظ محلي — الربط بانتظار الإعداد</span></div><div class="page-actions"><button class="btn btn-primary" onclick="wrSyncPending().then(updateSync)">مزامنة الآن</button><a class="btn btn-soft" href="pages/settings/index.html">إعداد الربط</a></div></div>
+<div class="stats">
+<article class="stat"><strong id="statAll">0</strong><span>إجمالي السجلات</span></article>
+<article class="stat"><strong id="statActivities">0</strong><span>الفعاليات</span></article>
+<article class="stat"><strong id="statMeetings">0</strong><span>الاجتماعات</span></article>
+<article class="stat"><strong id="statCertificates">0</strong><span>الشهادات</span></article>
+</div>
+<h3 class="section-title">الوصول السريع</h3>
+<div class="cards">
+<a class="feature-card" href="pages/activities/report.html">📋<b>تقرير فعالية</b><span>صور وPDF وأرشيف</span></a>
+<a class="feature-card" href="pages/meetings/invitation.html">📩<b>دعوة اجتماع</b><span>بطاقة PNG</span></a>
+<a class="feature-card" href="pages/meetings/minutes.html">📝<b>محضر اجتماع</b><span>PDF وحفظ</span></a>
+<a class="feature-card" href="pages/meetings/attendance.html">✅<b>سجل حضور</b><span>حضور وغياب</span></a>
+<a class="feature-card" href="pages/meetings/recommendations.html">📌<b>متابعة توصيات</b><span>الحالة والمسؤول</span></a>
+<a class="feature-card" href="pages/certificates/create.html">🏅<b>شهادة تقدير</b><span>جاهزة للطباعة</span></a>
+</div>
+<h3 class="section-title">آخر العمليات</h3>
+<div id="recentList" class="recent-list"></div>
+<script>function updateSync(r){const configured=WRGraph.configured();const pending=wrGetQueue().length;document.getElementById("syncDot").className="dot "+(configured?(pending?"":"ok"):"");document.getElementById("syncText").textContent=configured?(pending?`جاهز للمزامنة — ${pending} معلّق`:"متصل ولا توجد سجلات معلقة"):`حفظ محلي — ${pending} سجل معلّق، الربط بانتظار الإعداد`;}window.addEventListener("wr-sync-changed",updateSync);updateSync();</script>
+</main>
+</div>
+<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/graph.js"></script>
+<script src="js/common.js"></script>
+<script src="js/dashboard.js"></script>
+<script>function updateSync(){const configured=window.WRGraph?.configured?.()||false;const pending=wrGetQueue().length;document.getElementById("syncDot").className="dot "+(configured?(pending?"":"ok"):"off");document.getElementById("syncText").textContent=configured?(pending?`جاهز للمزامنة — ${pending} معلّق`:"متصل ولا توجد سجلات معلقة"):`الحفظ المحلي يعمل — ${pending} سجل في طابور المزامنة الاختياري`;}window.addEventListener("wr-sync-changed",updateSync);document.addEventListener("DOMContentLoaded",updateSync);</script>
+</body></html>

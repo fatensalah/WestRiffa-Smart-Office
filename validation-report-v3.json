@@ -1,0 +1,21 @@
+{
+  "version": "3.0-local-stable",
+  "status": "PASS_WITH_LIMITATIONS",
+  "validated": [
+    "JavaScript syntax",
+    "Inline script syntax",
+    "Local HTML/CSS/JS/image references",
+    "Full activity metadata persistence",
+    "Image persistence through IndexedDB",
+    "Archive open/edit/delete workflow",
+    "Draft auto-save and restore",
+    "Backup export/import with images",
+    "Standalone HTML report download with embedded images",
+    "Print / Save as PDF workflow"
+  ],
+  "knownLimitations": [
+    "PDF is saved through the browser print dialog, not silently generated",
+    "Data is local to the browser/device unless Graph sync is configured",
+    "Images selected for an unsaved draft are not restored until the report is saved"
+  ]
+}
