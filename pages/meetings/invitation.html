@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>دعوة اجتماع</title>
+<link rel="stylesheet" href="../../css/app.css">
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<link rel="manifest" href="../../manifest.webmanifest">
+<meta name="theme-color" content="#075c40">
+</head><body>
+
+<header class="topbar">
+  <div class="brand">
+    <img src="../../assets/school-header.jpg" alt="شعار المدرسة">
+    <div><h1>دعوة اجتماع</h1><p>بطاقة PNG موحدة</p></div>
+  </div>
+  <div class="header-actions">
+    <a class="btn btn-soft" href="../../index.html">🏠 الرئيسية</a>
+    <a class="btn btn-soft" href="../../pages/archive/index.html">📂 الأرشيف</a>
+  </div>
+</header>
+
+<div class="shell">
+<aside class="sidebar"><h3 class="sidebar-title">القائمة الرئيسية</h3><a class="nav-link " href="../../index.html">🏠 لوحة التحكم</a>
+<a class="nav-link active" href="../../pages/meetings/index.html">📅 الاجتماعات</a>
+<a class="nav-link " href="../../pages/activities/index.html">🎯 الفعاليات</a>
+<a class="nav-link " href="../../pages/certificates/index.html">🏅 الشهادات</a>
+<a class="nav-link " href="../../pages/archive/index.html">📂 الأرشيف الذكي</a>
+<a class="nav-link " href="../../pages/settings/index.html">⚙️ الإعدادات</a></aside>
+<main class="content">
+<div class="page-head"><div><h2>دعوة اجتماع</h2><p>بطاقة PNG موحدة</p></div></div>
+<div class="tool-layout">
+<section class="panel form-panel">
+<h3>بيانات اجتماع</h3>
+<label>رقم / كود</label><input id="number">
+<label>العنوان</label><input id="title">
+<label>التاريخ</label><input id="date" type="date">
+<label>الوقت</label><input id="time" type="time">
+<label>المكان</label><input id="place">
+<label>الفئة المستهدفة</label><input id="target">
+<label>المحاور / التفاصيل</label><textarea id="topics"></textarea>
+<div class="form-actions"><button id="saveBtn" class="btn btn-primary">حفظ ذكي</button><button id="downloadBtn" class="btn btn-gold">تحميل PNG</button></div>
+</section>
+<section class="panel preview">
+<article id="card" class="invitation-card"><img class="school-header" src="../../assets/school-header.jpg"><div class="gold-line"></div>
+<p style="color:var(--gold);font-size:27px;font-weight:700">دعوة لحضور اجتماع</p>
+<h1 id="pTitle">اجتماع</h1><p>رقم <strong id="pNumber">1</strong></p>
+<div id="pTopics" class="topics-box"></div>
+<div class="details-grid"><div class="detail-box"><span>التاريخ</span><strong id="pDate">—</strong></div><div class="detail-box"><span>الوقت</span><strong id="pTime">—</strong></div><div class="detail-box"><span>المكان</span><strong id="pPlace">—</strong></div><div class="detail-box"><span>الفئة المستهدفة</span><strong id="pTarget">—</strong></div></div></article>
+</section>
+</div>
+</main></div>
+<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"></script>
+<script src="../../js/config.js"></script>
+<script src="../../js/graph.js"></script>
+<script src="../../js/common.js"></script>
+<script>
+function update(){
+ $("pTitle").textContent=$("title").value||"اجتماع";
+ $("pNumber").textContent=$("number").value||"1";
+ $("pDate").textContent=wrFormatDate($("date").value);
+ $("pTime").textContent=wrFormatTime($("time").value);
+ $("pPlace").textContent=$("place").value||"—";
+ $("pTarget").textContent=$("target").value||"—";
+ $("pTopics").textContent=wrBullets($("topics").value||"مراجعة التفاصيل\nتوزيع المهام");
+}
+["number","title","date","time","place","target","topics"].forEach(id=>$(id).addEventListener("input",update));
+$("saveBtn").onclick=()=>wrAddRecord({type:"invitation",title:$("title").value||"اجتماع",date:$("date").value});
+$("downloadBtn").onclick=async()=>{update();const c=await html2canvas($("card"),{scale:2,backgroundColor:"#fffdf8",useCORS:true});const a=document.createElement("a");a.download="دعوة-اجتماع.png";a.href=c.toDataURL("image/png");a.click()};
+update();
+</script>
+</body></html>

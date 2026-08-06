@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>شهادة شكر وتقدير</title>
+<link rel="stylesheet" href="../../css/app.css">
+
+<link rel="manifest" href="../../manifest.webmanifest">
+<meta name="theme-color" content="#075c40">
+</head><body>
+
+<header class="topbar">
+  <div class="brand">
+    <img src="../../assets/school-header.jpg" alt="شعار المدرسة">
+    <div><h1>شهادة شكر وتقدير</h1><p>شهادة موحدة للطباعة</p></div>
+  </div>
+  <div class="header-actions">
+    <a class="btn btn-soft" href="../../index.html">🏠 الرئيسية</a>
+    <a class="btn btn-soft" href="../../pages/archive/index.html">📂 الأرشيف</a>
+  </div>
+</header>
+
+<div class="shell">
+<aside class="sidebar"><h3 class="sidebar-title">القائمة الرئيسية</h3><a class="nav-link " href="../../index.html">🏠 لوحة التحكم</a>
+<a class="nav-link " href="../../pages/meetings/index.html">📅 الاجتماعات</a>
+<a class="nav-link " href="../../pages/activities/index.html">🎯 الفعاليات</a>
+<a class="nav-link active" href="../../pages/certificates/index.html">🏅 الشهادات</a>
+<a class="nav-link " href="../../pages/archive/index.html">📂 الأرشيف الذكي</a>
+<a class="nav-link " href="../../pages/settings/index.html">⚙️ الإعدادات</a></aside>
+<main class="content">
+<div class="page-head"><div><h2>شهادة شكر وتقدير</h2><p>شهادة موحدة للطباعة</p></div></div>
+<div class="tool-layout">
+<section class="panel form-panel">
+<h3>بيانات الشهادة</h3>
+<label>اسم المستفيد</label><input id="name">
+<label>سبب التكريم</label><textarea id="reason"></textarea>
+<label>التاريخ</label><input id="date" type="date">
+<label>اسم الموقّع</label><input id="signer" value="أحلام السويدي">
+<div class="form-actions"><button id="saveBtn" class="btn btn-primary">حفظ ذكي</button><button class="btn btn-gold" onclick="window.print()">طباعة / PDF</button></div>
+</section>
+<section class="panel preview">
+<div class="certificate"><img class="school-header" src="../../assets/school-header.jpg"><h1>شهادة شكر وتقدير</h1>
+<p>تتقدم مدرسة الرفاع الغربي الابتدائية للبنين بخالص الشكر والتقدير إلى</p>
+<div id="pName" class="name">اسم المستفيد</div><p id="pReason">تقديرًا لجهوده المتميزة ومشاركته الفاعلة.</p>
+<p id="pDate">—</p><p>مديرة المدرسة<br><b id="pSigner">أحلام السويدي</b></p></div>
+</section>
+</div>
+</main></div>
+<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"></script>
+<script src="../../js/config.js"></script>
+<script src="../../js/graph.js"></script>
+<script src="../../js/common.js"></script>
+<script>
+function update(){
+ $("pName").textContent=$("name").value||"اسم المستفيد";
+ $("pReason").textContent=$("reason").value||"تقديرًا لجهوده المتميزة ومشاركته الفاعلة.";
+ $("pDate").textContent=wrFormatDate($("date").value);
+ $("pSigner").textContent=$("signer").value||"أحلام السويدي";
+}
+["name","reason","date","signer"].forEach(id=>$(id).addEventListener("input",update));
+$("saveBtn").onclick=()=>wrAddRecord({type:"certificate",title:"شهادة - "+($("name").value||"مستفيد"),date:$("date").value});
+update();
+</script>
+</body></html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>متابعة توصيات</title>
+<link rel="stylesheet" href="../../css/app.css">
+
+<link rel="manifest" href="../../manifest.webmanifest">
+<meta name="theme-color" content="#075c40">
+</head><body>
+
+<header class="topbar">
+  <div class="brand">
+    <img src="../../assets/school-header.jpg" alt="شعار المدرسة">
+    <div><h1>متابعة توصيات</h1><p>المسؤول والحالة والموعد</p></div>
+  </div>
+  <div class="header-actions">
+    <a class="btn btn-soft" href="../../index.html">🏠 الرئيسية</a>
+    <a class="btn btn-soft" href="../../pages/archive/index.html">📂 الأرشيف</a>
+  </div>
+</header>
+
+<div class="shell">
+<aside class="sidebar"><h3 class="sidebar-title">القائمة الرئيسية</h3><a class="nav-link " href="../../index.html">🏠 لوحة التحكم</a>
+<a class="nav-link active" href="../../pages/meetings/index.html">📅 الاجتماعات</a>
+<a class="nav-link " href="../../pages/activities/index.html">🎯 الفعاليات</a>
+<a class="nav-link " href="../../pages/certificates/index.html">🏅 الشهادات</a>
+<a class="nav-link " href="../../pages/archive/index.html">📂 الأرشيف الذكي</a>
+<a class="nav-link " href="../../pages/settings/index.html">⚙️ الإعدادات</a></aside>
+<main class="content">
+<div class="page-head"><div><h2>متابعة توصيات</h2><p>المسؤول والحالة والموعد</p></div></div>
+<div class="tool-layout">
+<section class="panel form-panel"><h3>البيانات</h3>
+<label>العنوان</label><input id="f0" type="text">
+<label>التوصية</label><textarea id="f1"></textarea>
+<label>المسؤول</label><input id="f2" type="text">
+<label>موعد التنفيذ</label><input id="f3" type="date">
+<label>الحالة</label><input id="f4" type="text">
+<label>ملاحظات</label><textarea id="f5"></textarea>
+<div class="form-actions"><button id="saveBtn" class="btn btn-primary">حفظ ذكي</button><button class="btn btn-gold" onclick="window.print()">طباعة / PDF</button></div></section>
+<section class="panel preview"><div class="sheet"><img class="school-header" src="../../assets/school-header.jpg"><div class="doc-title"><h1>متابعة توصية</h1><p>مدرسة الرفاع الغربي الابتدائية للبنين</p></div>
+<div class="doc-section"><h3>العنوان</h3><p id="p0">—</p></div>
+<div class="doc-section"><h3>التوصية</h3><p id="p1">—</p></div>
+<div class="doc-section"><h3>المسؤول</h3><p id="p2">—</p></div>
+<div class="doc-section"><h3>موعد التنفيذ</h3><p id="p3">—</p></div>
+<div class="doc-section"><h3>الحالة</h3><p id="p4">—</p></div>
+<div class="doc-section"><h3>ملاحظات</h3><p id="p5">—</p></div>
+</div></section>
+</div>
+</main></div>
+<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"></script>
+<script src="../../js/config.js"></script>
+<script src="../../js/graph.js"></script>
+<script src="../../js/common.js"></script>
+<script>$("f0").addEventListener("input",()=>$("p0").textContent=($("f0").value||"—"));$("f1").addEventListener("input",()=>$("p1").textContent=($("f1").value||"—"));$("f2").addEventListener("input",()=>$("p2").textContent=($("f2").value||"—"));$("f3").addEventListener("input",()=>$("p3").textContent=wrFormatDate($("f3").value));$("f4").addEventListener("input",()=>$("p4").textContent=($("f4").value||"—"));$("f5").addEventListener("input",()=>$("p5").textContent=($("f5").value||"—"));$("saveBtn").onclick=()=>wrAddRecord({type:"recommendation",title:($("f1")?.value||"متابعة توصية")});</script>
+</body></html>
