@@ -48,11 +48,11 @@
 </div>
 <h3 class="section-title">آخر العمليات</h3>
 <div id="recentList" class="recent-list"></div>
-<script>function updateSync(r){const configured=WRGraph.configured();const pending=wrGetQueue().length;document.getElementById("syncDot").className="dot "+(configured?(pending?"":"ok"):"");document.getElementById("syncText").textContent=configured?(pending?`جاهز للمزامنة — ${pending} معلّق`:"متصل ولا توجد سجلات معلقة"):`حفظ محلي — ${pending} سجل معلّق، الربط بانتظار الإعداد`;}window.addEventListener("wr-sync-changed",updateSync);updateSync();</script>
 </main>
 </div>
 <script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"></script>
 <script src="js/config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/graph.js"></script>
 <script src="js/common.js"></script>
 <script src="js/dashboard.js"></script>

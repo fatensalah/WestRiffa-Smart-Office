@@ -3,7 +3,11 @@ const WR_QUEUE_KEY = "westriffa_sync_queue_v3";
 const WR_DB_NAME = "WestRiffaSmartOffice";
 const WR_DB_VERSION = 2;
 const $ = (id) => document.getElementById(id);
-
+const wrSupabase = window.supabase.createClient(
+  window.WR_CONFIG.supabaseUrl,
+  window.WR_CONFIG.supabaseKey
+);
+console.log("Supabase connected:", wrSupabase);
 function wrGetRecords(){try{return JSON.parse(localStorage.getItem(WR_KEY))||[]}catch{return[]}}
 function wrSetRecords(records){localStorage.setItem(WR_KEY,JSON.stringify(records));window.dispatchEvent(new Event("wr-records-changed"))}
 function wrGetQueue(){try{return JSON.parse(localStorage.getItem(WR_QUEUE_KEY))||[]}catch{return[]}}

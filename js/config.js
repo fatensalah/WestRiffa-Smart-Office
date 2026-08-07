@@ -1,5 +1,7 @@
 window.WR_CONFIG = {
   appName: "WestRiffa Smart Office",
+  supabaseUrl: "https://rupbuipzaguiiphmswny.supabase.co",
+  supabaseKey: "sb_publishable_C_uOzV3F5yrPSdkNbCoGgA_s44qiL9w",
   schoolName: "مدرسة الرفاع الغربي الابتدائية للبنين",
   microsoft: {
     enabled: false,

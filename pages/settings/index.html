@@ -1,12 +1,482 @@
-<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>إعدادات الربط</title><link rel="stylesheet" href="../../css/app.css"><link rel="manifest" href="../../manifest.webmanifest"><meta name="theme-color" content="#075c40"></head><body>
-<header class="topbar"><div class="brand"><img src="../../assets/school-header.jpg"><div><h1>إعدادات الربط</h1><p>Microsoft 365 وSharePoint</p></div></div><div class="header-actions"><a class="btn btn-soft" href="../../index.html">🏠 الرئيسية</a><a class="btn btn-soft" href="../archive/index.html">📂 الأرشيف</a></div></header>
-<div class="shell"><aside class="sidebar"><h3 class="sidebar-title">القائمة الرئيسية</h3><a class="nav-link" href="../../index.html">🏠 لوحة التحكم</a><a class="nav-link" href="../meetings/index.html">📅 الاجتماعات</a><a class="nav-link" href="../activities/index.html">🎯 الفعاليات</a><a class="nav-link" href="../certificates/index.html">🏅 الشهادات</a><a class="nav-link" href="../archive/index.html">📂 الأرشيف الذكي</a><a class="nav-link active" href="index.html">⚙️ الإعدادات</a></aside>
-<main class="content"><div class="page-head"><div><h2>إعدادات الربط</h2><p>البرنامج جاهز؛ هذه القيم فقط تُملأ بعد تسجيل تطبيق Microsoft.</p></div></div>
-<div class="sync-strip"><div class="sync-state"><span id="dot" class="dot"></span><span id="status">الربط غير مُعد</span></div><div class="page-actions"><button id="testBtn" class="btn btn-primary">اختبار الاتصال</button><button id="syncBtn" class="btn btn-gold">مزامنة الآن</button></div></div>
-<div class="config-grid"><article class="panel"><h3>حالة الإعداد</h3><p id="configState"></p><p>السجلات المعلقة: <strong id="pending">0</strong></p><p class="small">قبل الربط، كل شيء يُحفظ محليًا. بعد تعبئة القيم، المزامنة إلى SharePoint تعمل من نفس الأزرار الحالية.</p></article><article class="panel"><h3>الملف المطلوب تعديله مرة واحدة</h3><div class="code-note">js/config.js</div><p class="small">املئي tenantId وclientId وsiteId وdriveId، ثم غيّري enabled إلى true.</p></article></div>
-<article class="panel" style="margin-top:15px"><h3>المجلدات المعتمدة</h3><p>General/Activities — General/Invitations — General/Meetings — General/Certificates — General/Archive — General/Images — General/Reports — General/Templates</p></article>
-</main></div>
-<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"></script><script src="../../js/config.js"></script><script src="../../js/graph.js"></script><script src="../../js/common.js"></script><script>
-function render(){const ok=WRGraph.configured();$("configState").textContent=ok?"تم إدخال بيانات Microsoft":"بانتظار إدخال بيانات Microsoft";$("pending").textContent=wrGetQueue().length;$("dot").className="dot "+(ok?"ok":"");$("status").textContent=ok?"جاهز لاختبار الاتصال":"الربط غير مُعد"}
-$("testBtn").onclick=async()=>{const r=await WRGraph.test();alert(r.message);if(r.ok){$("dot").className="dot ok";$("status").textContent=r.message}};$("syncBtn").onclick=async()=>{const r=await wrSyncPending();alert(r.configured?`تمت مزامنة ${r.synced}، المتبقي ${r.pending}`:"أكملي بيانات config.js أولًا");render()};window.addEventListener("wr-sync-changed",render);render();
-</script></body></html>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+ 
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إعدادات الربط | WestRiffa Smart Office</title>
+ 
+  <link rel="stylesheet" href="../../css/style.css">
+ 
+  <style>
+    .login-box{
+      display:grid;
+      gap:12px;
+      margin-top:18px;
+    }
+ 
+    .login-box input{
+      width:100%;
+      box-sizing:border-box;
+      padding:12px 14px;
+      border:1px solid #d7ddd9;
+      border-radius:10px;
+      font-family:inherit;
+      font-size:15px;
+    }
+ 
+    .status-line{
+      margin:14px 0;
+      font-weight:700;
+    }
+ 
+    .actions-row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:15px;
+    }
+  </style>
+</head>
+ 
+<body>
+ 
+<header class="topbar">
+  <div class="brand">
+    <img src="../../assets/school-header.jpg" alt="شعار المدرسة">
+  </div>
+</header>
+ 
+<div class="shell">
+ 
+  <aside class="sidebar">
+ 
+    <h3 class="sidebar-title">القائمة الرئيسية</h3>
+ 
+    <a href="../../index.html">🏠 لوحة التحكم</a>
+    <a href="../meetings/index.html">📅 الاجتماعات</a>
+    <a href="../activities/index.html">🎯 الفعاليات</a>
+    <a href="../certificates/index.html">🏅 الشهادات</a>
+    <a href="../archive/index.html">📁 الأرشيف الذكي</a>
+    <a href="./index.html">⚙️ الإعدادات</a>
+ 
+  </aside>
+ 
+  <main class="content">
+ 
+    <div class="page-head">
+      <div>
+        <h2>إعدادات الربط</h2>
+        <p>إدارة الاتصال والمزامنة مع Supabase.</p>
+      </div>
+    </div>
+ 
+    <div class="sync-strip">
+      <div class="sync-state">
+        <span id="dot" class="dot"></span>
+        <span id="stateText">جاري فحص النظام...</span>
+      </div>
+    </div>
+ 
+    <div class="config-grid">
+ 
+      <article class="panel">
+ 
+        <h3>تسجيل الدخول</h3>
+ 
+        <p>
+          سجلي الدخول بحساب الإدارة الذي أنشأناه في Supabase
+          لتفعيل المزامنة السحابية.
+        </p>
+ 
+        <div class="login-box">
+ 
+          <input
+            id="email"
+            type="email"
+            placeholder="البريد الإلكتروني"
+            autocomplete="username"
+          >
+ 
+          <input
+            id="password"
+            type="password"
+            placeholder="كلمة مرور المنصة"
+            autocomplete="current-password"
+          >
+ 
+        </div>
+ 
+        <div class="actions-row">
+ 
+          <button
+            class="btn"
+            id="loginBtn"
+            type="button"
+          >
+            تسجيل الدخول
+          </button>
+ 
+          <button
+            class="btn"
+            id="testBtn"
+            type="button"
+          >
+            اختبار الاتصال
+          </button>
+ 
+        </div>
+ 
+        <p
+          id="loginState"
+          class="status-line"
+        >
+          لم يتم تسجيل الدخول بعد.
+        </p>
+ 
+      </article>
+ 
+ 
+      <article class="panel">
+ 
+        <h3>المزامنة السحابية</h3>
+ 
+        <p>
+          بعد نجاح تسجيل الدخول يمكن رفع السجلات المحفوظة محليًا
+          إلى قاعدة بيانات Supabase.
+        </p>
+ 
+        <p id="queueState">
+          جاري قراءة السجلات المعلقة...
+        </p>
+ 
+        <div class="actions-row">
+ 
+          <button
+            class="btn btn-gold"
+            id="syncBtn"
+            type="button"
+            disabled
+          >
+            مزامنة الآن
+          </button>
+ 
+        </div>
+ 
+      </article>
+ 
+    </div>
+ 
+  </main>
+ 
+</div>
+ 
+ 
+<script src="../../js/config.js"></script>
+ 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+ 
+<script src="../../js/graph.js"></script>
+<script src="../../js/common.js"></script>
+ 
+ 
+<script>
+ 
+  const loginBtn =
+    document.getElementById("loginBtn");
+ 
+  const testBtn =
+    document.getElementById("testBtn");
+ 
+  const syncBtn =
+    document.getElementById("syncBtn");
+ 
+  const loginState =
+    document.getElementById("loginState");
+ 
+  const queueState =
+    document.getElementById("queueState");
+ 
+  const stateText =
+    document.getElementById("stateText");
+ 
+  const dot =
+    document.getElementById("dot");
+ 
+ 
+  function getPendingCount(){
+ 
+    try{
+ 
+      if(typeof wrGetQueue !== "function"){
+        return 0;
+      }
+ 
+      const q = wrGetQueue();
+ 
+      return Array.isArray(q)
+        ? q.length
+        : 0;
+ 
+    }catch(e){
+ 
+      return 0;
+ 
+    }
+ 
+  }
+ 
+ 
+  function updateQueue(){
+ 
+    const count =
+      getPendingCount();
+ 
+    queueState.textContent =
+      "السجلات المعلقة للمزامنة: " + count;
+ 
+  }
+ 
+ 
+  function setConnectedUI(user){
+ 
+    stateText.textContent =
+      "متصل بـ Supabase";
+ 
+    loginState.textContent =
+      user?.email
+        ? "تم تسجيل الدخول: " + user.email
+        : "تم تسجيل الدخول بنجاح";
+ 
+    syncBtn.disabled = false;
+ 
+    if(dot){
+      dot.classList.add("ok");
+    }
+ 
+  }
+ 
+ 
+  function setDisconnectedUI(){
+ 
+    stateText.textContent =
+      "جاهز لتسجيل الدخول";
+ 
+    loginState.textContent =
+      "لم يتم تسجيل الدخول بعد.";
+ 
+    syncBtn.disabled = true;
+ 
+  }
+ 
+ 
+  async function checkCurrentLogin(){
+ 
+    try{
+ 
+      if(
+        !window.WRGraph ||
+        !WRGraph.configured()
+      ){
+ 
+        stateText.textContent =
+          "إعدادات Supabase غير مكتملة";
+ 
+        return;
+ 
+      }
+ 
+      const user =
+        await WRGraph.getAccount();
+ 
+      if(user){
+ 
+        setConnectedUI(user);
+ 
+      }else{
+ 
+        setDisconnectedUI();
+ 
+      }
+ 
+    }catch(error){
+ 
+      console.error(error);
+ 
+      setDisconnectedUI();
+ 
+    }
+ 
+  }
+ 
+ 
+  loginBtn.addEventListener(
+    "click",
+    async function(){
+ 
+      const email =
+        document
+          .getElementById("email")
+          .value
+          .trim();
+ 
+      const password =
+        document
+          .getElementById("password")
+          .value;
+ 
+      if(!email || !password){
+ 
+        alert(
+          "أدخلي البريد الإلكتروني وكلمة المرور."
+        );
+ 
+        return;
+ 
+      }
+ 
+      loginBtn.disabled = true;
+ 
+      loginState.textContent =
+        "جاري تسجيل الدخول...";
+ 
+      try{
+ 
+        await WRGraph.login(
+          email,
+          password
+        );
+ 
+        const user =
+          await WRGraph.getAccount();
+ 
+        setConnectedUI(user);
+ 
+        document
+          .getElementById("password")
+          .value = "";
+ 
+        alert(
+          "تم تسجيل الدخول بنجاح ✅"
+        );
+ 
+      }catch(error){
+ 
+        console.error(error);
+ 
+        loginState.textContent =
+          "فشل تسجيل الدخول.";
+ 
+        alert(
+          "تعذر تسجيل الدخول: " +
+          (error.message || error)
+        );
+ 
+      }finally{
+ 
+        loginBtn.disabled = false;
+ 
+      }
+ 
+    }
+  );
+ 
+ 
+  testBtn.addEventListener(
+    "click",
+    async function(){
+ 
+      try{
+ 
+        const result =
+          await WRGraph.test();
+ 
+        if(result.ok){
+ 
+          alert(
+            "تم الاتصال بـ Supabase بنجاح ✅"
+          );
+ 
+          const user =
+            await WRGraph.getAccount();
+ 
+          setConnectedUI(user);
+ 
+        }else{
+ 
+          alert(
+            result.message ||
+            "الاتصال غير مكتمل."
+          );
+ 
+        }
+ 
+      }catch(error){
+ 
+        console.error(error);
+ 
+        alert(
+          "فشل اختبار الاتصال: " +
+          (error.message || error)
+        );
+ 
+      }
+ 
+    }
+  );
+ 
+ 
+  syncBtn.addEventListener(
+    "click",
+    async function(){
+ 
+      syncBtn.disabled = true;
+ 
+      syncBtn.textContent =
+        "جاري المزامنة...";
+ 
+      try{
+ 
+        const result =
+          await wrSyncPending();
+ 
+        updateQueue();
+ 
+        alert(
+          "تمت المزامنة ✅\n" +
+          "تم رفع: " +
+          (result?.synced ?? 0) +
+          "\nالمتبقي: " +
+          (result?.pending ?? 0)
+        );
+ 
+      }catch(error){
+ 
+        console.error(error);
+ 
+        alert(
+          "تعذر إتمام المزامنة: " +
+          (error.message || error)
+        );
+ 
+      }finally{
+ 
+        syncBtn.disabled = false;
+ 
+        syncBtn.textContent =
+          "مزامنة الآن";
+ 
+      }
+ 
+    }
+  );
+ 
+ 
+  updateQueue();
+ 
+  checkCurrentLogin();
+ 
+</script>
+ 
+</body>
+</html>
