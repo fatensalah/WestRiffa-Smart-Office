@@ -1,74 +1,883 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>محضر اجتماع</title>
-<link rel="stylesheet" href="../../css/app.css">
 
-<link rel="manifest" href="../../manifest.webmanifest">
-<meta name="theme-color" content="#075c40">
-</head><body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <title>محضر اجتماع</title>
+
+  <link rel="stylesheet" href="../../css/app.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+
+  <meta name="theme-color" content="#075c40">
+</head>
+
+<body>
 
 <header class="topbar">
+
   <div class="brand">
     <img src="../../assets/school-header.jpg" alt="شعار المدرسة">
-    <div><h1>محضر اجتماع</h1><p>محضر كامل مع PDF وحفظ</p></div>
+
+    <div>
+      <h1>محضر اجتماع</h1>
+      <p>محضر كامل مع PDF وحفظ سحابي</p>
+    </div>
   </div>
+
   <div class="header-actions">
-    <a class="btn btn-soft" href="../../index.html">🏠 الرئيسية</a>
-    <a class="btn btn-soft" href="../../pages/archive/index.html">📂 الأرشيف</a>
+
+    <a class="btn btn-soft" href="../../index.html">
+      🏠 الرئيسية
+    </a>
+
+    <a class="btn btn-soft" href="../../pages/archive/index.html">
+      📂 الأرشيف
+    </a>
+
   </div>
+
 </header>
 
+
 <div class="shell">
-<aside class="sidebar"><h3 class="sidebar-title">القائمة الرئيسية</h3><a class="nav-link " href="../../index.html">🏠 لوحة التحكم</a>
-<a class="nav-link active" href="../../pages/meetings/index.html">📅 الاجتماعات</a>
-<a class="nav-link " href="../../pages/activities/index.html">🎯 الفعاليات</a>
-<a class="nav-link " href="../../pages/certificates/index.html">🏅 الشهادات</a>
-<a class="nav-link " href="../../pages/archive/index.html">📂 الأرشيف الذكي</a>
-<a class="nav-link " href="../../pages/settings/index.html">⚙️ الإعدادات</a></aside>
-<main class="content">
-<div class="page-head"><div><h2>محضر اجتماع</h2><p>محضر كامل مع PDF وحفظ</p></div></div>
-<div class="tool-layout">
-<section class="panel form-panel"><h3>البيانات</h3>
-<label>رقم الاجتماع</label><input id="f0" type="text">
-<label>عنوان الاجتماع</label><input id="f1" type="text">
-<label>التاريخ</label><input id="f2" type="date">
-<label>الوقت</label><input id="f3" type="time">
-<label>المكان</label><input id="f4" type="text">
-<label>رئيس الاجتماع</label><input id="f5" type="text">
-<label>مقرر الاجتماع</label><input id="f6" type="text">
-<label>الحضور</label><textarea id="f7"></textarea>
-<label>الغياب</label><textarea id="f8"></textarea>
-<label>المحاور</label><textarea id="f9"></textarea>
-<label>ملخص المناقشات</label><textarea id="f10"></textarea>
-<label>القرارات</label><textarea id="f11"></textarea>
-<label>التوصيات</label><textarea id="f12"></textarea>
-<label>المسؤول عن التنفيذ</label><input id="f13" type="text">
-<label>موعد المتابعة</label><input id="f14" type="date">
-<div class="form-actions"><button id="saveBtn" class="btn btn-primary">حفظ ذكي</button><button class="btn btn-gold" onclick="window.print()">طباعة / PDF</button></div></section>
-<section class="panel preview"><div class="sheet"><img class="school-header" src="../../assets/school-header.jpg"><div class="doc-title"><h1>محضر اجتماع</h1><p>مدرسة الرفاع الغربي الابتدائية للبنين</p></div>
-<div class="doc-section"><h3>رقم الاجتماع</h3><p id="p0">—</p></div>
-<div class="doc-section"><h3>عنوان الاجتماع</h3><p id="p1">—</p></div>
-<div class="doc-section"><h3>التاريخ</h3><p id="p2">—</p></div>
-<div class="doc-section"><h3>الوقت</h3><p id="p3">—</p></div>
-<div class="doc-section"><h3>المكان</h3><p id="p4">—</p></div>
-<div class="doc-section"><h3>رئيس الاجتماع</h3><p id="p5">—</p></div>
-<div class="doc-section"><h3>مقرر الاجتماع</h3><p id="p6">—</p></div>
-<div class="doc-section"><h3>الحضور</h3><p id="p7">—</p></div>
-<div class="doc-section"><h3>الغياب</h3><p id="p8">—</p></div>
-<div class="doc-section"><h3>المحاور</h3><p id="p9">—</p></div>
-<div class="doc-section"><h3>ملخص المناقشات</h3><p id="p10">—</p></div>
-<div class="doc-section"><h3>القرارات</h3><p id="p11">—</p></div>
-<div class="doc-section"><h3>التوصيات</h3><p id="p12">—</p></div>
-<div class="doc-section"><h3>المسؤول عن التنفيذ</h3><p id="p13">—</p></div>
-<div class="doc-section"><h3>موعد المتابعة</h3><p id="p14">—</p></div>
-</div></section>
+
+  <aside class="sidebar">
+
+    <h3 class="sidebar-title">
+      القائمة الرئيسية
+    </h3>
+
+    <a class="nav-link" href="../../index.html">
+      🏠 لوحة التحكم
+    </a>
+
+    <a class="nav-link active" href="../../pages/meetings/index.html">
+      📅 الاجتماعات
+    </a>
+
+    <a class="nav-link" href="../../pages/activities/index.html">
+      🎯 الفعاليات
+    </a>
+
+    <a class="nav-link" href="../../pages/certificates/index.html">
+      🏅 الشهادات
+    </a>
+
+    <a class="nav-link" href="../../pages/archive/index.html">
+      📂 الأرشيف الذكي
+    </a>
+
+    <a class="nav-link" href="../../pages/settings/index.html">
+      ⚙️ الإعدادات
+    </a>
+
+  </aside>
+
+
+  <main class="content">
+
+    <div class="page-head">
+
+      <div>
+        <h2 id="pageTitle">
+          محضر اجتماع
+        </h2>
+
+        <p>
+          محضر كامل مع PDF وحفظ سحابي.
+        </p>
+      </div>
+
+      <div class="page-actions">
+
+        <button
+          id="newBtn"
+          class="btn btn-soft"
+          type="button"
+        >
+          نموذج جديد
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <div class="tool-layout">
+
+      <section class="panel form-panel">
+
+        <h3>البيانات</h3>
+
+        <label>رقم الاجتماع</label>
+        <input id="f0" type="text">
+
+        <label>عنوان الاجتماع *</label>
+        <input id="f1" type="text" required>
+
+        <label>التاريخ *</label>
+        <input id="f2" type="date" required>
+
+        <label>الوقت</label>
+        <input id="f3" type="time">
+
+        <label>المكان</label>
+        <input id="f4" type="text">
+
+        <label>رئيس الاجتماع</label>
+        <input id="f5" type="text">
+
+        <label>مقرر الاجتماع</label>
+        <input id="f6" type="text">
+
+        <label>الحضور</label>
+        <textarea id="f7"></textarea>
+
+        <label>الغياب</label>
+        <textarea id="f8"></textarea>
+
+        <label>المحاور</label>
+        <textarea id="f9"></textarea>
+
+        <label>ملخص المناقشات</label>
+        <textarea id="f10"></textarea>
+
+        <label>القرارات</label>
+        <textarea id="f11"></textarea>
+
+        <label>التوصيات</label>
+        <textarea id="f12"></textarea>
+
+        <label>المسؤول عن التنفيذ</label>
+        <input id="f13" type="text">
+
+        <label>موعد المتابعة</label>
+        <input id="f14" type="date">
+
+
+        <div class="form-actions">
+
+          <button
+            id="saveBtn"
+            class="btn btn-primary"
+            type="button"
+          >
+            💾 حفظ ذكي
+          </button>
+
+          <button
+            id="printBtn"
+            class="btn btn-gold"
+            type="button"
+          >
+            🖨 طباعة / PDF
+          </button>
+
+          <button
+            id="deleteBtn"
+            class="btn btn-danger hidden"
+            type="button"
+          >
+            🗑 حذف المحضر
+          </button>
+
+        </div>
+
+      </section>
+
+
+      <section class="panel preview">
+
+        <div class="sheet">
+
+          <img
+            class="school-header"
+            src="../../assets/school-header.jpg"
+            alt="شعار المدرسة"
+          >
+
+          <div class="doc-title">
+
+            <h1>محضر اجتماع</h1>
+
+            <p>
+              مدرسة الرفاع الغربي الابتدائية للبنين
+            </p>
+
+          </div>
+
+
+          <div class="doc-section">
+            <h3>رقم الاجتماع</h3>
+            <p id="p0">—</p>
+          </div>
+
+
+          <div class="doc-section">
+            <h3>عنوان الاجتماع</h3>
+            <p id="p1">—</p>
+          </div>
+
+
+          <div class="doc-section">
+            <h3>التاريخ</h3>
+            <p id="p2">—</p>
+          </div>
+
+
+          <div class="doc-section">
+            <h3>الوقت</h3>
+            <p id="p3">—</p>
+          </div>
+
+
+          <div class="doc-section">
+            <h3>المكان</h3>
+            <p id="p4">—</p>
+          </div>
+
+
+          <div class="doc-section">
+            <h3>رئيس الاجتماع</h3>
+            <p id="p5">—</p>
+          </div>
+
+
+          <div class="doc-section">
+            <h3>مقرر الاجتماع</h3>
+            <p id="p6">—</p>
+          </div>
+
+
+          <div class="doc-section">
+            <h3>الحضور</h3>
+            <p id="p7">—</p>
+          </div>
+
+
+          <div class="doc-section">
+            <h3>الغياب</h3>
+            <p id="p8">—</p>
+          </div>
+
+
+          <div class="doc-section">
+            <h3>المحاور</h3>
+            <p id="p9">—</p>
+          </div>
+
+
+          <div class="doc-section">
+            <h3>ملخص المناقشات</h3>
+            <p id="p10">—</p>
+          </div>
+
+
+          <div class="doc-section">
+            <h3>القرارات</h3>
+            <p id="p11">—</p>
+          </div>
+
+
+          <div class="doc-section">
+            <h3>التوصيات</h3>
+            <p id="p12">—</p>
+          </div>
+
+
+          <div class="doc-section">
+            <h3>المسؤول عن التنفيذ</h3>
+            <p id="p13">—</p>
+          </div>
+
+
+          <div class="doc-section">
+            <h3>موعد المتابعة</h3>
+            <p id="p14">—</p>
+          </div>
+
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
 </div>
-</main></div>
-<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="../../js/config.js"></script>
 <script src="../../js/graph.js"></script>
 <script src="../../js/common.js"></script>
-<script>$("f0").addEventListener("input",()=>$("p0").textContent=($("f0").value||"—"));$("f1").addEventListener("input",()=>$("p1").textContent=($("f1").value||"—"));$("f2").addEventListener("input",()=>$("p2").textContent=wrFormatDate($("f2").value));$("f3").addEventListener("input",()=>$("p3").textContent=wrFormatTime($("f3").value));$("f4").addEventListener("input",()=>$("p4").textContent=($("f4").value||"—"));$("f5").addEventListener("input",()=>$("p5").textContent=($("f5").value||"—"));$("f6").addEventListener("input",()=>$("p6").textContent=($("f6").value||"—"));$("f7").addEventListener("input",()=>$("p7").textContent=wrBullets($("f7").value));$("f8").addEventListener("input",()=>$("p8").textContent=wrBullets($("f8").value));$("f9").addEventListener("input",()=>$("p9").textContent=wrBullets($("f9").value));$("f10").addEventListener("input",()=>$("p10").textContent=($("f10").value||"—"));$("f11").addEventListener("input",()=>$("p11").textContent=wrBullets($("f11").value));$("f12").addEventListener("input",()=>$("p12").textContent=wrBullets($("f12").value));$("f13").addEventListener("input",()=>$("p13").textContent=($("f13").value||"—"));$("f14").addEventListener("input",()=>$("p14").textContent=wrFormatDate($("f14").value));$("saveBtn").onclick=()=>wrAddRecord({type:"meeting",title:($("f1")?.value||"محضر اجتماع")});</script>
-</body></html>
+
+
+<script>
+
+let currentId = null;
+
+
+function getData() {
+
+  return {
+
+    type: "meeting",
+
+    title:
+      $("f1").value.trim() ||
+      "محضر اجتماع",
+
+    meetingNumber:
+      $("f0").value.trim(),
+
+    meetingTitle:
+      $("f1").value.trim(),
+
+    date:
+      $("f2").value,
+
+    time:
+      $("f3").value,
+
+    place:
+      $("f4").value.trim(),
+
+    chairperson:
+      $("f5").value.trim(),
+
+    recorder:
+      $("f6").value.trim(),
+
+    attendees:
+      $("f7").value,
+
+    absentees:
+      $("f8").value,
+
+    topics:
+      $("f9").value,
+
+    discussion:
+      $("f10").value,
+
+    decisions:
+      $("f11").value,
+
+    recommendations:
+      $("f12").value,
+
+    responsible:
+      $("f13").value.trim(),
+
+    followUpDate:
+      $("f14").value
+
+  };
+
+}
+
+
+function updatePreview() {
+
+  const d = getData();
+
+  $("p0").textContent =
+    d.meetingNumber || "—";
+
+  $("p1").textContent =
+    d.meetingTitle || "—";
+
+  $("p2").textContent =
+    wrFormatDate(d.date);
+
+  $("p3").textContent =
+    wrFormatTime(d.time);
+
+  $("p4").textContent =
+    d.place || "—";
+
+  $("p5").textContent =
+    d.chairperson || "—";
+
+  $("p6").textContent =
+    d.recorder || "—";
+
+  $("p7").textContent =
+    wrBullets(d.attendees || "");
+
+  $("p8").textContent =
+    wrBullets(d.absentees || "");
+
+  $("p9").textContent =
+    wrBullets(d.topics || "");
+
+  $("p10").textContent =
+    d.discussion || "—";
+
+  $("p11").textContent =
+    wrBullets(d.decisions || "");
+
+  $("p12").textContent =
+    wrBullets(d.recommendations || "");
+
+  $("p13").textContent =
+    d.responsible || "—";
+
+  $("p14").textContent =
+    wrFormatDate(d.followUpDate);
+
+}
+
+
+function applyData(data = {}) {
+
+  $("f0").value =
+    data.meetingNumber || "";
+
+  $("f1").value =
+    data.meetingTitle ||
+    data.title ||
+    "";
+
+  $("f2").value =
+    data.date || "";
+
+  $("f3").value =
+    data.time || "";
+
+  $("f4").value =
+    data.place || "";
+
+  $("f5").value =
+    data.chairperson || "";
+
+  $("f6").value =
+    data.recorder || "";
+
+  $("f7").value =
+    data.attendees || "";
+
+  $("f8").value =
+    data.absentees || "";
+
+  $("f9").value =
+    data.topics || "";
+
+  $("f10").value =
+    data.discussion || "";
+
+  $("f11").value =
+    data.decisions || "";
+
+  $("f12").value =
+    data.recommendations || "";
+
+  $("f13").value =
+    data.responsible || "";
+
+  $("f14").value =
+    data.followUpDate || "";
+
+  updatePreview();
+
+}
+
+
+[
+  "f0",
+  "f1",
+  "f2",
+  "f3",
+  "f4",
+  "f5",
+  "f6",
+  "f7",
+  "f8",
+  "f9",
+  "f10",
+  "f11",
+  "f12",
+  "f13",
+  "f14"
+].forEach(id => {
+
+  $(id).addEventListener(
+    "input",
+    updatePreview
+  );
+
+});
+
+
+async function loadRecord(id) {
+
+  try {
+
+    const records =
+      await WRGraph.fetchRecords();
+
+
+    const rec =
+      records.find(
+        r =>
+          String(r.id) ===
+          String(id)
+      );
+
+
+    if (!rec) {
+
+      alert(
+        "لم يتم العثور على محضر الاجتماع"
+      );
+
+      return;
+
+    }
+
+
+    currentId =
+      rec.id;
+
+
+    const data = {
+      ...(rec.payload || {})
+    };
+
+
+    if (
+      !data.meetingTitle &&
+      rec.title
+    ) {
+
+      data.meetingTitle =
+        rec.title;
+
+    }
+
+
+    if (
+      !data.date &&
+      rec.record_date
+    ) {
+
+      data.date =
+        rec.record_date;
+
+    }
+
+
+    applyData(data);
+
+
+    $("pageTitle").textContent =
+      "تعديل محضر اجتماع";
+
+
+    $("saveBtn").textContent =
+      "💾 تحديث المحضر";
+
+
+    $("deleteBtn")
+      .classList
+      .remove("hidden");
+
+
+    console.log(
+      "تم استرجاع المحضر:",
+      rec
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "خطأ في استرجاع المحضر:",
+      error
+    );
+
+
+    alert(
+      "حدث خطأ أثناء استرجاع المحضر"
+    );
+
+  }
+
+}
+
+
+$("saveBtn").onclick =
+  async () => {
+
+    const data =
+      getData();
+
+
+    if (
+      !data.meetingTitle ||
+      !data.date
+    ) {
+
+      wrToast(
+        "أكملي عنوان الاجتماع والتاريخ"
+      );
+
+      return;
+
+    }
+
+
+    $("saveBtn").disabled =
+      true;
+
+
+    try {
+
+      const rec =
+        await wrAddRecord({
+
+          ...data,
+
+          id:
+            currentId ||
+            undefined
+
+        });
+
+
+      currentId =
+        rec.id;
+
+
+      history.replaceState(
+        null,
+        "",
+        `?id=${encodeURIComponent(
+          currentId
+        )}`
+      );
+
+
+      $("pageTitle").textContent =
+        "تعديل محضر اجتماع";
+
+
+      $("saveBtn").textContent =
+        "💾 تحديث المحضر";
+
+
+      $("deleteBtn")
+        .classList
+        .remove("hidden");
+
+
+      wrToast(
+        "تم حفظ محضر الاجتماع بنجاح"
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "خطأ حفظ المحضر:",
+        error
+      );
+
+
+      wrToast(
+        "تعذر حفظ المحضر: " +
+        (
+          error.message ||
+          error
+        )
+      );
+
+
+    } finally {
+
+      $("saveBtn").disabled =
+        false;
+
+    }
+
+  };
+
+
+$("deleteBtn").onclick =
+  async () => {
+
+    if (!currentId) {
+
+      wrToast(
+        "لا يوجد محضر محفوظ لحذفه"
+      );
+
+      return;
+
+    }
+
+
+    if (
+      !confirm(
+        "هل أنتِ متأكدة من حذف محضر الاجتماع نهائيًا؟"
+      )
+    ) {
+
+      return;
+
+    }
+
+
+    $("deleteBtn").disabled =
+      true;
+
+
+    try {
+
+      await WRGraph.deleteRecord(
+        currentId
+      );
+
+
+      try {
+
+        if (
+          typeof wrDeleteRecord ===
+          "function"
+        ) {
+
+          await wrDeleteRecord(
+            currentId
+          );
+
+        }
+
+      } catch (localError) {
+
+        console.warn(
+          "تعذر تنظيف النسخة المحلية:",
+          localError
+        );
+
+      }
+
+
+      wrToast(
+        "تم حذف محضر الاجتماع بنجاح"
+      );
+
+
+      setTimeout(
+        () => {
+
+          location.href =
+            "../archive/index.html";
+
+        },
+        400
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "خطأ حذف المحضر:",
+        error
+      );
+
+
+      wrToast(
+        "تعذر حذف المحضر: " +
+        (
+          error.message ||
+          error
+        )
+      );
+
+
+      $("deleteBtn").disabled =
+        false;
+
+    }
+
+  };
+
+
+$("printBtn").onclick =
+  () => {
+
+    document.title =
+      "محضر اجتماع - " +
+      (
+        $("f1").value ||
+        "اجتماع"
+      );
+
+    window.print();
+
+  };
+
+
+$("newBtn").onclick =
+  () => {
+
+    if (
+      confirm(
+        "بدء محضر اجتماع جديد؟"
+      )
+    ) {
+
+      location.href =
+        "minutes.html";
+
+    }
+
+  };
+
+
+(async function init() {
+
+  const id =
+    new URLSearchParams(
+      location.search
+    ).get("id");
+
+
+  if (id) {
+
+    await loadRecord(id);
+
+  } else {
+
+    $("deleteBtn")
+      .classList
+      .add("hidden");
+
+
+    if (
+      !$("f2").value
+    ) {
+
+      $("f2").value =
+        new Date()
+          .toISOString()
+          .slice(0, 10);
+
+    }
+
+
+    updatePreview();
+
+  }
+
+})();
+
+</script>
+
+
+</body>
+</html>

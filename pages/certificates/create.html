@@ -1,64 +1,768 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>شهادة شكر وتقدير</title>
-<link rel="stylesheet" href="../../css/app.css">
 
-<link rel="manifest" href="../../manifest.webmanifest">
-<meta name="theme-color" content="#075c40">
-</head><body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <title>شهادة شكر وتقدير</title>
+
+  <link rel="stylesheet" href="../../css/app.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+
+  <meta name="theme-color" content="#075c40">
+</head>
+
+<body>
 
 <header class="topbar">
+
   <div class="brand">
-    <img src="../../assets/school-header.jpg" alt="شعار المدرسة">
-    <div><h1>شهادة شكر وتقدير</h1><p>شهادة موحدة للطباعة</p></div>
+
+    <img
+      src="../../assets/school-header.jpg"
+      alt="شعار المدرسة"
+    >
+
+    <div>
+      <h1>شهادة شكر وتقدير</h1>
+      <p>شهادة موحدة للطباعة</p>
+    </div>
+
   </div>
+
+
   <div class="header-actions">
-    <a class="btn btn-soft" href="../../index.html">🏠 الرئيسية</a>
-    <a class="btn btn-soft" href="../../pages/archive/index.html">📂 الأرشيف</a>
+
+    <a
+      class="btn btn-soft"
+      href="../../index.html"
+    >
+      🏠 الرئيسية
+    </a>
+
+    <a
+      class="btn btn-soft"
+      href="../../pages/archive/index.html"
+    >
+      📂 الأرشيف
+    </a>
+
   </div>
+
 </header>
 
+
 <div class="shell">
-<aside class="sidebar"><h3 class="sidebar-title">القائمة الرئيسية</h3><a class="nav-link " href="../../index.html">🏠 لوحة التحكم</a>
-<a class="nav-link " href="../../pages/meetings/index.html">📅 الاجتماعات</a>
-<a class="nav-link " href="../../pages/activities/index.html">🎯 الفعاليات</a>
-<a class="nav-link active" href="../../pages/certificates/index.html">🏅 الشهادات</a>
-<a class="nav-link " href="../../pages/archive/index.html">📂 الأرشيف الذكي</a>
-<a class="nav-link " href="../../pages/settings/index.html">⚙️ الإعدادات</a></aside>
-<main class="content">
-<div class="page-head"><div><h2>شهادة شكر وتقدير</h2><p>شهادة موحدة للطباعة</p></div></div>
-<div class="tool-layout">
-<section class="panel form-panel">
-<h3>بيانات الشهادة</h3>
-<label>اسم المستفيد</label><input id="name">
-<label>سبب التكريم</label><textarea id="reason"></textarea>
-<label>التاريخ</label><input id="date" type="date">
-<label>اسم الموقّع</label><input id="signer" value="أحلام السويدي">
-<div class="form-actions"><button id="saveBtn" class="btn btn-primary">حفظ ذكي</button><button class="btn btn-gold" onclick="window.print()">طباعة / PDF</button></div>
-</section>
-<section class="panel preview">
-<div class="certificate"><img class="school-header" src="../../assets/school-header.jpg"><h1>شهادة شكر وتقدير</h1>
-<p>تتقدم مدرسة الرفاع الغربي الابتدائية للبنين بخالص الشكر والتقدير إلى</p>
-<div id="pName" class="name">اسم المستفيد</div><p id="pReason">تقديرًا لجهوده المتميزة ومشاركته الفاعلة.</p>
-<p id="pDate">—</p><p>مديرة المدرسة<br><b id="pSigner">أحلام السويدي</b></p></div>
-</section>
+
+  <aside class="sidebar">
+
+    <h3 class="sidebar-title">
+      القائمة الرئيسية
+    </h3>
+
+    <a
+      class="nav-link"
+      href="../../index.html"
+    >
+      🏠 لوحة التحكم
+    </a>
+
+    <a
+      class="nav-link"
+      href="../../pages/meetings/index.html"
+    >
+      📅 الاجتماعات
+    </a>
+
+    <a
+      class="nav-link"
+      href="../../pages/activities/index.html"
+    >
+      🎯 الفعاليات
+    </a>
+
+    <a
+      class="nav-link active"
+      href="../../pages/certificates/index.html"
+    >
+      🏅 الشهادات
+    </a>
+
+    <a
+      class="nav-link"
+      href="../../pages/archive/index.html"
+    >
+      📂 الأرشيف الذكي
+    </a>
+
+    <a
+      class="nav-link"
+      href="../../pages/settings/index.html"
+    >
+      ⚙️ الإعدادات
+    </a>
+
+  </aside>
+
+
+  <main class="content">
+
+    <div class="page-head">
+
+      <div>
+        <h2 id="pageTitle">
+          شهادة شكر وتقدير
+        </h2>
+
+        <p>
+          شهادة موحدة للطباعة والحفظ السحابي.
+        </p>
+      </div>
+
+      <div class="page-actions">
+
+        <button
+          id="newBtn"
+          class="btn btn-soft"
+          type="button"
+        >
+          نموذج جديد
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <div class="tool-layout">
+
+      <section class="panel form-panel">
+
+        <h3>بيانات الشهادة</h3>
+
+
+        <label>
+          اسم المستفيد *
+        </label>
+
+        <input
+          id="name"
+          type="text"
+          required
+        >
+
+
+        <label>
+          سبب التكريم
+        </label>
+
+        <textarea
+          id="reason"
+        ></textarea>
+
+
+        <label>
+          التاريخ *
+        </label>
+
+        <input
+          id="date"
+          type="date"
+          required
+        >
+
+
+        <label>
+          اسم الموقّع
+        </label>
+
+        <input
+          id="signer"
+          type="text"
+          value="أحلام السويدي"
+        >
+
+
+        <div class="form-actions">
+
+          <button
+            id="saveBtn"
+            class="btn btn-primary"
+            type="button"
+          >
+            💾 حفظ ذكي
+          </button>
+
+          <button
+            id="printBtn"
+            class="btn btn-gold"
+            type="button"
+          >
+            🖨 طباعة / PDF
+          </button>
+
+          <button
+            id="deleteBtn"
+            class="btn btn-danger hidden"
+            type="button"
+          >
+            🗑 حذف الشهادة
+          </button>
+
+        </div>
+
+      </section>
+
+
+      <section class="panel preview">
+
+        <div class="certificate">
+
+          <img
+            class="school-header"
+            src="../../assets/school-header.jpg"
+            alt="شعار المدرسة"
+          >
+
+          <h1>
+            شهادة شكر وتقدير
+          </h1>
+
+          <p>
+            تتقدم مدرسة الرفاع الغربي الابتدائية للبنين
+            بخالص الشكر والتقدير إلى
+          </p>
+
+
+          <div
+            id="pName"
+            class="name"
+          >
+            اسم المستفيد
+          </div>
+
+
+          <p id="pReason">
+            تقديرًا لجهوده المتميزة ومشاركته الفاعلة.
+          </p>
+
+
+          <p id="pDate">
+            —
+          </p>
+
+
+          <p>
+            مديرة المدرسة
+            <br>
+
+            <b id="pSigner">
+              أحلام السويدي
+            </b>
+          </p>
+
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
 </div>
-</main></div>
-<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="../../js/config.js"></script>
 <script src="../../js/graph.js"></script>
 <script src="../../js/common.js"></script>
+
+
 <script>
-function update(){
- $("pName").textContent=$("name").value||"اسم المستفيد";
- $("pReason").textContent=$("reason").value||"تقديرًا لجهوده المتميزة ومشاركته الفاعلة.";
- $("pDate").textContent=wrFormatDate($("date").value);
- $("pSigner").textContent=$("signer").value||"أحلام السويدي";
+
+let currentId = null;
+
+
+function getData() {
+
+  return {
+
+    type:
+      "certificate",
+
+    title:
+      "شهادة - " +
+      (
+        $("name").value.trim() ||
+        "مستفيد"
+      ),
+
+    beneficiaryName:
+      $("name").value.trim(),
+
+    reason:
+      $("reason").value,
+
+    date:
+      $("date").value,
+
+    signer:
+      $("signer").value.trim()
+
+  };
+
 }
-["name","reason","date","signer"].forEach(id=>$(id).addEventListener("input",update));
-$("saveBtn").onclick=()=>wrAddRecord({type:"certificate",title:"شهادة - "+($("name").value||"مستفيد"),date:$("date").value});
-update();
+
+
+function updatePreview() {
+
+  const data =
+    getData();
+
+
+  $("pName").textContent =
+    data.beneficiaryName ||
+    "اسم المستفيد";
+
+
+  $("pReason").textContent =
+    data.reason ||
+    "تقديرًا لجهوده المتميزة ومشاركته الفاعلة.";
+
+
+  $("pDate").textContent =
+    wrFormatDate(
+      data.date
+    );
+
+
+  $("pSigner").textContent =
+    data.signer ||
+    "أحلام السويدي";
+
+}
+
+
+function applyData(data = {}) {
+
+  $("name").value =
+    data.beneficiaryName ||
+    data.name ||
+    "";
+
+
+  $("reason").value =
+    data.reason ||
+    "";
+
+
+  $("date").value =
+    data.date ||
+    "";
+
+
+  $("signer").value =
+    data.signer ||
+    "أحلام السويدي";
+
+
+  updatePreview();
+
+}
+
+
+[
+  "name",
+  "reason",
+  "date",
+  "signer"
+].forEach(id => {
+
+  $(id).addEventListener(
+    "input",
+    updatePreview
+  );
+
+  $(id).addEventListener(
+    "change",
+    updatePreview
+  );
+
+});
+
+
+async function loadRecord(id) {
+
+  try {
+
+    const records =
+      await WRGraph.fetchRecords();
+
+
+    const rec =
+      records.find(
+        r =>
+          String(r.id) ===
+          String(id)
+      );
+
+
+    if (!rec) {
+
+      alert(
+        "لم يتم العثور على الشهادة"
+      );
+
+      return;
+
+    }
+
+
+    currentId =
+      rec.id;
+
+
+    const data = {
+      ...(rec.payload || {})
+    };
+
+
+    if (
+      !data.beneficiaryName &&
+      rec.title
+    ) {
+
+      data.beneficiaryName =
+        String(rec.title)
+          .replace(
+            /^شهادة\s*-\s*/,
+            ""
+          );
+
+    }
+
+
+    if (
+      !data.date &&
+      rec.record_date
+    ) {
+
+      data.date =
+        rec.record_date;
+
+    }
+
+
+    applyData(data);
+
+
+    $("pageTitle").textContent =
+      "تعديل شهادة شكر وتقدير";
+
+
+    $("saveBtn").textContent =
+      "💾 تحديث الشهادة";
+
+
+    $("deleteBtn")
+      .classList
+      .remove("hidden");
+
+
+    console.log(
+      "تم استرجاع الشهادة:",
+      rec
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "خطأ في استرجاع الشهادة:",
+      error
+    );
+
+
+    alert(
+      "حدث خطأ أثناء استرجاع الشهادة"
+    );
+
+  }
+
+}
+
+
+$("saveBtn").onclick =
+  async () => {
+
+    const data =
+      getData();
+
+
+    if (
+      !data.beneficiaryName ||
+      !data.date
+    ) {
+
+      wrToast(
+        "أكملي اسم المستفيد والتاريخ"
+      );
+
+      return;
+
+    }
+
+
+    $("saveBtn").disabled =
+      true;
+
+
+    try {
+
+      const rec =
+        await wrAddRecord({
+
+          ...data,
+
+          id:
+            currentId ||
+            undefined
+
+        });
+
+
+      currentId =
+        rec.id;
+
+
+      history.replaceState(
+        null,
+        "",
+        `?id=${encodeURIComponent(
+          currentId
+        )}`
+      );
+
+
+      $("pageTitle").textContent =
+        "تعديل شهادة شكر وتقدير";
+
+
+      $("saveBtn").textContent =
+        "💾 تحديث الشهادة";
+
+
+      $("deleteBtn")
+        .classList
+        .remove("hidden");
+
+
+      wrToast(
+        "تم حفظ الشهادة بنجاح"
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "خطأ حفظ الشهادة:",
+        error
+      );
+
+
+      wrToast(
+        "تعذر حفظ الشهادة: " +
+        (
+          error.message ||
+          error
+        )
+      );
+
+
+    } finally {
+
+      $("saveBtn").disabled =
+        false;
+
+    }
+
+  };
+
+
+$("deleteBtn").onclick =
+  async () => {
+
+    if (!currentId) {
+
+      wrToast(
+        "لا توجد شهادة محفوظة لحذفها"
+      );
+
+      return;
+
+    }
+
+
+    if (
+      !confirm(
+        "هل أنتِ متأكدة من حذف هذه الشهادة نهائيًا؟"
+      )
+    ) {
+
+      return;
+
+    }
+
+
+    $("deleteBtn").disabled =
+      true;
+
+
+    try {
+
+      await WRGraph.deleteRecord(
+        currentId
+      );
+
+
+      try {
+
+        if (
+          typeof wrDeleteRecord ===
+          "function"
+        ) {
+
+          await wrDeleteRecord(
+            currentId
+          );
+
+        }
+
+      } catch (localError) {
+
+        console.warn(
+          "تعذر تنظيف النسخة المحلية:",
+          localError
+        );
+
+      }
+
+
+      wrToast(
+        "تم حذف الشهادة بنجاح"
+      );
+
+
+      setTimeout(
+        () => {
+
+          location.href =
+            "../archive/index.html";
+
+        },
+        400
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "خطأ حذف الشهادة:",
+        error
+      );
+
+
+      wrToast(
+        "تعذر حذف الشهادة: " +
+        (
+          error.message ||
+          error
+        )
+      );
+
+
+      $("deleteBtn").disabled =
+        false;
+
+    }
+
+  };
+
+
+$("printBtn").onclick =
+  () => {
+
+    document.title =
+      "شهادة - " +
+      (
+        $("name").value ||
+        "مستفيد"
+      );
+
+
+    window.print();
+
+  };
+
+
+$("newBtn").onclick =
+  () => {
+
+    if (
+      confirm(
+        "بدء شهادة جديدة؟"
+      )
+    ) {
+
+      location.href =
+        "create.html";
+
+    }
+
+  };
+
+
+(async function init() {
+
+  const id =
+    new URLSearchParams(
+      location.search
+    ).get("id");
+
+
+  if (id) {
+
+    await loadRecord(id);
+
+  } else {
+
+    $("deleteBtn")
+      .classList
+      .add("hidden");
+
+
+    if (
+      !$("date").value
+    ) {
+
+      $("date").value =
+        new Date()
+          .toISOString()
+          .slice(0, 10);
+
+    }
+
+
+    updatePreview();
+
+  }
+
+})();
+
 </script>
-</body></html>
+
+
+</body>
+</html>

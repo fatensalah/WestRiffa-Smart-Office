@@ -1,56 +1,718 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>متابعة توصيات</title>
-<link rel="stylesheet" href="../../css/app.css">
 
-<link rel="manifest" href="../../manifest.webmanifest">
-<meta name="theme-color" content="#075c40">
-</head><body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <title>متابعة توصيات</title>
+
+  <link rel="stylesheet" href="../../css/app.css">
+  <link rel="manifest" href="../../manifest.webmanifest">
+
+  <meta name="theme-color" content="#075c40">
+</head>
+
+<body>
 
 <header class="topbar">
+
   <div class="brand">
     <img src="../../assets/school-header.jpg" alt="شعار المدرسة">
-    <div><h1>متابعة توصيات</h1><p>المسؤول والحالة والموعد</p></div>
+
+    <div>
+      <h1>متابعة توصيات</h1>
+      <p>المسؤول والحالة والموعد</p>
+    </div>
   </div>
+
   <div class="header-actions">
-    <a class="btn btn-soft" href="../../index.html">🏠 الرئيسية</a>
-    <a class="btn btn-soft" href="../../pages/archive/index.html">📂 الأرشيف</a>
+
+    <a class="btn btn-soft" href="../../index.html">
+      🏠 الرئيسية
+    </a>
+
+    <a class="btn btn-soft" href="../../pages/archive/index.html">
+      📂 الأرشيف
+    </a>
+
   </div>
+
 </header>
 
+
 <div class="shell">
-<aside class="sidebar"><h3 class="sidebar-title">القائمة الرئيسية</h3><a class="nav-link " href="../../index.html">🏠 لوحة التحكم</a>
-<a class="nav-link active" href="../../pages/meetings/index.html">📅 الاجتماعات</a>
-<a class="nav-link " href="../../pages/activities/index.html">🎯 الفعاليات</a>
-<a class="nav-link " href="../../pages/certificates/index.html">🏅 الشهادات</a>
-<a class="nav-link " href="../../pages/archive/index.html">📂 الأرشيف الذكي</a>
-<a class="nav-link " href="../../pages/settings/index.html">⚙️ الإعدادات</a></aside>
-<main class="content">
-<div class="page-head"><div><h2>متابعة توصيات</h2><p>المسؤول والحالة والموعد</p></div></div>
-<div class="tool-layout">
-<section class="panel form-panel"><h3>البيانات</h3>
-<label>العنوان</label><input id="f0" type="text">
-<label>التوصية</label><textarea id="f1"></textarea>
-<label>المسؤول</label><input id="f2" type="text">
-<label>موعد التنفيذ</label><input id="f3" type="date">
-<label>الحالة</label><input id="f4" type="text">
-<label>ملاحظات</label><textarea id="f5"></textarea>
-<div class="form-actions"><button id="saveBtn" class="btn btn-primary">حفظ ذكي</button><button class="btn btn-gold" onclick="window.print()">طباعة / PDF</button></div></section>
-<section class="panel preview"><div class="sheet"><img class="school-header" src="../../assets/school-header.jpg"><div class="doc-title"><h1>متابعة توصية</h1><p>مدرسة الرفاع الغربي الابتدائية للبنين</p></div>
-<div class="doc-section"><h3>العنوان</h3><p id="p0">—</p></div>
-<div class="doc-section"><h3>التوصية</h3><p id="p1">—</p></div>
-<div class="doc-section"><h3>المسؤول</h3><p id="p2">—</p></div>
-<div class="doc-section"><h3>موعد التنفيذ</h3><p id="p3">—</p></div>
-<div class="doc-section"><h3>الحالة</h3><p id="p4">—</p></div>
-<div class="doc-section"><h3>ملاحظات</h3><p id="p5">—</p></div>
-</div></section>
+
+  <aside class="sidebar">
+
+    <h3 class="sidebar-title">
+      القائمة الرئيسية
+    </h3>
+
+    <a class="nav-link" href="../../index.html">
+      🏠 لوحة التحكم
+    </a>
+
+    <a class="nav-link active" href="../../pages/meetings/index.html">
+      📅 الاجتماعات
+    </a>
+
+    <a class="nav-link" href="../../pages/activities/index.html">
+      🎯 الفعاليات
+    </a>
+
+    <a class="nav-link" href="../../pages/certificates/index.html">
+      🏅 الشهادات
+    </a>
+
+    <a class="nav-link" href="../../pages/archive/index.html">
+      📂 الأرشيف الذكي
+    </a>
+
+    <a class="nav-link" href="../../pages/settings/index.html">
+      ⚙️ الإعدادات
+    </a>
+
+  </aside>
+
+
+  <main class="content">
+
+    <div class="page-head">
+
+      <div>
+        <h2 id="pageTitle">
+          متابعة توصيات
+        </h2>
+
+        <p>
+          المسؤول والحالة والموعد مع حفظ سحابي.
+        </p>
+      </div>
+
+      <div class="page-actions">
+
+        <button
+          id="newBtn"
+          class="btn btn-soft"
+          type="button"
+        >
+          نموذج جديد
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <div class="tool-layout">
+
+      <section class="panel form-panel">
+
+        <h3>البيانات</h3>
+
+        <label>العنوان *</label>
+        <input id="f0" type="text" required>
+
+        <label>التوصية *</label>
+        <textarea id="f1" required></textarea>
+
+        <label>المسؤول</label>
+        <input id="f2" type="text">
+
+        <label>موعد التنفيذ</label>
+        <input id="f3" type="date">
+
+        <label>الحالة</label>
+        <select id="f4">
+          <option value="">— اختر الحالة —</option>
+          <option value="لم يبدأ">لم يبدأ</option>
+          <option value="قيد التنفيذ">قيد التنفيذ</option>
+          <option value="مكتمل">مكتمل</option>
+          <option value="متأخر">متأخر</option>
+          <option value="مؤجل">مؤجل</option>
+        </select>
+
+        <label>ملاحظات</label>
+        <textarea id="f5"></textarea>
+
+
+        <div class="form-actions">
+
+          <button
+            id="saveBtn"
+            class="btn btn-primary"
+            type="button"
+          >
+            💾 حفظ ذكي
+          </button>
+
+          <button
+            id="printBtn"
+            class="btn btn-gold"
+            type="button"
+          >
+            🖨 طباعة / PDF
+          </button>
+
+          <button
+            id="deleteBtn"
+            class="btn btn-danger hidden"
+            type="button"
+          >
+            🗑 حذف التوصية
+          </button>
+
+        </div>
+
+      </section>
+
+
+      <section class="panel preview">
+
+        <div class="sheet">
+
+          <img
+            class="school-header"
+            src="../../assets/school-header.jpg"
+            alt="شعار المدرسة"
+          >
+
+          <div class="doc-title">
+            <h1>متابعة توصية</h1>
+            <p>مدرسة الرفاع الغربي الابتدائية للبنين</p>
+          </div>
+
+
+          <div class="doc-section">
+            <h3>العنوان</h3>
+            <p id="p0">—</p>
+          </div>
+
+
+          <div class="doc-section">
+            <h3>التوصية</h3>
+            <p id="p1">—</p>
+          </div>
+
+
+          <div class="doc-section">
+            <h3>المسؤول</h3>
+            <p id="p2">—</p>
+          </div>
+
+
+          <div class="doc-section">
+            <h3>موعد التنفيذ</h3>
+            <p id="p3">—</p>
+          </div>
+
+
+          <div class="doc-section">
+            <h3>الحالة</h3>
+            <p id="p4">—</p>
+          </div>
+
+
+          <div class="doc-section">
+            <h3>ملاحظات</h3>
+            <p id="p5">—</p>
+          </div>
+
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
 </div>
-</main></div>
-<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="../../js/config.js"></script>
 <script src="../../js/graph.js"></script>
 <script src="../../js/common.js"></script>
-<script>$("f0").addEventListener("input",()=>$("p0").textContent=($("f0").value||"—"));$("f1").addEventListener("input",()=>$("p1").textContent=($("f1").value||"—"));$("f2").addEventListener("input",()=>$("p2").textContent=($("f2").value||"—"));$("f3").addEventListener("input",()=>$("p3").textContent=wrFormatDate($("f3").value));$("f4").addEventListener("input",()=>$("p4").textContent=($("f4").value||"—"));$("f5").addEventListener("input",()=>$("p5").textContent=($("f5").value||"—"));$("saveBtn").onclick=()=>wrAddRecord({type:"recommendation",title:($("f1")?.value||"متابعة توصية")});</script>
-</body></html>
+
+
+<script>
+
+let currentId = null;
+
+
+function getData() {
+
+  return {
+
+    type: "recommendation",
+
+    title:
+      $("f0").value.trim() ||
+      "متابعة توصية",
+
+    recommendationTitle:
+      $("f0").value.trim(),
+
+    recommendation:
+      $("f1").value,
+
+    responsible:
+      $("f2").value.trim(),
+
+    dueDate:
+      $("f3").value,
+
+    status:
+      $("f4").value,
+
+    notes:
+      $("f5").value
+
+  };
+
+}
+
+
+function updatePreview() {
+
+  const d = getData();
+
+  $("p0").textContent =
+    d.recommendationTitle || "—";
+
+  $("p1").textContent =
+    d.recommendation || "—";
+
+  $("p2").textContent =
+    d.responsible || "—";
+
+  $("p3").textContent =
+    wrFormatDate(d.dueDate);
+
+  $("p4").textContent =
+    d.status || "—";
+
+  $("p5").textContent =
+    d.notes || "—";
+
+}
+
+
+function applyData(data = {}) {
+
+  $("f0").value =
+    data.recommendationTitle ||
+    data.title ||
+    "";
+
+  $("f1").value =
+    data.recommendation || "";
+
+  $("f2").value =
+    data.responsible || "";
+
+  $("f3").value =
+    data.dueDate || "";
+
+  $("f4").value =
+    data.status || "";
+
+  $("f5").value =
+    data.notes || "";
+
+  updatePreview();
+
+}
+
+
+[
+  "f0",
+  "f1",
+  "f2",
+  "f3",
+  "f4",
+  "f5"
+].forEach(id => {
+
+  $(id).addEventListener(
+    "input",
+    updatePreview
+  );
+
+  $(id).addEventListener(
+    "change",
+    updatePreview
+  );
+
+});
+
+
+async function loadRecord(id) {
+
+  try {
+
+    const records =
+      await WRGraph.fetchRecords();
+
+
+    const rec =
+      records.find(
+        r =>
+          String(r.id) ===
+          String(id)
+      );
+
+
+    if (!rec) {
+
+      alert(
+        "لم يتم العثور على التوصية"
+      );
+
+      return;
+
+    }
+
+
+    currentId =
+      rec.id;
+
+
+    const data = {
+      ...(rec.payload || {})
+    };
+
+
+    if (
+      !data.recommendationTitle &&
+      rec.title
+    ) {
+
+      data.recommendationTitle =
+        rec.title;
+
+    }
+
+
+    if (
+      !data.dueDate &&
+      rec.record_date
+    ) {
+
+      data.dueDate =
+        rec.record_date;
+
+    }
+
+
+    applyData(data);
+
+
+    $("pageTitle").textContent =
+      "تعديل متابعة توصية";
+
+
+    $("saveBtn").textContent =
+      "💾 تحديث التوصية";
+
+
+    $("deleteBtn")
+      .classList
+      .remove("hidden");
+
+
+    console.log(
+      "تم استرجاع التوصية:",
+      rec
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "خطأ في استرجاع التوصية:",
+      error
+    );
+
+
+    alert(
+      "حدث خطأ أثناء استرجاع التوصية"
+    );
+
+  }
+
+}
+
+
+$("saveBtn").onclick =
+  async () => {
+
+    const data =
+      getData();
+
+
+    if (
+      !data.recommendationTitle ||
+      !data.recommendation
+    ) {
+
+      wrToast(
+        "أكملي عنوان التوصية ونص التوصية"
+      );
+
+      return;
+
+    }
+
+
+    $("saveBtn").disabled =
+      true;
+
+
+    try {
+
+      const rec =
+        await wrAddRecord({
+
+          ...data,
+
+          /*
+           * Supabase يحتاج تاريخًا صالحًا.
+           * إذا لم تحددي موعد تنفيذ،
+           * نستخدم تاريخ اليوم كسجل زمني.
+           */
+          date:
+            data.dueDate ||
+            new Date()
+              .toISOString()
+              .slice(0, 10),
+
+          id:
+            currentId ||
+            undefined
+
+        });
+
+
+      currentId =
+        rec.id;
+
+
+      history.replaceState(
+        null,
+        "",
+        `?id=${encodeURIComponent(
+          currentId
+        )}`
+      );
+
+
+      $("pageTitle").textContent =
+        "تعديل متابعة توصية";
+
+
+      $("saveBtn").textContent =
+        "💾 تحديث التوصية";
+
+
+      $("deleteBtn")
+        .classList
+        .remove("hidden");
+
+
+      wrToast(
+        "تم حفظ التوصية بنجاح"
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "خطأ حفظ التوصية:",
+        error
+      );
+
+
+      wrToast(
+        "تعذر حفظ التوصية: " +
+        (
+          error.message ||
+          error
+        )
+      );
+
+
+    } finally {
+
+      $("saveBtn").disabled =
+        false;
+
+    }
+
+  };
+
+
+$("deleteBtn").onclick =
+  async () => {
+
+    if (!currentId) {
+
+      wrToast(
+        "لا توجد توصية محفوظة لحذفها"
+      );
+
+      return;
+
+    }
+
+
+    if (
+      !confirm(
+        "هل أنتِ متأكدة من حذف هذه التوصية نهائيًا؟"
+      )
+    ) {
+
+      return;
+
+    }
+
+
+    $("deleteBtn").disabled =
+      true;
+
+
+    try {
+
+      await WRGraph.deleteRecord(
+        currentId
+      );
+
+
+      try {
+
+        if (
+          typeof wrDeleteRecord ===
+          "function"
+        ) {
+
+          await wrDeleteRecord(
+            currentId
+          );
+
+        }
+
+      } catch (localError) {
+
+        console.warn(
+          "تعذر تنظيف النسخة المحلية:",
+          localError
+        );
+
+      }
+
+
+      wrToast(
+        "تم حذف التوصية بنجاح"
+      );
+
+
+      setTimeout(
+        () => {
+
+          location.href =
+            "../archive/index.html";
+
+        },
+        400
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "خطأ حذف التوصية:",
+        error
+      );
+
+
+      wrToast(
+        "تعذر حذف التوصية: " +
+        (
+          error.message ||
+          error
+        )
+      );
+
+
+      $("deleteBtn").disabled =
+        false;
+
+    }
+
+  };
+
+
+$("printBtn").onclick =
+  () => {
+
+    document.title =
+      "متابعة توصية - " +
+      (
+        $("f0").value ||
+        "توصية"
+      );
+
+    window.print();
+
+  };
+
+
+$("newBtn").onclick =
+  () => {
+
+    if (
+      confirm(
+        "بدء متابعة توصية جديدة؟"
+      )
+    ) {
+
+      location.href =
+        "recommendations.html";
+
+    }
+
+  };
+
+
+(async function init() {
+
+  const id =
+    new URLSearchParams(
+      location.search
+    ).get("id");
+
+
+  if (id) {
+
+    await loadRecord(id);
+
+  } else {
+
+    $("deleteBtn")
+      .classList
+      .add("hidden");
+
+
+    updatePreview();
+
+  }
+
+})();
+
+</script>
+
+
+</body>
+</html>

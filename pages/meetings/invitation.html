@@ -1,72 +1,896 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>دعوة اجتماع</title>
-<link rel="stylesheet" href="../../css/app.css">
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-<link rel="manifest" href="../../manifest.webmanifest">
-<meta name="theme-color" content="#075c40">
-</head><body>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <title>دعوة اجتماع</title>
+
+  <link rel="stylesheet" href="../../css/app.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta name="theme-color" content="#075c40">
+</head>
+
+<body>
 
 <header class="topbar">
+
   <div class="brand">
-    <img src="../../assets/school-header.jpg" alt="شعار المدرسة">
-    <div><h1>دعوة اجتماع</h1><p>بطاقة PNG موحدة</p></div>
+    <img
+      src="../../assets/school-header.jpg"
+      alt="شعار المدرسة"
+    >
+
+    <div>
+      <h1>دعوة اجتماع</h1>
+      <p>بطاقة PNG موحدة</p>
+    </div>
   </div>
+
   <div class="header-actions">
-    <a class="btn btn-soft" href="../../index.html">🏠 الرئيسية</a>
-    <a class="btn btn-soft" href="../../pages/archive/index.html">📂 الأرشيف</a>
+
+    <a
+      class="btn btn-soft"
+      href="../../index.html"
+    >
+      🏠 الرئيسية
+    </a>
+
+    <a
+      class="btn btn-soft"
+      href="../../pages/archive/index.html"
+    >
+      📂 الأرشيف
+    </a>
+
   </div>
+
 </header>
 
+
 <div class="shell">
-<aside class="sidebar"><h3 class="sidebar-title">القائمة الرئيسية</h3><a class="nav-link " href="../../index.html">🏠 لوحة التحكم</a>
-<a class="nav-link active" href="../../pages/meetings/index.html">📅 الاجتماعات</a>
-<a class="nav-link " href="../../pages/activities/index.html">🎯 الفعاليات</a>
-<a class="nav-link " href="../../pages/certificates/index.html">🏅 الشهادات</a>
-<a class="nav-link " href="../../pages/archive/index.html">📂 الأرشيف الذكي</a>
-<a class="nav-link " href="../../pages/settings/index.html">⚙️ الإعدادات</a></aside>
-<main class="content">
-<div class="page-head"><div><h2>دعوة اجتماع</h2><p>بطاقة PNG موحدة</p></div></div>
-<div class="tool-layout">
-<section class="panel form-panel">
-<h3>بيانات اجتماع</h3>
-<label>رقم / كود</label><input id="number">
-<label>العنوان</label><input id="title">
-<label>التاريخ</label><input id="date" type="date">
-<label>الوقت</label><input id="time" type="time">
-<label>المكان</label><input id="place">
-<label>الفئة المستهدفة</label><input id="target">
-<label>المحاور / التفاصيل</label><textarea id="topics"></textarea>
-<div class="form-actions"><button id="saveBtn" class="btn btn-primary">حفظ ذكي</button><button id="downloadBtn" class="btn btn-gold">تحميل PNG</button></div>
-</section>
-<section class="panel preview">
-<article id="card" class="invitation-card"><img class="school-header" src="../../assets/school-header.jpg"><div class="gold-line"></div>
-<p style="color:var(--gold);font-size:27px;font-weight:700">دعوة لحضور اجتماع</p>
-<h1 id="pTitle">اجتماع</h1><p>رقم <strong id="pNumber">1</strong></p>
-<div id="pTopics" class="topics-box"></div>
-<div class="details-grid"><div class="detail-box"><span>التاريخ</span><strong id="pDate">—</strong></div><div class="detail-box"><span>الوقت</span><strong id="pTime">—</strong></div><div class="detail-box"><span>المكان</span><strong id="pPlace">—</strong></div><div class="detail-box"><span>الفئة المستهدفة</span><strong id="pTarget">—</strong></div></div></article>
-</section>
+
+  <aside class="sidebar">
+
+    <h3 class="sidebar-title">
+      القائمة الرئيسية
+    </h3>
+
+    <a
+      class="nav-link"
+      href="../../index.html"
+    >
+      🏠 لوحة التحكم
+    </a>
+
+    <a
+      class="nav-link active"
+      href="../../pages/meetings/index.html"
+    >
+      📅 الاجتماعات
+    </a>
+
+    <a
+      class="nav-link"
+      href="../../pages/activities/index.html"
+    >
+      🎯 الفعاليات
+    </a>
+
+    <a
+      class="nav-link"
+      href="../../pages/certificates/index.html"
+    >
+      🏅 الشهادات
+    </a>
+
+    <a
+      class="nav-link"
+      href="../../pages/archive/index.html"
+    >
+      📂 الأرشيف الذكي
+    </a>
+
+    <a
+      class="nav-link"
+      href="../../pages/settings/index.html"
+    >
+      ⚙️ الإعدادات
+    </a>
+
+  </aside>
+
+
+  <main class="content">
+
+    <div class="page-head">
+
+      <div>
+
+        <h2 id="pageTitle">
+          دعوة اجتماع
+        </h2>
+
+        <p>
+          إنشاء وحفظ بطاقة دعوة اجتماع.
+        </p>
+
+      </div>
+
+
+      <div class="page-actions">
+
+        <button
+          id="newBtn"
+          class="btn btn-soft"
+          type="button"
+        >
+          نموذج جديد
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <div class="tool-layout">
+
+
+      <section class="panel form-panel">
+
+        <h3>بيانات الاجتماع</h3>
+
+
+        <label>
+          رقم / كود الاجتماع
+        </label>
+
+        <input
+          id="number"
+          type="text"
+        >
+
+
+        <label>
+          عنوان الاجتماع *
+        </label>
+
+        <input
+          id="title"
+          type="text"
+          required
+        >
+
+
+        <label>
+          التاريخ *
+        </label>
+
+        <input
+          id="date"
+          type="date"
+          required
+        >
+
+
+        <label>
+          الوقت
+        </label>
+
+        <input
+          id="time"
+          type="time"
+        >
+
+
+        <label>
+          المكان
+        </label>
+
+        <input
+          id="place"
+          type="text"
+        >
+
+
+        <label>
+          الفئة المستهدفة
+        </label>
+
+        <input
+          id="target"
+          type="text"
+        >
+
+
+        <label>
+          المحاور / التفاصيل
+        </label>
+
+        <textarea
+          id="topics"
+          rows="7"
+        ></textarea>
+
+
+        <div class="form-actions">
+
+          <button
+            id="saveBtn"
+            class="btn btn-primary"
+            type="button"
+          >
+            💾 حفظ ذكي
+          </button>
+
+
+          <button
+            id="downloadBtn"
+            class="btn btn-gold"
+            type="button"
+          >
+            ⬇ تحميل PNG
+          </button>
+
+
+          <button
+            id="deleteBtn"
+            class="btn btn-danger hidden"
+            type="button"
+          >
+            🗑 حذف الدعوة
+          </button>
+
+        </div>
+
+      </section>
+
+
+      <section class="panel preview">
+
+        <article
+          id="card"
+          class="invitation-card"
+        >
+
+          <img
+            class="school-header"
+            src="../../assets/school-header.jpg"
+            alt="شعار المدرسة"
+          >
+
+          <div class="gold-line"></div>
+
+
+          <p
+            style="
+              color:var(--gold);
+              font-size:27px;
+              font-weight:700
+            "
+          >
+            دعوة لحضور اجتماع
+          </p>
+
+
+          <h1 id="pTitle">
+            اجتماع
+          </h1>
+
+
+          <p>
+            رقم
+            <strong id="pNumber">
+              1
+            </strong>
+          </p>
+
+
+          <div
+            id="pTopics"
+            class="topics-box"
+          ></div>
+
+
+          <div class="details-grid">
+
+            <div class="detail-box">
+              <span>التاريخ</span>
+              <strong id="pDate">—</strong>
+            </div>
+
+            <div class="detail-box">
+              <span>الوقت</span>
+              <strong id="pTime">—</strong>
+            </div>
+
+            <div class="detail-box">
+              <span>المكان</span>
+              <strong id="pPlace">—</strong>
+            </div>
+
+            <div class="detail-box">
+              <span>الفئة المستهدفة</span>
+              <strong id="pTarget">—</strong>
+            </div>
+
+          </div>
+
+        </article>
+
+      </section>
+
+    </div>
+
+  </main>
+
 </div>
-</main></div>
-<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="../../js/config.js"></script>
 <script src="../../js/graph.js"></script>
 <script src="../../js/common.js"></script>
+
+
 <script>
-function update(){
- $("pTitle").textContent=$("title").value||"اجتماع";
- $("pNumber").textContent=$("number").value||"1";
- $("pDate").textContent=wrFormatDate($("date").value);
- $("pTime").textContent=wrFormatTime($("time").value);
- $("pPlace").textContent=$("place").value||"—";
- $("pTarget").textContent=$("target").value||"—";
- $("pTopics").textContent=wrBullets($("topics").value||"مراجعة التفاصيل\nتوزيع المهام");
+
+let currentId = null;
+
+
+function getData() {
+
+  return {
+
+    type: "invitation",
+
+    title:
+      $("title").value.trim() ||
+      "دعوة اجتماع",
+
+    number:
+      $("number").value.trim(),
+
+    date:
+      $("date").value,
+
+    time:
+      $("time").value,
+
+    place:
+      $("place").value.trim(),
+
+    target:
+      $("target").value.trim(),
+
+    topics:
+      $("topics").value
+
+  };
+
 }
-["number","title","date","time","place","target","topics"].forEach(id=>$(id).addEventListener("input",update));
-$("saveBtn").onclick=()=>wrAddRecord({type:"invitation",title:$("title").value||"اجتماع",date:$("date").value});
-$("downloadBtn").onclick=async()=>{update();const c=await html2canvas($("card"),{scale:2,backgroundColor:"#fffdf8",useCORS:true});const a=document.createElement("a");a.download="دعوة-اجتماع.png";a.href=c.toDataURL("image/png");a.click()};
-update();
+
+
+function update() {
+
+  const d = getData();
+
+
+  $("pTitle").textContent =
+    d.title || "اجتماع";
+
+
+  $("pNumber").textContent =
+    d.number || "1";
+
+
+  $("pDate").textContent =
+    wrFormatDate(d.date);
+
+
+  $("pTime").textContent =
+    wrFormatTime(d.time);
+
+
+  $("pPlace").textContent =
+    d.place || "—";
+
+
+  $("pTarget").textContent =
+    d.target || "—";
+
+
+  $("pTopics").textContent =
+    wrBullets(
+      d.topics ||
+      "مراجعة التفاصيل\nتوزيع المهام"
+    );
+
+}
+
+
+function applyData(data = {}) {
+
+  if (data.number !== undefined) {
+    $("number").value =
+      data.number || "";
+  }
+
+  if (data.title !== undefined) {
+    $("title").value =
+      data.title || "";
+  }
+
+  if (data.date !== undefined) {
+    $("date").value =
+      data.date || "";
+  }
+
+  if (data.time !== undefined) {
+    $("time").value =
+      data.time || "";
+  }
+
+  if (data.place !== undefined) {
+    $("place").value =
+      data.place || "";
+  }
+
+  if (data.target !== undefined) {
+    $("target").value =
+      data.target || "";
+  }
+
+  if (data.topics !== undefined) {
+    $("topics").value =
+      data.topics || "";
+  }
+
+  update();
+
+}
+
+
+[
+  "number",
+  "title",
+  "date",
+  "time",
+  "place",
+  "target",
+  "topics"
+].forEach(id => {
+
+  $(id).addEventListener(
+    "input",
+    update
+  );
+
+});
+
+
+async function loadRecord(id) {
+
+  try {
+
+    const records =
+      await WRGraph.fetchRecords();
+
+
+    const rec =
+      records.find(
+        r =>
+          String(r.id) ===
+          String(id)
+      );
+
+
+    if (!rec) {
+
+      alert(
+        "لم يتم العثور على الدعوة"
+      );
+
+      return;
+
+    }
+
+
+    currentId = rec.id;
+
+
+    const data = {
+      ...(rec.payload || {})
+    };
+
+
+    if (
+      !data.title &&
+      rec.title
+    ) {
+
+      data.title =
+        rec.title;
+
+    }
+
+
+    if (
+      !data.date &&
+      rec.record_date
+    ) {
+
+      data.date =
+        rec.record_date;
+
+    }
+
+
+    applyData(data);
+
+
+    $("pageTitle").textContent =
+      "تعديل دعوة اجتماع";
+
+
+    $("saveBtn").textContent =
+      "💾 تحديث الدعوة";
+
+
+    $("deleteBtn")
+      .classList
+      .remove("hidden");
+
+
+    console.log(
+      "تم استرجاع الدعوة:",
+      rec
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "خطأ في استرجاع الدعوة:",
+      error
+    );
+
+
+    alert(
+      "حدث خطأ أثناء استرجاع الدعوة"
+    );
+
+  }
+
+}
+
+
+$("saveBtn").onclick =
+  async () => {
+
+    const data =
+      getData();
+
+
+    if (
+      !data.title ||
+      !data.date
+    ) {
+
+      wrToast(
+        "أكملي عنوان الاجتماع والتاريخ"
+      );
+
+      return;
+
+    }
+
+
+    $("saveBtn").disabled =
+      true;
+
+
+    try {
+
+      const rec =
+        await wrAddRecord({
+
+          ...data,
+
+          id:
+            currentId ||
+            undefined
+
+        });
+
+
+      currentId =
+        rec.id;
+
+
+      history.replaceState(
+        null,
+        "",
+        `?id=${encodeURIComponent(
+          currentId
+        )}`
+      );
+
+
+      $("pageTitle").textContent =
+        "تعديل دعوة اجتماع";
+
+
+      $("saveBtn").textContent =
+        "💾 تحديث الدعوة";
+
+
+      $("deleteBtn")
+        .classList
+        .remove("hidden");
+
+
+      wrToast(
+        "تم حفظ الدعوة بنجاح"
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "خطأ حفظ الدعوة:",
+        error
+      );
+
+
+      wrToast(
+        "تعذر حفظ الدعوة: " +
+        (
+          error.message ||
+          error
+        )
+      );
+
+
+    } finally {
+
+      $("saveBtn").disabled =
+        false;
+
+    }
+
+  };
+
+
+$("deleteBtn").onclick =
+  async () => {
+
+    if (!currentId) {
+
+      wrToast(
+        "لا توجد دعوة محفوظة لحذفها"
+      );
+
+      return;
+
+    }
+
+
+    const confirmed =
+      confirm(
+        "هل أنتِ متأكدة من حذف هذه الدعوة نهائيًا؟"
+      );
+
+
+    if (!confirmed) {
+      return;
+    }
+
+
+    $("deleteBtn").disabled =
+      true;
+
+
+    try {
+
+      /*
+       * الحذف الحقيقي من Supabase
+       */
+      await WRGraph.deleteRecord(
+        currentId
+      );
+
+
+      /*
+       * تنظيف النسخة المحلية
+       * إن كانت موجودة.
+       */
+      try {
+
+        if (
+          typeof wrDeleteRecord ===
+          "function"
+        ) {
+
+          await wrDeleteRecord(
+            currentId
+          );
+
+        }
+
+      } catch (localError) {
+
+        console.warn(
+          "تعذر تنظيف النسخة المحلية:",
+          localError
+        );
+
+      }
+
+
+      wrToast(
+        "تم حذف الدعوة بنجاح"
+      );
+
+
+      setTimeout(
+        () => {
+
+          location.href =
+            "../archive/index.html";
+
+        },
+        400
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "خطأ حذف الدعوة:",
+        error
+      );
+
+
+      wrToast(
+        "تعذر حذف الدعوة: " +
+        (
+          error.message ||
+          error
+        )
+      );
+
+
+      $("deleteBtn").disabled =
+        false;
+
+    }
+
+  };
+
+
+$("downloadBtn").onclick =
+  async () => {
+
+    try {
+
+      update();
+
+
+      const canvas =
+        await html2canvas(
+          $("card"),
+          {
+            scale: 2,
+            backgroundColor:
+              "#fffdf8",
+            useCORS: true
+          }
+        );
+
+
+      const link =
+        document.createElement(
+          "a"
+        );
+
+
+      link.download =
+        "دعوة-" +
+        wrSafeName(
+          $("title").value ||
+          "اجتماع"
+        ) +
+        ".png";
+
+
+      link.href =
+        canvas.toDataURL(
+          "image/png"
+        );
+
+
+      link.click();
+
+
+    } catch (error) {
+
+      console.error(
+        "تعذر إنشاء PNG:",
+        error
+      );
+
+
+      wrToast(
+        "تعذر تحميل صورة الدعوة"
+      );
+
+    }
+
+  };
+
+
+$("newBtn").onclick =
+  () => {
+
+    if (
+      confirm(
+        "بدء دعوة اجتماع جديدة؟"
+      )
+    ) {
+
+      location.href =
+        "invitation.html";
+
+    }
+
+  };
+
+
+(async function init() {
+
+  const id =
+    new URLSearchParams(
+      location.search
+    ).get("id");
+
+
+  if (id) {
+
+    await loadRecord(id);
+
+  } else {
+
+    $("deleteBtn")
+      .classList
+      .add("hidden");
+
+
+    if (
+      !$("date").value
+    ) {
+
+      $("date").value =
+        new Date()
+          .toISOString()
+          .slice(0, 10);
+
+    }
+
+
+    update();
+
+  }
+
+})();
+
 </script>
-</body></html>
+
+
+</body>
+</html>

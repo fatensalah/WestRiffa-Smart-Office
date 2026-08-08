@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
- 
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
- 
+
   <title>الأرشيف الذكي | WestRiffa Smart Office</title>
- 
+
   <link rel="stylesheet" href="../../css/app.css">
   <link rel="manifest" href="../../manifest.webmanifest">
- 
+
   <meta name="theme-color" content="#075c40">
- 
+
   <style>
     .archive-tools {
       display: grid;
@@ -19,7 +19,7 @@
       gap: 12px;
       margin: 20px 0;
     }
- 
+
     .archive-tools input,
     .archive-tools select {
       width: 100%;
@@ -30,13 +30,13 @@
       font-size: 15px;
       background: #fff;
     }
- 
+
     #recordsList {
       display: grid;
       gap: 14px;
       margin-top: 20px;
     }
- 
+
     .record-card {
       background: #fff;
       border: 1px solid #e6e6e6;
@@ -44,25 +44,25 @@
       padding: 18px;
       box-shadow: 0 4px 14px rgba(0,0,0,.05);
     }
- 
+
     .record-card h3 {
       margin: 0 0 8px;
       color: #075c40;
     }
- 
+
     .record-meta {
       color: #666;
       font-size: 14px;
       margin-bottom: 12px;
     }
- 
+
     .record-actions {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
       margin-top: 12px;
     }
- 
+
     .empty-state {
       padding: 35px;
       text-align: center;
@@ -73,302 +73,573 @@
     }
   </style>
 </head>
- 
+
 <body>
- 
+
 <header class="topbar">
+
   <div class="brand">
-    <img src="../../assets/school-header.jpg" alt="شعار المدرسة">
+
+    <img
+      src="../../assets/school-header.jpg"
+      alt="شعار المدرسة"
+    >
+
     <div>
       <h1>الأرشيف الذكي</h1>
       <p>عرض وتعديل واسترجاع السجلات</p>
     </div>
+
   </div>
- 
+
   <div class="header-actions">
-    <a class="btn btn-soft" href="../../index.html">🏠 الرئيسية</a>
-    <a class="btn" href="../activities/report.html">➕ تقرير فعالية</a>
+
+    <a
+      class="btn btn-soft"
+      href="../../index.html"
+    >
+      🏠 الرئيسية
+    </a>
+
+    <a
+      class="btn"
+      href="../activities/report.html"
+    >
+      ➕ تقرير فعالية
+    </a>
+
   </div>
+
 </header>
- 
+
+
 <div class="shell">
- 
+
   <aside class="sidebar">
-    <h3 class="sidebar-title">القائمة الرئيسية</h3>
- 
-    <a class="nav-link" href="../meetings/index.html">▣ الاجتماعات</a>
-    <a class="nav-link" href="../activities/index.html">🎯 الفعاليات</a>
-    <a class="nav-link" href="../certificates/index.html">🏅 الشهادات</a>
-    <a class="nav-link active" href="./index.html">📁 الأرشيف الذكي</a>
-    <a class="nav-link" href="../settings/index.html">⚙️ الإعدادات</a>
+
+    <h3 class="sidebar-title">
+      القائمة الرئيسية
+    </h3>
+
+    <a
+      class="nav-link"
+      href="../meetings/index.html"
+    >
+      📅 الاجتماعات
+    </a>
+
+    <a
+      class="nav-link"
+      href="../activities/index.html"
+    >
+      🎯 الفعاليات
+    </a>
+
+    <a
+      class="nav-link"
+      href="../certificates/index.html"
+    >
+      🏅 الشهادات
+    </a>
+
+    <a
+      class="nav-link active"
+      href="./index.html"
+    >
+      📁 الأرشيف الذكي
+    </a>
+
+    <a
+      class="nav-link"
+      href="../settings/index.html"
+    >
+      ⚙️ الإعدادات
+    </a>
+
   </aside>
- 
+
+
   <main class="content">
- 
+
     <div class="page-head">
+
       <div>
-        <h2>الأرشيف الذكي</h2>
-        <p>ابحثي عن أي سجل محفوظ في قاعدة البيانات.</p>
+
+        <h2>
+          الأرشيف الذكي
+        </h2>
+
+        <p>
+          ابحثي عن أي سجل محفوظ في قاعدة البيانات.
+        </p>
+
       </div>
+
     </div>
- 
+
+
     <div class="archive-tools">
+
       <input
         id="search"
         type="search"
         placeholder="بحث بالعنوان أو النوع أو البيانات..."
       >
- 
+
       <select id="type">
-        <option value="">كل الأنواع</option>
-        <option value="activity">الفعاليات</option>
-        <option value="meeting">الاجتماعات</option>
-        <option value="certificate">الشهادات</option>
+
+        <option value="">
+          كل الأنواع
+        </option>
+
+        <option value="activity">
+          الفعاليات
+        </option>
+
+        <option value="meeting">
+          محاضر الاجتماعات
+        </option>
+
+        <option value="invitation">
+          دعوات الاجتماعات
+        </option>
+
+        <option value="attendance">
+          سجلات الحضور
+        </option>
+
+        <option value="recommendation">
+          متابعة التوصيات
+        </option>
+
+        <option value="certificate">
+          الشهادات
+        </option>
+
       </select>
+
     </div>
- 
-    <div id="status" class="empty-state">
+
+
+    <div
+      id="status"
+      class="empty-state"
+    >
       جارٍ تحميل السجلات...
     </div>
- 
+
+
     <div id="recordsList"></div>
- 
+
   </main>
+
 </div>
- 
- 
-<!-- مهم: Supabase يجب أن يحمّل أولاً -->
+
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
- 
+
 <script src="../../js/config.js"></script>
 <script src="../../js/graph.js"></script>
 <script src="../../js/common.js"></script>
- 
+
+
 <script>
-  const searchInput = document.getElementById("search");
-  const typeSelect = document.getElementById("type");
-  const recordsList = document.getElementById("recordsList");
-  const statusBox = document.getElementById("status");
- 
-  let allRecords = [];
- 
- 
-  function getRecordUrl(record) {
- 
-    if (record.type === "activity") {
-      return "../activities/report.html?id=" +
-        encodeURIComponent(record.id);
-    }
- 
-    if (record.type === "meeting") {
-      return "../meetings/index.html?id=" +
-        encodeURIComponent(record.id);
-    }
- 
-    if (record.type === "certificate") {
-      return "../certificates/index.html?id=" +
-        encodeURIComponent(record.id);
-    }
- 
-    return "#";
+
+const searchInput =
+  document.getElementById("search");
+
+const typeSelect =
+  document.getElementById("type");
+
+const recordsList =
+  document.getElementById("recordsList");
+
+const statusBox =
+  document.getElementById("status");
+
+let allRecords = [];
+
+
+/* ==============================
+   تحديد صفحة فتح كل نوع
+   ============================== */
+
+function getRecordUrl(record) {
+
+  if (record.type === "activity") {
+
+    return (
+      "../activities/report.html?id=" +
+      encodeURIComponent(record.id)
+    );
+
   }
- 
- 
-  function getTypeName(type) {
- 
-    if (type === "activity") return "فعالية";
-    if (type === "meeting") return "اجتماع";
-    if (type === "certificate") return "شهادة";
- 
-    return type || "سجل";
+
+
+  if (record.type === "invitation") {
+
+    return (
+      "../meetings/invitation.html?id=" +
+      encodeURIComponent(record.id)
+    );
+
   }
- 
- 
-  function render() {
- 
-    const searchValue =
-      searchInput.value.toLowerCase().trim();
- 
-    const selectedType =
-      typeSelect.value;
- 
-    const filteredRecords = allRecords.filter(record => {
- 
+
+
+  if (record.type === "meeting") {
+
+    return (
+      "../meetings/minutes.html?id=" +
+      encodeURIComponent(record.id)
+    );
+
+  }
+
+
+  if (record.type === "attendance") {
+
+    return (
+      "../meetings/attendance.html?id=" +
+      encodeURIComponent(record.id)
+    );
+
+  }
+
+
+  if (record.type === "recommendation") {
+
+    return (
+      "../meetings/recommendations.html?id=" +
+      encodeURIComponent(record.id)
+    );
+
+  }
+
+
+  if (record.type === "certificate") {
+
+    return (
+      "../certificates/create.html?id=" +
+      encodeURIComponent(record.id)
+    );
+
+  }
+
+
+  return "#";
+}
+
+
+/* ==============================
+   أسماء الأنواع بالعربي
+   ============================== */
+
+function getTypeName(type) {
+
+  if (type === "activity") {
+    return "فعالية";
+  }
+
+  if (type === "meeting") {
+    return "محضر اجتماع";
+  }
+
+  if (type === "invitation") {
+    return "دعوة اجتماع";
+  }
+
+  if (type === "attendance") {
+    return "سجل حضور";
+  }
+
+  if (type === "recommendation") {
+    return "متابعة توصيات";
+  }
+
+  if (type === "certificate") {
+    return "شهادة";
+  }
+
+  return type || "سجل";
+}
+
+
+/* ==============================
+   حماية النصوص
+   ============================== */
+
+function escapeHtml(value) {
+
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+
+}
+
+
+/* ==============================
+   عرض السجلات
+   ============================== */
+
+function render() {
+
+  const searchValue =
+    searchInput.value
+      .toLowerCase()
+      .trim();
+
+
+  const selectedType =
+    typeSelect.value;
+
+
+  const filteredRecords =
+    allRecords.filter(record => {
+
       const payloadText =
-        JSON.stringify(record.payload || {})
-          .toLowerCase();
- 
+        JSON.stringify(
+          record.payload || {}
+        ).toLowerCase();
+
+
       const title =
-        String(record.title || "")
-          .toLowerCase();
- 
+        String(
+          record.title || ""
+        ).toLowerCase();
+
+
       const type =
-        String(record.type || "")
-          .toLowerCase();
- 
+        String(
+          record.type || ""
+        ).toLowerCase();
+
+
       const matchesSearch =
         !searchValue ||
         title.includes(searchValue) ||
         type.includes(searchValue) ||
         payloadText.includes(searchValue);
- 
+
+
       const matchesType =
         !selectedType ||
         record.type === selectedType;
- 
-      return matchesSearch && matchesType;
-    });
- 
- 
-    recordsList.innerHTML = "";
- 
- 
-    if (!filteredRecords.length) {
- 
-      statusBox.style.display = "block";
- 
-      statusBox.textContent =
-        allRecords.length
-          ? "لا توجد سجلات مطابقة للبحث."
-          : "لا توجد سجلات محفوظة.";
- 
-      return;
-    }
- 
- 
-    statusBox.style.display = "none";
- 
- 
-    filteredRecords.forEach(record => {
- 
-      const card =
-        document.createElement("div");
- 
-      card.className = "record-card";
- 
- 
-      const title =
-        record.title || "بدون عنوان";
- 
-      const typeName =
-        getTypeName(record.type);
- 
-      const date =
-        record.record_date || "";
- 
-      const url =
-        getRecordUrl(record);
- 
- 
-      card.innerHTML = `
-        <h3>${escapeHtml(title)}</h3>
- 
-        <div class="record-meta">
-          ${escapeHtml(typeName)}
-          ${date ? " • " + escapeHtml(date) : ""}
-        </div>
- 
-        <div class="record-actions">
-          ${
-            url !== "#"
-              ? `<a class="btn btn-soft"
-                    href="${url}">
-                    فتح / تعديل
-                 </a>`
-              : ""
-          }
-        </div>
-      `;
- 
- 
-      recordsList.appendChild(card);
-    });
-  }
- 
- 
-  function escapeHtml(value) {
- 
-    return String(value ?? "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
- 
- 
-  async function loadRecords() {
- 
-    try {
- 
-      statusBox.style.display = "block";
-      statusBox.textContent =
-        "جارٍ تحميل السجلات...";
- 
- 
-      if (
-        !window.WRGraph ||
-        typeof WRGraph.fetchRecords !== "function"
-      ) {
-        throw new Error(
-          "دالة جلب السجلات غير متاحة"
-        );
-      }
- 
- 
-      /*
-       * النقطة المهمة:
-       * ننتظر fetchRecords أولاً،
-       * وبعدها فقط نستخدم filter داخل render.
-       */
-      const records =
-        await WRGraph.fetchRecords();
- 
- 
-      allRecords =
-        Array.isArray(records)
-          ? records
-          : [];
- 
- 
-      console.log(
-        "Archive records:",
-        allRecords
+
+
+      return (
+        matchesSearch &&
+        matchesType
       );
- 
- 
-      render();
- 
-    } catch (error) {
- 
-      console.error(
-        "Archive loading error:",
+
+    });
+
+
+  recordsList.innerHTML = "";
+
+
+  if (!filteredRecords.length) {
+
+    statusBox.style.display =
+      "block";
+
+
+    statusBox.textContent =
+      allRecords.length
+        ? "لا توجد سجلات مطابقة للبحث."
+        : "لا توجد سجلات محفوظة.";
+
+
+    return;
+
+  }
+
+
+  statusBox.style.display =
+    "none";
+
+
+  filteredRecords.forEach(record => {
+
+    const card =
+      document.createElement("div");
+
+
+    card.className =
+      "record-card";
+
+
+    const title =
+      record.title ||
+      "بدون عنوان";
+
+
+    const typeName =
+      getTypeName(
+        record.type
+      );
+
+
+    const date =
+      record.record_date ||
+      record.created_at ||
+      "";
+
+
+    const url =
+      getRecordUrl(
+        record
+      );
+
+
+    card.innerHTML = `
+
+      <h3>
+        ${escapeHtml(title)}
+      </h3>
+
+
+      <div class="record-meta">
+
+        ${escapeHtml(typeName)}
+
+        ${
+          date
+            ? " • " +
+              escapeHtml(date)
+            : ""
+        }
+
+      </div>
+
+
+      <div class="record-actions">
+
+        ${
+          url !== "#"
+            ? `
+              <a
+                class="btn btn-soft"
+                href="${url}"
+              >
+                فتح / تعديل
+              </a>
+            `
+            : ""
+        }
+
+      </div>
+
+    `;
+
+
+    recordsList.appendChild(
+      card
+    );
+
+  });
+
+}
+
+
+/* ==============================
+   تحميل البيانات من Supabase
+   ============================== */
+
+async function loadRecords() {
+
+  try {
+
+    statusBox.style.display =
+      "block";
+
+
+    statusBox.textContent =
+      "جارٍ تحميل السجلات...";
+
+
+    if (
+      !window.WRGraph ||
+      typeof WRGraph.fetchRecords !==
+        "function"
+    ) {
+
+      throw new Error(
+        "دالة جلب السجلات غير متاحة"
+      );
+
+    }
+
+
+    const records =
+      await WRGraph.fetchRecords();
+
+
+    allRecords =
+      Array.isArray(records)
+        ? records
+        : [];
+
+
+    console.log(
+      "Archive records:",
+      allRecords
+    );
+
+
+    render();
+
+
+  } catch (error) {
+
+    console.error(
+      "Archive loading error:",
+      error
+    );
+
+
+    statusBox.style.display =
+      "block";
+
+
+    statusBox.textContent =
+      "تعذر تحميل الأرشيف: " +
+      (
+        error.message ||
         error
       );
- 
-      statusBox.style.display = "block";
- 
-      statusBox.textContent =
-        "تعذر تحميل الأرشيف: " +
-        (error.message || error);
-    }
+
   }
- 
- 
-  searchInput.addEventListener(
-    "input",
-    render
-  );
- 
- 
-  typeSelect.addEventListener(
-    "change",
-    render
-  );
- 
- 
-  loadRecords();
+
+}
+
+
+/* ==============================
+   البحث والفلترة
+   ============================== */
+
+searchInput.addEventListener(
+  "input",
+  render
+);
+
+
+typeSelect.addEventListener(
+  "change",
+  render
+);
+
+
+/* ==============================
+   تشغيل الأرشيف
+   ============================== */
+
+loadRecords();
+
 </script>
- 
+
+
 </body>
 </html>
