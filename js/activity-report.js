@@ -729,36 +729,102 @@ $("printBtn").onclick = () => {
 };
 
 
-$("deleteBtn").onclick =
-  async () => {
-    if (
-      !confirm(
-        "حذف هذا التقرير وصوره من الأرشيف؟"
-      )
-    ) {
-      return;
-    }
+/*
+ * =====================================
+ * حذف التقرير نهائيًا
+ * Storage + Supabase + Local
+ * =====================================
+ */
 
-    try {
-      if (
-        existingImagePaths.length
-      ) {
-        await WRGraph.deleteFiles(
-          existingImagePaths
-        );
-      }
-    } catch (e) {
-      console.warn(
-        "تعذر حذف بعض الصور:",
-        e
+$("deleteBtn").onclick = async () => {
+
+  if (!currentId) {
+    wrToast(
+      "لا يوجد تقرير محدد للحذف"
+    );
+    return;
+  }
+
+  const ok = confirm(
+    "هل أنتِ متأكدة من حذف هذا التقرير وصوره نهائيًا؟"
+  );
+
+  if (!ok) return;
+
+  $("deleteBtn").disabled = true;
+
+  try {
+
+    /*
+     * 1- حذف الصور من Supabase Storage
+     */
+    if (existingImagePaths.length) {
+      await WRGraph.deleteFiles(
+        existingImagePaths
       );
     }
 
-    await wrDeleteRecord(currentId);
+    /*
+     * 2- حذف السجل نفسه من Supabase
+     */
+    await WRGraph.deleteRecord(
+      currentId
+    );
 
-    location.href =
-      "../archive/index.html";
-  };
+    /*
+     * 3- حذف النسخة المحلية إن وجدت
+     */
+    if (
+      typeof wrDeleteRecord ===
+      "function"
+    ) {
+      try {
+        await wrDeleteRecord(
+          currentId
+        );
+      } catch (localError) {
+        console.warn(
+          "تعذر حذف النسخة المحلية:",
+          localError
+        );
+      }
+    }
+
+    /*
+     * 4- حذف أي مسودة متبقية
+     */
+    localStorage.removeItem(
+      DRAFT_KEY
+    );
+
+    wrToast(
+      "تم حذف التقرير نهائيًا"
+    );
+
+    /*
+     * 5- الرجوع إلى الأرشيف
+     */
+    setTimeout(() => {
+      location.href =
+        "../archive/index.html";
+    }, 500);
+
+  } catch (error) {
+
+    console.error(
+      "خطأ في حذف التقرير:",
+      error
+    );
+
+    wrToast(
+      "تعذر حذف التقرير: " +
+      (error.message || error)
+    );
+
+    $("deleteBtn").disabled =
+      false;
+  }
+};
 
 
 $("newBtn").onclick = () => {
