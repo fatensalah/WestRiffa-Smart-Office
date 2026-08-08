@@ -5,15 +5,151 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
 
-  <title>شهادة شكر وتقدير</title>
+  <title>شهادات شكر وتقدير</title>
 
   <link rel="stylesheet" href="../../css/app.css">
   <link rel="manifest" href="../../manifest.webmanifest">
 
   <meta name="theme-color" content="#075c40">
+
+  <style>
+
+    .mode-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 20px;
+      padding: 5px;
+      background: #f3f7f5;
+      border-radius: 14px;
+    }
+
+    .mode-btn {
+      border: 0;
+      padding: 11px 14px;
+      border-radius: 10px;
+      background: transparent;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #476359;
+    }
+
+    .mode-btn.active {
+      background: #075c40;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(7,92,64,.18);
+    }
+
+    .mode-section.hidden {
+      display: none;
+    }
+
+    .names-counter {
+      margin-top: 7px;
+      font-size: 13px;
+      color: #6b7a72;
+    }
+
+    .bulk-preview {
+      display: grid;
+      gap: 24px;
+    }
+
+    .bulk-certificate-wrap {
+      page-break-after: always;
+      break-after: page;
+    }
+
+    .bulk-certificate-wrap:last-child {
+      page-break-after: auto;
+      break-after: auto;
+    }
+
+    .bulk-certificate-wrap .certificate {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .batch-status {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #f5f8f6;
+      color: #52685f;
+      font-size: 13px;
+      display: none;
+    }
+
+    .batch-status.show {
+      display: block;
+    }
+
+    @media print {
+
+      body {
+        background: #fff !important;
+      }
+
+      .topbar,
+      .sidebar,
+      .form-panel,
+      .page-head {
+        display: none !important;
+      }
+
+      .shell,
+      .content,
+      .tool-layout,
+      .preview {
+        display: block !important;
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      body.print-single #bulkPreviewSection {
+        display: none !important;
+      }
+
+      body.print-single #singlePreviewSection {
+        display: block !important;
+      }
+
+      body.print-bulk #singlePreviewSection {
+        display: none !important;
+      }
+
+      body.print-bulk #bulkPreviewSection {
+        display: block !important;
+      }
+
+      .certificate {
+        box-shadow: none !important;
+        margin: 0 auto !important;
+        break-inside: avoid;
+      }
+
+      .bulk-certificate-wrap {
+        page-break-after: always;
+        break-after: page;
+      }
+
+      .bulk-certificate-wrap:last-child {
+        page-break-after: auto;
+        break-after: auto;
+      }
+
+    }
+
+  </style>
 </head>
 
+
 <body>
+
 
 <header class="topbar">
 
@@ -25,8 +161,8 @@
     >
 
     <div>
-      <h1>شهادة شكر وتقدير</h1>
-      <p>شهادة موحدة للطباعة</p>
+      <h1>شهادات شكر وتقدير</h1>
+      <p>إنشاء فردي وجماعي مع الحفظ والطباعة</p>
     </div>
 
   </div>
@@ -54,6 +190,7 @@
 
 
 <div class="shell">
+
 
   <aside class="sidebar">
 
@@ -108,17 +245,21 @@
 
   <main class="content">
 
+
     <div class="page-head">
 
       <div>
+
         <h2 id="pageTitle">
           شهادة شكر وتقدير
         </h2>
 
-        <p>
-          شهادة موحدة للطباعة والحفظ السحابي.
+        <p id="pageSubtitle">
+          أنشئي شهادة فردية أو مجموعة شهادات دفعة واحدة.
         </p>
+
       </div>
+
 
       <div class="page-actions">
 
@@ -137,20 +278,100 @@
 
     <div class="tool-layout">
 
+
+      <!-- =========================
+           نموذج البيانات
+           ========================= -->
+
       <section class="panel form-panel">
 
-        <h3>بيانات الشهادة</h3>
+
+        <div class="mode-switch">
+
+          <button
+            id="singleModeBtn"
+            class="mode-btn active"
+            type="button"
+          >
+            👤 شهادة فردية
+          </button>
+
+          <button
+            id="bulkModeBtn"
+            class="mode-btn"
+            type="button"
+          >
+            👥 شهادات جماعية
+          </button>
+
+        </div>
 
 
-        <label>
-          اسم المستفيد *
-        </label>
+        <!-- =========================
+             الوضع الفردي
+             ========================= -->
 
-        <input
-          id="name"
-          type="text"
-          required
+        <div
+          id="singleFields"
+          class="mode-section"
         >
+
+          <h3>
+            بيانات المستفيد
+          </h3>
+
+          <label>
+            اسم المستفيد *
+          </label>
+
+          <input
+            id="name"
+            type="text"
+          >
+
+        </div>
+
+
+        <!-- =========================
+             الوضع الجماعي
+             ========================= -->
+
+        <div
+          id="bulkFields"
+          class="mode-section hidden"
+        >
+
+          <h3>
+            أسماء المستفيدين
+          </h3>
+
+          <label>
+            الأسماء *
+          </label>
+
+          <textarea
+            id="bulkNames"
+            rows="10"
+            placeholder="اكتبي كل اسم في سطر مستقل&#10;مثال:&#10;أحمد محمد&#10;محمد علي&#10;سلمان حسن"
+          ></textarea>
+
+          <div
+            id="namesCounter"
+            class="names-counter"
+          >
+            عدد الأسماء: 0
+          </div>
+
+        </div>
+
+
+        <!-- =========================
+             بيانات مشتركة
+             ========================= -->
+
+        <h3 style="margin-top:22px">
+          بيانات الشهادة
+        </h3>
 
 
         <label>
@@ -159,6 +380,8 @@
 
         <textarea
           id="reason"
+          rows="5"
+          placeholder="تقديرًا لجهوده المتميزة ومشاركته الفاعلة."
         ></textarea>
 
 
@@ -169,7 +392,6 @@
         <input
           id="date"
           type="date"
-          required
         >
 
 
@@ -212,66 +434,112 @@
 
         </div>
 
+
+        <div
+          id="batchStatus"
+          class="batch-status"
+        ></div>
+
+
       </section>
 
+
+      <!-- =========================
+           المعاينة
+           ========================= -->
 
       <section class="panel preview">
 
-        <div class="certificate">
 
-          <img
-            class="school-header"
-            src="../../assets/school-header.jpg"
-            alt="شعار المدرسة"
-          >
+        <!-- الشهادة الفردية -->
 
-          <h1>
-            شهادة شكر وتقدير
-          </h1>
-
-          <p>
-            تتقدم مدرسة الرفاع الغربي الابتدائية للبنين
-            بخالص الشكر والتقدير إلى
-          </p>
-
+        <div
+          id="singlePreviewSection"
+        >
 
           <div
-            id="pName"
-            class="name"
+            id="singleCertificate"
+            class="certificate"
           >
-            اسم المستفيد
+
+            <img
+              class="school-header"
+              src="../../assets/school-header.jpg"
+              alt="شعار المدرسة"
+            >
+
+            <h1>
+              شهادة شكر وتقدير
+            </h1>
+
+
+            <p>
+              تتقدم مدرسة الرفاع الغربي الابتدائية للبنين
+              بخالص الشكر والتقدير إلى
+            </p>
+
+
+            <div
+              id="pName"
+              class="name"
+            >
+              اسم المستفيد
+            </div>
+
+
+            <p id="pReason">
+              تقديرًا لجهوده المتميزة ومشاركته الفاعلة.
+            </p>
+
+
+            <p id="pDate">
+              —
+            </p>
+
+
+            <p>
+              مديرة المدرسة
+              <br>
+
+              <b id="pSigner">
+                أحلام السويدي
+              </b>
+            </p>
+
           </div>
-
-
-          <p id="pReason">
-            تقديرًا لجهوده المتميزة ومشاركته الفاعلة.
-          </p>
-
-
-          <p id="pDate">
-            —
-          </p>
-
-
-          <p>
-            مديرة المدرسة
-            <br>
-
-            <b id="pSigner">
-              أحلام السويدي
-            </b>
-          </p>
 
         </div>
 
+
+        <!-- المعاينة الجماعية -->
+
+        <div
+          id="bulkPreviewSection"
+          class="hidden"
+        >
+
+          <div
+            id="bulkPreview"
+            class="bulk-preview"
+          ></div>
+
+        </div>
+
+
       </section>
 
+
     </div>
+
 
   </main>
 
 </div>
 
+
+<!-- =========================
+     المكتبات
+     ========================= -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -282,28 +550,49 @@
 
 <script>
 
+
+/* =========================================================
+   المتغيرات
+   ========================================================= */
+
 let currentId = null;
 
+let currentMode =
+  "single";
 
-function getData() {
+
+const DEFAULT_REASON =
+  "تقديرًا لجهوده المتميزة ومشاركته الفاعلة.";
+
+
+/* =========================================================
+   قراءة الأسماء الجماعية
+   ========================================================= */
+
+function parseBulkNames() {
+
+  return $("bulkNames")
+    .value
+    .split(/[\n،,]+/)
+    .map(
+      name =>
+        name.trim()
+    )
+    .filter(Boolean);
+
+}
+
+
+/* =========================================================
+   الحصول على بيانات مشتركة
+   ========================================================= */
+
+function getCommonData() {
 
   return {
 
-    type:
-      "certificate",
-
-    title:
-      "شهادة - " +
-      (
-        $("name").value.trim() ||
-        "مستفيد"
-      ),
-
-    beneficiaryName:
-      $("name").value.trim(),
-
     reason:
-      $("reason").value,
+      $("reason").value.trim(),
 
     date:
       $("date").value,
@@ -316,10 +605,59 @@ function getData() {
 }
 
 
-function updatePreview() {
+/* =========================================================
+   بيانات الشهادة الفردية
+   ========================================================= */
+
+function getSingleData() {
+
+  const common =
+    getCommonData();
+
+
+  const beneficiaryName =
+    $("name").value.trim();
+
+
+  return {
+
+    type:
+      "certificate",
+
+    title:
+      "شهادة - " +
+      (
+        beneficiaryName ||
+        "مستفيد"
+      ),
+
+    beneficiaryName,
+
+    reason:
+      common.reason,
+
+    date:
+      common.date,
+
+    signer:
+      common.signer,
+
+    certificateMode:
+      "single"
+
+  };
+
+}
+
+
+/* =========================================================
+   تحديث معاينة الفردي
+   ========================================================= */
+
+function updateSinglePreview() {
 
   const data =
-    getData();
+    getSingleData();
 
 
   $("pName").textContent =
@@ -329,7 +667,7 @@ function updatePreview() {
 
   $("pReason").textContent =
     data.reason ||
-    "تقديرًا لجهوده المتميزة ومشاركته الفاعلة.";
+    DEFAULT_REASON;
 
 
   $("pDate").textContent =
@@ -345,7 +683,402 @@ function updatePreview() {
 }
 
 
-function applyData(data = {}) {
+/* =========================================================
+   حماية HTML
+   ========================================================= */
+
+function certificateEscapeHtml(value) {
+
+  return String(
+    value ?? ""
+  )
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+
+}
+
+
+/* =========================================================
+   إنشاء HTML لشهادة جماعية
+   ========================================================= */
+
+function createCertificateHtml(
+  name,
+  reason,
+  date,
+  signer
+) {
+
+  return `
+
+    <div class="bulk-certificate-wrap">
+
+      <div class="certificate">
+
+        <img
+          class="school-header"
+          src="../../assets/school-header.jpg"
+          alt="شعار المدرسة"
+        >
+
+        <h1>
+          شهادة شكر وتقدير
+        </h1>
+
+
+        <p>
+          تتقدم مدرسة الرفاع الغربي الابتدائية للبنين
+          بخالص الشكر والتقدير إلى
+        </p>
+
+
+        <div class="name">
+          ${certificateEscapeHtml(name)}
+        </div>
+
+
+        <p>
+          ${
+            certificateEscapeHtml(
+              reason ||
+              DEFAULT_REASON
+            )
+          }
+        </p>
+
+
+        <p>
+          ${
+            certificateEscapeHtml(
+              wrFormatDate(date)
+            )
+          }
+        </p>
+
+
+        <p>
+
+          مديرة المدرسة
+
+          <br>
+
+          <b>
+            ${
+              certificateEscapeHtml(
+                signer ||
+                "أحلام السويدي"
+              )
+            }
+          </b>
+
+        </p>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   تحديث المعاينة الجماعية
+   ========================================================= */
+
+function updateBulkPreview() {
+
+  const names =
+    parseBulkNames();
+
+
+  const common =
+    getCommonData();
+
+
+  $("namesCounter").textContent =
+    `عدد الأسماء: ${names.length}`;
+
+
+  const preview =
+    $("bulkPreview");
+
+
+  preview.innerHTML =
+    "";
+
+
+  if (!names.length) {
+
+    preview.innerHTML = `
+
+      <div class="empty">
+        أضيفي أسماء المستفيدين
+        لمعاينة الشهادات.
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  names.forEach(
+    name => {
+
+      preview.insertAdjacentHTML(
+
+        "beforeend",
+
+        createCertificateHtml(
+          name,
+          common.reason,
+          common.date,
+          common.signer
+        )
+
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   تحديث المعاينة الحالية
+   ========================================================= */
+
+function updatePreview() {
+
+  updateSinglePreview();
+
+  updateBulkPreview();
+
+}
+
+
+/* =========================================================
+   تغيير الوضع
+   ========================================================= */
+
+function setMode(mode) {
+
+  currentMode =
+    mode;
+
+
+  const single =
+    mode === "single";
+
+
+  $("singleModeBtn")
+    .classList
+    .toggle(
+      "active",
+      single
+    );
+
+
+  $("bulkModeBtn")
+    .classList
+    .toggle(
+      "active",
+      !single
+    );
+
+
+  $("singleFields")
+    .classList
+    .toggle(
+      "hidden",
+      !single
+    );
+
+
+  $("bulkFields")
+    .classList
+    .toggle(
+      "hidden",
+      single
+    );
+
+
+  $("singlePreviewSection")
+    .classList
+    .toggle(
+      "hidden",
+      !single
+    );
+
+
+  $("bulkPreviewSection")
+    .classList
+    .toggle(
+      "hidden",
+      single
+    );
+
+
+  if (single) {
+
+    $("pageTitle").textContent =
+      currentId
+        ? "تعديل شهادة شكر وتقدير"
+        : "شهادة شكر وتقدير";
+
+
+    $("saveBtn").textContent =
+      currentId
+        ? "💾 تحديث الشهادة"
+        : "💾 حفظ ذكي";
+
+
+    $("printBtn").textContent =
+      "🖨 طباعة / PDF";
+
+
+  } else {
+
+    $("pageTitle").textContent =
+      "إنشاء شهادات جماعية";
+
+
+    $("saveBtn").textContent =
+      "💾 حفظ جميع الشهادات";
+
+
+    $("printBtn").textContent =
+      "🖨 طباعة جميع الشهادات";
+
+  }
+
+
+  updatePreview();
+
+}
+
+
+/* =========================================================
+   أزرار الوضع
+   ========================================================= */
+
+$("singleModeBtn")
+  .addEventListener(
+    "click",
+    () => {
+
+      setMode(
+        "single"
+      );
+
+    }
+  );
+
+
+$("bulkModeBtn")
+  .addEventListener(
+    "click",
+    () => {
+
+      /*
+        لو بنعدل شهادة محفوظة،
+        نبدأ نموذج جماعي جديد حتى لا نربط
+        المجموعة بسجل فردي قديم.
+      */
+
+      if (currentId) {
+
+        const ok =
+          confirm(
+            "أنتِ الآن تعدلين شهادة محفوظة. هل تريدين الانتقال إلى إنشاء شهادات جماعية جديدة؟"
+          );
+
+
+        if (!ok) {
+          return;
+        }
+
+
+        currentId =
+          null;
+
+
+        $("deleteBtn")
+          .classList
+          .add("hidden");
+
+      }
+
+
+      setMode(
+        "bulk"
+      );
+
+    }
+  );
+
+
+/* =========================================================
+   الاستماع للحقول
+   ========================================================= */
+
+[
+  "name",
+  "reason",
+  "date",
+  "signer"
+].forEach(
+  id => {
+
+    $(id).addEventListener(
+      "input",
+      updatePreview
+    );
+
+
+    $(id).addEventListener(
+      "change",
+      updatePreview
+    );
+
+  }
+);
+
+
+$("bulkNames")
+  .addEventListener(
+    "input",
+    updateBulkPreview
+  );
+
+
+/* =========================================================
+   تعبئة شهادة محفوظة
+   ========================================================= */
+
+function applyData(
+  data = {}
+) {
 
   $("name").value =
     data.beneficiaryName ||
@@ -373,25 +1106,9 @@ function applyData(data = {}) {
 }
 
 
-[
-  "name",
-  "reason",
-  "date",
-  "signer"
-].forEach(id => {
-
-  $(id).addEventListener(
-    "input",
-    updatePreview
-  );
-
-  $(id).addEventListener(
-    "change",
-    updatePreview
-  );
-
-});
-
+/* =========================================================
+   تحميل شهادة من Supabase
+   ========================================================= */
 
 async function loadRecord(id) {
 
@@ -435,11 +1152,12 @@ async function loadRecord(id) {
     ) {
 
       data.beneficiaryName =
-        String(rec.title)
-          .replace(
-            /^شهادة\s*-\s*/,
-            ""
-          );
+        String(
+          rec.title
+        ).replace(
+          /^شهادة\s*-\s*/,
+          ""
+        );
 
     }
 
@@ -455,7 +1173,14 @@ async function loadRecord(id) {
     }
 
 
-    applyData(data);
+    applyData(
+      data
+    );
+
+
+    setMode(
+      "single"
+    );
 
 
     $("pageTitle").textContent =
@@ -494,26 +1219,213 @@ async function loadRecord(id) {
 }
 
 
+/* =========================================================
+   حفظ شهادة فردية
+   ========================================================= */
+
+async function saveSingle() {
+
+  const data =
+    getSingleData();
+
+
+  if (
+    !data.beneficiaryName ||
+    !data.date
+  ) {
+
+    wrToast(
+      "أكملي اسم المستفيد والتاريخ"
+    );
+
+    return;
+
+  }
+
+
+  const rec =
+    await wrAddRecord({
+
+      ...data,
+
+      id:
+        currentId ||
+        undefined
+
+    });
+
+
+  currentId =
+    rec.id;
+
+
+  history.replaceState(
+
+    null,
+
+    "",
+
+    `?id=${encodeURIComponent(
+      currentId
+    )}`
+
+  );
+
+
+  $("pageTitle").textContent =
+    "تعديل شهادة شكر وتقدير";
+
+
+  $("saveBtn").textContent =
+    "💾 تحديث الشهادة";
+
+
+  $("deleteBtn")
+    .classList
+    .remove("hidden");
+
+
+  wrToast(
+    "تم حفظ الشهادة بنجاح"
+  );
+
+}
+
+
+/* =========================================================
+   حفظ الشهادات الجماعية
+   ========================================================= */
+
+async function saveBulk() {
+
+  const names =
+    parseBulkNames();
+
+
+  const common =
+    getCommonData();
+
+
+  if (!names.length) {
+
+    wrToast(
+      "أضيفي اسم مستفيد واحد على الأقل"
+    );
+
+    return;
+
+  }
+
+
+  if (!common.date) {
+
+    wrToast(
+      "حددي تاريخ الشهادات"
+    );
+
+    return;
+
+  }
+
+
+  const uniqueNames =
+    [...new Set(names)];
+
+
+  $("batchStatus")
+    .classList
+    .add("show");
+
+
+  $("batchStatus").textContent =
+    `جارٍ حفظ 0 من ${uniqueNames.length}...`;
+
+
+  let saved =
+    0;
+
+
+  for (
+    const beneficiaryName
+    of uniqueNames
+  ) {
+
+    const data = {
+
+      type:
+        "certificate",
+
+      title:
+        "شهادة - " +
+        beneficiaryName,
+
+      beneficiaryName,
+
+      reason:
+        common.reason,
+
+      date:
+        common.date,
+
+      signer:
+        common.signer,
+
+      certificateMode:
+        "bulk",
+
+      batchCreatedAt:
+        new Date()
+          .toISOString()
+
+    };
+
+
+    await wrAddRecord(
+      data
+    );
+
+
+    saved++;
+
+
+    $("batchStatus").textContent =
+      `جارٍ حفظ ${saved} من ${uniqueNames.length}...`;
+
+  }
+
+
+  /*
+    ننتظر مزامنة كل السجلات
+    مع Supabase قبل إعلان النجاح.
+  */
+
+  if (
+    typeof wrSyncPending ===
+    "function"
+  ) {
+
+    await wrSyncPending();
+
+  }
+
+
+  $("batchStatus").textContent =
+    `تم حفظ ${saved} شهادة بنجاح.`;
+
+
+  wrToast(
+    `تم حفظ ${saved} شهادة`
+  );
+
+}
+
+
+/* =========================================================
+   زر الحفظ
+   ========================================================= */
+
 $("saveBtn").onclick =
   async () => {
-
-    const data =
-      getData();
-
-
-    if (
-      !data.beneficiaryName ||
-      !data.date
-    ) {
-
-      wrToast(
-        "أكملي اسم المستفيد والتاريخ"
-      );
-
-      return;
-
-    }
-
 
     $("saveBtn").disabled =
       true;
@@ -521,47 +1433,18 @@ $("saveBtn").onclick =
 
     try {
 
-      const rec =
-        await wrAddRecord({
+      if (
+        currentMode ===
+        "single"
+      ) {
 
-          ...data,
+        await saveSingle();
 
-          id:
-            currentId ||
-            undefined
+      } else {
 
-        });
+        await saveBulk();
 
-
-      currentId =
-        rec.id;
-
-
-      history.replaceState(
-        null,
-        "",
-        `?id=${encodeURIComponent(
-          currentId
-        )}`
-      );
-
-
-      $("pageTitle").textContent =
-        "تعديل شهادة شكر وتقدير";
-
-
-      $("saveBtn").textContent =
-        "💾 تحديث الشهادة";
-
-
-      $("deleteBtn")
-        .classList
-        .remove("hidden");
-
-
-      wrToast(
-        "تم حفظ الشهادة بنجاح"
-      );
+      }
 
 
     } catch (error) {
@@ -573,7 +1456,7 @@ $("saveBtn").onclick =
 
 
       wrToast(
-        "تعذر حفظ الشهادة: " +
+        "تعذر الحفظ: " +
         (
           error.message ||
           error
@@ -590,6 +1473,10 @@ $("saveBtn").onclick =
 
   };
 
+
+/* =========================================================
+   الحذف
+   ========================================================= */
 
 $("deleteBtn").onclick =
   async () => {
@@ -640,7 +1527,9 @@ $("deleteBtn").onclick =
 
         }
 
-      } catch (localError) {
+      } catch (
+        localError
+      ) {
 
         console.warn(
           "تعذر تنظيف النسخة المحلية:",
@@ -691,28 +1580,121 @@ $("deleteBtn").onclick =
   };
 
 
+/* =========================================================
+   الطباعة
+   ========================================================= */
+
 $("printBtn").onclick =
   () => {
 
-    document.title =
-      "شهادة - " +
-      (
-        $("name").value ||
-        "مستفيد"
+    if (
+      currentMode ===
+      "single"
+    ) {
+
+      document.body.classList
+        .remove(
+          "print-bulk"
+        );
+
+
+      document.body.classList
+        .add(
+          "print-single"
+        );
+
+
+      document.title =
+        "شهادة - " +
+        (
+          $("name").value ||
+          "مستفيد"
+        );
+
+
+      window.print();
+
+
+      setTimeout(
+        () => {
+
+          document.body.classList
+            .remove(
+              "print-single"
+            );
+
+        },
+        500
       );
+
+
+      return;
+
+    }
+
+
+    const names =
+      parseBulkNames();
+
+
+    if (!names.length) {
+
+      wrToast(
+        "أضيفي أسماء المستفيدين أولًا"
+      );
+
+      return;
+
+    }
+
+
+    updateBulkPreview();
+
+
+    document.body.classList
+      .remove(
+        "print-single"
+      );
+
+
+    document.body.classList
+      .add(
+        "print-bulk"
+      );
+
+
+    document.title =
+      "شهادات شكر وتقدير";
 
 
     window.print();
 
+
+    setTimeout(
+      () => {
+
+        document.body.classList
+          .remove(
+            "print-bulk"
+          );
+
+      },
+      500
+    );
+
   };
 
+
+/* =========================================================
+   نموذج جديد
+   ========================================================= */
 
 $("newBtn").onclick =
   () => {
 
     if (
       confirm(
-        "بدء شهادة جديدة؟"
+        "بدء نموذج شهادات جديد؟"
       )
     ) {
 
@@ -724,6 +1706,10 @@ $("newBtn").onclick =
   };
 
 
+/* =========================================================
+   تشغيل الصفحة
+   ========================================================= */
+
 (async function init() {
 
   const id =
@@ -734,13 +1720,17 @@ $("newBtn").onclick =
 
   if (id) {
 
-    await loadRecord(id);
+    await loadRecord(
+      id
+    );
 
   } else {
 
     $("deleteBtn")
       .classList
-      .add("hidden");
+      .add(
+        "hidden"
+      );
 
 
     if (
@@ -750,9 +1740,17 @@ $("newBtn").onclick =
       $("date").value =
         new Date()
           .toISOString()
-          .slice(0, 10);
+          .slice(
+            0,
+            10
+          );
 
     }
+
+
+    setMode(
+      "single"
+    );
 
 
     updatePreview();
@@ -761,8 +1759,10 @@ $("newBtn").onclick =
 
 })();
 
+
 </script>
 
 
 </body>
+
 </html>
