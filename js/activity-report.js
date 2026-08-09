@@ -21,8 +21,76 @@ const DRAFT_KEY = "wr_activity_draft_v3";
 let currentId = null;
 let selectedFiles = [];
 let existingImageRefs = [];
-let existingImagePaths = [];
 
+let currentUser = null;
+let currentProfile = null;
+
+
+// =====================================================
+// بيانات المستخدم الحالي من Supabase
+// =====================================================
+
+async function loadCurrentProfile() {
+  try {
+    if (
+      !window.WRGraph ||
+      typeof WRGraph.getAccount !== "function"
+    ) {
+      console.warn("WRGraph غير متاح");
+      return null;
+    }
+
+    currentUser = await WRGraph.getAccount();
+
+    if (!currentUser) {
+      console.warn("لا يوجد مستخدم مسجل الدخول");
+      return null;
+    }
+
+    const sb = window.supabase.createClient(
+      window.WR_CONFIG.supabaseUrl,
+      window.WR_CONFIG.supabaseKey
+    );
+
+    const { data, error } = await sb
+      .from("profiles")
+      .select("id, full_name, role")
+      .eq("id", currentUser.id)
+      .single();
+
+    if (error) {
+      console.error("Profile error:", error);
+      return null;
+    }
+
+    currentProfile = data;
+
+    // اسم المنفذ يأتي تلقائيًا من حساب المعلمة
+    if (currentProfile?.full_name) {
+      $("executor").value = currentProfile.full_name;
+
+      // المعلمة لا تغير اسم المنفذ يدويًا
+      if (currentProfile.role === "teacher") {
+        $("executor").readOnly = true;
+        $("executor").title =
+          "يتم تحديد اسم المنفذ تلقائيًا من الحساب المسجل";
+      }
+    }
+
+    updatePreview();
+
+    return currentProfile;
+
+  } catch (error) {
+    console.error("تعذر تحميل بيانات المستخدم:", error);
+    return null;
+  }
+}
+
+
+// =====================================================
+// قراءة قيم النموذج
+// =====================================================
 
 function values() {
   const o = {};
@@ -34,6 +102,10 @@ function values() {
   return o;
 }
 
+
+// =====================================================
+// تعبئة النموذج
+// =====================================================
 
 function applyValues(o = {}) {
   FIELD_IDS.forEach(id => {
@@ -49,6 +121,10 @@ function applyValues(o = {}) {
 }
 
 
+// =====================================================
+// البيانات التي يتم حفظها داخل التقرير
+// =====================================================
+
 function recordData() {
   return {
     type: "activity",
@@ -56,9 +132,6 @@ function recordData() {
     title:
       $("name").value.trim() ||
       "تقرير فعالية",
-
-    name:
-      $("name").value.trim(),
 
     activityType:
       $("activityType").value,
@@ -102,11 +175,23 @@ function recordData() {
     notes:
       $("notes").value,
 
-    image_paths:
-      [...existingImagePaths]
+    // معلومات صاحب الحساب
+    owner_id:
+      currentUser?.id || "",
+
+    owner_name:
+      currentProfile?.full_name ||
+      $("executor").value.trim(),
+
+    owner_role:
+      currentProfile?.role || ""
   };
 }
 
+
+// =====================================================
+// تحديث المعاينة
+// =====================================================
 
 function updatePreview() {
   const d = recordData();
@@ -160,6 +245,10 @@ function updatePreview() {
 }
 
 
+// =====================================================
+// حفظ المسودة محليًا
+// =====================================================
+
 function saveDraft() {
   if (currentId) return;
 
@@ -167,37 +256,33 @@ function saveDraft() {
     DRAFT_KEY,
     JSON.stringify({
       ...values(),
-      savedAt:
-        new Date().toISOString()
+      savedAt: new Date().toISOString()
     })
   );
 
   $("draftState").textContent =
     "تم حفظ المسودة تلقائيًا: " +
-    new Date()
-      .toLocaleTimeString("ar-BH");
+    new Date().toLocaleTimeString("ar-BH");
 }
 
 
 let draftTimer;
 
 FIELD_IDS.forEach(id => {
-  $(id).addEventListener(
-    "input",
-    () => {
-      updatePreview();
+  $(id).addEventListener("input", () => {
+    updatePreview();
 
-      clearTimeout(draftTimer);
+    clearTimeout(draftTimer);
 
-      draftTimer =
-        setTimeout(
-          saveDraft,
-          450
-        );
-    }
-  );
+    draftTimer =
+      setTimeout(saveDraft, 450);
+  });
 });
 
+
+// =====================================================
+// عرض الصور
+// =====================================================
 
 async function renderImages() {
   const box = $("pImages");
@@ -206,62 +291,22 @@ async function renderImages() {
 
   const sources = [];
 
-  /*
-   * الصور السحابية من Supabase Storage
-   */
-  for (const path of existingImagePaths) {
-    try {
-      const url =
-        await WRGraph.getFileUrl(path);
-
-      if (url) {
-        sources.push({
-          name: path.split("/").pop(),
-          url,
-          revoke: false
-        });
-      }
-    } catch (e) {
-      console.warn(
-        "تعذر تحميل صورة سحابية:",
-        path,
-        e
-      );
-    }
-  }
-
-  /*
-   * دعم الصور المحلية القديمة إن وجدت
-   */
   for (const ref of existingImageRefs) {
-    try {
-      const f =
-        await wrGetFile(ref);
+    const f = await wrGetFile(ref);
 
-      if (f) {
-        sources.push({
-          name: f.name,
-          url:
-            URL.createObjectURL(f.blob),
-          revoke: true
-        });
-      }
-    } catch (e) {
-      console.warn(
-        "تعذر تحميل صورة محلية:",
-        e
-      );
+    if (f) {
+      sources.push({
+        name: f.name,
+        url: URL.createObjectURL(f.blob),
+        revoke: true
+      });
     }
   }
 
-  /*
-   * الصور الجديدة قبل الحفظ
-   */
   for (const f of selectedFiles) {
     sources.push({
       name: f.name,
-      url:
-        URL.createObjectURL(f),
+      url: URL.createObjectURL(f),
       revoke: true
     });
   }
@@ -278,8 +323,11 @@ async function renderImages() {
       const im =
         new Image();
 
-      im.src = s.url;
-      im.alt = s.name;
+      im.src =
+        s.url;
+
+      im.alt =
+        s.name;
 
       im.onload = () => {
         if (s.revoke) {
@@ -292,15 +340,14 @@ async function renderImages() {
       };
 
       fig.appendChild(im);
+
       box.appendChild(fig);
     });
 
-  $("noImages")
-    .classList
-    .toggle(
-      "hidden",
-      sources.length > 0
-    );
+  $("noImages").classList.toggle(
+    "hidden",
+    sources.length > 0
+  );
 }
 
 
@@ -319,172 +366,94 @@ $("images").addEventListener(
 );
 
 
-async function loadRecord(id) {
-  try {
-    const records =
-      await WRGraph.fetchRecords();
+// =====================================================
+// تحميل سجل محفوظ للتعديل
+// =====================================================
 
-    const rec =
-      records.find(
+async function loadRecord(id) {
+  const rec =
+    wrGetRecords()
+      .find(
         r =>
           String(r.id) ===
           String(id)
       );
 
-    if (!rec) {
-      alert(
-        "لم يتم العثور على السجل"
-      );
-
-      return;
-    }
-
-    currentId = rec.id;
-
-    const data = {
-      ...(rec.payload || {})
-    };
-
-    if (!data.name && rec.title) {
-      data.name = rec.title;
-    }
-
-    if (
-      !data.date &&
-      rec.record_date
-    ) {
-      data.date =
-        rec.record_date;
-    }
-
-    if (!data.activityType) {
-      data.activityType =
-        rec.type === "activity"
-          ? "فعالية"
-          : rec.type || "فعالية";
-    }
-
-    existingImagePaths =
-      Array.isArray(rec.image_paths)
-        ? [...rec.image_paths]
-        : Array.isArray(
-            data.image_paths
-          )
-          ? [...data.image_paths]
-          : [];
-
-    existingImageRefs =
-      Array.isArray(data.imageRefs)
-        ? [...data.imageRefs]
-        : [];
-
-    applyValues(data);
-
-    $("deleteBtn")
-      .classList
-      .remove("hidden");
-
-    $("pageTitle").textContent =
-      "تعديل تقرير فعالية";
-
-    await renderImages();
-
-    console.log(
-      "تم استرجاع السجل:",
-      rec
+  if (!rec) {
+    wrToast(
+      "السجل غير موجود"
     );
 
-  } catch (error) {
-    console.error(
-      "خطأ في استرجاع السجل:",
-      error
-    );
-
-    alert(
-      "حدث خطأ أثناء استرجاع السجل"
-    );
+    return;
   }
+
+  currentId =
+    rec.id;
+
+  existingImageRefs =
+    rec.imageRefs || [];
+
+  applyValues(rec);
+
+  $("pageTitle").textContent =
+    "تعديل تقرير فعالية";
+
+  $("draftState").textContent =
+    "أنت تعدّلين تقريرًا محفوظًا في الأرشيف.";
+
+  $("deleteBtn")
+    .classList
+    .remove("hidden");
+
+  await renderImages();
 }
 
 
+// =====================================================
+// حفظ التقرير
+// =====================================================
+
 async function save() {
+
   if (
     !$("name").value.trim() ||
     !$("executor").value.trim() ||
     !$("date").value
   ) {
     wrToast(
-      "أكملي اسم الفعالية والمنفذ والتاريخ"
+      "أكملي اسم الفعالية والتاريخ"
     );
 
     return;
   }
 
-  $("saveBtn").disabled = true;
+  $("saveBtn").disabled =
+    true;
 
   try {
-    /*
-     * نحدد ID قبل رفع الصور حتى يكون
-     * لكل تقرير مجلد ثابت في Storage.
-     */
-    if (!currentId) {
-      currentId =
-        "rec_" +
-        Date.now() +
-        "_" +
-        Math.random()
-          .toString(36)
-          .slice(2, 8);
-    }
 
-    /*
-     * رفع الصور الجديدة فقط.
-     */
-    if (selectedFiles.length) {
-      $("imageHint").textContent =
-        "جارٍ رفع الصور إلى السحابة...";
-
-      const newPaths =
-        await WRGraph.uploadFiles(
-          currentId,
-          selectedFiles
-        );
-
-      existingImagePaths = [
-        ...existingImagePaths,
-        ...newPaths
-      ].slice(0, 10);
-    }
-
-    const dataToSave = {
-      ...recordData(),
-
-      id: currentId,
-
-      image_paths:
-        [...existingImagePaths]
-    };
-
-    /*
-     * نحافظ على نظام الحفظ الحالي المحلي
-     * ثم المزامنة مع Supabase.
-     * لا نرسل الصور مرة أخرى إلى IndexedDB.
-     */
     const rec =
       await wrAddRecord(
-        dataToSave,
-        []
+        {
+          ...recordData(),
+          id:
+            currentId ||
+            undefined
+        },
+        selectedFiles
       );
 
     currentId =
-      rec.id || currentId;
+      rec.id;
 
     existingImageRefs =
       rec.imageRefs || [];
 
-    selectedFiles = [];
+    selectedFiles =
+      [];
 
-    $("images").value = "";
+    $("images").value =
+      "";
 
     localStorage.removeItem(
       DRAFT_KEY
@@ -497,38 +466,37 @@ async function save() {
     history.replaceState(
       null,
       "",
-      `?id=${encodeURIComponent(currentId)}`
+      `?id=${encodeURIComponent(rec.id)}`
     );
 
     $("pageTitle").textContent =
       "تعديل تقرير فعالية";
 
-    $("imageHint").textContent =
-      existingImagePaths.length
-        ? `تم حفظ ${existingImagePaths.length} صورة في السحابة`
-        : "لم تُضف صور";
-
     await renderImages();
 
-    wrToast(
-      "تم حفظ التقرير والصور بنجاح"
-    );
-
   } catch (e) {
+
     console.error(e);
 
     wrToast(
       "تعذر الحفظ: " +
-      (e.message || e)
+      e.message
     );
 
   } finally {
-    $("saveBtn").disabled = false;
+
+    $("saveBtn").disabled =
+      false;
   }
 }
 
 
+// =====================================================
+// إنشاء HTML للتقرير
+// =====================================================
+
 function reportHtml() {
+
   const clone =
     $("reportSheet")
       .cloneNode(true);
@@ -536,6 +504,7 @@ function reportHtml() {
   clone
     .querySelectorAll("img")
     .forEach(img => {
+
       if (
         img.src.startsWith("blob:")
       ) {
@@ -544,46 +513,145 @@ function reportHtml() {
           "1"
         );
       }
+
     });
 
   return `
 <!doctype html>
 <html lang="ar" dir="rtl">
+
 <head>
+
 <meta charset="utf-8">
-<title>${wrSafeName(
-    $("name").value
-  )}</title>
+
+<title>
+${wrSafeName($("name").value)}
+</title>
+
+<style>
+
+body{
+font-family:Tahoma,Arial,sans-serif;
+background:#fff;
+margin:0
+}
+
+.sheet{
+max-width:190mm;
+margin:auto;
+padding:12mm
+}
+
+.school-header{
+width:100%;
+max-height:100px;
+object-fit:contain
+}
+
+.doc-title{
+text-align:center;
+border-top:3px solid #087451;
+border-bottom:1px solid #b58a36;
+padding:14px
+}
+
+.summary{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px
+}
+
+.summary-item{
+padding:10px;
+background:#f5f8f6;
+border-right:4px solid #087451
+}
+
+.doc-section h3{
+color:#075c40;
+border-bottom:2px solid #d8b668
+}
+
+.doc-section p{
+white-space:pre-wrap;
+line-height:1.8
+}
+
+.images-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px
+}
+
+.report-photo{
+margin:0
+}
+
+.report-photo img{
+width:100%;
+max-height:280px;
+object-fit:contain
+}
+
+.report-footer{
+text-align:center;
+margin-top:25px;
+color:#6b7a72;
+font-size:12px
+}
+
+@media print{
+@page{
+size:A4;
+margin:10mm
+}
+}
+
+</style>
+
 </head>
+
 <body>
+
 ${clone.outerHTML}
+
 </body>
+
 </html>
 `;
 }
 
 
+// =====================================================
+// تنزيل HTML كامل بالصور
+// =====================================================
+
 async function downloadHtml() {
+
   const clone =
     $("reportSheet")
       .cloneNode(true);
 
-  const originalImages = [
-    ...$("reportSheet")
-      .querySelectorAll("img")
-  ];
+  const originalImages =
+    [
+      ...$("reportSheet")
+        .querySelectorAll("img")
+    ];
 
-  const clonedImages = [
-    ...clone
-      .querySelectorAll("img")
-  ];
+  const clonedImages =
+    [
+      ...clone
+        .querySelectorAll("img")
+    ];
 
   for (
     let i = 0;
     i < originalImages.length;
     i++
   ) {
+
     try {
+
       const blob =
         await (
           await fetch(
@@ -594,104 +662,129 @@ async function downloadHtml() {
       clonedImages[i].src =
         await wrBlobToDataURL(blob);
 
-    } catch (e) {
-      console.warn(
-        "تعذر تضمين صورة في HTML:",
-        e
-      );
-    }
+    } catch {}
   }
 
   const css = `
 body{
-  font-family:Tahoma,Arial,sans-serif;
-  background:#fff;
-  margin:0;
-  color:#24352e
+font-family:Tahoma,Arial,sans-serif;
+background:#fff;
+margin:0;
+color:#24352e
 }
+
 .sheet{
-  max-width:190mm;
-  margin:auto;
-  padding:12mm
+max-width:190mm;
+margin:auto;
+padding:12mm
 }
+
 .school-header{
-  width:100%;
-  max-height:100px;
-  object-fit:contain
+width:100%;
+max-height:100px;
+object-fit:contain
 }
+
 .doc-title{
-  text-align:center;
-  border-top:3px solid #087451;
-  border-bottom:1px solid #b58a36;
-  padding:14px
+text-align:center;
+border-top:3px solid #087451;
+border-bottom:1px solid #b58a36;
+padding:14px
 }
+
 .doc-title h1{
-  color:#075c40
+color:#075c40
 }
+
 .summary{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px
 }
+
 .summary-item{
-  padding:10px;
-  background:#f5f8f6;
-  border-right:4px solid #087451;
-  border-radius:8px
+padding:10px;
+background:#f5f8f6;
+border-right:4px solid #087451;
+border-radius:8px
 }
+
 .doc-section h3{
-  color:#075c40;
-  border-bottom:2px solid #d8b668
+color:#075c40;
+border-bottom:2px solid #d8b668
 }
+
 .doc-section p{
-  white-space:pre-wrap;
-  line-height:1.8
+white-space:pre-wrap;
+line-height:1.8
 }
+
 .images-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px
 }
+
 .report-photo{
-  margin:0;
-  break-inside:avoid
+margin:0;
+break-inside:avoid
 }
+
 .report-photo img{
-  width:100%;
-  max-height:280px;
-  object-fit:contain
+width:100%;
+max-height:280px;
+object-fit:contain
 }
+
 .empty{
-  display:none
+display:none
 }
+
 .report-footer{
-  text-align:center;
-  margin-top:25px;
-  color:#6b7a72;
-  font-size:12px
+text-align:center;
+margin-top:25px;
+color:#6b7a72;
+font-size:12px
 }
+
 @media print{
-  @page{
-    size:A4;
-    margin:10mm
-  }
+@page{
+size:A4;
+margin:10mm
+}
 }
 `;
 
   const html = `
 <!doctype html>
+
 <html lang="ar" dir="rtl">
+
 <head>
+
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width">
-<title>${wrSafeName(
-    $("name").value
-  )}</title>
-<style>${css}</style>
+
+<meta
+name="viewport"
+content="width=device-width"
+>
+
+<title>
+${wrSafeName($("name").value)}
+</title>
+
+<style>
+${css}
+</style>
+
 </head>
+
 <body>
+
 ${clone.outerHTML}
+
 </body>
+
 </html>
 `;
 
@@ -703,9 +796,7 @@ ${clone.outerHTML}
           "text/html;charset=utf-8"
       }
     ),
-    `تقرير - ${wrSafeName(
-      $("name").value
-    )}.html`
+    `تقرير - ${wrSafeName($("name").value)}.html`
   );
 
   wrToast(
@@ -714,145 +805,102 @@ ${clone.outerHTML}
 }
 
 
-$("saveBtn").onclick = save;
+// =====================================================
+// الأزرار
+// =====================================================
+
+$("saveBtn").onclick =
+  save;
+
 
 $("htmlBtn").onclick =
   downloadHtml;
 
-$("printBtn").onclick = () => {
-  document.title =
-    `تقرير - ${wrSafeName(
-      $("name").value
-    )}`;
 
-  window.print();
-};
+$("printBtn").onclick =
+  () => {
+
+    document.title =
+      `تقرير - ${wrSafeName($("name").value)}`;
+
+    window.print();
+  };
 
 
-/*
- * =====================================
- * حذف التقرير نهائيًا
- * Storage + Supabase + Local
- * =====================================
- */
+$("deleteBtn").onclick =
+  async () => {
 
-$("deleteBtn").onclick = async () => {
-
-  if (!currentId) {
-    wrToast(
-      "لا يوجد تقرير محدد للحذف"
-    );
-    return;
-  }
-
-  const ok = confirm(
-    "هل أنتِ متأكدة من حذف هذا التقرير وصوره نهائيًا؟"
-  );
-
-  if (!ok) return;
-
-  $("deleteBtn").disabled = true;
-
-  try {
-
-    /*
-     * 1- حذف الصور من Supabase Storage
-     */
-    if (existingImagePaths.length) {
-      await WRGraph.deleteFiles(
-        existingImagePaths
-      );
-    }
-
-    /*
-     * 2- حذف السجل نفسه من Supabase
-     */
-    await WRGraph.deleteRecord(
-      currentId
-    );
-
-    /*
-     * 3- حذف النسخة المحلية إن وجدت
-     */
     if (
-      typeof wrDeleteRecord ===
-      "function"
+      confirm(
+        "حذف هذا التقرير وصوره من الأرشيف؟"
+      )
     ) {
-      try {
-        await wrDeleteRecord(
-          currentId
-        );
-      } catch (localError) {
-        console.warn(
-          "تعذر حذف النسخة المحلية:",
-          localError
-        );
-      }
-    }
 
-    /*
-     * 4- حذف أي مسودة متبقية
-     */
-    localStorage.removeItem(
-      DRAFT_KEY
-    );
+      await wrDeleteRecord(
+        currentId
+      );
 
-    wrToast(
-      "تم حذف التقرير نهائيًا"
-    );
-
-    /*
-     * 5- الرجوع إلى الأرشيف
-     */
-    setTimeout(() => {
       location.href =
         "../archive/index.html";
-    }, 500);
-
-  } catch (error) {
-
-    console.error(
-      "خطأ في حذف التقرير:",
-      error
-    );
-
-    wrToast(
-      "تعذر حذف التقرير: " +
-      (error.message || error)
-    );
-
-    $("deleteBtn").disabled =
-      false;
-  }
-};
+    }
+  };
 
 
-$("newBtn").onclick = () => {
-  if (
-    confirm(
-      "بدء تقرير جديد؟"
-    )
-  ) {
-    localStorage.removeItem(
-      DRAFT_KEY
-    );
+$("newBtn").onclick =
+  () => {
 
-    location.href =
-      "report.html";
-  }
-};
+    if (
+      confirm(
+        "بدء تقرير جديد؟"
+      )
+    ) {
 
+      localStorage.removeItem(
+        DRAFT_KEY
+      );
+
+      location.href =
+        "report.html";
+    }
+  };
+
+
+// =====================================================
+// تشغيل الصفحة
+// =====================================================
 
 (async function init() {
+
+  // أولاً نعرف من المستخدم الحالي
+  await loadCurrentProfile();
+
   const id =
     new URLSearchParams(
       location.search
     ).get("id");
 
   if (id) {
+
     await loadRecord(id);
 
+    // لو Teacher نحافظ على اسم الحساب
+    // حتى عند فتح تقرير للتعديل
+    if (
+      currentProfile?.role === "teacher" &&
+      currentProfile?.full_name
+    ) {
+
+      $("executor").value =
+        currentProfile.full_name;
+
+      $("executor").readOnly =
+        true;
+
+      updatePreview();
+    }
+
   } else {
+
     const draft =
       JSON.parse(
         localStorage.getItem(
@@ -861,18 +909,39 @@ $("newBtn").onclick = () => {
       );
 
     if (draft) {
+
       applyValues(draft);
 
       $("draftState").textContent =
         "تم استرجاع المسودة المحفوظة تلقائيًا.";
 
     } else {
+
       $("date").value =
         new Date()
           .toISOString()
           .slice(0, 10);
-
-      updatePreview();
     }
+
+    // بعد استرجاع المسودة نعيد اسم الحساب
+    // حتى لا تستبدله مسودة قديمة
+    if (
+      currentProfile?.full_name
+    ) {
+
+      $("executor").value =
+        currentProfile.full_name;
+
+      if (
+        currentProfile.role ===
+        "teacher"
+      ) {
+        $("executor").readOnly =
+          true;
+      }
+    }
+
+    updatePreview();
   }
+
 })();
