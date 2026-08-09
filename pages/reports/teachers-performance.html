@@ -1,48 +1,1434 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>تقرير أداء المعلمات | WestRiffa Smart Office</title>
-<link rel="stylesheet" href="../../css/app.css">
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1"
+>
+
+<title>
+تقرير أداء المعلمات | WestRiffa Smart Office
+</title>
+
+<link
+  rel="stylesheet"
+  href="../../css/app.css"
+>
+
+<meta
+  name="theme-color"
+  content="#075c40"
+>
+
 <style>
-:root{--g:#075c40;--gold:#b78b2f;--soft:#f4f8f6;--line:#dfe8e3}
-*{box-sizing:border-box}body{margin:0;background:#f5f8f6;font-family:Tahoma,Arial,sans-serif;color:#18362c}
-.wrap{max-width:1200px;margin:auto;padding:24px}.box{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 6px 22px #0000000d}
-.toolbar{padding:14px 18px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:16px}.actions{display:flex;gap:8px;flex-wrap:wrap}
-.btnx{border:0;border-radius:11px;padding:11px 15px;font:inherit;font-weight:700;cursor:pointer;text-decoration:none}.primary{background:var(--g);color:#fff}.soft{background:#eaf3ef;color:var(--g)}.gold{background:var(--gold);color:#fff}
-.head{background:#fff;border-top:7px solid var(--g);border-bottom:2px solid var(--gold);padding:18px;text-align:center;margin-bottom:16px}.head img{width:100%;max-height:115px;object-fit:contain}.head h1{color:var(--g);font-size:31px;margin:14px 0 5px}.head p{margin:0;color:#6c7b74}
-.filters{padding:16px;margin-bottom:16px}.grid{display:grid;grid-template-columns:1fr 1fr auto auto;gap:10px;align-items:end}label{display:block;font-weight:700;font-size:13px;margin-bottom:6px}input{width:100%;padding:11px;border:1px solid #d6e1db;border-radius:10px;font:inherit}.period{margin-top:12px;padding:10px;background:var(--soft);border-radius:10px;color:var(--g);font-weight:700}
-.stats{padding:14px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}.stat{padding:17px;text-align:center;background:var(--soft);border-radius:14px;border-top:3px solid var(--g)}.stat strong{display:block;color:var(--g);font-size:26px}.stat span{color:#66776f;font-size:13px}
-.tablebox{padding:16px;overflow:auto}table{width:100%;border-collapse:collapse;min-width:760px}th,td{padding:13px 11px;border-bottom:1px solid #e5ece8;text-align:right}th{background:var(--g);color:#fff}tbody tr:nth-child(even){background:#f8faf9}.rank{font-weight:800;color:var(--gold)}.empty{text-align:center;padding:35px;color:#718078}.footer{text-align:center;color:#77867f;font-size:12px;padding:20px}
-@media(max-width:800px){.grid{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr 1fr}}@media(max-width:520px){.grid,.stats{grid-template-columns:1fr}.wrap{padding:10px}}
-@media print{body{background:#fff}.wrap{max-width:none;padding:0}.toolbar,.filters{display:none!important}.box{box-shadow:none}.tablebox{border:0}@page{size:A4 landscape;margin:10mm}}
+
+:root {
+  --green:#075c40;
+  --gold:#b78b2f;
+  --soft:#f4f8f6;
+  --line:#dfe8e3;
+  --text:#18362c;
+}
+
+* {
+  box-sizing:border-box;
+}
+
+body {
+  margin:0;
+  background:#f5f8f6;
+  color:var(--text);
+  font-family:Tahoma,Arial,sans-serif;
+}
+
+.report-page {
+  max-width:1200px;
+  margin:auto;
+  padding:24px;
+}
+
+.box {
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  box-shadow:0 6px 22px rgba(0,0,0,.05);
+}
+
+.toolbar {
+  padding:14px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:16px;
+}
+
+.actions {
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.btnx {
+  border:0;
+  border-radius:11px;
+  padding:11px 15px;
+  font:inherit;
+  font-weight:700;
+  cursor:pointer;
+  text-decoration:none;
+  display:inline-block;
+}
+
+.primary {
+  background:var(--green);
+  color:#fff;
+}
+
+.soft {
+  background:#eaf3ef;
+  color:var(--green);
+}
+
+.gold {
+  background:var(--gold);
+  color:#fff;
+}
+
+.report-head {
+  background:#fff;
+  border-top:7px solid var(--green);
+  border-bottom:2px solid var(--gold);
+  padding:18px 22px;
+  text-align:center;
+  margin-bottom:16px;
+}
+
+.school-header {
+  width:100%;
+  max-height:115px;
+  object-fit:contain;
+  display:block;
+  margin:auto;
+}
+
+.report-head h1 {
+  color:var(--green);
+  font-size:31px;
+  margin:14px 0 5px;
+}
+
+.report-head p {
+  margin:0;
+  color:#6c7b74;
+}
+
+.filters {
+  padding:16px;
+  margin-bottom:16px;
+}
+
+.filter-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr auto auto;
+  gap:10px;
+  align-items:end;
+}
+
+label {
+  display:block;
+  font-weight:700;
+  font-size:13px;
+  margin-bottom:6px;
+}
+
+input[type="date"] {
+  width:100%;
+  padding:11px;
+  border:1px solid #d6e1db;
+  border-radius:10px;
+  font:inherit;
+  background:#fff;
+}
+
+.period {
+  margin-top:12px;
+  padding:10px 13px;
+  background:var(--soft);
+  border-radius:10px;
+  color:var(--green);
+  font-weight:700;
+}
+
+.summary-grid {
+  padding:14px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-bottom:16px;
+}
+
+.stat-box {
+  padding:17px;
+  text-align:center;
+  background:var(--soft);
+  border-radius:14px;
+  border-top:3px solid var(--green);
+}
+
+.stat-box strong {
+  display:block;
+  color:var(--green);
+  font-size:27px;
+}
+
+.stat-box span {
+  color:#66776f;
+  font-size:13px;
+}
+
+.table-card {
+  padding:16px;
+  overflow:auto;
+}
+
+table {
+  width:100%;
+  border-collapse:collapse;
+  min-width:760px;
+}
+
+th,
+td {
+  padding:13px 11px;
+  border-bottom:1px solid #e5ece8;
+  text-align:right;
+}
+
+th {
+  background:var(--green);
+  color:#fff;
+}
+
+tbody tr:nth-child(even) {
+  background:#f8faf9;
+}
+
+.rank {
+  font-weight:800;
+  color:var(--gold);
+}
+
+.empty {
+  text-align:center;
+  padding:35px;
+  color:#718078;
+}
+
+.footer {
+  text-align:center;
+  color:#77867f;
+  font-size:12px;
+  padding:20px 0;
+}
+
+@media(max-width:800px) {
+
+  .filter-grid {
+    grid-template-columns:1fr 1fr;
+  }
+
+  .summary-grid {
+    grid-template-columns:1fr 1fr;
+  }
+
+}
+
+@media(max-width:520px) {
+
+  .filter-grid,
+  .summary-grid {
+    grid-template-columns:1fr;
+  }
+
+  .report-page {
+    padding:10px;
+  }
+
+}
+
+@media print {
+
+  body {
+    background:#fff;
+  }
+
+  .report-page {
+    max-width:none;
+    padding:0;
+  }
+
+  .toolbar,
+  .filters {
+    display:none !important;
+  }
+
+  .summary-grid,
+  .table-card {
+    box-shadow:none;
+  }
+
+  .table-card {
+    border:0;
+    padding:0;
+  }
+
+  .report-head {
+    margin-top:0;
+  }
+
+  @page {
+    size:A4 landscape;
+    margin:10mm;
+  }
+
+}
+
 </style>
+
 </head>
+
+
 <body>
-<div class="wrap">
-<div class="toolbar box"><strong>📊 تقرير أداء المعلمات</strong><div class="actions"><a class="btnx soft" href="../../index.html">🏠 لوحة التحكم</a><button class="btnx gold" id="printBtn">🖨 طباعة / حفظ PDF</button></div></div>
-<section class="head"><img src="../../assets/school-header.jpg" alt="شعار المدرسة"><h1>تقرير أداء المعلمات</h1><p>متابعة تقارير الفعاليات المسجلة في منصة WestRiffa Smart Office</p></section>
-<section class="filters box"><div class="grid"><div><label>من تاريخ</label><input id="fromDate" type="date"></div><div><label>إلى تاريخ</label><input id="toDate" type="date"></div><button class="btnx primary" id="applyBtn">تطبيق</button><button class="btnx soft" id="clearBtn">جميع الفترات</button></div><div class="period" id="periodText">جميع الفترات</div></section>
-<section class="stats box"><div class="stat"><strong id="teachersCount">0</strong><span>عدد المعلمات</span></div><div class="stat"><strong id="activitiesCount">0</strong><span>إجمالي الفعاليات</span></div><div class="stat"><strong id="topTeacher">—</strong><span>الأكثر توثيقًا</span></div><div class="stat"><strong id="latestDate">—</strong><span>آخر توثيق</span></div></section>
-<section class="tablebox box"><table><thead><tr><th>الترتيب</th><th>اسم المعلمة / المنفذ</th><th>عدد الفعاليات</th><th>آخر فعالية</th><th>تاريخ آخر فعالية</th><th>النسبة من إجمالي النشاط</th></tr></thead><tbody id="reportBody"></tbody></table><div id="emptyState" class="empty" hidden>لا توجد فعاليات في الفترة المحددة.</div></section>
-<div class="footer">تم إنشاء التقرير بواسطة منصة التوثيق الذكي — مدرسة الرفاع الغربي الابتدائية للبنين</div>
+
+<div class="report-page">
+
+
+  <div class="toolbar box">
+
+    <strong>
+      📊 تقرير أداء المعلمات
+    </strong>
+
+
+    <div class="actions">
+
+      <a
+        class="btnx soft"
+        href="../../index.html"
+      >
+        🏠 لوحة التحكم
+      </a>
+
+
+      <button
+        class="btnx gold"
+        id="printBtn"
+        type="button"
+      >
+        🖨 طباعة / حفظ PDF
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <section class="report-head">
+
+    <img
+      class="school-header"
+      src="../../assets/school-header.jpg"
+      alt="شعار المدرسة"
+    >
+
+    <h1>
+      تقرير أداء المعلمات
+    </h1>
+
+    <p>
+      متابعة تقارير الفعاليات المسجلة في منصة
+      WestRiffa Smart Office
+    </p>
+
+  </section>
+
+
+  <section class="filters box">
+
+    <div class="filter-grid">
+
+
+      <div>
+
+        <label for="fromDate">
+          من تاريخ
+        </label>
+
+        <input
+          id="fromDate"
+          type="date"
+        >
+
+      </div>
+
+
+      <div>
+
+        <label for="toDate">
+          إلى تاريخ
+        </label>
+
+        <input
+          id="toDate"
+          type="date"
+        >
+
+      </div>
+
+
+      <button
+        class="btnx primary"
+        id="applyBtn"
+        type="button"
+      >
+        تطبيق
+      </button>
+
+
+      <button
+        class="btnx soft"
+        id="clearBtn"
+        type="button"
+      >
+        جميع الفترات
+      </button>
+
+    </div>
+
+
+    <div
+      class="period"
+      id="periodText"
+    >
+      جميع الفترات
+    </div>
+
+  </section>
+
+
+  <section class="summary-grid box">
+
+
+    <div class="stat-box">
+
+      <strong id="teachersCount">
+        0
+      </strong>
+
+      <span>
+        عدد المعلمات
+      </span>
+
+    </div>
+
+
+    <div class="stat-box">
+
+      <strong id="activitiesCount">
+        0
+      </strong>
+
+      <span>
+        إجمالي الفعاليات
+      </span>
+
+    </div>
+
+
+    <div class="stat-box">
+
+      <strong id="topTeacher">
+        —
+      </strong>
+
+      <span>
+        الأكثر توثيقًا
+      </span>
+
+    </div>
+
+
+    <div class="stat-box">
+
+      <strong id="latestDate">
+        —
+      </strong>
+
+      <span>
+        آخر توثيق
+      </span>
+
+    </div>
+
+
+  </section>
+
+
+  <section class="table-card box">
+
+    <table>
+
+      <thead>
+
+        <tr>
+
+          <th>
+            الترتيب
+          </th>
+
+          <th>
+            اسم المعلمة
+          </th>
+
+          <th>
+            عدد الفعاليات
+          </th>
+
+          <th>
+            آخر فعالية
+          </th>
+
+          <th>
+            تاريخ آخر فعالية
+          </th>
+
+          <th>
+            النسبة من إجمالي النشاط
+          </th>
+
+        </tr>
+
+      </thead>
+
+
+      <tbody id="reportBody">
+      </tbody>
+
+    </table>
+
+
+    <div
+      id="emptyState"
+      class="empty"
+      hidden
+    >
+      لا توجد فعاليات مسجلة في الفترة المحددة.
+    </div>
+
+  </section>
+
+
+  <div class="footer">
+
+    تم إنشاء التقرير بواسطة منصة التوثيق الذكي
+    —
+    مدرسة الرفاع الغربي الابتدائية للبنين
+
+  </div>
+
+
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../../js/config.js"></script><script src="../../js/graph.js"></script>
+
+
+
+<script
+  src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+<script src="../../js/config.js"></script>
+
+<script src="../../js/graph.js"></script>
+
+
 <script>
-const $=id=>document.getElementById(id);let all=[];
-const p=r=>(r&&r.payload&&typeof r.payload==="object")?r.payload:{};
-const teacher=r=>String(p(r).executor||p(r).teacherName||p(r).full_name||p(r).fullName||"غير محدد").trim()||"غير محدد";
-const title=r=>r.title||p(r).name||p(r).title||"فعالية";
-function key(r){let v=r.record_date||p(r).date||r.created_at||"";if(!v)return"";let d=new Date(v);return isNaN(d)?String(v).slice(0,10):d.toISOString().slice(0,10)}
-function pretty(v){if(!v)return"—";let d=new Date(v+"T00:00:00");return isNaN(d)?v:d.toLocaleDateString("ar-BH",{year:"numeric",month:"long",day:"numeric"})}
-function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
-function render(){let f=$("fromDate").value,t=$("toDate").value,list=all.filter(r=>{let d=key(r);return !(f&&(!d||d<f))&&!(t&&(!d||d>t))});
-$("periodText").textContent=f&&t?`الفترة من ${pretty(f)} إلى ${pretty(t)}`:f?`من ${pretty(f)} حتى آخر سجل`:t?`حتى ${pretty(t)}`:"جميع الفترات";
-let m=new Map;list.forEach(r=>{let n=teacher(r);if(!m.has(n))m.set(n,[]);m.get(n).push(r)});
-let rows=[...m].map(([name,items])=>{items.sort((a,b)=>key(b).localeCompare(key(a)));return{name,count:items.length,last:items[0]}}).sort((a,b)=>b.count-a.count||key(b.last).localeCompare(key(a.last)));
-$("teachersCount").textContent=rows.length;$("activitiesCount").textContent=list.length;$("topTeacher").textContent=rows[0]?.name||"—";let latest=[...list].sort((a,b)=>key(b).localeCompare(key(a)))[0];$("latestDate").textContent=latest?pretty(key(latest)):"—";
-let body=$("reportBody");body.innerHTML="";$("emptyState").hidden=!!rows.length;rows.forEach((r,i)=>{let tr=document.createElement("tr"),pct=list.length?((r.count/list.length)*100).toFixed(1):"0.0";tr.innerHTML=`<td class="rank">${i+1}</td><td><strong>${esc(r.name)}</strong></td><td>${r.count}</td><td>${esc(title(r.last))}</td><td>${esc(pretty(key(r.last)))}</td><td>${pct}%</td>`;body.appendChild(tr)})}
-async function load(){try{if(!window.WRGraph||!WRGraph.configured())throw Error("Supabase غير معد");let u=await WRGraph.getAccount();if(!u){location.href="../../index.html";return}let records=await WRGraph.fetchRecords();all=(Array.isArray(records)?records:[]).filter(r=>r.type==="activity");let q=new URLSearchParams(location.search);if(q.get("from"))$("fromDate").value=q.get("from");if(q.get("to"))$("toDate").value=q.get("to");render()}catch(e){console.error(e);$("emptyState").hidden=false;$("emptyState").textContent="تعذر تحميل التقرير. تأكدي من تسجيل الدخول والاتصال."}}
-$("applyBtn").onclick=()=>{if($("fromDate").value&&$("toDate").value&&$("fromDate").value>$("toDate").value){alert("تاريخ البداية يجب أن يكون قبل تاريخ النهاية.");return}render()};$("clearBtn").onclick=()=>{$("fromDate").value="";$("toDate").value="";render()};$("printBtn").onclick=()=>window.print();document.addEventListener("DOMContentLoaded",load);
+
+
+const $ =
+  id =>
+    document.getElementById(
+      id
+    );
+
+
+let allActivities =
+  [];
+
+
+let teacherProfiles =
+  [];
+
+
+let currentProfile =
+  null;
+
+
+
+/* =====================================================
+   Supabase
+   ===================================================== */
+
+function reportSupabase() {
+
+  return window.supabase.createClient(
+    window.WR_CONFIG.supabaseUrl,
+    window.WR_CONFIG.supabaseKey
+  );
+
+}
+
+
+
+/* =====================================================
+   التاريخ الحقيقي للفعالية
+   ===================================================== */
+
+function activityDateKey(
+  record
+) {
+
+  const payload =
+    record.payload ||
+    {};
+
+
+  const raw =
+    record.record_date ||
+    payload.date ||
+    "";
+
+
+  if (!raw) {
+    return "";
+  }
+
+
+  return String(
+    raw
+  ).slice(
+    0,
+    10
+  );
+
+}
+
+
+
+/* =====================================================
+   اسم الفعالية
+   ===================================================== */
+
+function activityTitle(
+  record
+) {
+
+  const payload =
+    record.payload ||
+    {};
+
+
+  return (
+    record.title ||
+    payload.name ||
+    payload.title ||
+    "فعالية"
+  );
+
+}
+
+
+
+/* =====================================================
+   تنسيق التاريخ
+   ===================================================== */
+
+function prettyDate(
+  value
+) {
+
+  if (!value) {
+    return "—";
+  }
+
+
+  const date =
+    new Date(
+      value +
+      "T00:00:00"
+    );
+
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+
+    return value;
+
+  }
+
+
+  return date
+    .toLocaleDateString(
+      "ar-BH",
+      {
+        year:
+          "numeric",
+
+        month:
+          "long",
+
+        day:
+          "numeric"
+      }
+    );
+
+}
+
+
+
+/* =====================================================
+   حماية النص
+   ===================================================== */
+
+function escapeHtml(
+  value
+) {
+
+  return String(
+    value ?? ""
+  )
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+
+}
+
+
+
+/* =====================================================
+   قراءة Query String
+   ===================================================== */
+
+function applyQueryDates() {
+
+  const params =
+    new URLSearchParams(
+      location.search
+    );
+
+
+  const from =
+    params.get(
+      "from"
+    );
+
+
+  const to =
+    params.get(
+      "to"
+    );
+
+
+  if (from) {
+
+    $("fromDate").value =
+      from;
+
+  }
+
+
+  if (to) {
+
+    $("toDate").value =
+      to;
+
+  }
+
+}
+
+
+
+/* =====================================================
+   رسم التقرير
+   ===================================================== */
+
+function renderReport() {
+
+  const from =
+    $("fromDate").value;
+
+
+  const to =
+    $("toDate").value;
+
+
+  /* ===================================================
+     IDs حسابات المعلمات فقط
+     =================================================== */
+
+  const teacherIds =
+    new Set(
+      teacherProfiles.map(
+        teacher =>
+          String(
+            teacher.id
+          )
+      )
+    );
+
+
+  /* ===================================================
+     فعاليات الفترة
+     نحسب فقط فعاليات حسابات المعلمات
+     =================================================== */
+
+  const periodActivities =
+    allActivities.filter(
+      record => {
+
+        if (
+          !teacherIds.has(
+            String(
+              record.created_by
+            )
+          )
+        ) {
+
+          return false;
+
+        }
+
+
+        const date =
+          activityDateKey(
+            record
+          );
+
+
+        if (
+          from &&
+          (
+            !date ||
+            date < from
+          )
+        ) {
+
+          return false;
+
+        }
+
+
+        if (
+          to &&
+          (
+            !date ||
+            date > to
+          )
+        ) {
+
+          return false;
+
+        }
+
+
+        return true;
+
+      }
+    );
+
+
+  /* ===================================================
+     عنوان الفترة
+     =================================================== */
+
+  if (
+    from &&
+    to
+  ) {
+
+    $("periodText").textContent =
+      `الفترة من ${prettyDate(from)} إلى ${prettyDate(to)}`;
+
+  } else if (from) {
+
+    $("periodText").textContent =
+      `من ${prettyDate(from)} حتى آخر سجل`;
+
+  } else if (to) {
+
+    $("periodText").textContent =
+      `حتى ${prettyDate(to)}`;
+
+  } else {
+
+    $("periodText").textContent =
+      "جميع الفترات";
+
+  }
+
+
+  /* ===================================================
+     التجميع حسب حساب المعلمة
+     =================================================== */
+
+  const teacherRows =
+    teacherProfiles.map(
+      teacher => {
+
+        const records =
+          periodActivities
+            .filter(
+              record =>
+                String(
+                  record.created_by
+                ) ===
+                String(
+                  teacher.id
+                )
+            )
+            .sort(
+              (a, b) =>
+                activityDateKey(
+                  b
+                ).localeCompare(
+                  activityDateKey(
+                    a
+                  )
+                )
+            );
+
+
+        return {
+
+          id:
+            teacher.id,
+
+          name:
+            teacher.full_name ||
+            "معلمة",
+
+          count:
+            records.length,
+
+          latest:
+            records[0] ||
+            null
+
+        };
+
+      }
+    );
+
+
+  /* ===================================================
+     المعلمات اللاتي لديهن نشاط
+     =================================================== */
+
+  const activeTeachers =
+    teacherRows
+      .filter(
+        teacher =>
+          teacher.count > 0
+      )
+      .sort(
+        (a, b) => {
+
+          if (
+            b.count !==
+            a.count
+          ) {
+
+            return (
+              b.count -
+              a.count
+            );
+
+          }
+
+
+          return activityDateKey(
+            b.latest
+          ).localeCompare(
+            activityDateKey(
+              a.latest
+            )
+          );
+
+        }
+      );
+
+
+  /* ===================================================
+     الإحصائيات
+     =================================================== */
+
+  $("teachersCount").textContent =
+    activeTeachers.length;
+
+
+  $("activitiesCount").textContent =
+    periodActivities.length;
+
+
+  $("topTeacher").textContent =
+    activeTeachers[0]?.name ||
+    "—";
+
+
+  const latestRecord =
+    [...periodActivities]
+      .sort(
+        (a, b) =>
+          activityDateKey(
+            b
+          ).localeCompare(
+            activityDateKey(
+              a
+            )
+          )
+      )[0];
+
+
+  $("latestDate").textContent =
+    latestRecord
+      ? prettyDate(
+          activityDateKey(
+            latestRecord
+          )
+        )
+      : "—";
+
+
+  /* ===================================================
+     الجدول
+     =================================================== */
+
+  const body =
+    $("reportBody");
+
+
+  body.innerHTML =
+    "";
+
+
+  $("emptyState").hidden =
+    activeTeachers.length >
+    0;
+
+
+  activeTeachers.forEach(
+    (
+      teacher,
+      index
+    ) => {
+
+      const percentage =
+        periodActivities.length
+          ? (
+              teacher.count /
+              periodActivities.length *
+              100
+            ).toFixed(
+              1
+            )
+          : "0.0";
+
+
+      const row =
+        document.createElement(
+          "tr"
+        );
+
+
+      row.innerHTML = `
+
+        <td class="rank">
+          ${index + 1}
+        </td>
+
+
+        <td>
+
+          <strong>
+            ${escapeHtml(
+              teacher.name
+            )}
+          </strong>
+
+        </td>
+
+
+        <td>
+          ${teacher.count}
+        </td>
+
+
+        <td>
+
+          ${
+            teacher.latest
+              ? escapeHtml(
+                  activityTitle(
+                    teacher.latest
+                  )
+                )
+              : "—"
+          }
+
+        </td>
+
+
+        <td>
+
+          ${
+            teacher.latest
+              ? escapeHtml(
+                  prettyDate(
+                    activityDateKey(
+                      teacher.latest
+                    )
+                  )
+                )
+              : "—"
+          }
+
+        </td>
+
+
+        <td>
+          ${percentage}%
+        </td>
+
+      `;
+
+
+      body.appendChild(
+        row
+      );
+
+    }
+  );
+
+}
+
+
+
+/* =====================================================
+   تحميل البيانات
+   ===================================================== */
+
+async function loadReport() {
+
+  try {
+
+    if (
+      !window.WRGraph ||
+      !WRGraph.configured()
+    ) {
+
+      throw new Error(
+        "إعدادات Supabase غير مكتملة"
+      );
+
+    }
+
+
+    const user =
+      await WRGraph.getAccount();
+
+
+    if (!user) {
+
+      location.href =
+        "../../index.html";
+
+      return;
+
+    }
+
+
+    const sb =
+      reportSupabase();
+
+
+    /* =================================================
+       Profile المستخدم الحالي
+       ================================================= */
+
+    const {
+      data: myProfile,
+      error: myProfileError
+    } = await sb
+      .from(
+        "profiles"
+      )
+      .select(
+        "id, full_name, role"
+      )
+      .eq(
+        "id",
+        user.id
+      )
+      .single();
+
+
+    if (
+      myProfileError
+    ) {
+
+      throw myProfileError;
+
+    }
+
+
+    currentProfile =
+      myProfile;
+
+
+    /* التقرير للإدارة فقط */
+
+    if (
+      currentProfile.role !==
+      "admin"
+    ) {
+
+      alert(
+        "هذا التقرير متاح للإدارة فقط."
+      );
+
+
+      location.href =
+        "../../index.html";
+
+
+      return;
+
+    }
+
+
+    /* =================================================
+       Profiles المعلمات
+       ================================================= */
+
+    const {
+      data: profiles,
+      error: profilesError
+    } = await sb
+      .from(
+        "profiles"
+      )
+      .select(
+        "id, full_name, role"
+      )
+      .eq(
+        "role",
+        "teacher"
+      )
+      .order(
+        "full_name",
+        {
+          ascending:
+            true
+        }
+      );
+
+
+    if (
+      profilesError
+    ) {
+
+      throw profilesError;
+
+    }
+
+
+    teacherProfiles =
+      Array.isArray(
+        profiles
+      )
+        ? profiles
+        : [];
+
+
+    /* =================================================
+       السجلات
+       ================================================= */
+
+    const records =
+      await WRGraph.fetchRecords();
+
+
+    allActivities =
+      (
+        Array.isArray(
+          records
+        )
+          ? records
+          : []
+      )
+        .filter(
+          record =>
+            record.type ===
+            "activity"
+        );
+
+
+    applyQueryDates();
+
+
+    renderReport();
+
+
+  } catch (
+    error
+  ) {
+
+    console.error(
+      "Teacher performance report error:",
+      error
+    );
+
+
+    $("emptyState").hidden =
+      false;
+
+
+    $("emptyState").textContent =
+      "تعذر تحميل تقرير الأداء. تأكدي من تسجيل الدخول والاتصال.";
+
+  }
+
+}
+
+
+
+/* =====================================================
+   تطبيق الفلتر
+   ===================================================== */
+
+$("applyBtn")
+  .addEventListener(
+    "click",
+    () => {
+
+      const from =
+        $("fromDate").value;
+
+
+      const to =
+        $("toDate").value;
+
+
+      if (
+        from &&
+        to &&
+        from > to
+      ) {
+
+        alert(
+          "تاريخ البداية يجب أن يكون قبل تاريخ النهاية."
+        );
+
+
+        return;
+
+      }
+
+
+      renderReport();
+
+    }
+  );
+
+
+
+/* =====================================================
+   جميع الفترات
+   ===================================================== */
+
+$("clearBtn")
+  .addEventListener(
+    "click",
+    () => {
+
+      $("fromDate").value =
+        "";
+
+
+      $("toDate").value =
+        "";
+
+
+      renderReport();
+
+    }
+  );
+
+
+
+/* =====================================================
+   الطباعة
+   ===================================================== */
+
+$("printBtn")
+  .addEventListener(
+    "click",
+    () => {
+
+      window.print();
+
+    }
+  );
+
+
+
+/* =====================================================
+   تشغيل
+   ===================================================== */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  loadReport
+);
+
+
 </script>
-</body></html>
+
+
+</body>
+
+</html>
