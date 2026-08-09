@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>تقرير أداء المعلمات | WestRiffa Smart Office</title>
+<link rel="stylesheet" href="../../css/app.css">
+<style>
+:root{--g:#075c40;--gold:#b78b2f;--soft:#f4f8f6;--line:#dfe8e3}
+*{box-sizing:border-box}body{margin:0;background:#f5f8f6;font-family:Tahoma,Arial,sans-serif;color:#18362c}
+.wrap{max-width:1200px;margin:auto;padding:24px}.box{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 6px 22px #0000000d}
+.toolbar{padding:14px 18px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:16px}.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btnx{border:0;border-radius:11px;padding:11px 15px;font:inherit;font-weight:700;cursor:pointer;text-decoration:none}.primary{background:var(--g);color:#fff}.soft{background:#eaf3ef;color:var(--g)}.gold{background:var(--gold);color:#fff}
+.head{background:#fff;border-top:7px solid var(--g);border-bottom:2px solid var(--gold);padding:18px;text-align:center;margin-bottom:16px}.head img{width:100%;max-height:115px;object-fit:contain}.head h1{color:var(--g);font-size:31px;margin:14px 0 5px}.head p{margin:0;color:#6c7b74}
+.filters{padding:16px;margin-bottom:16px}.grid{display:grid;grid-template-columns:1fr 1fr auto auto;gap:10px;align-items:end}label{display:block;font-weight:700;font-size:13px;margin-bottom:6px}input{width:100%;padding:11px;border:1px solid #d6e1db;border-radius:10px;font:inherit}.period{margin-top:12px;padding:10px;background:var(--soft);border-radius:10px;color:var(--g);font-weight:700}
+.stats{padding:14px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}.stat{padding:17px;text-align:center;background:var(--soft);border-radius:14px;border-top:3px solid var(--g)}.stat strong{display:block;color:var(--g);font-size:26px}.stat span{color:#66776f;font-size:13px}
+.tablebox{padding:16px;overflow:auto}table{width:100%;border-collapse:collapse;min-width:760px}th,td{padding:13px 11px;border-bottom:1px solid #e5ece8;text-align:right}th{background:var(--g);color:#fff}tbody tr:nth-child(even){background:#f8faf9}.rank{font-weight:800;color:var(--gold)}.empty{text-align:center;padding:35px;color:#718078}.footer{text-align:center;color:#77867f;font-size:12px;padding:20px}
+@media(max-width:800px){.grid{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr 1fr}}@media(max-width:520px){.grid,.stats{grid-template-columns:1fr}.wrap{padding:10px}}
+@media print{body{background:#fff}.wrap{max-width:none;padding:0}.toolbar,.filters{display:none!important}.box{box-shadow:none}.tablebox{border:0}@page{size:A4 landscape;margin:10mm}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="toolbar box"><strong>📊 تقرير أداء المعلمات</strong><div class="actions"><a class="btnx soft" href="../../index.html">🏠 لوحة التحكم</a><button class="btnx gold" id="printBtn">🖨 طباعة / حفظ PDF</button></div></div>
+<section class="head"><img src="../../assets/school-header.jpg" alt="شعار المدرسة"><h1>تقرير أداء المعلمات</h1><p>متابعة تقارير الفعاليات المسجلة في منصة WestRiffa Smart Office</p></section>
+<section class="filters box"><div class="grid"><div><label>من تاريخ</label><input id="fromDate" type="date"></div><div><label>إلى تاريخ</label><input id="toDate" type="date"></div><button class="btnx primary" id="applyBtn">تطبيق</button><button class="btnx soft" id="clearBtn">جميع الفترات</button></div><div class="period" id="periodText">جميع الفترات</div></section>
+<section class="stats box"><div class="stat"><strong id="teachersCount">0</strong><span>عدد المعلمات</span></div><div class="stat"><strong id="activitiesCount">0</strong><span>إجمالي الفعاليات</span></div><div class="stat"><strong id="topTeacher">—</strong><span>الأكثر توثيقًا</span></div><div class="stat"><strong id="latestDate">—</strong><span>آخر توثيق</span></div></section>
+<section class="tablebox box"><table><thead><tr><th>الترتيب</th><th>اسم المعلمة / المنفذ</th><th>عدد الفعاليات</th><th>آخر فعالية</th><th>تاريخ آخر فعالية</th><th>النسبة من إجمالي النشاط</th></tr></thead><tbody id="reportBody"></tbody></table><div id="emptyState" class="empty" hidden>لا توجد فعاليات في الفترة المحددة.</div></section>
+<div class="footer">تم إنشاء التقرير بواسطة منصة التوثيق الذكي — مدرسة الرفاع الغربي الابتدائية للبنين</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../../js/config.js"></script><script src="../../js/graph.js"></script>
+<script>
+const $=id=>document.getElementById(id);let all=[];
+const p=r=>(r&&r.payload&&typeof r.payload==="object")?r.payload:{};
+const teacher=r=>String(p(r).executor||p(r).teacherName||p(r).full_name||p(r).fullName||"غير محدد").trim()||"غير محدد";
+const title=r=>r.title||p(r).name||p(r).title||"فعالية";
+function key(r){let v=r.record_date||p(r).date||r.created_at||"";if(!v)return"";let d=new Date(v);return isNaN(d)?String(v).slice(0,10):d.toISOString().slice(0,10)}
+function pretty(v){if(!v)return"—";let d=new Date(v+"T00:00:00");return isNaN(d)?v:d.toLocaleDateString("ar-BH",{year:"numeric",month:"long",day:"numeric"})}
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+function render(){let f=$("fromDate").value,t=$("toDate").value,list=all.filter(r=>{let d=key(r);return !(f&&(!d||d<f))&&!(t&&(!d||d>t))});
+$("periodText").textContent=f&&t?`الفترة من ${pretty(f)} إلى ${pretty(t)}`:f?`من ${pretty(f)} حتى آخر سجل`:t?`حتى ${pretty(t)}`:"جميع الفترات";
+let m=new Map;list.forEach(r=>{let n=teacher(r);if(!m.has(n))m.set(n,[]);m.get(n).push(r)});
+let rows=[...m].map(([name,items])=>{items.sort((a,b)=>key(b).localeCompare(key(a)));return{name,count:items.length,last:items[0]}}).sort((a,b)=>b.count-a.count||key(b.last).localeCompare(key(a.last)));
+$("teachersCount").textContent=rows.length;$("activitiesCount").textContent=list.length;$("topTeacher").textContent=rows[0]?.name||"—";let latest=[...list].sort((a,b)=>key(b).localeCompare(key(a)))[0];$("latestDate").textContent=latest?pretty(key(latest)):"—";
+let body=$("reportBody");body.innerHTML="";$("emptyState").hidden=!!rows.length;rows.forEach((r,i)=>{let tr=document.createElement("tr"),pct=list.length?((r.count/list.length)*100).toFixed(1):"0.0";tr.innerHTML=`<td class="rank">${i+1}</td><td><strong>${esc(r.name)}</strong></td><td>${r.count}</td><td>${esc(title(r.last))}</td><td>${esc(pretty(key(r.last)))}</td><td>${pct}%</td>`;body.appendChild(tr)})}
+async function load(){try{if(!window.WRGraph||!WRGraph.configured())throw Error("Supabase غير معد");let u=await WRGraph.getAccount();if(!u){location.href="../../index.html";return}let records=await WRGraph.fetchRecords();all=(Array.isArray(records)?records:[]).filter(r=>r.type==="activity");let q=new URLSearchParams(location.search);if(q.get("from"))$("fromDate").value=q.get("from");if(q.get("to"))$("toDate").value=q.get("to");render()}catch(e){console.error(e);$("emptyState").hidden=false;$("emptyState").textContent="تعذر تحميل التقرير. تأكدي من تسجيل الدخول والاتصال."}}
+$("applyBtn").onclick=()=>{if($("fromDate").value&&$("toDate").value&&$("fromDate").value>$("toDate").value){alert("تاريخ البداية يجب أن يكون قبل تاريخ النهاية.");return}render()};$("clearBtn").onclick=()=>{$("fromDate").value="";$("toDate").value="";render()};$("printBtn").onclick=()=>window.print();document.addEventListener("DOMContentLoaded",load);
+</script>
+</body></html>
