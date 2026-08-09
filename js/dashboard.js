@@ -1,3 +1,8 @@
+/* =========================================================
+   WestRiffa Smart Office
+   Dashboard
+   ========================================================= */
+
 let dashboardRecords = [];
 let dashboardCurrentProfile = null;
 let dashboardProfiles = [];
@@ -10,12 +15,9 @@ let dashboardProfiles = [];
 async function renderDashboard() {
 
   const recentBox =
-    $("recentList");
+    document.getElementById("recentList");
 
-
-  if (!recentBox) {
-    return;
-  }
+  if (!recentBox) return;
 
 
   try {
@@ -25,9 +27,9 @@ async function renderDashboard() {
     let allProfiles = [];
 
 
-    /* =====================================
+    /* ===============================
        المستخدم الحالي
-       ===================================== */
+       =============================== */
 
     const user =
       await WRGraph.getAccount();
@@ -40,9 +42,9 @@ async function renderDashboard() {
     }
 
 
-    /* =====================================
-       الاتصال بـ Supabase
-       ===================================== */
+    /* ===============================
+       Supabase
+       =============================== */
 
     const sb =
       window.supabase.createClient(
@@ -51,9 +53,9 @@ async function renderDashboard() {
       );
 
 
-    /* =====================================
-       Profile المستخدم الحالي
-       ===================================== */
+    /* ===============================
+       Profile المستخدم
+       =============================== */
 
     const {
       data: profileData,
@@ -73,7 +75,7 @@ async function renderDashboard() {
     if (profileError) {
 
       console.warn(
-        "تعذر تحميل Profile الحالي:",
+        "Profile error:",
         profileError
       );
 
@@ -85,14 +87,13 @@ async function renderDashboard() {
     }
 
 
-    /* =====================================
-       جلب السجلات
-       ===================================== */
+    /* ===============================
+       السجلات
+       =============================== */
 
     if (
       window.WRGraph &&
-      typeof WRGraph.configured ===
-        "function" &&
+      typeof WRGraph.configured === "function" &&
       WRGraph.configured()
     ) {
 
@@ -102,8 +103,7 @@ async function renderDashboard() {
     } else {
 
       records =
-        typeof wrGetRecords ===
-          "function"
+        typeof wrGetRecords === "function"
           ? wrGetRecords()
           : [];
 
@@ -116,9 +116,9 @@ async function renderDashboard() {
         : [];
 
 
-    /* =====================================
-       لو Admin نجلب Profiles المعلمات
-       ===================================== */
+    /* ===============================
+       حسابات المعلمات — Admin فقط
+       =============================== */
 
     if (
       currentProfile &&
@@ -144,7 +144,7 @@ async function renderDashboard() {
       if (profilesError) {
 
         console.error(
-          "تعذر تحميل Profiles:",
+          "Profiles error:",
           profilesError
         );
 
@@ -160,38 +160,41 @@ async function renderDashboard() {
     }
 
 
-    /* =====================================
-       حفظ البيانات للاستخدام في الفلترة
-       ===================================== */
-
     dashboardRecords =
       records;
 
-
     dashboardCurrentProfile =
       currentProfile;
-
 
     dashboardProfiles =
       allProfiles;
 
 
-    /* =====================================
+    /* ===============================
        الإحصائيات الرئيسية
-       ===================================== */
+       =============================== */
 
-    $("statAll").textContent =
-      records.length;
+    setDashboardText(
+      "statAll",
+      records.length
+    );
 
 
-    $("statActivities").textContent =
+    const activities =
       records.filter(
         record =>
           record.type === "activity"
-      ).length;
+      );
 
 
-    $("statMeetings").textContent =
+    setDashboardText(
+      "statActivities",
+      activities.length
+    );
+
+
+    setDashboardText(
+      "statMeetings",
       records.filter(
         record =>
           [
@@ -199,22 +202,33 @@ async function renderDashboard() {
             "invitation",
             "attendance",
             "recommendation"
-          ].includes(
-            record.type
-          )
-      ).length;
+          ].includes(record.type)
+      ).length
+    );
 
 
-    $("statCertificates").textContent =
+    setDashboardText(
+      "statCertificates",
       records.filter(
         record =>
           record.type === "certificate"
-      ).length;
+      ).length
+    );
 
 
-    /* =====================================
-       تحليل أنواع الفعاليات
-       ===================================== */
+    /* ===============================
+       المؤشرات الإدارية
+       =============================== */
+
+    renderAdminInsights(
+      records,
+      currentProfile
+    );
+
+
+    /* ===============================
+       أنواع الفعاليات
+       =============================== */
 
     renderActivityTypeBreakdown(
       records,
@@ -222,9 +236,9 @@ async function renderDashboard() {
     );
 
 
-    /* =====================================
+    /* ===============================
        نشاط المعلمات
-       ===================================== */
+       =============================== */
 
     renderTeacherActivity(
       records,
@@ -233,169 +247,24 @@ async function renderDashboard() {
     );
 
 
-    /*
-      تحديث رابط تقرير الأداء
-      حتى يحمل نفس الفترة المختارة.
-    */
-
     updatePerformanceReportLink();
 
 
-    /* =====================================
-       ترتيب السجلات من الأحدث
-       ===================================== */
-
-    records.sort(
-      (a, b) =>
-        getRecordDate(b).getTime() -
-        getRecordDate(a).getTime()
-    );
-
-
-    /* =====================================
+    /* ===============================
        آخر العمليات
-       ===================================== */
+       =============================== */
 
-    recentBox.innerHTML =
-      "";
-
-
-    if (!records.length) {
-
-      recentBox.innerHTML = `
-        <div class="empty">
-          لا توجد عمليات محفوظة بعد.
-        </div>
-      `;
-
-      return;
-
-    }
+    const sortedRecords =
+      [...records].sort(
+        (a, b) =>
+          getRecordDate(b).getTime() -
+          getRecordDate(a).getTime()
+      );
 
 
-    records
-      .slice(0, 6)
-      .forEach(record => {
-
-        const row =
-          document.createElement(
-            "div"
-          );
-
-
-        row.className =
-          "recent-row";
-
-
-        const title =
-          getRecordTitle(
-            record
-          );
-
-
-        const typeName =
-          typeof wrTypeLabel ===
-            "function"
-            ? wrTypeLabel(
-                record.type
-              )
-            : record.type ||
-              "سجل";
-
-
-        const dateText =
-          formatRecordDate(
-            record
-          );
-
-
-        const url =
-          getRecordUrl(
-            record
-          );
-
-
-        row.innerHTML = `
-
-          <div>
-
-            <strong>
-              ${escapeDashboardHtml(
-                title
-              )}
-            </strong>
-
-            <div
-              style="
-                color:#6b7a72;
-                font-size:13px;
-                margin-top:4px;
-              "
-            >
-              ${escapeDashboardHtml(
-                dateText
-              )}
-            </div>
-
-          </div>
-
-
-          <div
-            style="
-              display:flex;
-              gap:8px;
-              align-items:center;
-              flex-wrap:wrap;
-            "
-          >
-
-            <span class="tag">
-              ${escapeDashboardHtml(
-                typeName
-              )}
-            </span>
-
-            ${
-              url
-                ? `
-                  <a
-                    class="btn btn-soft"
-                    href="${url}"
-                    style="
-                      padding:7px 11px;
-                      font-size:12px;
-                    "
-                  >
-                    فتح
-                  </a>
-                `
-                : ""
-            }
-
-          </div>
-
-        `;
-
-
-        recentBox.appendChild(
-          row
-        );
-
-      });
-
-
-    console.log(
-      "Dashboard loaded:",
-      {
-        role:
-          currentProfile?.role,
-
-        records:
-          records.length,
-
-        profiles:
-          allProfiles.length
-      }
+    renderRecentRecords(
+      sortedRecords,
+      recentBox
     );
 
 
@@ -407,35 +276,33 @@ async function renderDashboard() {
     );
 
 
-    $("statAll").textContent =
-      "0";
+    setDashboardText(
+      "statAll",
+      0
+    );
 
+    setDashboardText(
+      "statActivities",
+      0
+    );
 
-    $("statActivities").textContent =
-      "0";
+    setDashboardText(
+      "statMeetings",
+      0
+    );
 
-
-    $("statMeetings").textContent =
-      "0";
-
-
-    $("statCertificates").textContent =
-      "0";
+    setDashboardText(
+      "statCertificates",
+      0
+    );
 
 
     recentBox.innerHTML = `
-
       <div class="empty">
-
         تعذر تحميل السجلات.
-
         <br>
-
-        تأكدي من تسجيل الدخول
-        ثم أعيدي تحميل الصفحة.
-
+        تأكدي من تسجيل الدخول ثم أعيدي تحميل الصفحة.
       </div>
-
     `;
 
   }
@@ -444,8 +311,360 @@ async function renderDashboard() {
 
 
 /* =========================================================
-   تحليل أنواع الفعاليات
-   يظهر للـ Admin فقط
+   كتابة قيمة
+   ========================================================= */
+
+function setDashboardText(
+  id,
+  value
+) {
+
+  const element =
+    document.getElementById(id);
+
+  if (element) {
+    element.textContent =
+      String(value ?? "");
+  }
+
+}
+
+
+/* =========================================================
+   قراءة عدد المستفيدين من السجل
+   ========================================================= */
+
+function getBeneficiaryCount(
+  record
+) {
+
+  const rawValue =
+    record?.payload?.count ??
+    record?.payload?.beneficiaries ??
+    record?.payload?.beneficiaryCount ??
+    record?.count ??
+    0;
+
+
+  const value =
+    Number(rawValue);
+
+
+  if (
+    !Number.isFinite(value) ||
+    value < 0
+  ) {
+    return 0;
+  }
+
+
+  return value;
+
+}
+
+
+/* =========================================================
+   إجمالي المستفيدين
+   ========================================================= */
+
+function calculateBeneficiaries(
+  records
+) {
+
+  return (records || [])
+    .reduce(
+      (sum, record) =>
+        sum +
+        getBeneficiaryCount(record),
+      0
+    );
+
+}
+
+
+/* =========================================================
+   المؤشرات الإدارية
+   ========================================================= */
+
+function renderAdminInsights(
+  records,
+  currentProfile
+) {
+
+  const section =
+    document.getElementById(
+      "adminInsightsSection"
+    );
+
+
+  if (!section) return;
+
+
+  if (
+    !currentProfile ||
+    currentProfile.role !== "admin"
+  ) {
+
+    section.style.display =
+      "none";
+
+    return;
+
+  }
+
+
+  section.style.display =
+    "block";
+
+
+  const activities =
+    records.filter(
+      record =>
+        record.type === "activity"
+    );
+
+
+  /* إجمالي المستفيدين */
+
+  setDashboardText(
+    "statBeneficiaries",
+    calculateBeneficiaries(
+      activities
+    )
+  );
+
+
+  const now =
+    new Date();
+
+
+  const currentMonthStart =
+    new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      1
+    );
+
+
+  const nextMonthStart =
+    new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      1
+    );
+
+
+  const previousMonthStart =
+    new Date(
+      now.getFullYear(),
+      now.getMonth() - 1,
+      1
+    );
+
+
+  const currentMonthActivities =
+    activities.filter(
+      record => {
+
+        const date =
+          getActivityDate(record);
+
+        return (
+          date.getTime() !== 0 &&
+          date >= currentMonthStart &&
+          date < nextMonthStart
+        );
+
+      }
+    );
+
+
+  const previousMonthActivities =
+    activities.filter(
+      record => {
+
+        const date =
+          getActivityDate(record);
+
+        return (
+          date.getTime() !== 0 &&
+          date >= previousMonthStart &&
+          date < currentMonthStart
+        );
+
+      }
+    );
+
+
+  const currentCount =
+    currentMonthActivities.length;
+
+  const previousCount =
+    previousMonthActivities.length;
+
+
+  setDashboardText(
+    "statCurrentMonth",
+    currentCount
+  );
+
+  setDashboardText(
+    "statPreviousMonth",
+    previousCount
+  );
+
+
+  const currentMonthName =
+    currentMonthStart
+      .toLocaleDateString(
+        "ar-BH",
+        {
+          month: "long",
+          year: "numeric"
+        }
+      );
+
+
+  const previousMonthName =
+    previousMonthStart
+      .toLocaleDateString(
+        "ar-BH",
+        {
+          month: "long",
+          year: "numeric"
+        }
+      );
+
+
+  setDashboardText(
+    "currentMonthLabel",
+    currentMonthName
+  );
+
+  setDashboardText(
+    "previousMonthLabel",
+    previousMonthName
+  );
+
+
+  const change =
+    currentCount -
+    previousCount;
+
+
+  let percentage = 0;
+
+
+  if (previousCount > 0) {
+
+    percentage =
+      Math.round(
+        (change / previousCount) *
+        100
+      );
+
+  } else if (
+    currentCount > 0
+  ) {
+
+    percentage = 100;
+
+  }
+
+
+  const monthChange =
+    document.getElementById(
+      "statMonthChange"
+    );
+
+
+  const comparisonText =
+    document.getElementById(
+      "monthComparisonText"
+    );
+
+
+  const trend =
+    document.getElementById(
+      "monthTrend"
+    );
+
+
+  if (
+    currentCount >
+    previousCount
+  ) {
+
+    if (monthChange) {
+      monthChange.textContent =
+        `+${Math.abs(percentage)}%`;
+    }
+
+
+    if (trend) {
+
+      trend.textContent =
+        `↑ زيادة ${Math.abs(percentage)}%`;
+
+      trend.className =
+        "month-trend up";
+
+    }
+
+  } else if (
+    currentCount <
+    previousCount
+  ) {
+
+    if (monthChange) {
+      monthChange.textContent =
+        `-${Math.abs(percentage)}%`;
+    }
+
+
+    if (trend) {
+
+      trend.textContent =
+        `↓ انخفاض ${Math.abs(percentage)}%`;
+
+      trend.className =
+        "month-trend down";
+
+    }
+
+  } else {
+
+    if (monthChange) {
+      monthChange.textContent =
+        "0%";
+    }
+
+
+    if (trend) {
+
+      trend.textContent =
+        "— ثابت";
+
+      trend.className =
+        "month-trend same";
+
+    }
+
+  }
+
+
+  if (comparisonText) {
+
+    comparisonText.textContent =
+      `تم تسجيل ${currentCount} فعالية في ${currentMonthName} مقابل ${previousCount} في ${previousMonthName}.`;
+
+  }
+
+}
+
+
+/* =========================================================
+   توزيع أنواع الفعاليات
    ========================================================= */
 
 function renderActivityTypeBreakdown(
@@ -478,13 +697,11 @@ function renderActivityTypeBreakdown(
     );
 
 
-  if (!statsBox) {
-    return;
-  }
+  if (!statsBox) return;
 
 
   const activities =
-    (records || []).filter(
+    records.filter(
       record =>
         record.type === "activity"
     );
@@ -517,28 +734,25 @@ function renderActivityTypeBreakdown(
   activities.forEach(
     record => {
 
-      const rawType =
-        record.payload?.activityType ||
-        record.payload?.activity_type ||
-        record.activityType ||
-        record.activity_type ||
-        "فعالية";
-
-
-      const activityType =
-        String(rawType).trim() ||
-        "فعالية";
+      const type =
+        getActivityTypeLabel(record);
 
 
       if (
-        Object.prototype.hasOwnProperty.call(
-          counts,
-          activityType
-        )
+        Object.prototype
+          .hasOwnProperty
+          .call(
+            counts,
+            type
+          )
       ) {
-        counts[activityType] += 1;
+
+        counts[type]++;
+
       } else {
-        counts["أخرى"] += 1;
+
+        counts["أخرى"]++;
+
       }
 
     }
@@ -549,7 +763,7 @@ function renderActivityTypeBreakdown(
     activities.length;
 
 
-  const activeTypes =
+  const sortedTypes =
     knownTypes
       .map(
         type => ({
@@ -580,15 +794,17 @@ function renderActivityTypeBreakdown(
   `;
 
 
-  const cardsHtml =
-    activeTypes
+  const cards =
+    sortedTypes
       .map(
         item => {
 
           const percentage =
             total
               ? Math.round(
-                  (item.count / total) * 100
+                  item.count /
+                  total *
+                  100
                 )
               : 0;
 
@@ -602,9 +818,6 @@ function renderActivityTypeBreakdown(
                 padding:15px;
                 box-shadow:0 3px 12px rgba(0,0,0,.04);
                 min-height:106px;
-                display:flex;
-                flex-direction:column;
-                justify-content:space-between;
               "
             >
 
@@ -615,9 +828,7 @@ function renderActivityTypeBreakdown(
                   font-weight:700;
                 "
               >
-                ${escapeDashboardHtml(
-                  item.type
-                )}
+                ${escapeDashboardHtml(item.type)}
               </div>
 
               <div
@@ -625,7 +836,6 @@ function renderActivityTypeBreakdown(
                   display:flex;
                   justify-content:space-between;
                   align-items:flex-end;
-                  gap:10px;
                   margin-top:10px;
                 "
               >
@@ -634,7 +844,6 @@ function renderActivityTypeBreakdown(
                   style="
                     color:#075c40;
                     font-size:28px;
-                    line-height:1;
                   "
                 >
                   ${item.count}
@@ -666,7 +875,6 @@ function renderActivityTypeBreakdown(
                     height:100%;
                     width:${percentage}%;
                     background:#087451;
-                    border-radius:20px;
                   "
                 ></div>
 
@@ -680,22 +888,14 @@ function renderActivityTypeBreakdown(
       .join("");
 
 
-  let highestText =
-    "لا توجد فعاليات محفوظة بعد";
+  const highest =
+    sortedTypes[0];
 
 
-  if (
-    total &&
-    activeTypes.length
-  ) {
-
-    const highest =
-      activeTypes[0];
-
-
-    highestText =
-      `أعلى نوع توثيقًا: ${highest.type} (${highest.count})`;
-  }
+  const highestText =
+    total && highest
+      ? `أعلى نوع توثيقًا: ${highest.type} (${highest.count})`
+      : "لا توجد فعاليات محفوظة بعد";
 
 
   section.innerHTML = `
@@ -732,7 +932,6 @@ function renderActivityTypeBreakdown(
 
       </div>
 
-
       <div
         style="
           background:#f5f8f6;
@@ -753,11 +952,15 @@ function renderActivityTypeBreakdown(
     <div
       style="
         display:grid;
-        grid-template-columns:repeat(auto-fit,minmax(155px,1fr));
+        grid-template-columns:
+          repeat(
+            auto-fit,
+            minmax(155px,1fr)
+          );
         gap:10px;
       "
     >
-      ${cardsHtml}
+      ${cards}
     </div>
 
 
@@ -765,8 +968,8 @@ function renderActivityTypeBreakdown(
       style="
         margin-top:12px;
         padding:10px 12px;
-        border-radius:10px;
         background:#f8faf9;
+        border-radius:10px;
         color:#5f7068;
         font-size:12px;
       "
@@ -788,31 +991,27 @@ function renderActivityTypeBreakdown(
 
 
 /* =========================================================
-   قراءة فترة الفلترة
+   الفترة المحددة
    ========================================================= */
 
 function getTeacherFilterRange() {
 
-  const fromInput =
-    document.getElementById(
-      "teacherFromDate"
-    );
-
-
-  const toInput =
-    document.getElementById(
-      "teacherToDate"
-    );
-
-
   return {
 
     from:
-      fromInput?.value ||
+      document
+        .getElementById(
+          "teacherFromDate"
+        )
+        ?.value ||
       "",
 
     to:
-      toInput?.value ||
+      document
+        .getElementById(
+          "teacherToDate"
+        )
+        ?.value ||
       ""
 
   };
@@ -821,7 +1020,7 @@ function getTeacherFilterRange() {
 
 
 /* =========================================================
-   تاريخ الفعالية الحقيقي
+   تاريخ الفعالية
    ========================================================= */
 
 function getActivityDate(
@@ -829,9 +1028,9 @@ function getActivityDate(
 ) {
 
   const rawDate =
-    record.record_date ||
-    record.payload?.date ||
-    record.date ||
+    record?.record_date ||
+    record?.payload?.date ||
+    record?.date ||
     "";
 
 
@@ -843,10 +1042,7 @@ function getActivityDate(
   const date =
     new Date(
       String(rawDate)
-        .slice(
-          0,
-          10
-        ) +
+        .slice(0,10) +
       "T00:00:00"
     );
 
@@ -856,7 +1052,9 @@ function getActivityDate(
       date.getTime()
     )
   ) {
+
     return new Date(0);
+
   }
 
 
@@ -866,7 +1064,7 @@ function getActivityDate(
 
 
 /* =========================================================
-   هل الفعالية داخل الفترة؟
+   هل التاريخ داخل الفترة؟
    ========================================================= */
 
 function isActivityInRange(
@@ -875,14 +1073,12 @@ function isActivityInRange(
   to
 ) {
 
-  const activityDate =
-    getActivityDate(
-      record
-    );
+  const date =
+    getActivityDate(record);
 
 
   if (
-    activityDate.getTime() === 0
+    date.getTime() === 0
   ) {
     return false;
   }
@@ -898,7 +1094,7 @@ function isActivityInRange(
 
 
     if (
-      activityDate <
+      date <
       fromDate
     ) {
       return false;
@@ -917,7 +1113,7 @@ function isActivityInRange(
 
 
     if (
-      activityDate >
+      date >
       toDate
     ) {
       return false;
@@ -963,14 +1159,14 @@ function renderTeacherActivity(
 
   if (
     !currentProfile ||
-    currentProfile.role !==
-      "admin"
+    currentProfile.role !== "admin"
   ) {
 
     section.style.display =
       "none";
 
     return;
+
   }
 
 
@@ -998,21 +1194,19 @@ function renderTeacherActivity(
 
   const periodActivities =
     records.filter(
-      record => {
-
-        return (
-          record.type ===
-            "activity" &&
-          isActivityInRange(
-            record,
-            from,
-            to
-          )
-        );
-
-      }
+      record =>
+        record.type === "activity" &&
+        isActivityInRange(
+          record,
+          from,
+          to
+        )
     );
 
+
+  /* ===============================
+     ملخص الفترة
+     =============================== */
 
   const periodSummary =
     document.getElementById(
@@ -1044,7 +1238,7 @@ function renderTeacherActivity(
         text +=
           ` — من ${formatSimpleDate(from)}`;
 
-      } else if (to) {
+      } else {
 
         text +=
           ` — حتى ${formatSimpleDate(to)}`;
@@ -1059,13 +1253,7 @@ function renderTeacherActivity(
     } else {
 
       periodSummary.textContent =
-        `جميع الفترات — إجمالي الفعاليات: ${
-          records.filter(
-            record =>
-              record.type ===
-              "activity"
-          ).length
-        }`;
+        `جميع الفترات — إجمالي الفعاليات: ${periodActivities.length}`;
 
     }
 
@@ -1076,8 +1264,7 @@ function renderTeacherActivity(
     (profiles || [])
       .filter(
         profile =>
-          profile.role ===
-          "teacher"
+          profile.role === "teacher"
       );
 
 
@@ -1088,11 +1275,9 @@ function renderTeacherActivity(
   if (!teachers.length) {
 
     listBox.innerHTML = `
-
       <div class="empty">
         لا توجد حسابات معلمات حتى الآن.
       </div>
-
     `;
 
     return;
@@ -1100,138 +1285,251 @@ function renderTeacherActivity(
   }
 
 
-  teachers.forEach(
-    teacher => {
+  /* ===============================
+     ترتيب المعلمات حسب النشاط
+     =============================== */
 
-      const teacherRecords =
-        periodActivities
-          .filter(
-            record =>
-              String(
-                record.created_by
-              ) ===
-              String(
-                teacher.id
+  const teacherStats =
+    teachers
+      .map(
+        teacher => {
+
+          const teacherRecords =
+            periodActivities
+              .filter(
+                record =>
+                  String(
+                    record.created_by
+                  ) ===
+                  String(
+                    teacher.id
+                  )
               )
-          )
-          .sort(
-            (a, b) =>
-              getActivityDate(
-                b
-              ).getTime() -
-              getActivityDate(
-                a
-              ).getTime()
-          );
+              .sort(
+                (a, b) =>
+                  getActivityDate(b).getTime() -
+                  getActivityDate(a).getTime()
+              );
 
 
-      const count =
-        teacherRecords.length;
+          const beneficiaries =
+            calculateBeneficiaries(
+              teacherRecords
+            );
+
+
+          return {
+
+            teacher,
+
+            records:
+              teacherRecords,
+
+            activityCount:
+              teacherRecords.length,
+
+            beneficiaries
+
+          };
+
+        }
+      )
+      .sort(
+        (a, b) =>
+          b.activityCount -
+          a.activityCount ||
+          b.beneficiaries -
+          a.beneficiaries
+      );
+
+
+  teacherStats.forEach(
+    item => {
+
+      const {
+        teacher,
+        records: teacherRecords,
+        activityCount,
+        beneficiaries
+      } = item;
 
 
       let latestText =
         "لا توجد فعاليات";
 
 
-      if (count) {
+      let latestTitle =
+        "—";
+
+
+      if (teacherRecords.length) {
 
         latestText =
-          getActivityDate(
+          formatActivityDate(
             teacherRecords[0]
-          )
-            .toLocaleDateString(
-              "ar-BH",
-              {
-                year:
-                  "numeric",
+          );
 
-                month:
-                  "short",
 
-                day:
-                  "numeric"
-              }
-            );
+        latestTitle =
+          getRecordTitle(
+            teacherRecords[0]
+          );
 
       }
 
 
       const card =
         document.createElement(
-          "button"
+          "div"
         );
-
-
-      card.type =
-        "button";
 
 
       card.style.cssText = `
         width:100%;
         border:1px solid #e2ebe6;
         background:#fff;
-        border-radius:14px;
-        padding:16px;
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-        gap:12px;
-        margin-bottom:10px;
+        border-radius:16px;
+        padding:17px;
+        margin-bottom:11px;
         box-shadow:0 3px 12px rgba(0,0,0,.04);
-        text-align:right;
-        font-family:inherit;
-        cursor:pointer;
       `;
 
 
       card.innerHTML = `
 
-        <div>
-
-          <strong
-            style="
-              display:block;
-              color:#075c40;
-              font-size:16px;
-            "
-          >
-            ${escapeDashboardHtml(
-              teacher.full_name ||
-              "معلمة"
-            )}
-          </strong>
-
+        <div
+          style="
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-start;
+            gap:14px;
+            flex-wrap:wrap;
+          "
+        >
 
           <div
             style="
-              color:#6b7a72;
-              font-size:12px;
-              margin-top:5px;
+              flex:1;
+              min-width:220px;
             "
           >
-            ${
-              count
-                ? `آخر فعالية: ${escapeDashboardHtml(
-                    latestText
-                  )}`
-                : (
-                    from ||
-                    to
-                      ? "لا توجد فعاليات في هذه الفترة"
-                      : "لم تسجل فعاليات بعد"
-                  )
-            }
+
+            <strong
+              style="
+                display:block;
+                color:#075c40;
+                font-size:17px;
+                margin-bottom:8px;
+              "
+            >
+              ${escapeDashboardHtml(
+                teacher.full_name ||
+                "معلمة"
+              )}
+            </strong>
+
+
+            <div
+              style="
+                color:#5f7068;
+                font-size:12px;
+                margin-bottom:5px;
+              "
+            >
+              آخر فعالية:
+              <strong>
+                ${escapeDashboardHtml(
+                  latestTitle
+                )}
+              </strong>
+            </div>
+
+
+            <div
+              style="
+                color:#7b8982;
+                font-size:12px;
+              "
+            >
+              ${escapeDashboardHtml(
+                latestText
+              )}
+            </div>
+
           </div>
 
 
           <div
             style="
-              color:#8a9790;
-              font-size:11px;
-              margin-top:4px;
+              display:grid;
+              grid-template-columns:
+                repeat(2,minmax(90px,1fr));
+              gap:8px;
+              min-width:210px;
             "
           >
-            اضغطي لعرض التقارير
+
+            <div
+              style="
+                background:#f5f8f6;
+                border-radius:12px;
+                padding:11px;
+                text-align:center;
+              "
+            >
+
+              <strong
+                style="
+                  display:block;
+                  color:#075c40;
+                  font-size:25px;
+                "
+              >
+                ${activityCount}
+              </strong>
+
+              <span
+                style="
+                  color:#6b7a72;
+                  font-size:11px;
+                "
+              >
+                فعالية
+              </span>
+
+            </div>
+
+
+            <div
+              style="
+                background:#f5f8f6;
+                border-radius:12px;
+                padding:11px;
+                text-align:center;
+              "
+            >
+
+              <strong
+                style="
+                  display:block;
+                  color:#075c40;
+                  font-size:25px;
+                "
+              >
+                ${beneficiaries}
+              </strong>
+
+              <span
+                style="
+                  color:#6b7a72;
+                  font-size:11px;
+                "
+              >
+                مستفيد
+              </span>
+
+            </div>
+
           </div>
 
         </div>
@@ -1239,36 +1537,31 @@ function renderTeacherActivity(
 
         <div
           style="
-            text-align:center;
-            min-width:75px;
+            margin-top:12px;
+            display:flex;
+            justify-content:flex-end;
           "
         >
 
-          <strong
-            style="
-              display:block;
-              font-size:26px;
-              color:#075c40;
-            "
+          <button
+            type="button"
+            class="btn btn-soft teacher-details-btn"
           >
-            ${count}
-          </strong>
-
-          <span
-            style="
-              font-size:12px;
-              color:#6b7a72;
-            "
-          >
-            فعالية
-          </span>
+            عرض تقارير المعلمة
+          </button>
 
         </div>
 
       `;
 
 
-      card.addEventListener(
+      const detailsBtn =
+        card.querySelector(
+          ".teacher-details-btn"
+        );
+
+
+      detailsBtn.addEventListener(
         "click",
         () => {
 
@@ -1291,8 +1584,10 @@ function renderTeacherActivity(
   );
 
 }
+
+
 /* =========================================================
-   عرض تقارير معلمة
+   عرض تقارير المعلمة
    ========================================================= */
 
 function showTeacherReports(
@@ -1308,9 +1603,7 @@ function showTeacherReports(
     );
 
 
-  if (!section) {
-    return;
-  }
+  if (!section) return;
 
 
   let details =
@@ -1372,13 +1665,19 @@ function showTeacherReports(
   }
 
 
+  const beneficiaries =
+    calculateBeneficiaries(
+      records
+    );
+
+
   details.innerHTML = `
 
     <div
       style="
         display:flex;
         justify-content:space-between;
-        align-items:center;
+        align-items:flex-start;
         gap:12px;
         flex-wrap:wrap;
         margin-bottom:14px;
@@ -1400,19 +1699,18 @@ function showTeacherReports(
           )}
         </h3>
 
-
         <div
           style="
-            margin-top:5px;
+            margin-top:6px;
             color:#6b7a72;
             font-size:13px;
           "
         >
-          ${escapeDashboardHtml(
-            periodText
-          )}
-          — عدد الفعاليات:
-          ${records.length}
+          ${escapeDashboardHtml(periodText)}
+          —
+          ${records.length} فعالية
+          —
+          ${beneficiaries} مستفيد
         </div>
 
       </div>
@@ -1445,11 +1743,9 @@ function showTeacherReports(
   if (!records.length) {
 
     list.innerHTML = `
-
       <div class="empty">
         لا توجد تقارير لهذه المعلمة في الفترة المحددة.
       </div>
-
     `;
 
   } else {
@@ -1467,28 +1763,8 @@ function showTeacherReports(
           "recent-row";
 
 
-        const title =
-          getRecordTitle(
-            record
-          );
-
-
-        const date =
-          formatActivityDate(
-            record
-          );
-
-
         const url =
-          getRecordUrl(
-            record
-          );
-
-
-        const activityType =
-          getActivityTypeLabel(
-            record
-          );
+          getRecordUrl(record);
 
 
         row.innerHTML = `
@@ -1497,7 +1773,7 @@ function showTeacherReports(
 
             <strong>
               ${escapeDashboardHtml(
-                title
+                getRecordTitle(record)
               )}
             </strong>
 
@@ -1509,7 +1785,7 @@ function showTeacherReports(
               "
             >
               ${escapeDashboardHtml(
-                date
+                formatActivityDate(record)
               )}
             </div>
 
@@ -1522,23 +1798,32 @@ function showTeacherReports(
               "
             >
               ${escapeDashboardHtml(
-                activityType
+                getActivityTypeLabel(record)
               )}
+              —
+              ${getBeneficiaryCount(record)}
+              مستفيد
             </div>
 
           </div>
 
 
-          <a
-            class="btn btn-soft"
-            href="${url}"
-            style="
-              padding:7px 11px;
-              font-size:12px;
-            "
-          >
-            فتح التقرير
-          </a>
+          ${
+            url
+              ? `
+                <a
+                  class="btn btn-soft"
+                  href="${url}"
+                  style="
+                    padding:7px 11px;
+                    font-size:12px;
+                  "
+                >
+                  فتح التقرير
+                </a>
+              `
+              : ""
+          }
 
         `;
 
@@ -1557,7 +1842,7 @@ function showTeacherReports(
     .querySelector(
       "#closeTeacherDetails"
     )
-    .addEventListener(
+    ?.addEventListener(
       "click",
       () => {
 
@@ -1569,11 +1854,8 @@ function showTeacherReports(
 
   details.scrollIntoView(
     {
-      behavior:
-        "smooth",
-
-      block:
-        "start"
+      behavior: "smooth",
+      block: "start"
     }
   );
 
@@ -1581,7 +1863,7 @@ function showTeacherReports(
 
 
 /* =========================================================
-   ربط فترة لوحة التحكم بتقرير أداء المعلمات
+   تقرير أداء المعلمات
    ========================================================= */
 
 function updatePerformanceReportLink() {
@@ -1592,9 +1874,7 @@ function updatePerformanceReportLink() {
     );
 
 
-  if (!reportLink) {
-    return;
-  }
+  if (!reportLink) return;
 
 
   const {
@@ -1609,22 +1889,12 @@ function updatePerformanceReportLink() {
 
 
   if (from) {
-
-    params.set(
-      "from",
-      from
-    );
-
+    params.set("from", from);
   }
 
 
   if (to) {
-
-    params.set(
-      "to",
-      to
-    );
-
+    params.set("to", to);
   }
 
 
@@ -1644,7 +1914,7 @@ function updatePerformanceReportLink() {
 
 
 /* =========================================================
-   تطبيق فلتر الفترة
+   تطبيق الفلتر
    ========================================================= */
 
 function applyTeacherPeriodFilter() {
@@ -1684,36 +1954,30 @@ function applyTeacherPeriodFilter() {
 
 
 /* =========================================================
-   إلغاء فلتر الفترة
+   إلغاء الفلتر
    ========================================================= */
 
 function clearTeacherPeriodFilter() {
 
-  const fromInput =
+  const from =
     document.getElementById(
       "teacherFromDate"
     );
 
 
-  const toInput =
+  const to =
     document.getElementById(
       "teacherToDate"
     );
 
 
-  if (fromInput) {
-
-    fromInput.value =
-      "";
-
+  if (from) {
+    from.value = "";
   }
 
 
-  if (toInput) {
-
-    toInput.value =
-      "";
-
+  if (to) {
+    to.value = "";
   }
 
 
@@ -1730,37 +1994,29 @@ function clearTeacherPeriodFilter() {
 
 
 /* =========================================================
-   ربط أزرار الفلتر
+   إعداد الفلاتر
    ========================================================= */
 
 function setupTeacherFilters() {
 
-  const applyBtn =
-    document.getElementById(
+  document
+    .getElementById(
       "applyTeacherFilter"
+    )
+    ?.addEventListener(
+      "click",
+      applyTeacherPeriodFilter
     );
 
 
-  const clearBtn =
-    document.getElementById(
+  document
+    .getElementById(
       "clearTeacherFilter"
+    )
+    ?.addEventListener(
+      "click",
+      clearTeacherPeriodFilter
     );
-
-
-  if (applyBtn) {
-
-    applyBtn.onclick =
-      applyTeacherPeriodFilter;
-
-  }
-
-
-  if (clearBtn) {
-
-    clearBtn.onclick =
-      clearTeacherPeriodFilter;
-
-  }
 
 
   updatePerformanceReportLink();
@@ -1769,63 +2025,169 @@ function setupTeacherFilters() {
 
 
 /* =========================================================
-   تنسيق تاريخ الفلتر
+   آخر العمليات
+   ========================================================= */
+
+function renderRecentRecords(
+  records,
+  recentBox
+) {
+
+  recentBox.innerHTML =
+    "";
+
+
+  if (!records.length) {
+
+    recentBox.innerHTML = `
+      <div class="empty">
+        لا توجد عمليات محفوظة بعد.
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  records
+    .slice(0,6)
+    .forEach(
+      record => {
+
+        const row =
+          document.createElement(
+            "div"
+          );
+
+
+        row.className =
+          "recent-row";
+
+
+        const url =
+          getRecordUrl(record);
+
+
+        const typeName =
+          typeof wrTypeLabel === "function"
+            ? wrTypeLabel(record.type)
+            : (
+                record.type ||
+                "سجل"
+              );
+
+
+        row.innerHTML = `
+
+          <div>
+
+            <strong>
+              ${escapeDashboardHtml(
+                getRecordTitle(record)
+              )}
+            </strong>
+
+            <div
+              style="
+                color:#6b7a72;
+                font-size:13px;
+                margin-top:4px;
+              "
+            >
+              ${escapeDashboardHtml(
+                formatRecordDate(record)
+              )}
+            </div>
+
+          </div>
+
+
+          <div
+            style="
+              display:flex;
+              gap:8px;
+              align-items:center;
+            "
+          >
+
+            <span class="tag">
+              ${escapeDashboardHtml(
+                typeName
+              )}
+            </span>
+
+            ${
+              url
+                ? `
+                  <a
+                    class="btn btn-soft"
+                    href="${url}"
+                    style="
+                      padding:7px 11px;
+                      font-size:12px;
+                    "
+                  >
+                    فتح
+                  </a>
+                `
+                : ""
+            }
+
+          </div>
+
+        `;
+
+
+        recentBox.appendChild(
+          row
+        );
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   تنسيق التاريخ
    ========================================================= */
 
 function formatSimpleDate(
   value
 ) {
 
-  if (!value) {
-    return "—";
-  }
+  if (!value) return "—";
 
 
-  const date =
-    new Date(
-      value +
-      "T00:00:00"
-    );
-
-
-  return date
+  return new Date(
+    value +
+    "T00:00:00"
+  )
     .toLocaleDateString(
       "ar-BH",
       {
-        year:
-          "numeric",
-
-        month:
-          "short",
-
-        day:
-          "numeric"
+        year: "numeric",
+        month: "short",
+        day: "numeric"
       }
     );
 
 }
 
-
-/* =========================================================
-   تنسيق تاريخ الفعالية
-   ========================================================= */
 
 function formatActivityDate(
   record
 ) {
 
   const date =
-    getActivityDate(
-      record
-    );
+    getActivityDate(record);
 
 
   if (
     date.getTime() === 0
   ) {
-
     return "—";
-
   }
 
 
@@ -1833,14 +2195,9 @@ function formatActivityDate(
     .toLocaleDateString(
       "ar-BH",
       {
-        year:
-          "numeric",
-
-        month:
-          "short",
-
-        day:
-          "numeric"
+        year: "numeric",
+        month: "short",
+        day: "numeric"
       }
     );
 
@@ -1848,14 +2205,14 @@ function formatActivityDate(
 
 
 /* =========================================================
-   استخراج نوع الفعالية من السجل
+   نوع الفعالية
    ========================================================= */
 
 function getActivityTypeLabel(
   record
 ) {
 
-  const rawType =
+  const value =
     record?.payload?.activityType ||
     record?.payload?.activity_type ||
     record?.activityType ||
@@ -1863,14 +2220,8 @@ function getActivityTypeLabel(
     "فعالية";
 
 
-  const value =
-    String(
-      rawType
-    ).trim();
-
-
   return (
-    value ||
+    String(value).trim() ||
     "فعالية"
   );
 
@@ -1886,12 +2237,12 @@ function getRecordTitle(
 ) {
 
   return (
-    record.title ||
-    record.payload?.title ||
-    record.payload?.name ||
-    record.payload?.meetingTitle ||
-    record.payload?.recommendationTitle ||
-    record.payload?.beneficiaryName ||
+    record?.title ||
+    record?.payload?.title ||
+    record?.payload?.name ||
+    record?.payload?.meetingTitle ||
+    record?.payload?.recommendationTitle ||
+    record?.payload?.beneficiaryName ||
     "بدون عنوان"
   );
 
@@ -1899,72 +2250,53 @@ function getRecordTitle(
 
 
 /* =========================================================
-   تاريخ السجل العام
+   تاريخ السجل
    ========================================================= */
 
 function getRecordDate(
   record
 ) {
 
-  const rawDate =
-    record.created_at ||
-    record.createdAt ||
-    record.updated_at ||
-    record.updatedAt ||
-    record.record_date ||
-    record.payload?.date ||
-    record.payload?.dueDate;
+  const value =
+    record?.created_at ||
+    record?.createdAt ||
+    record?.updated_at ||
+    record?.updatedAt ||
+    record?.record_date ||
+    record?.payload?.date ||
+    record?.payload?.dueDate;
 
 
-  if (!rawDate) {
-
+  if (!value) {
     return new Date(0);
-
   }
 
 
   const date =
-    new Date(
-      rawDate
-    );
+    new Date(value);
 
 
-  if (
-    Number.isNaN(
-      date.getTime()
-    )
-  ) {
-
-    return new Date(0);
-
-  }
-
-
-  return date;
+  return Number.isNaN(
+    date.getTime()
+  )
+    ? new Date(0)
+    : date;
 
 }
 
-
-/* =========================================================
-   تنسيق تاريخ السجل
-   ========================================================= */
 
 function formatRecordDate(
   record
 ) {
 
   const date =
-    getRecordDate(
-      record
-    );
+    getRecordDate(record);
 
 
   if (
     date.getTime() === 0
   ) {
-
     return "—";
-
   }
 
 
@@ -1972,14 +2304,9 @@ function formatRecordDate(
     .toLocaleString(
       "ar-BH",
       {
-        year:
-          "numeric",
-
-        month:
-          "short",
-
-        day:
-          "numeric"
+        year: "numeric",
+        month: "short",
+        day: "numeric"
       }
     );
 
@@ -1987,12 +2314,15 @@ function formatRecordDate(
 
 
 /* =========================================================
-   رابط فتح السجل
+   روابط السجلات
    ========================================================= */
 
 function getRecordUrl(
   record
 ) {
+
+  if (!record?.id) return "";
+
 
   const id =
     encodeURIComponent(
@@ -2000,85 +2330,36 @@ function getRecordUrl(
     );
 
 
-  if (
-    record.type ===
-    "activity"
-  ) {
+  const routes = {
 
-    return (
-      "pages/activities/report.html?id=" +
-      id
-    );
+    activity:
+      "pages/activities/report.html",
 
-  }
+    invitation:
+      "pages/meetings/invitation.html",
 
+    meeting:
+      "pages/meetings/minutes.html",
 
-  if (
-    record.type ===
-    "invitation"
-  ) {
+    attendance:
+      "pages/meetings/attendance.html",
 
-    return (
-      "pages/meetings/invitation.html?id=" +
-      id
-    );
+    recommendation:
+      "pages/meetings/recommendations.html",
 
-  }
+    certificate:
+      "pages/certificates/create.html"
+
+  };
 
 
-  if (
-    record.type ===
-    "meeting"
-  ) {
-
-    return (
-      "pages/meetings/minutes.html?id=" +
-      id
-    );
-
-  }
+  const route =
+    routes[record.type];
 
 
-  if (
-    record.type ===
-    "attendance"
-  ) {
-
-    return (
-      "pages/meetings/attendance.html?id=" +
-      id
-    );
-
-  }
-
-
-  if (
-    record.type ===
-    "recommendation"
-  ) {
-
-    return (
-      "pages/meetings/recommendations.html?id=" +
-      id
-    );
-
-  }
-
-
-  if (
-    record.type ===
-    "certificate"
-  ) {
-
-    return (
-      "pages/certificates/create.html?id=" +
-      id
-    );
-
-  }
-
-
-  return "";
+  return route
+    ? `${route}?id=${id}`
+    : "";
 
 }
 
@@ -2129,7 +2410,7 @@ window.addEventListener(
 
 
 /* =========================================================
-   بدء الصفحة
+   تشغيل الصفحة
    ========================================================= */
 
 document.addEventListener(
