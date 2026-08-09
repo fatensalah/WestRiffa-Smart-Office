@@ -138,10 +138,6 @@
       color: #596c63;
     }
 
-    /* =====================================
-       نشاط المعلمات
-       ===================================== */
-
     .teacher-activity-section {
       display: none;
       margin-top: 28px;
@@ -174,6 +170,76 @@
       border-radius: 20px;
       font-size: 12px;
       font-weight: 700;
+    }
+
+    .teacher-filter-box {
+      background: #fff;
+      border: 1px solid #e0e9e4;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 15px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.04);
+    }
+
+    .teacher-filter-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .teacher-filter-field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .teacher-filter-field label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #52685f;
+    }
+
+    .teacher-filter-field input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px 12px;
+      border: 1px solid #d7e1dc;
+      border-radius: 10px;
+      font-family: inherit;
+      background: #fff;
+    }
+
+    .teacher-period-summary {
+      margin-top: 11px;
+      color: #075c40;
+      font-size: 13px;
+      font-weight: 700;
+      background: #f5f8f6;
+      padding: 9px 12px;
+      border-radius: 10px;
+    }
+
+    .admin-tools {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 800px) {
+
+      .teacher-filter-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+    }
+
+    @media (max-width: 520px) {
+
+      .teacher-filter-grid {
+        grid-template-columns: 1fr;
+      }
+
     }
 
   </style>
@@ -210,7 +276,6 @@
       منصة التوثيق والإدارة الذكية
     </div>
 
-
     <div class="auth-fields">
 
       <label for="loginEmail">
@@ -223,7 +288,6 @@
         autocomplete="username"
         placeholder="أدخلي البريد الإلكتروني"
       >
-
 
       <label for="loginPassword">
         كلمة مرور المنصة
@@ -238,7 +302,6 @@
 
     </div>
 
-
     <button
       id="loginBtn"
       class="auth-login-btn"
@@ -247,12 +310,10 @@
       تسجيل الدخول
     </button>
 
-
     <div
       id="authMessage"
       class="auth-message"
     ></div>
-
 
     <div class="auth-note">
       الدخول مخصص للمستخدمين المصرح لهم.
@@ -261,7 +322,6 @@
   </div>
 
 </div>
-
 
 
 <!-- =====================================
@@ -284,6 +344,7 @@
     >
 
     <div>
+
       <h1>
         WestRiffa Smart Office
       </h1>
@@ -291,6 +352,7 @@
       <p>
         مدرسة الرفاع الغربي الابتدائية للبنين
       </p>
+
     </div>
 
   </div>
@@ -303,7 +365,6 @@
       class="user-email"
     ></span>
 
-
     <a
       class="btn btn-soft"
       href="index.html"
@@ -311,14 +372,12 @@
       🏠 الرئيسية
     </a>
 
-
     <a
       class="btn btn-soft"
       href="pages/archive/index.html"
     >
       📂 الأرشيف
     </a>
-
 
     <button
       id="logoutBtn"
@@ -333,20 +392,14 @@
 </header>
 
 
-
 <div class="shell">
 
-
-<!-- =====================================
-     القائمة الجانبية
-     ===================================== -->
 
 <aside class="sidebar">
 
   <h3 class="sidebar-title">
     القائمة الرئيسية
   </h3>
-
 
   <a
     class="nav-link active"
@@ -355,14 +408,12 @@
     🏠 لوحة التحكم
   </a>
 
-
   <a
     class="nav-link"
     href="pages/meetings/index.html"
   >
     📅 الاجتماعات
   </a>
-
 
   <a
     class="nav-link"
@@ -371,7 +422,6 @@
     🎯 الفعاليات
   </a>
 
-
   <a
     class="nav-link"
     href="pages/certificates/index.html"
@@ -379,14 +429,12 @@
     🏅 الشهادات
   </a>
 
-
   <a
     class="nav-link"
     href="pages/archive/index.html"
   >
     📂 الأرشيف الذكي
   </a>
-
 
   <a
     class="nav-link"
@@ -397,11 +445,6 @@
 
 </aside>
 
-
-
-<!-- =====================================
-     المحتوى
-     ===================================== -->
 
 <main class="content">
 
@@ -420,7 +463,6 @@
 
     </div>
 
-
     <div class="page-actions">
 
       <button
@@ -435,11 +477,6 @@
 
   </div>
 
-
-
-  <!-- =====================================
-       المزامنة
-       ===================================== -->
 
   <div class="sync-strip">
 
@@ -456,7 +493,6 @@
 
     </div>
 
-
     <div class="page-actions">
 
       <button
@@ -466,7 +502,6 @@
       >
         مزامنة الآن
       </button>
-
 
       <a
         class="btn btn-soft"
@@ -479,11 +514,6 @@
 
   </div>
 
-
-
-  <!-- =====================================
-       الإحصائيات
-       ===================================== -->
 
   <div class="stats">
 
@@ -541,10 +571,8 @@
   </div>
 
 
-
   <!-- =====================================
-       نشاط المعلمات
-       Admin فقط
+       نشاط المعلمات - Admin فقط
        ===================================== -->
 
   <section
@@ -561,15 +589,90 @@
         </h3>
 
         <p>
-          متابعة عدد تقارير الفعاليات المسجلة لكل معلمة.
+          متابعة عدد تقارير الفعاليات المسجلة لكل معلمة حسب الفترة.
         </p>
 
       </div>
 
 
-      <span class="admin-badge">
-        خاص بالإدارة
-      </span>
+      <div class="admin-tools">
+
+        <span class="admin-badge">
+          خاص بالإدارة
+        </span>
+
+        <a
+          id="teacherPerformanceLink"
+          class="btn btn-primary"
+          href="pages/reports/teachers-performance.html"
+        >
+          📊 تقرير أداء المعلمات
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="teacher-filter-box">
+
+      <div class="teacher-filter-grid">
+
+
+        <div class="teacher-filter-field">
+
+          <label for="teacherFromDate">
+            من تاريخ
+          </label>
+
+          <input
+            id="teacherFromDate"
+            type="date"
+          >
+
+        </div>
+
+
+        <div class="teacher-filter-field">
+
+          <label for="teacherToDate">
+            إلى تاريخ
+          </label>
+
+          <input
+            id="teacherToDate"
+            type="date"
+          >
+
+        </div>
+
+
+        <button
+          id="applyTeacherFilter"
+          class="btn btn-primary"
+          type="button"
+        >
+          تطبيق
+        </button>
+
+
+        <button
+          id="clearTeacherFilter"
+          class="btn btn-soft"
+          type="button"
+        >
+          إلغاء الفلتر
+        </button>
+
+      </div>
+
+
+      <div
+        id="teacherPeriodSummary"
+        class="teacher-period-summary"
+      >
+        جميع الفترات
+      </div>
 
     </div>
 
@@ -580,11 +683,6 @@
 
   </section>
 
-
-
-  <!-- =====================================
-       الوصول السريع
-       ===================================== -->
 
   <h3 class="section-title">
     الوصول السريع
@@ -599,6 +697,7 @@
       href="pages/activities/report.html"
     >
       📋
+
       <b>
         تقرير فعالية
       </b>
@@ -614,6 +713,7 @@
       href="pages/meetings/invitation.html"
     >
       📩
+
       <b>
         دعوة اجتماع
       </b>
@@ -629,6 +729,7 @@
       href="pages/meetings/minutes.html"
     >
       📝
+
       <b>
         محضر اجتماع
       </b>
@@ -644,6 +745,7 @@
       href="pages/meetings/attendance.html"
     >
       ✅
+
       <b>
         سجل حضور
       </b>
@@ -659,6 +761,7 @@
       href="pages/meetings/recommendations.html"
     >
       📌
+
       <b>
         متابعة توصيات
       </b>
@@ -674,6 +777,7 @@
       href="pages/certificates/create.html"
     >
       🏅
+
       <b>
         شهادة تقدير
       </b>
@@ -685,11 +789,6 @@
 
   </div>
 
-
-
-  <!-- =====================================
-       آخر العمليات
-       ===================================== -->
 
   <h3 class="section-title">
     آخر العمليات
@@ -709,11 +808,6 @@
 </div>
 
 
-
-<!-- =====================================
-     JavaScript
-     ===================================== -->
-
 <script
   src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
 ></script>
@@ -722,7 +816,6 @@
 <script src="js/graph.js"></script>
 <script src="js/common.js"></script>
 <script src="js/dashboard.js"></script>
-
 
 
 <script>
@@ -781,16 +874,12 @@ const syncNowBtn =
   );
 
 
-
-/* =====================================
-   إظهار شاشة الدخول
-   ===================================== */
-
 function showLogin() {
 
   authOverlay.classList.remove(
     "hidden"
   );
+
 
   appRoot.classList.add(
     "auth-loading"
@@ -799,16 +888,12 @@ function showLogin() {
 }
 
 
-
-/* =====================================
-   إظهار المنصة
-   ===================================== */
-
 function showApp(user) {
 
   authOverlay.classList.add(
     "hidden"
   );
+
 
   appRoot.classList.remove(
     "auth-loading"
@@ -816,7 +901,8 @@ function showApp(user) {
 
 
   currentUserEmail.textContent =
-    user?.email || "";
+    user?.email ||
+    "";
 
 
   if (
@@ -834,11 +920,6 @@ function showApp(user) {
 }
 
 
-
-/* =====================================
-   التحقق من تسجيل الدخول
-   ===================================== */
-
 async function checkAuth() {
 
   try {
@@ -851,7 +932,9 @@ async function checkAuth() {
       authMessage.textContent =
         "إعدادات Supabase غير مكتملة.";
 
+
       showLogin();
+
 
       return;
 
@@ -864,7 +947,9 @@ async function checkAuth() {
 
     if (user) {
 
-      showApp(user);
+      showApp(
+        user
+      );
 
     } else {
 
@@ -880,17 +965,13 @@ async function checkAuth() {
       error
     );
 
+
     showLogin();
 
   }
 
 }
 
-
-
-/* =====================================
-   تسجيل الدخول
-   ===================================== */
 
 async function doLogin() {
 
@@ -909,6 +990,7 @@ async function doLogin() {
 
     authMessage.textContent =
       "أدخلي البريد الإلكتروني وكلمة المرور.";
+
 
     return;
 
@@ -952,7 +1034,9 @@ async function doLogin() {
       "";
 
 
-    showApp(user);
+    showApp(
+      user
+    );
 
 
   } catch (error) {
@@ -981,12 +1065,10 @@ async function doLogin() {
 }
 
 
-
 loginBtn.addEventListener(
   "click",
   doLogin
 );
-
 
 
 loginPassword.addEventListener(
@@ -994,7 +1076,8 @@ loginPassword.addEventListener(
   event => {
 
     if (
-      event.key === "Enter"
+      event.key ===
+      "Enter"
     ) {
 
       doLogin();
@@ -1004,11 +1087,6 @@ loginPassword.addEventListener(
   }
 );
 
-
-
-/* =====================================
-   تسجيل الخروج
-   ===================================== */
 
 logoutBtn.addEventListener(
   "click",
@@ -1038,22 +1116,18 @@ logoutBtn.addEventListener(
 );
 
 
-
-/* =====================================
-   حالة المزامنة
-   ===================================== */
-
 function updateSync() {
 
   const configured =
     window.WRGraph
       ?.configured
-      ?.() || false;
+      ?.() ||
+    false;
 
 
   const pending =
     typeof wrGetQueue ===
-    "function"
+      "function"
       ? wrGetQueue().length
       : 0;
 
@@ -1107,11 +1181,6 @@ function updateSync() {
 }
 
 
-
-/* =====================================
-   المزامنة اليدوية
-   ===================================== */
-
 syncNowBtn.addEventListener(
   "click",
   async () => {
@@ -1123,6 +1192,7 @@ syncNowBtn.addEventListener(
     try {
 
       await wrSyncPending();
+
 
       updateSync();
 
@@ -1161,12 +1231,10 @@ syncNowBtn.addEventListener(
 );
 
 
-
 window.addEventListener(
   "wr-sync-changed",
   updateSync
 );
-
 
 
 document.addEventListener(
