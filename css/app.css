@@ -1,144 +1,1154 @@
-
-*{box-sizing:border-box}
-:root{
-  --green:#087451;--green-dark:#075c40;--gold:#b58a36;--bg:#f3f6f4;
-  --text:#24352e;--muted:#6b7a72;--border:#d7dfda;--danger:#b42318;
+*{
+  box-sizing:border-box;
 }
-html{scroll-behavior:smooth}
-body{margin:0;font-family:Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text)}
-a{text-decoration:none;color:inherit}
-button,input,textarea,select{font:inherit}
-button{cursor:pointer}
-.hidden{display:none!important}
+
+:root{
+  --green:#087451;
+  --green-dark:#075c40;
+  --gold:#b58a36;
+  --bg:#f3f6f4;
+  --text:#24352e;
+  --muted:#6b7a72;
+  --border:#d7dfda;
+  --danger:#b42318;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  margin:0;
+  font-family:Tahoma,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+a{
+  text-decoration:none;
+  color:inherit;
+}
+
+button,
+input,
+textarea,
+select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+.hidden{
+  display:none!important;
+}
+
+
+/* =========================================================
+   الهيدر
+   ========================================================= */
 
 .topbar{
-  min-height:88px;background:#fff;border-bottom:4px solid var(--green);
-  display:flex;align-items:center;justify-content:space-between;gap:18px;
-  padding:12px 3vw;position:sticky;top:0;z-index:30
-}
-.brand{display:flex;align-items:center;gap:15px}
-.brand img{width:min(430px,55vw);max-height:70px;object-fit:contain}
-.brand h1{margin:0;color:var(--green-dark);font-size:28px}
-.brand p{margin:4px 0 0;color:var(--muted);font-size:13px}
-.header-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  min-height:88px;
+  background:#fff;
+  border-bottom:4px solid var(--green);
 
-.shell{display:grid;grid-template-columns:245px 1fr;min-height:calc(100vh - 88px)}
-.sidebar{background:var(--green-dark);padding:22px 14px}
-.sidebar-title{color:#f4dca9;margin:0 10px 16px;font-size:16px}
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  gap:18px;
+
+  padding:12px 3vw;
+
+  position:sticky;
+  top:0;
+
+  z-index:30;
+}
+
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:15px;
+}
+
+
+.brand img{
+  width:min(430px,55vw);
+  max-height:70px;
+  object-fit:contain;
+}
+
+
+.brand h1{
+  margin:0;
+  color:var(--green-dark);
+  font-size:28px;
+}
+
+
+.brand p{
+  margin:4px 0 0;
+  color:var(--muted);
+  font-size:13px;
+}
+
+
+/* دعم الاسمين في صفحات المشروع */
+
+.header-actions,
+.top-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+
+
+/* =========================================================
+   الهيكل الرئيسي
+   ========================================================= */
+
+/*
+  بعض صفحات المشروع تستخدم shell
+  وصفحة تقرير الفعالية تستخدم app-shell.
+  الاثنين يأخذان نفس التصميم.
+*/
+
+.shell,
+.app-shell{
+  display:grid;
+  grid-template-columns:245px minmax(0,1fr);
+
+  min-height:calc(100vh - 88px);
+
+  width:100%;
+}
+
+
+/* =========================================================
+   القائمة الجانبية
+   ========================================================= */
+
+.sidebar{
+  background:var(--green-dark);
+  padding:22px 14px;
+
+  min-height:calc(100vh - 88px);
+
+  align-self:stretch;
+}
+
+
+.sidebar-title{
+  color:#f4dca9;
+  margin:0 10px 16px;
+  font-size:16px;
+}
+
+
 .nav-link{
-  display:flex;align-items:center;gap:9px;width:100%;text-align:right;color:#fff;
-  background:none;border:0;padding:13px;border-radius:10px;margin:5px 0
+  display:flex;
+  align-items:center;
+  gap:9px;
+
+  width:100%;
+
+  text-align:right;
+
+  color:#fff;
+
+  background:none;
+  border:0;
+
+  padding:13px;
+
+  border-radius:10px;
+
+  margin:5px 0;
 }
-.nav-link:hover,.nav-link.active{background:rgba(255,255,255,.14)}
 
-.content{padding:28px;min-width:0}
-.page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:24px}
-.page-head h2{margin:0 0 5px;color:var(--green-dark);font-size:30px}
-.page-head p{margin:0;color:var(--muted)}
-.page-actions{display:flex;gap:8px;flex-wrap:wrap}
 
-.btn{border:0;border-radius:11px;padding:11px 15px;font-weight:700}
-.btn-primary{background:var(--green);color:#fff}
-.btn-gold{background:var(--gold);color:#fff}
-.btn-soft{background:#eaf3ef;color:var(--green-dark)}
-.btn-danger{background:#fee4e2;color:var(--danger)}
-.btn-wide{width:100%}
-.btn:hover{filter:brightness(.96)}
-
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}
-.stat,.panel,.feature-card,.archive-card{
-  background:#fff;border-radius:18px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,.06)
+.nav-link:hover,
+.nav-link.active{
+  background:rgba(255,255,255,.14);
 }
-.stat{border-top:4px solid var(--green)}
-.stat strong{display:block;font-size:35px;color:var(--green-dark)}
-.stat span{color:var(--muted)}
 
-.section-title{margin:28px 0 13px;color:var(--green-dark)}
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.feature-card{border:1px solid #e5ebe8;text-align:right;font-size:32px;transition:.2s}
-.feature-card:hover{transform:translateY(-3px)}
-.feature-card b{display:block;color:var(--green-dark);font-size:19px;margin:10px 0 6px}
-.feature-card span{display:block;color:var(--muted);font-size:14px;line-height:1.6}
 
-.recent-list{background:#fff;border-radius:18px;padding:6px 18px}
-.recent-row{display:flex;justify-content:space-between;gap:12px;padding:14px 2px;border-bottom:1px solid #edf0ee}
-.recent-row:last-child{border-bottom:0}
-.tag{background:#eaf3ef;color:var(--green-dark);border-radius:999px;padding:5px 9px;font-size:12px;font-weight:700}
-.empty{text-align:center;color:var(--muted);padding:28px;background:#fff;border-radius:17px}
+/* =========================================================
+   محتوى الصفحة
+   ========================================================= */
 
-.filters{display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-bottom:16px}
-.archive-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
-.archive-card h3{color:var(--green-dark)}
-.archive-card p{color:var(--muted);line-height:1.6}
-.archive-actions{display:flex;gap:8px;flex-wrap:wrap}
+.content{
+  padding:28px;
+  min-width:0;
+  width:100%;
+}
 
-.tool-layout{display:grid;grid-template-columns:minmax(330px,410px) minmax(650px,1fr);gap:22px;align-items:start}
-.panel h3{margin-top:0;color:var(--green-dark)}
-label{display:block;margin:14px 0 7px;font-weight:700}
-input,textarea,select{width:100%;padding:11px;border:1px solid #ccd7d1;border-radius:10px;background:#fff}
-textarea{min-height:92px;resize:vertical}
-.form-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:18px}
-.preview{overflow-x:auto}
+
+.page-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+
+  gap:14px;
+
+  margin-bottom:24px;
+}
+
+
+.page-head h2{
+  margin:0 0 5px;
+
+  color:var(--green-dark);
+
+  font-size:30px;
+}
+
+
+.page-head p{
+  margin:0;
+  color:var(--muted);
+}
+
+
+.page-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+
+/* =========================================================
+   الأزرار
+   ========================================================= */
+
+.btn{
+  border:0;
+
+  border-radius:11px;
+
+  padding:11px 15px;
+
+  font-weight:700;
+}
+
+
+.btn-primary{
+  background:var(--green);
+  color:#fff;
+}
+
+
+.btn-gold{
+  background:var(--gold);
+  color:#fff;
+}
+
+
+.btn-soft{
+  background:#eaf3ef;
+  color:var(--green-dark);
+}
+
+
+.btn-danger{
+  background:#fee4e2;
+  color:var(--danger);
+}
+
+
+.btn-wide{
+  width:100%;
+}
+
+
+.btn:hover{
+  filter:brightness(.96);
+}
+
+
+/* =========================================================
+   إحصائيات لوحة التحكم
+   ========================================================= */
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:15px;
+}
+
+
+.stat,
+.panel,
+.feature-card,
+.archive-card{
+  background:#fff;
+
+  border-radius:18px;
+
+  padding:20px;
+
+  box-shadow:0 10px 30px rgba(0,0,0,.06);
+}
+
+
+.stat{
+  border-top:4px solid var(--green);
+}
+
+
+.stat strong{
+  display:block;
+
+  font-size:35px;
+
+  color:var(--green-dark);
+}
+
+
+.stat span{
+  color:var(--muted);
+}
+
+
+/* =========================================================
+   البطاقات
+   ========================================================= */
+
+.section-title{
+  margin:28px 0 13px;
+
+  color:var(--green-dark);
+}
+
+
+.cards{
+  display:grid;
+
+  grid-template-columns:repeat(3,1fr);
+
+  gap:16px;
+}
+
+
+.feature-card{
+  border:1px solid #e5ebe8;
+
+  text-align:right;
+
+  font-size:32px;
+
+  transition:.2s;
+}
+
+
+.feature-card:hover{
+  transform:translateY(-3px);
+}
+
+
+.feature-card b{
+  display:block;
+
+  color:var(--green-dark);
+
+  font-size:19px;
+
+  margin:10px 0 6px;
+}
+
+
+.feature-card span{
+  display:block;
+
+  color:var(--muted);
+
+  font-size:14px;
+
+  line-height:1.6;
+}
+
+
+/* =========================================================
+   آخر العمليات
+   ========================================================= */
+
+.recent-list{
+  background:#fff;
+
+  border-radius:18px;
+
+  padding:6px 18px;
+}
+
+
+.recent-row{
+  display:flex;
+
+  justify-content:space-between;
+
+  gap:12px;
+
+  padding:14px 2px;
+
+  border-bottom:1px solid #edf0ee;
+}
+
+
+.recent-row:last-child{
+  border-bottom:0;
+}
+
+
+.tag{
+  background:#eaf3ef;
+
+  color:var(--green-dark);
+
+  border-radius:999px;
+
+  padding:5px 9px;
+
+  font-size:12px;
+
+  font-weight:700;
+}
+
+
+.empty{
+  text-align:center;
+
+  color:var(--muted);
+
+  padding:28px;
+
+  background:#fff;
+
+  border-radius:17px;
+}
+
+
+/* =========================================================
+   الأرشيف
+   ========================================================= */
+
+.filters{
+  display:grid;
+
+  grid-template-columns:2fr 1fr;
+
+  gap:10px;
+
+  margin-bottom:16px;
+}
+
+
+.archive-grid{
+  display:grid;
+
+  grid-template-columns:repeat(3,1fr);
+
+  gap:15px;
+}
+
+
+.archive-card h3{
+  color:var(--green-dark);
+}
+
+
+.archive-card p{
+  color:var(--muted);
+
+  line-height:1.6;
+}
+
+
+.archive-actions{
+  display:flex;
+
+  gap:8px;
+
+  flex-wrap:wrap;
+}
+
+
+/* =========================================================
+   صفحات الأدوات
+   النموذج + المعاينة
+   ========================================================= */
+
+.tool-layout{
+  display:grid;
+
+  grid-template-columns:
+    minmax(330px,410px)
+    minmax(0,1fr);
+
+  gap:22px;
+
+  align-items:start;
+
+  width:100%;
+}
+
+
+.panel h3{
+  margin-top:0;
+
+  color:var(--green-dark);
+}
+
+
+label{
+  display:block;
+
+  margin:14px 0 7px;
+
+  font-weight:700;
+}
+
+
+input,
+textarea,
+select{
+  width:100%;
+
+  padding:11px;
+
+  border:1px solid #ccd7d1;
+
+  border-radius:10px;
+
+  background:#fff;
+}
+
+
+textarea{
+  min-height:92px;
+
+  resize:vertical;
+}
+
+
+.form-actions{
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:9px;
+
+  margin-top:18px;
+}
+
+
+.preview{
+  overflow-x:auto;
+  min-width:0;
+}
+
+
+/* =========================================================
+   ورقة التقرير
+   ========================================================= */
 
 .sheet{
-  background:#fff;min-height:1080px;padding:32px;border:1px solid var(--border);
-  position:relative;overflow:hidden
+  background:#fff;
+
+  min-height:1080px;
+
+  padding:32px;
+
+  border:1px solid var(--border);
+
+  position:relative;
+
+  overflow:hidden;
 }
+
+
 .sheet:before{
-  content:"";position:absolute;top:0;right:0;width:100%;height:8px;
-  background:linear-gradient(90deg,var(--green),var(--gold),var(--green))
+  content:"";
+
+  position:absolute;
+
+  top:0;
+  right:0;
+
+  width:100%;
+  height:8px;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--green),
+      var(--gold),
+      var(--green)
+    );
 }
-.school-header{display:block;width:100%;max-height:112px;object-fit:contain;margin:8px auto 17px}
-.doc-title{text-align:center;border-top:3px solid var(--green);border-bottom:1px solid var(--gold);padding:16px;margin-bottom:22px}
-.doc-title h1{margin:0 0 7px;color:var(--green-dark)}
-.doc-title p{margin:0;color:#8a682a;font-weight:700}
-.summary{display:grid;grid-template-columns:1fr 1fr;gap:11px}
-.summary-item{padding:11px;background:#f5f8f6;border-right:4px solid var(--green);border-radius:8px}
-.summary-item strong{color:var(--green-dark)}
-.doc-section{margin-top:21px}
-.doc-section h3{color:var(--green-dark);border-bottom:2px solid #d8b668;padding-bottom:6px}
-.doc-section p{white-space:pre-wrap;line-height:1.8;min-height:28px}
-.images-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.images-grid img{width:100%;height:210px;object-fit:cover;border-radius:9px}
+
+
+.school-header{
+  display:block;
+
+  width:100%;
+
+  max-height:112px;
+
+  object-fit:contain;
+
+  margin:8px auto 17px;
+}
+
+
+.doc-title{
+  text-align:center;
+
+  border-top:3px solid var(--green);
+
+  border-bottom:1px solid var(--gold);
+
+  padding:16px;
+
+  margin-bottom:22px;
+}
+
+
+.doc-title h1{
+  margin:0 0 7px;
+
+  color:var(--green-dark);
+}
+
+
+.doc-title p{
+  margin:0;
+
+  color:#8a682a;
+
+  font-weight:700;
+}
+
+
+.summary{
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:11px;
+}
+
+
+.summary-item{
+  padding:11px;
+
+  background:#f5f8f6;
+
+  border-right:4px solid var(--green);
+
+  border-radius:8px;
+}
+
+
+.summary-item strong{
+  color:var(--green-dark);
+}
+
+
+.doc-section{
+  margin-top:21px;
+}
+
+
+.doc-section h3{
+  color:var(--green-dark);
+
+  border-bottom:2px solid #d8b668;
+
+  padding-bottom:6px;
+}
+
+
+.doc-section p{
+  white-space:pre-wrap;
+
+  line-height:1.8;
+
+  min-height:28px;
+}
+
+
+/* =========================================================
+   صور التقرير
+   ========================================================= */
+
+.images-grid{
+  display:grid;
+
+  grid-template-columns:repeat(2,1fr);
+
+  gap:10px;
+}
+
+
+.images-grid img{
+  width:100%;
+
+  height:210px;
+
+  object-fit:cover;
+
+  border-radius:9px;
+}
+
+
+.report-photo{
+  margin:0;
+
+  background:#f5f8f6;
+
+  border:1px solid #e1e8e4;
+
+  border-radius:10px;
+
+  padding:6px;
+
+  break-inside:avoid;
+}
+
+
+.report-photo img{
+  width:100%;
+
+  height:230px;
+
+  object-fit:contain;
+
+  border-radius:7px;
+
+  background:#fff;
+}
+
+
+/* =========================================================
+   الدعوات
+   ========================================================= */
 
 .invitation-card{
-  width:820px;min-height:1060px;margin:auto;padding:44px 58px;background:#fffdf8;
-  border:3px solid var(--green);text-align:center
+  width:820px;
+
+  min-height:1060px;
+
+  margin:auto;
+
+  padding:44px 58px;
+
+  background:#fffdf8;
+
+  border:3px solid var(--green);
+
+  text-align:center;
 }
-.invitation-card h1{font-size:45px;color:var(--green-dark)}
-.gold-line{height:3px;width:65%;margin:24px auto;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
-.topics-box{min-height:190px;text-align:right;padding:20px 25px;background:#fff;border-right:5px solid var(--gold);border-radius:12px;font-size:21px;line-height:1.8;white-space:pre-wrap}
-.details-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}
-.detail-box{padding:14px;border:1px solid #e4e7ec;border-radius:11px}
-.detail-box span{display:block;color:var(--green);font-weight:700;margin-bottom:7px}
+
+
+.invitation-card h1{
+  font-size:45px;
+
+  color:var(--green-dark);
+}
+
+
+.gold-line{
+  height:3px;
+
+  width:65%;
+
+  margin:24px auto;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      var(--gold),
+      transparent
+    );
+}
+
+
+.topics-box{
+  min-height:190px;
+
+  text-align:right;
+
+  padding:20px 25px;
+
+  background:#fff;
+
+  border-right:5px solid var(--gold);
+
+  border-radius:12px;
+
+  font-size:21px;
+
+  line-height:1.8;
+
+  white-space:pre-wrap;
+}
+
+
+.details-grid{
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:12px;
+
+  margin-top:22px;
+}
+
+
+.detail-box{
+  padding:14px;
+
+  border:1px solid #e4e7ec;
+
+  border-radius:11px;
+}
+
+
+.detail-box span{
+  display:block;
+
+  color:var(--green);
+
+  font-weight:700;
+
+  margin-bottom:7px;
+}
+
+
+/* =========================================================
+   الشهادات
+   ========================================================= */
 
 .certificate{
-  width:900px;min-height:620px;margin:auto;padding:42px;background:#fffdf8;
-  border:6px double var(--gold);text-align:center
+  width:900px;
+
+  min-height:620px;
+
+  margin:auto;
+
+  padding:42px;
+
+  background:#fffdf8;
+
+  border:6px double var(--gold);
+
+  text-align:center;
 }
-.certificate h1{color:var(--green-dark);font-size:46px}
-.certificate .name{font-size:38px;color:var(--gold);font-weight:700;margin:30px 0}
-.status-list{line-height:2}
-.pending{color:#b54708;font-weight:700}
+
+
+.certificate h1{
+  color:var(--green-dark);
+
+  font-size:46px;
+}
+
+
+.certificate .name{
+  font-size:38px;
+
+  color:var(--gold);
+
+  font-weight:700;
+
+  margin:30px 0;
+}
+
+
+.status-list{
+  line-height:2;
+}
+
+
+.pending{
+  color:#b54708;
+
+  font-weight:700;
+}
+
+
+/* =========================================================
+   المزامنة والإعدادات
+   ========================================================= */
+
+.sync-strip{
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  gap:12px;
+
+  background:#fff;
+
+  border:1px solid #e5ebe8;
+
+  border-radius:14px;
+
+  padding:12px 16px;
+
+  margin-bottom:18px;
+}
+
+
+.sync-state{
+  display:flex;
+
+  gap:8px;
+
+  align-items:center;
+
+  font-weight:700;
+}
+
+
+.dot{
+  width:10px;
+
+  height:10px;
+
+  border-radius:50%;
+
+  background:#b54708;
+}
+
+
+.dot.ok{
+  background:#087451;
+}
+
+
+.dot.off{
+  background:#b42318;
+}
+
+
+.config-grid{
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:14px;
+}
+
+
+.code-note{
+  background:#f7f8f7;
+
+  border-right:4px solid var(--gold);
+
+  padding:12px;
+
+  border-radius:8px;
+
+  white-space:pre-wrap;
+
+  direction:ltr;
+
+  text-align:left;
+}
+
+
+.small{
+  font-size:13px;
+
+  color:var(--muted);
+
+  line-height:1.6;
+}
+
+
+/* =========================================================
+   Footer التقرير
+   ========================================================= */
+
+.report-footer{
+  text-align:center;
+
+  margin-top:28px;
+
+  padding-top:12px;
+
+  border-top:1px solid #d7dfda;
+
+  color:#6b7a72;
+
+  font-size:12px;
+}
+
+
+/* =========================================================
+   بطاقات الأرشيف
+   ========================================================= */
+
+.archive-card-head{
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  gap:8px;
+}
+
+
+.archive-card h3{
+  margin:14px 0 8px;
+}
+
+
+.archive-card p{
+  min-height:115px;
+}
+
+
+.preview .sheet{
+  max-width:900px;
+
+  margin:auto;
+}
+
+
+/* =========================================================
+   الشاشات المتوسطة
+   ========================================================= */
 
 @media(max-width:1000px){
-  .shell{grid-template-columns:1fr}.sidebar{display:none}
-  .stats{grid-template-columns:repeat(2,1fr)}
-  .cards,.archive-grid{grid-template-columns:repeat(2,1fr)}
-  .tool-layout{grid-template-columns:1fr}
+
+  .shell,
+  .app-shell{
+    grid-template-columns:1fr;
+  }
+
+
+  .sidebar{
+    display:none;
+  }
+
+
+  .stats{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+
+  .cards,
+  .archive-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+
+  .tool-layout{
+    grid-template-columns:1fr;
+  }
+
 }
+
+
+/* =========================================================
+   الهاتف
+   ========================================================= */
+
 @media(max-width:650px){
-  .topbar{flex-direction:column;align-items:flex-start}
-  .brand div{display:none}
-  .stats,.cards,.archive-grid,.summary,.details-grid,.form-actions,.filters{grid-template-columns:1fr}
-  .sheet{min-width:760px}.page-head{flex-direction:column}
+
+  .topbar{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+
+  .brand div{
+    display:none;
+  }
+
+
+  .stats,
+  .cards,
+  .archive-grid,
+  .summary,
+  .details-grid,
+  .form-actions,
+  .filters{
+    grid-template-columns:1fr;
+  }
+
+
+  .sheet{
+    min-width:760px;
+  }
+
+
+  .page-head{
+    flex-direction:column;
+  }
+
+
+  .report-photo img{
+    height:180px;
+  }
+
 }
+
+
+/* =========================================================
+   الطباعة
+   ========================================================= */
+
 @media print{
-  .topbar,.sidebar,.form-panel,.page-head,.no-print{display:none!important}
-  .shell,.tool-layout{display:block}
-  .content,.preview{padding:0!important;overflow:visible}
-  .sheet{border:0;min-width:0;min-height:auto;padding:0}
-  @page{size:A4;margin:12mm}
+
+  .topbar,
+  .sidebar,
+  .form-panel,
+  .page-head,
+  .no-print{
+    display:none!important;
+  }
+
+
+  .shell,
+  .app-shell,
+  .tool-layout{
+    display:block;
+  }
+
+
+  .content,
+  .preview{
+    padding:0!important;
+
+    overflow:visible;
+  }
+
+
+  .sheet{
+    border:0;
+
+    min-width:0;
+
+    min-height:auto;
+
+    padding:0;
+  }
+
+
+  @page{
+    size:A4;
+    margin:12mm;
+  }
+
 }
-.sync-strip{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fff;border:1px solid #e5ebe8;border-radius:14px;padding:12px 16px;margin-bottom:18px}.sync-state{display:flex;gap:8px;align-items:center;font-weight:700}.dot{width:10px;height:10px;border-radius:50%;background:#b54708}.dot.ok{background:#087451}.dot.off{background:#b42318}.config-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.code-note{background:#f7f8f7;border-right:4px solid var(--gold);padding:12px;border-radius:8px;white-space:pre-wrap;direction:ltr;text-align:left}.small{font-size:13px;color:var(--muted)}
-.report-footer{text-align:center;margin-top:28px;padding-top:12px;border-top:1px solid #d7dfda;color:#6b7a72;font-size:12px}.report-photo{margin:0;background:#f5f8f6;border:1px solid #e1e8e4;border-radius:10px;padding:6px;break-inside:avoid}.report-photo img{width:100%;height:230px;object-fit:contain;border-radius:7px;background:#fff}.archive-card-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.archive-card h3{margin:14px 0 8px}.archive-card p{min-height:115px}.form-actions{grid-template-columns:1fr 1fr}.small{line-height:1.6}.preview .sheet{max-width:900px;margin:auto}@media(max-width:650px){.report-photo img{height:180px}}
