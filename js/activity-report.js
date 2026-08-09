@@ -19,115 +19,225 @@ const FIELD_IDS = [
 const DRAFT_KEY = "wr_activity_draft_v3";
 
 let currentId = null;
+
 let selectedFiles = [];
+
 let existingImageRefs = [];
 
+let remoteImagePaths = [];
+
 let currentUser = null;
+
 let currentProfile = null;
 
+let loadedRecordOwnerId = null;
 
-// =====================================================
-// بيانات المستخدم الحالي من Supabase
-// =====================================================
+
+/* =========================================================
+   Supabase client
+   ========================================================= */
+
+function getActivitySupabase() {
+
+  return window.supabase.createClient(
+    window.WR_CONFIG.supabaseUrl,
+    window.WR_CONFIG.supabaseKey
+  );
+
+}
+
+
+/* =========================================================
+   بيانات المستخدم الحالي
+   ========================================================= */
 
 async function loadCurrentProfile() {
+
   try {
+
     if (
       !window.WRGraph ||
       typeof WRGraph.getAccount !== "function"
     ) {
-      console.warn("WRGraph غير متاح");
+
+      console.warn(
+        "WRGraph غير متاح"
+      );
+
       return null;
+
     }
 
-    currentUser = await WRGraph.getAccount();
+
+    currentUser =
+      await WRGraph.getAccount();
+
 
     if (!currentUser) {
-      console.warn("لا يوجد مستخدم مسجل الدخول");
+
+      console.warn(
+        "لا يوجد مستخدم مسجل الدخول"
+      );
+
       return null;
+
     }
 
-    const sb = window.supabase.createClient(
-      window.WR_CONFIG.supabaseUrl,
-      window.WR_CONFIG.supabaseKey
-    );
 
-    const { data, error } = await sb
+    const sb =
+      getActivitySupabase();
+
+
+    const {
+      data,
+      error
+    } = await sb
       .from("profiles")
-      .select("id, full_name, role")
-      .eq("id", currentUser.id)
+      .select(
+        "id, full_name, role"
+      )
+      .eq(
+        "id",
+        currentUser.id
+      )
       .single();
 
+
     if (error) {
-      console.error("Profile error:", error);
+
+      console.error(
+        "Profile error:",
+        error
+      );
+
       return null;
+
     }
 
-    currentProfile = data;
 
-    // اسم المنفذ يأتي تلقائيًا من حساب المعلمة
-    if (currentProfile?.full_name) {
-      $("executor").value = currentProfile.full_name;
+    currentProfile =
+      data;
 
-      // المعلمة لا تغير اسم المنفذ يدويًا
-      if (currentProfile.role === "teacher") {
-        $("executor").readOnly = true;
+
+    /*
+      هذا الاسم يستخدم عند إنشاء
+      تقرير جديد فقط.
+
+      عند فتح تقرير محفوظ
+      سيتم استبداله ببيانات
+      صاحب التقرير الأصلي.
+    */
+
+    if (
+      currentProfile?.full_name
+    ) {
+
+      $("executor").value =
+        currentProfile.full_name;
+
+
+      if (
+        currentProfile.role ===
+        "teacher"
+      ) {
+
+        $("executor").readOnly =
+          true;
+
+
         $("executor").title =
           "يتم تحديد اسم المنفذ تلقائيًا من الحساب المسجل";
+
       }
+
     }
+
 
     updatePreview();
 
+
     return currentProfile;
 
+
   } catch (error) {
-    console.error("تعذر تحميل بيانات المستخدم:", error);
+
+    console.error(
+      "تعذر تحميل بيانات المستخدم:",
+      error
+    );
+
+
     return null;
+
   }
+
 }
 
 
-// =====================================================
-// قراءة قيم النموذج
-// =====================================================
+/* =========================================================
+   قراءة قيم النموذج
+   ========================================================= */
 
 function values() {
-  const o = {};
 
-  FIELD_IDS.forEach(id => {
-    o[id] = $(id).value;
-  });
+  const data = {};
 
-  return o;
+
+  FIELD_IDS.forEach(
+    id => {
+
+      data[id] =
+        $(id).value;
+
+    }
+  );
+
+
+  return data;
+
 }
 
 
-// =====================================================
-// تعبئة النموذج
-// =====================================================
+/* =========================================================
+   تعبئة النموذج
+   ========================================================= */
 
-function applyValues(o = {}) {
-  FIELD_IDS.forEach(id => {
-    if (
-      o[id] !== undefined &&
-      o[id] !== null
-    ) {
-      $(id).value = o[id];
+function applyValues(
+  data = {}
+) {
+
+  FIELD_IDS.forEach(
+    id => {
+
+      if (
+        data[id] !== undefined &&
+        data[id] !== null
+      ) {
+
+        $(id).value =
+          data[id];
+
+      }
+
     }
-  });
+  );
+
 
   updatePreview();
+
 }
 
 
-// =====================================================
-// البيانات التي يتم حفظها داخل التقرير
-// =====================================================
+/* =========================================================
+   بيانات التقرير
+   ========================================================= */
 
 function recordData() {
+
   return {
-    type: "activity",
+
+    type:
+      "activity",
 
     title:
       $("name").value.trim() ||
@@ -175,243 +285,672 @@ function recordData() {
     notes:
       $("notes").value,
 
-    // معلومات صاحب الحساب
     owner_id:
-      currentUser?.id || "",
+      loadedRecordOwnerId ||
+      currentUser?.id ||
+      "",
 
     owner_name:
-      currentProfile?.full_name ||
       $("executor").value.trim(),
 
     owner_role:
-      currentProfile?.role || ""
+      currentProfile?.role ||
+      "",
+
+    image_paths:
+      remoteImagePaths
+
   };
+
 }
 
 
-// =====================================================
-// تحديث المعاينة
-// =====================================================
+/* =========================================================
+   تحديث المعاينة
+   ========================================================= */
 
 function updatePreview() {
-  const d = recordData();
+
+  const data =
+    recordData();
+
 
   $("pName").textContent =
-    d.title;
+    data.title;
+
 
   $("pType").textContent =
-    d.activityType || "—";
+    data.activityType ||
+    "—";
+
 
   $("pExecutor").textContent =
-    d.executor || "—";
+    data.executor ||
+    "—";
+
 
   $("pDepartment").textContent =
-    d.department || "—";
+    data.department ||
+    "—";
+
 
   $("pDate").textContent =
-    wrFormatDate(d.date);
+    wrFormatDate(
+      data.date
+    );
+
 
   $("pTime").textContent =
     [
-      wrFormatTime(d.startTime),
-      wrFormatTime(d.endTime)
+      wrFormatTime(
+        data.startTime
+      ),
+
+      wrFormatTime(
+        data.endTime
+      )
     ]
-      .filter(x => x !== "—")
-      .join(" – ") || "—";
+      .filter(
+        x =>
+          x !== "—"
+      )
+      .join(" – ") ||
+    "—";
+
 
   $("pPlace").textContent =
-    d.place || "—";
+    data.place ||
+    "—";
+
 
   $("pTarget").textContent =
-    d.target || "—";
+    data.target ||
+    "—";
+
 
   $("pCount").textContent =
-    d.count || "—";
+    data.count ||
+    "—";
+
 
   $("pGoal").textContent =
-    d.goal || "—";
+    data.goal ||
+    "—";
+
 
   $("pImplementation").textContent =
-    d.implementation || "—";
+    data.implementation ||
+    "—";
+
 
   $("pResults").textContent =
-    d.results || "—";
+    data.results ||
+    "—";
+
 
   $("pRecommendations").textContent =
-    d.recommendations || "—";
+    data.recommendations ||
+    "—";
+
 
   $("pNotes").textContent =
-    d.notes || "—";
+    data.notes ||
+    "—";
+
 }
 
 
-// =====================================================
-// حفظ المسودة محليًا
-// =====================================================
+/* =========================================================
+   حفظ المسودة
+   ========================================================= */
 
 function saveDraft() {
-  if (currentId) return;
+
+  if (currentId) {
+    return;
+  }
+
 
   localStorage.setItem(
+
     DRAFT_KEY,
+
     JSON.stringify({
+
       ...values(),
-      savedAt: new Date().toISOString()
+
+      savedAt:
+        new Date()
+          .toISOString()
+
     })
+
   );
+
 
   $("draftState").textContent =
     "تم حفظ المسودة تلقائيًا: " +
-    new Date().toLocaleTimeString("ar-BH");
+    new Date()
+      .toLocaleTimeString(
+        "ar-BH"
+      );
+
 }
 
 
 let draftTimer;
 
-FIELD_IDS.forEach(id => {
-  $(id).addEventListener("input", () => {
-    updatePreview();
 
-    clearTimeout(draftTimer);
+FIELD_IDS.forEach(
+  id => {
 
-    draftTimer =
-      setTimeout(saveDraft, 450);
-  });
-});
+    $(id).addEventListener(
+      "input",
+      () => {
+
+        updatePreview();
 
 
-// =====================================================
-// عرض الصور
-// =====================================================
+        clearTimeout(
+          draftTimer
+        );
 
-async function renderImages() {
-  const box = $("pImages");
 
-  box.innerHTML = "";
-
-  const sources = [];
-
-  for (const ref of existingImageRefs) {
-    const f = await wrGetFile(ref);
-
-    if (f) {
-      sources.push({
-        name: f.name,
-        url: URL.createObjectURL(f.blob),
-        revoke: true
-      });
-    }
-  }
-
-  for (const f of selectedFiles) {
-    sources.push({
-      name: f.name,
-      url: URL.createObjectURL(f),
-      revoke: true
-    });
-  }
-
-  sources
-    .slice(0, 10)
-    .forEach(s => {
-      const fig =
-        document.createElement("figure");
-
-      fig.className =
-        "report-photo";
-
-      const im =
-        new Image();
-
-      im.src =
-        s.url;
-
-      im.alt =
-        s.name;
-
-      im.onload = () => {
-        if (s.revoke) {
+        draftTimer =
           setTimeout(
-            () =>
-              URL.revokeObjectURL(s.url),
-            5000
+            saveDraft,
+            450
           );
-        }
-      };
 
-      fig.appendChild(im);
+      }
+    );
 
-      box.appendChild(fig);
-    });
-
-  $("noImages").classList.toggle(
-    "hidden",
-    sources.length > 0
-  );
-}
-
-
-$("images").addEventListener(
-  "change",
-  () => {
-    selectedFiles =
-      [...$("images").files]
-        .slice(0, 10);
-
-    $("imageHint").textContent =
-      `تم اختيار ${selectedFiles.length} صورة`;
-
-    renderImages();
   }
 );
 
 
-// =====================================================
-// تحميل سجل محفوظ للتعديل
-// =====================================================
+/* =========================================================
+   عرض الصور
+   محلية + Supabase
+   ========================================================= */
 
-async function loadRecord(id) {
-  const rec =
-    wrGetRecords()
-      .find(
-        r =>
-          String(r.id) ===
-          String(id)
+async function renderImages() {
+
+  const box =
+    $("pImages");
+
+
+  box.innerHTML =
+    "";
+
+
+  const sources = [];
+
+
+  /*
+    الصور المحلية القديمة
+  */
+
+  for (
+    const ref of
+    existingImageRefs
+  ) {
+
+    try {
+
+      const file =
+        await wrGetFile(
+          ref
+        );
+
+
+      if (file) {
+
+        sources.push({
+
+          name:
+            file.name,
+
+          url:
+            URL.createObjectURL(
+              file.blob
+            ),
+
+          revoke:
+            true
+
+        });
+
+      }
+
+    } catch (
+      error
+    ) {
+
+      console.warn(
+        "تعذر قراءة صورة محلية:",
+        error
       );
 
-  if (!rec) {
-    wrToast(
-      "السجل غير موجود"
-    );
+    }
 
-    return;
   }
 
-  currentId =
-    rec.id;
 
-  existingImageRefs =
-    rec.imageRefs || [];
+  /*
+    الصور الموجودة في Supabase Storage
+  */
 
-  applyValues(rec);
+  for (
+    const path of
+    remoteImagePaths
+  ) {
 
-  $("pageTitle").textContent =
-    "تعديل تقرير فعالية";
+    try {
 
-  $("draftState").textContent =
-    "أنت تعدّلين تقريرًا محفوظًا في الأرشيف.";
+      const url =
+        await WRGraph.getFileUrl(
+          path
+        );
 
-  $("deleteBtn")
+
+      if (url) {
+
+        sources.push({
+
+          name:
+            path
+              .split("/")
+              .pop(),
+
+          url,
+
+          revoke:
+            false
+
+        });
+
+      }
+
+    } catch (
+      error
+    ) {
+
+      console.warn(
+        "تعذر تحميل صورة من Supabase:",
+        error
+      );
+
+    }
+
+  }
+
+
+  /*
+    الصور المختارة الآن
+  */
+
+  for (
+    const file of
+    selectedFiles
+  ) {
+
+    sources.push({
+
+      name:
+        file.name,
+
+      url:
+        URL.createObjectURL(
+          file
+        ),
+
+      revoke:
+        true
+
+    });
+
+  }
+
+
+  sources
+    .slice(
+      0,
+      10
+    )
+    .forEach(
+      source => {
+
+        const figure =
+          document.createElement(
+            "figure"
+          );
+
+
+        figure.className =
+          "report-photo";
+
+
+        const image =
+          new Image();
+
+
+        image.src =
+          source.url;
+
+
+        image.alt =
+          source.name ||
+          "صورة الفعالية";
+
+
+        image.onload =
+          () => {
+
+            if (
+              source.revoke
+            ) {
+
+              setTimeout(
+                () => {
+
+                  URL.revokeObjectURL(
+                    source.url
+                  );
+
+                },
+                5000
+              );
+
+            }
+
+          };
+
+
+        figure.appendChild(
+          image
+        );
+
+
+        box.appendChild(
+          figure
+        );
+
+      }
+    );
+
+
+  $("noImages")
     .classList
-    .remove("hidden");
+    .toggle(
+      "hidden",
+      sources.length > 0
+    );
 
-  await renderImages();
 }
 
 
-// =====================================================
-// حفظ التقرير
-// =====================================================
+/* =========================================================
+   اختيار الصور
+   ========================================================= */
+
+$("images").addEventListener(
+  "change",
+  () => {
+
+    selectedFiles =
+      [
+        ...$("images").files
+      ]
+        .slice(
+          0,
+          10
+        );
+
+
+    $("imageHint").textContent =
+      `تم اختيار ${selectedFiles.length} صورة`;
+
+
+    renderImages();
+
+  }
+);
+
+
+/* =========================================================
+   تحميل تقرير محفوظ من Supabase
+   ========================================================= */
+
+async function loadRecord(id) {
+
+  try {
+
+    /*
+      نقرأ السجل مباشرة من Supabase
+      وليس من التخزين المحلي.
+    */
+
+    const records =
+      await WRGraph.fetchRecords();
+
+
+    const row =
+      records.find(
+        record =>
+          String(
+            record.id
+          ) ===
+          String(
+            id
+          )
+      );
+
+
+    if (!row) {
+
+      wrToast(
+        "السجل غير موجود أو لا تملكين صلاحية عرضه"
+      );
+
+
+      return false;
+
+    }
+
+
+    currentId =
+      row.id;
+
+
+    loadedRecordOwnerId =
+      row.created_by ||
+      row.payload?.owner_id ||
+      null;
+
+
+    /*
+      البيانات الحقيقية محفوظة داخل payload
+    */
+
+    const payload = {
+
+      ...(row.payload || {})
+
+    };
+
+
+    /*
+      احتياطًا للسجلات القديمة
+    */
+
+    if (
+      !payload.name
+    ) {
+
+      payload.name =
+        payload.title ||
+        row.title ||
+        "";
+
+    }
+
+
+    if (
+      !payload.date
+    ) {
+
+      payload.date =
+        row.record_date ||
+        "";
+
+    }
+
+
+    /*
+      اسم المنفذ الأصلي للتقرير.
+      مهم جدًا:
+      لا نستبدله باسم الـ Admin.
+    */
+
+    if (
+      !payload.executor
+    ) {
+
+      payload.executor =
+        payload.owner_name ||
+        "";
+
+    }
+
+
+    /*
+      الصور السحابية
+    */
+
+    remoteImagePaths =
+      Array.isArray(
+        row.image_paths
+      )
+        ? row.image_paths
+        : Array.isArray(
+            payload.image_paths
+          )
+          ? payload.image_paths
+          : [];
+
+
+    /*
+      الصور المحلية لو التقرير
+      تم إنشاؤه على نفس الجهاز
+    */
+
+    existingImageRefs =
+      Array.isArray(
+        payload.imageRefs
+      )
+        ? payload.imageRefs
+        : [];
+
+
+    /*
+      تعبئة كل الحقول
+    */
+
+    applyValues(
+      payload
+    );
+
+
+    /*
+      لا نغير اسم المنفذ
+      بعد تحميل التقرير.
+    */
+
+    $("executor").value =
+      payload.executor ||
+      payload.owner_name ||
+      "";
+
+
+    /*
+      المعلمة لا تغير اسمها
+      في تقريرها.
+    */
+
+    if (
+      currentProfile?.role ===
+      "teacher"
+    ) {
+
+      $("executor").readOnly =
+        true;
+
+    } else {
+
+      $("executor").readOnly =
+        false;
+
+    }
+
+
+    $("pageTitle").textContent =
+      "تعديل تقرير فعالية";
+
+
+    $("draftState").textContent =
+      "تم تحميل التقرير المحفوظ من الأرشيف السحابي.";
+
+
+    $("deleteBtn")
+      .classList
+      .remove(
+        "hidden"
+      );
+
+
+    updatePreview();
+
+
+    await renderImages();
+
+
+    console.log(
+      "Activity loaded from Supabase:",
+      row
+    );
+
+
+    return true;
+
+
+  } catch (error) {
+
+    console.error(
+      "خطأ تحميل التقرير:",
+      error
+    );
+
+
+    wrToast(
+      "تعذر تحميل التقرير: " +
+      (
+        error.message ||
+        error
+      )
+    );
+
+
+    return false;
+
+  }
+
+}
+
+
+/* =========================================================
+   حفظ التقرير
+   ========================================================= */
 
 async function save() {
 
@@ -420,101 +959,262 @@ async function save() {
     !$("executor").value.trim() ||
     !$("date").value
   ) {
+
     wrToast(
       "أكملي اسم الفعالية والتاريخ"
     );
 
+
     return;
+
   }
+
 
   $("saveBtn").disabled =
     true;
 
+
   try {
+
+    /*
+      لو فيه صور جديدة
+      نرفعها أيضًا إلى Supabase Storage.
+    */
+
+    if (
+      selectedFiles.length &&
+      currentId &&
+      typeof WRGraph.uploadFiles ===
+        "function"
+    ) {
+
+      try {
+
+        const uploaded =
+          await WRGraph.uploadFiles(
+            currentId,
+            selectedFiles
+          );
+
+
+        remoteImagePaths = [
+          ...remoteImagePaths,
+          ...uploaded
+        ]
+          .slice(
+            0,
+            10
+          );
+
+
+      } catch (
+        uploadError
+      ) {
+
+        console.warn(
+          "تعذر رفع الصور إلى Supabase، سيستمر الحفظ المحلي:",
+          uploadError
+        );
+
+      }
+
+    }
+
+
+    const data = {
+
+      ...recordData(),
+
+      id:
+        currentId ||
+        undefined,
+
+      image_paths:
+        remoteImagePaths
+
+    };
+
 
     const rec =
       await wrAddRecord(
-        {
-          ...recordData(),
-          id:
-            currentId ||
-            undefined
-        },
+        data,
         selectedFiles
       );
+
 
     currentId =
       rec.id;
 
+
     existingImageRefs =
-      rec.imageRefs || [];
+      rec.imageRefs ||
+      [];
+
+
+    /*
+      لو كان التقرير جديدًا
+      نرفع الصور بعد معرفة ID.
+    */
+
+    if (
+      selectedFiles.length &&
+      remoteImagePaths.length === 0 &&
+      typeof WRGraph.uploadFiles ===
+        "function"
+    ) {
+
+      try {
+
+        remoteImagePaths =
+          await WRGraph.uploadFiles(
+            currentId,
+            selectedFiles
+          );
+
+
+        /*
+          نعيد حفظ JSON ومعه
+          مسارات الصور السحابية.
+        */
+
+        await WRGraph.uploadJson({
+
+          ...data,
+
+          id:
+            currentId,
+
+          image_paths:
+            remoteImagePaths
+
+        });
+
+
+      } catch (
+        uploadError
+      ) {
+
+        console.warn(
+          "تعذر رفع الصور إلى Supabase:",
+          uploadError
+        );
+
+      }
+
+    }
+
 
     selectedFiles =
       [];
 
+
     $("images").value =
       "";
+
 
     localStorage.removeItem(
       DRAFT_KEY
     );
 
+
     $("deleteBtn")
       .classList
-      .remove("hidden");
+      .remove(
+        "hidden"
+      );
+
 
     history.replaceState(
+
       null,
+
       "",
-      `?id=${encodeURIComponent(rec.id)}`
+
+      `?id=${encodeURIComponent(
+        currentId
+      )}`
+
     );
+
 
     $("pageTitle").textContent =
       "تعديل تقرير فعالية";
 
+
+    $("draftState").textContent =
+      "تم حفظ التقرير بنجاح.";
+
+
     await renderImages();
 
-  } catch (e) {
 
-    console.error(e);
+    wrToast(
+      "تم حفظ التقرير بنجاح"
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      error
+    );
+
 
     wrToast(
       "تعذر الحفظ: " +
-      e.message
+      (
+        error.message ||
+        error
+      )
     );
+
 
   } finally {
 
     $("saveBtn").disabled =
       false;
+
   }
+
 }
 
 
-// =====================================================
-// إنشاء HTML للتقرير
-// =====================================================
+/* =========================================================
+   إنشاء HTML
+   ========================================================= */
 
 function reportHtml() {
 
   const clone =
     $("reportSheet")
-      .cloneNode(true);
+      .cloneNode(
+        true
+      );
+
 
   clone
-    .querySelectorAll("img")
-    .forEach(img => {
+    .querySelectorAll(
+      "img"
+    )
+    .forEach(
+      img => {
 
-      if (
-        img.src.startsWith("blob:")
-      ) {
-        img.setAttribute(
-          "data-needs-inline",
-          "1"
-        );
+        if (
+          img.src.startsWith(
+            "blob:"
+          )
+        ) {
+
+          img.setAttribute(
+            "data-needs-inline",
+            "1"
+          );
+
+        }
+
       }
+    );
 
-    });
 
   return `
 <!doctype html>
@@ -525,7 +1225,9 @@ function reportHtml() {
 <meta charset="utf-8">
 
 <title>
-${wrSafeName($("name").value)}
+${wrSafeName(
+  $("name").value
+)}
 </title>
 
 <style>
@@ -533,78 +1235,91 @@ ${wrSafeName($("name").value)}
 body{
 font-family:Tahoma,Arial,sans-serif;
 background:#fff;
-margin:0
+margin:0;
+color:#24352e;
 }
 
 .sheet{
 max-width:190mm;
 margin:auto;
-padding:12mm
+padding:12mm;
 }
 
 .school-header{
 width:100%;
 max-height:100px;
-object-fit:contain
+object-fit:contain;
 }
 
 .doc-title{
 text-align:center;
 border-top:3px solid #087451;
 border-bottom:1px solid #b58a36;
-padding:14px
+padding:14px;
+}
+
+.doc-title h1{
+color:#075c40;
 }
 
 .summary{
 display:grid;
 grid-template-columns:1fr 1fr;
-gap:10px
+gap:10px;
 }
 
 .summary-item{
 padding:10px;
 background:#f5f8f6;
-border-right:4px solid #087451
+border-right:4px solid #087451;
+border-radius:8px;
 }
 
 .doc-section h3{
 color:#075c40;
-border-bottom:2px solid #d8b668
+border-bottom:2px solid #d8b668;
 }
 
 .doc-section p{
 white-space:pre-wrap;
-line-height:1.8
+line-height:1.8;
 }
 
 .images-grid{
 display:grid;
 grid-template-columns:1fr 1fr;
-gap:10px
+gap:10px;
 }
 
 .report-photo{
-margin:0
+margin:0;
+break-inside:avoid;
 }
 
 .report-photo img{
 width:100%;
 max-height:280px;
-object-fit:contain
+object-fit:contain;
+}
+
+.empty{
+display:none;
 }
 
 .report-footer{
 text-align:center;
 margin-top:25px;
 color:#6b7a72;
-font-size:12px
+font-size:12px;
 }
 
 @media print{
+
 @page{
 size:A4;
-margin:10mm
+margin:10mm;
 }
+
 }
 
 </style>
@@ -619,30 +1334,38 @@ ${clone.outerHTML}
 
 </html>
 `;
+
 }
 
 
-// =====================================================
-// تنزيل HTML كامل بالصور
-// =====================================================
+/* =========================================================
+   تنزيل HTML كامل بالصور
+   ========================================================= */
 
 async function downloadHtml() {
 
   const clone =
     $("reportSheet")
-      .cloneNode(true);
+      .cloneNode(
+        true
+      );
 
-  const originalImages =
-    [
-      ...$("reportSheet")
-        .querySelectorAll("img")
-    ];
 
-  const clonedImages =
-    [
-      ...clone
-        .querySelectorAll("img")
-    ];
+  const originalImages = [
+    ...$("reportSheet")
+      .querySelectorAll(
+        "img"
+      )
+  ];
+
+
+  const clonedImages = [
+    ...clone
+      .querySelectorAll(
+        "img"
+      )
+  ];
+
 
   for (
     let i = 0;
@@ -659,103 +1382,124 @@ async function downloadHtml() {
           )
         ).blob();
 
-      clonedImages[i].src =
-        await wrBlobToDataURL(blob);
 
-    } catch {}
+      clonedImages[i].src =
+        await wrBlobToDataURL(
+          blob
+        );
+
+
+    } catch (
+      error
+    ) {
+
+      console.warn(
+        "تعذر تضمين صورة في HTML:",
+        error
+      );
+
+    }
+
   }
 
+
   const css = `
+
 body{
 font-family:Tahoma,Arial,sans-serif;
 background:#fff;
 margin:0;
-color:#24352e
+color:#24352e;
 }
 
 .sheet{
 max-width:190mm;
 margin:auto;
-padding:12mm
+padding:12mm;
 }
 
 .school-header{
 width:100%;
 max-height:100px;
-object-fit:contain
+object-fit:contain;
 }
 
 .doc-title{
 text-align:center;
 border-top:3px solid #087451;
 border-bottom:1px solid #b58a36;
-padding:14px
+padding:14px;
 }
 
 .doc-title h1{
-color:#075c40
+color:#075c40;
 }
 
 .summary{
 display:grid;
 grid-template-columns:1fr 1fr;
-gap:10px
+gap:10px;
 }
 
 .summary-item{
 padding:10px;
 background:#f5f8f6;
 border-right:4px solid #087451;
-border-radius:8px
+border-radius:8px;
 }
 
 .doc-section h3{
 color:#075c40;
-border-bottom:2px solid #d8b668
+border-bottom:2px solid #d8b668;
 }
 
 .doc-section p{
 white-space:pre-wrap;
-line-height:1.8
+line-height:1.8;
 }
 
 .images-grid{
 display:grid;
 grid-template-columns:1fr 1fr;
-gap:10px
+gap:10px;
 }
 
 .report-photo{
 margin:0;
-break-inside:avoid
+break-inside:avoid;
 }
 
 .report-photo img{
 width:100%;
 max-height:280px;
-object-fit:contain
+object-fit:contain;
 }
 
 .empty{
-display:none
+display:none;
 }
 
 .report-footer{
 text-align:center;
 margin-top:25px;
 color:#6b7a72;
-font-size:12px
+font-size:12px;
 }
 
 @media print{
+
 @page{
 size:A4;
-margin:10mm
+margin:10mm;
 }
+
 }
+
 `;
 
+
   const html = `
+
 <!doctype html>
 
 <html lang="ar" dir="rtl">
@@ -765,12 +1509,14 @@ margin:10mm
 <meta charset="utf-8">
 
 <meta
-name="viewport"
-content="width=device-width"
+  name="viewport"
+  content="width=device-width"
 >
 
 <title>
-${wrSafeName($("name").value)}
+${wrSafeName(
+  $("name").value
+)}
 </title>
 
 <style>
@@ -788,7 +1534,9 @@ ${clone.outerHTML}
 </html>
 `;
 
+
   wrDownloadBlob(
+
     new Blob(
       [html],
       {
@@ -796,18 +1544,167 @@ ${clone.outerHTML}
           "text/html;charset=utf-8"
       }
     ),
-    `تقرير - ${wrSafeName($("name").value)}.html`
+
+    `تقرير - ${wrSafeName(
+      $("name").value
+    )}.html`
+
   );
+
 
   wrToast(
     "تم تنزيل نسخة التقرير كاملة بالصور"
   );
+
 }
 
 
-// =====================================================
-// الأزرار
-// =====================================================
+/* =========================================================
+   حذف التقرير
+   ========================================================= */
+
+async function deleteCurrentReport() {
+
+  if (!currentId) {
+
+    wrToast(
+      "لا يوجد تقرير محفوظ لحذفه"
+    );
+
+    return;
+
+  }
+
+
+  const ok =
+    confirm(
+      "حذف هذا التقرير وصوره من الأرشيف؟"
+    );
+
+
+  if (!ok) {
+    return;
+  }
+
+
+  $("deleteBtn").disabled =
+    true;
+
+
+  try {
+
+    /*
+      حذف الصور السحابية
+    */
+
+    if (
+      remoteImagePaths.length &&
+      typeof WRGraph.deleteFiles ===
+        "function"
+    ) {
+
+      try {
+
+        await WRGraph.deleteFiles(
+          remoteImagePaths
+        );
+
+      } catch (
+        error
+      ) {
+
+        console.warn(
+          "تعذر حذف بعض الصور السحابية:",
+          error
+        );
+
+      }
+
+    }
+
+
+    /*
+      حذف السجل من Supabase
+    */
+
+    await WRGraph.deleteRecord(
+      currentId
+    );
+
+
+    /*
+      تنظيف النسخة المحلية
+    */
+
+    try {
+
+      if (
+        typeof wrDeleteRecord ===
+        "function"
+      ) {
+
+        await wrDeleteRecord(
+          currentId
+        );
+
+      }
+
+    } catch (
+      error
+    ) {
+
+      console.warn(
+        "تعذر تنظيف النسخة المحلية:",
+        error
+      );
+
+    }
+
+
+    wrToast(
+      "تم حذف التقرير"
+    );
+
+
+    setTimeout(
+      () => {
+
+        location.href =
+          "../archive/index.html";
+
+      },
+      400
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Delete error:",
+      error
+    );
+
+
+    wrToast(
+      "تعذر حذف التقرير: " +
+      (
+        error.message ||
+        error
+      )
+    );
+
+
+    $("deleteBtn").disabled =
+      false;
+
+  }
+
+}
+
+
+/* =========================================================
+   الأزرار
+   ========================================================= */
 
 $("saveBtn").onclick =
   save;
@@ -821,29 +1718,18 @@ $("printBtn").onclick =
   () => {
 
     document.title =
-      `تقرير - ${wrSafeName($("name").value)}`;
+      `تقرير - ${wrSafeName(
+        $("name").value
+      )}`;
+
 
     window.print();
+
   };
 
 
 $("deleteBtn").onclick =
-  async () => {
-
-    if (
-      confirm(
-        "حذف هذا التقرير وصوره من الأرشيف؟"
-      )
-    ) {
-
-      await wrDeleteRecord(
-        currentId
-      );
-
-      location.href =
-        "../archive/index.html";
-    }
-  };
+  deleteCurrentReport;
 
 
 $("newBtn").onclick =
@@ -859,89 +1745,125 @@ $("newBtn").onclick =
         DRAFT_KEY
       );
 
+
       location.href =
         "report.html";
+
     }
+
   };
 
 
-// =====================================================
-// تشغيل الصفحة
-// =====================================================
+/* =========================================================
+   تشغيل الصفحة
+   ========================================================= */
 
 (async function init() {
 
-  // أولاً نعرف من المستخدم الحالي
+  /*
+    أولًا نعرف من المستخدم الحالي.
+  */
+
   await loadCurrentProfile();
+
 
   const id =
     new URLSearchParams(
       location.search
-    ).get("id");
+    ).get(
+      "id"
+    );
+
+
+  /* =======================================================
+     فتح تقرير موجود
+     ======================================================= */
 
   if (id) {
 
-    await loadRecord(id);
+    /*
+      أهم تغيير:
+      التقرير سيأتي من Supabase
+      وليس من LocalStorage.
+    */
 
-    // لو Teacher نحافظ على اسم الحساب
-    // حتى عند فتح تقرير للتعديل
+    await loadRecord(
+      id
+    );
+
+
+    /*
+      لا نضع اسم المستخدم الحالي هنا.
+      بيانات التقرير الأصلية لها الأولوية.
+    */
+
+    return;
+
+  }
+
+
+  /* =======================================================
+     تقرير جديد
+     ======================================================= */
+
+  const draft =
+    JSON.parse(
+      localStorage.getItem(
+        DRAFT_KEY
+      ) ||
+      "null"
+    );
+
+
+  if (draft) {
+
+    applyValues(
+      draft
+    );
+
+
+    $("draftState").textContent =
+      "تم استرجاع المسودة المحفوظة تلقائيًا.";
+
+  } else {
+
+    $("date").value =
+      new Date()
+        .toISOString()
+        .slice(
+          0,
+          10
+        );
+
+  }
+
+
+  /*
+    اسم المنفذ التلقائي
+    يستخدم فقط في التقرير الجديد.
+  */
+
+  if (
+    currentProfile?.full_name
+  ) {
+
+    $("executor").value =
+      currentProfile.full_name;
+
+
     if (
-      currentProfile?.role === "teacher" &&
-      currentProfile?.full_name
+      currentProfile.role ===
+      "teacher"
     ) {
-
-      $("executor").value =
-        currentProfile.full_name;
 
       $("executor").readOnly =
         true;
 
-      updatePreview();
     }
 
-  } else {
-
-    const draft =
-      JSON.parse(
-        localStorage.getItem(
-          DRAFT_KEY
-        ) || "null"
-      );
-
-    if (draft) {
-
-      applyValues(draft);
-
-      $("draftState").textContent =
-        "تم استرجاع المسودة المحفوظة تلقائيًا.";
-
-    } else {
-
-      $("date").value =
-        new Date()
-          .toISOString()
-          .slice(0, 10);
-    }
-
-    // بعد استرجاع المسودة نعيد اسم الحساب
-    // حتى لا تستبدله مسودة قديمة
-    if (
-      currentProfile?.full_name
-    ) {
-
-      $("executor").value =
-        currentProfile.full_name;
-
-      if (
-        currentProfile.role ===
-        "teacher"
-      ) {
-        $("executor").readOnly =
-          true;
-      }
-    }
-
-    updatePreview();
   }
+
+
+  updatePreview();
 
 })();
