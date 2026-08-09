@@ -2,256 +2,607 @@
 <html lang="ar" dir="rtl">
 
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
 
-  <title>WestRiffa Smart Office</title>
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  >
 
-  <link rel="stylesheet" href="css/app.css">
-  <link rel="manifest" href="manifest.webmanifest">
+  <title>
+    WestRiffa Smart Office
+  </title>
 
-  <meta name="theme-color" content="#075c40">
+  <link
+    rel="stylesheet"
+    href="css/app.css"
+  >
+
+  <link
+    rel="manifest"
+    href="manifest.webmanifest"
+  >
+
+  <meta
+    name="theme-color"
+    content="#075c40"
+  >
+
 
   <style>
+
+    /* =====================================================
+       تسجيل الدخول
+       ===================================================== */
 
     .auth-overlay {
       position: fixed;
       inset: 0;
       z-index: 9999;
+
       background:
         linear-gradient(
           135deg,
           rgba(5, 74, 51, .98),
           rgba(8, 116, 81, .95)
         );
+
       display: flex;
       align-items: center;
       justify-content: center;
+
       padding: 24px;
     }
+
 
     .auth-overlay.hidden {
       display: none;
     }
 
+
     .auth-card {
       width: min(430px, 100%);
+
       background: #fff;
+
       border-radius: 22px;
+
       padding: 30px;
-      box-shadow: 0 24px 70px rgba(0, 0, 0, .22);
+
+      box-shadow:
+        0 24px 70px rgba(0, 0, 0, .22);
+
       text-align: center;
     }
 
+
     .auth-logo {
       width: 100%;
+
       max-height: 95px;
+
       object-fit: contain;
+
       margin-bottom: 18px;
     }
 
+
     .auth-card h1 {
       margin: 0 0 7px;
+
       color: #075c40;
+
       font-size: 27px;
     }
 
+
     .auth-card .school-name {
       color: #6b7a72;
+
       margin-bottom: 24px;
+
       line-height: 1.7;
     }
+
 
     .auth-fields {
       display: grid;
+
       gap: 13px;
+
       text-align: right;
     }
 
+
     .auth-fields label {
       font-weight: 700;
+
       color: #27493d;
     }
 
+
     .auth-fields input {
       width: 100%;
+
       box-sizing: border-box;
+
       padding: 13px 14px;
-      border: 1px solid #d9e1dd;
+
+      border:
+        1px solid #d9e1dd;
+
       border-radius: 11px;
+
       font-family: inherit;
+
       font-size: 15px;
+
       outline: none;
     }
 
+
     .auth-fields input:focus {
       border-color: #087451;
-      box-shadow: 0 0 0 3px rgba(8,116,81,.08);
+
+      box-shadow:
+        0 0 0 3px rgba(8,116,81,.08);
     }
+
 
     .auth-login-btn {
       width: 100%;
+
       margin-top: 20px;
+
       padding: 13px;
+
       border: 0;
+
       border-radius: 11px;
+
       background: #075c40;
+
       color: #fff;
+
       font-family: inherit;
+
       font-size: 16px;
+
       font-weight: 700;
+
       cursor: pointer;
     }
 
+
     .auth-login-btn:disabled {
       opacity: .65;
+
       cursor: wait;
     }
 
+
     .auth-message {
       min-height: 24px;
+
       margin-top: 13px;
+
       font-size: 14px;
+
       color: #a22;
     }
 
+
     .auth-note {
       margin-top: 18px;
+
       color: #78867f;
+
       font-size: 12px;
+
       line-height: 1.7;
     }
+
 
     #appRoot.auth-loading {
       visibility: hidden;
     }
 
+
+    /* =====================================================
+       بيانات المستخدم
+       ===================================================== */
+
     .user-strip {
       display: flex;
+
       align-items: center;
+
       gap: 8px;
+
       flex-wrap: wrap;
     }
+
 
     .user-email {
       font-size: 12px;
+
       color: #596c63;
     }
 
-    .teacher-activity-section {
+
+    /* =====================================================
+       المؤشرات الإدارية الجديدة
+       ===================================================== */
+
+    .admin-insights {
       display: none;
+
       margin-top: 28px;
+
       margin-bottom: 28px;
     }
 
-    .teacher-activity-head {
+
+    .admin-insights-head {
       display: flex;
+
       justify-content: space-between;
-      align-items: center;
+
+      align-items: flex-start;
+
       gap: 12px;
+
       flex-wrap: wrap;
+
       margin-bottom: 14px;
     }
+
+
+    .admin-insights-head h3 {
+      margin: 0;
+
+      color: #075c40;
+    }
+
+
+    .admin-insights-head p {
+      margin: 6px 0 0;
+
+      color: #6b7a72;
+
+      font-size: 13px;
+    }
+
+
+    .admin-insights-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+      gap: 14px;
+    }
+
+
+    .admin-insight-card {
+      background: #fff;
+
+      border:
+        1px solid #e1e9e5;
+
+      border-radius: 16px;
+
+      padding: 18px;
+
+      box-shadow:
+        0 5px 18px rgba(0,0,0,.05);
+    }
+
+
+    .admin-insight-card .insight-label {
+      color: #66776f;
+
+      font-size: 13px;
+
+      font-weight: 700;
+
+      margin-bottom: 10px;
+    }
+
+
+    .admin-insight-card strong {
+      display: block;
+
+      color: #075c40;
+
+      font-size: 32px;
+
+      line-height: 1;
+
+      margin-bottom: 9px;
+    }
+
+
+    .admin-insight-card .insight-note {
+      color: #7b8982;
+
+      font-size: 12px;
+
+      line-height: 1.6;
+    }
+
+
+    .month-comparison-box {
+      margin-top: 12px;
+
+      background: #fff;
+
+      border:
+        1px solid #e1e9e5;
+
+      border-radius: 14px;
+
+      padding: 14px 16px;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      gap: 12px;
+
+      flex-wrap: wrap;
+
+      box-shadow:
+        0 3px 12px rgba(0,0,0,.04);
+    }
+
+
+    .month-comparison-text {
+      color: #52685f;
+
+      font-size: 13px;
+
+      line-height: 1.7;
+    }
+
+
+    .month-trend {
+      padding: 7px 12px;
+
+      border-radius: 999px;
+
+      background: #eaf3ef;
+
+      color: #075c40;
+
+      font-size: 13px;
+
+      font-weight: 700;
+    }
+
+
+    .month-trend.up {
+      background: #eaf7ef;
+
+      color: #087451;
+    }
+
+
+    .month-trend.down {
+      background: #fff1f0;
+
+      color: #b42318;
+    }
+
+
+    .month-trend.same {
+      background: #f3f5f4;
+
+      color: #596c63;
+    }
+
+
+    /* =====================================================
+       نشاط المعلمات
+       ===================================================== */
+
+    .teacher-activity-section {
+      display: none;
+
+      margin-top: 28px;
+
+      margin-bottom: 28px;
+    }
+
+
+    .teacher-activity-head {
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: center;
+
+      gap: 12px;
+
+      flex-wrap: wrap;
+
+      margin-bottom: 14px;
+    }
+
 
     .teacher-activity-head h3 {
       margin: 0;
     }
 
+
     .teacher-activity-head p {
       margin: 6px 0 0;
+
       color: #6b7a72;
+
       font-size: 13px;
     }
+
 
     .admin-badge {
       background: #f5f8f6;
+
       color: #075c40;
+
       padding: 7px 12px;
+
       border-radius: 20px;
+
       font-size: 12px;
+
       font-weight: 700;
     }
+
 
     .teacher-filter-box {
       background: #fff;
-      border: 1px solid #e0e9e4;
+
+      border:
+        1px solid #e0e9e4;
+
       border-radius: 16px;
+
       padding: 16px;
+
       margin-bottom: 15px;
-      box-shadow: 0 3px 12px rgba(0,0,0,.04);
+
+      box-shadow:
+        0 3px 12px rgba(0,0,0,.04);
     }
+
 
     .teacher-filter-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr auto auto;
+
+      grid-template-columns:
+        1fr 1fr auto auto;
+
       gap: 10px;
+
       align-items: end;
     }
 
+
     .teacher-filter-field {
       display: grid;
+
       gap: 6px;
     }
 
+
     .teacher-filter-field label {
       font-size: 12px;
+
       font-weight: 700;
+
       color: #52685f;
     }
 
+
     .teacher-filter-field input {
       width: 100%;
+
       box-sizing: border-box;
+
       padding: 10px 12px;
-      border: 1px solid #d7e1dc;
+
+      border:
+        1px solid #d7e1dc;
+
       border-radius: 10px;
+
       font-family: inherit;
+
       background: #fff;
     }
 
+
     .teacher-period-summary {
       margin-top: 11px;
+
       color: #075c40;
+
       font-size: 13px;
+
       font-weight: 700;
+
       background: #f5f8f6;
+
       padding: 9px 12px;
+
       border-radius: 10px;
     }
 
+
     .admin-tools {
       display: flex;
+
       gap: 10px;
+
       align-items: center;
+
       flex-wrap: wrap;
     }
 
-    @media (max-width: 800px) {
 
-      .teacher-filter-grid {
-        grid-template-columns: 1fr 1fr;
+    /* =====================================================
+       Responsive
+       ===================================================== */
+
+    @media (max-width: 1000px) {
+
+      .admin-insights-grid {
+        grid-template-columns:
+          repeat(2, minmax(0,1fr));
       }
 
     }
 
+
+    @media (max-width: 800px) {
+
+      .teacher-filter-grid {
+        grid-template-columns:
+          1fr 1fr;
+      }
+
+    }
+
+
     @media (max-width: 520px) {
 
       .teacher-filter-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns:
+          1fr;
+      }
+
+
+      .admin-insights-grid {
+        grid-template-columns:
+          1fr;
       }
 
     }
 
   </style>
+
 </head>
 
 
 <body>
 
 
-<!-- =====================================
+<!-- =====================================================
      شاشة تسجيل الدخول
-     ===================================== -->
+     ===================================================== -->
 
 <div
   id="authOverlay"
@@ -260,27 +611,37 @@
 
   <div class="auth-card">
 
+
     <img
       class="auth-logo"
       src="assets/school-header.jpg"
       alt="شعار المدرسة"
     >
 
+
     <h1>
       WestRiffa Smart Office
     </h1>
 
+
     <div class="school-name">
+
       مدرسة الرفاع الغربي الابتدائية للبنين
+
       <br>
+
       منصة التوثيق والإدارة الذكية
+
     </div>
 
+
     <div class="auth-fields">
+
 
       <label for="loginEmail">
         البريد الإلكتروني
       </label>
+
 
       <input
         id="loginEmail"
@@ -289,9 +650,11 @@
         placeholder="أدخلي البريد الإلكتروني"
       >
 
+
       <label for="loginPassword">
         كلمة مرور المنصة
       </label>
+
 
       <input
         id="loginPassword"
@@ -300,7 +663,9 @@
         placeholder="أدخلي كلمة المرور"
       >
 
+
     </div>
+
 
     <button
       id="loginBtn"
@@ -310,23 +675,27 @@
       تسجيل الدخول
     </button>
 
+
     <div
       id="authMessage"
       class="auth-message"
     ></div>
 
+
     <div class="auth-note">
       الدخول مخصص للمستخدمين المصرح لهم.
     </div>
+
 
   </div>
 
 </div>
 
 
-<!-- =====================================
+
+<!-- =====================================================
      المنصة
-     ===================================== -->
+     ===================================================== -->
 
 <div
   id="appRoot"
@@ -336,12 +705,15 @@
 
 <header class="topbar">
 
+
   <div class="brand">
+
 
     <img
       src="assets/school-header.jpg"
       alt="شعار المدرسة"
     >
+
 
     <div>
 
@@ -355,15 +727,19 @@
 
     </div>
 
+
   </div>
 
 
+
   <div class="header-actions user-strip">
+
 
     <span
       id="currentUserEmail"
       class="user-email"
     ></span>
+
 
     <a
       class="btn btn-soft"
@@ -372,12 +748,14 @@
       🏠 الرئيسية
     </a>
 
+
     <a
       class="btn btn-soft"
       href="pages/archive/index.html"
     >
       📂 الأرشيف
     </a>
+
 
     <button
       id="logoutBtn"
@@ -387,19 +765,28 @@
       تسجيل الخروج
     </button>
 
+
   </div>
 
+
 </header>
+
 
 
 <div class="shell">
 
 
+<!-- =====================================================
+     القائمة الجانبية
+     ===================================================== -->
+
 <aside class="sidebar">
+
 
   <h3 class="sidebar-title">
     القائمة الرئيسية
   </h3>
+
 
   <a
     class="nav-link active"
@@ -408,12 +795,14 @@
     🏠 لوحة التحكم
   </a>
 
+
   <a
     class="nav-link"
     href="pages/meetings/index.html"
   >
     📅 الاجتماعات
   </a>
+
 
   <a
     class="nav-link"
@@ -422,12 +811,14 @@
     🎯 الفعاليات
   </a>
 
+
   <a
     class="nav-link"
     href="pages/certificates/index.html"
   >
     🏅 الشهادات
   </a>
+
 
   <a
     class="nav-link"
@@ -436,6 +827,7 @@
     📂 الأرشيف الذكي
   </a>
 
+
   <a
     class="nav-link"
     href="pages/settings/index.html"
@@ -443,13 +835,24 @@
     ⚙️ الإعدادات
   </a>
 
+
 </aside>
 
+
+
+<!-- =====================================================
+     المحتوى
+     ===================================================== -->
 
 <main class="content">
 
 
+  <!-- ===================================================
+       رأس لوحة التحكم
+       =================================================== -->
+
   <div class="page-head">
+
 
     <div>
 
@@ -463,6 +866,7 @@
 
     </div>
 
+
     <div class="page-actions">
 
       <button
@@ -475,25 +879,38 @@
 
     </div>
 
+
   </div>
 
 
+
+  <!-- ===================================================
+       حالة المزامنة
+       =================================================== -->
+
   <div class="sync-strip">
 
+
     <div class="sync-state">
+
 
       <span
         id="syncDot"
         class="dot"
       ></span>
 
+
       <span id="syncText">
         جارٍ فحص المزامنة...
       </span>
 
+
     </div>
 
+
+
     <div class="page-actions">
+
 
       <button
         id="syncNowBtn"
@@ -503,6 +920,7 @@
         مزامنة الآن
       </button>
 
+
       <a
         class="btn btn-soft"
         href="pages/settings/index.html"
@@ -510,12 +928,20 @@
         إعداد الربط
       </a>
 
+
     </div>
+
 
   </div>
 
 
+
+  <!-- ===================================================
+       الإحصائيات الرئيسية
+       =================================================== -->
+
   <div class="stats">
+
 
     <article class="stat">
 
@@ -528,6 +954,7 @@
       </span>
 
     </article>
+
 
 
     <article class="stat">
@@ -543,6 +970,7 @@
     </article>
 
 
+
     <article class="stat">
 
       <strong id="statMeetings">
@@ -554,6 +982,7 @@
       </span>
 
     </article>
+
 
 
     <article class="stat">
@@ -568,19 +997,193 @@
 
     </article>
 
+
   </div>
 
 
-  <!-- =====================================
+
+  <!-- ===================================================
+       مؤشرات الإدارة
+       Admin فقط
+       =================================================== -->
+
+  <section
+    id="adminInsightsSection"
+    class="admin-insights"
+  >
+
+
+    <div class="admin-insights-head">
+
+
+      <div>
+
+        <h3>
+          📈 مؤشرات إدارية
+        </h3>
+
+        <p>
+          قراءة سريعة لحجم الاستفادة واتجاه نشاط الفعاليات.
+        </p>
+
+      </div>
+
+
+      <span class="admin-badge">
+        خاص بالإدارة
+      </span>
+
+
+    </div>
+
+
+
+    <div class="admin-insights-grid">
+
+
+      <!-- إجمالي المستفيدين -->
+
+      <article class="admin-insight-card">
+
+
+        <div class="insight-label">
+          👥 إجمالي المستفيدين
+        </div>
+
+
+        <strong id="statBeneficiaries">
+          0
+        </strong>
+
+
+        <div class="insight-note">
+          مجموع أعداد المستفيدين المسجلة في تقارير الفعاليات.
+        </div>
+
+
+      </article>
+
+
+
+      <!-- هذا الشهر -->
+
+      <article class="admin-insight-card">
+
+
+        <div class="insight-label">
+          📅 فعاليات هذا الشهر
+        </div>
+
+
+        <strong id="statCurrentMonth">
+          0
+        </strong>
+
+
+        <div
+          id="currentMonthLabel"
+          class="insight-note"
+        >
+          الشهر الحالي
+        </div>
+
+
+      </article>
+
+
+
+      <!-- الشهر السابق -->
+
+      <article class="admin-insight-card">
+
+
+        <div class="insight-label">
+          🗓 فعاليات الشهر السابق
+        </div>
+
+
+        <strong id="statPreviousMonth">
+          0
+        </strong>
+
+
+        <div
+          id="previousMonthLabel"
+          class="insight-note"
+        >
+          الشهر السابق
+        </div>
+
+
+      </article>
+
+
+
+      <!-- اتجاه النشاط -->
+
+      <article class="admin-insight-card">
+
+
+        <div class="insight-label">
+          📊 اتجاه النشاط
+        </div>
+
+
+        <strong id="statMonthChange">
+          —
+        </strong>
+
+
+        <div class="insight-note">
+          مقارنة عدد الفعاليات بالشهر السابق.
+        </div>
+
+
+      </article>
+
+
+    </div>
+
+
+
+    <div class="month-comparison-box">
+
+
+      <div
+        id="monthComparisonText"
+        class="month-comparison-text"
+      >
+        جارٍ حساب مقارنة النشاط الشهري...
+      </div>
+
+
+      <span
+        id="monthTrend"
+        class="month-trend same"
+      >
+        —
+      </span>
+
+
+    </div>
+
+
+  </section>
+
+
+
+  <!-- ===================================================
        نشاط المعلمات - Admin فقط
-       ===================================== -->
+       =================================================== -->
 
   <section
     id="teacherActivitySection"
     class="teacher-activity-section"
   >
 
+
     <div class="teacher-activity-head">
+
 
       <div>
 
@@ -595,11 +1198,14 @@
       </div>
 
 
+
       <div class="admin-tools">
+
 
         <span class="admin-badge">
           خاص بالإدارة
         </span>
+
 
         <a
           id="teacherPerformanceLink"
@@ -609,12 +1215,16 @@
           📊 تقرير أداء المعلمات
         </a>
 
+
       </div>
+
 
     </div>
 
 
+
     <div class="teacher-filter-box">
+
 
       <div class="teacher-filter-grid">
 
@@ -633,6 +1243,7 @@
         </div>
 
 
+
         <div class="teacher-filter-field">
 
           <label for="teacherToDate">
@@ -647,6 +1258,7 @@
         </div>
 
 
+
         <button
           id="applyTeacherFilter"
           class="btn btn-primary"
@@ -654,6 +1266,7 @@
         >
           تطبيق
         </button>
+
 
 
         <button
@@ -664,7 +1277,9 @@
           إلغاء الفلتر
         </button>
 
+
       </div>
+
 
 
       <div
@@ -674,15 +1289,23 @@
         جميع الفترات
       </div>
 
+
     </div>
+
 
 
     <div
       id="teacherActivityList"
     ></div>
 
+
   </section>
 
+
+
+  <!-- ===================================================
+       الوصول السريع
+       =================================================== -->
 
   <h3 class="section-title">
     الوصول السريع
@@ -705,7 +1328,9 @@
       <span>
         صور وPDF وأرشيف
       </span>
+
     </a>
+
 
 
     <a
@@ -721,7 +1346,9 @@
       <span>
         بطاقة PNG
       </span>
+
     </a>
+
 
 
     <a
@@ -737,7 +1364,9 @@
       <span>
         PDF وحفظ
       </span>
+
     </a>
+
 
 
     <a
@@ -753,7 +1382,9 @@
       <span>
         حضور وغياب
       </span>
+
     </a>
+
 
 
     <a
@@ -769,7 +1400,9 @@
       <span>
         الحالة والمسؤول
       </span>
+
     </a>
+
 
 
     <a
@@ -785,10 +1418,17 @@
       <span>
         جاهزة للطباعة
       </span>
+
     </a>
+
 
   </div>
 
+
+
+  <!-- ===================================================
+       آخر العمليات
+       =================================================== -->
 
   <h3 class="section-title">
     آخر العمليات
@@ -803,22 +1443,38 @@
 
 </main>
 
-</div>
 
 </div>
 
+</div>
+
+
+
+<!-- =====================================================
+     المكتبات
+     ===================================================== -->
 
 <script
   src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
 ></script>
 
+
 <script src="js/config.js"></script>
+
 <script src="js/graph.js"></script>
+
 <script src="js/common.js"></script>
+
 <script src="js/dashboard.js"></script>
 
 
+
+<!-- =====================================================
+     تسجيل الدخول والمزامنة
+     ===================================================== -->
+
 <script>
+
 
 const authOverlay =
   document.getElementById(
@@ -874,7 +1530,13 @@ const syncNowBtn =
   );
 
 
+
+/* =====================================================
+   إظهار تسجيل الدخول
+   ===================================================== */
+
 function showLogin() {
+
 
   authOverlay.classList.remove(
     "hidden"
@@ -885,10 +1547,17 @@ function showLogin() {
     "auth-loading"
   );
 
+
 }
 
 
+
+/* =====================================================
+   إظهار المنصة
+   ===================================================== */
+
 function showApp(user) {
+
 
   authOverlay.classList.add(
     "hidden"
@@ -917,17 +1586,26 @@ function showApp(user) {
 
   updateSync();
 
+
 }
 
 
+
+/* =====================================================
+   فحص تسجيل الدخول
+   ===================================================== */
+
 async function checkAuth() {
 
+
   try {
+
 
     if (
       !window.WRGraph ||
       !WRGraph.configured()
     ) {
+
 
       authMessage.textContent =
         "إعدادات Supabase غير مكتملة.";
@@ -938,27 +1616,36 @@ async function checkAuth() {
 
       return;
 
+
     }
+
 
 
     const user =
       await WRGraph.getAccount();
 
 
+
     if (user) {
+
 
       showApp(
         user
       );
 
+
     } else {
 
+
       showLogin();
+
 
     }
 
 
+
   } catch (error) {
+
 
     console.error(
       "Auth check error:",
@@ -968,12 +1655,20 @@ async function checkAuth() {
 
     showLogin();
 
+
   }
+
 
 }
 
 
+
+/* =====================================================
+   تسجيل الدخول
+   ===================================================== */
+
 async function doLogin() {
+
 
   const email =
     loginEmail.value.trim();
@@ -983,10 +1678,12 @@ async function doLogin() {
     loginPassword.value;
 
 
+
   if (
     !email ||
     !password
   ) {
+
 
     authMessage.textContent =
       "أدخلي البريد الإلكتروني وكلمة المرور.";
@@ -994,7 +1691,9 @@ async function doLogin() {
 
     return;
 
+
   }
+
 
 
   loginBtn.disabled =
@@ -1009,7 +1708,9 @@ async function doLogin() {
     "";
 
 
+
   try {
+
 
     await WRGraph.login(
       email,
@@ -1017,21 +1718,27 @@ async function doLogin() {
     );
 
 
+
     const user =
       await WRGraph.getAccount();
 
 
+
     if (!user) {
+
 
       throw new Error(
         "تعذر إنشاء جلسة المستخدم"
       );
 
+
     }
+
 
 
     loginPassword.value =
       "";
+
 
 
     showApp(
@@ -1039,7 +1746,9 @@ async function doLogin() {
     );
 
 
+
   } catch (error) {
+
 
     console.error(
       "Login error:",
@@ -1051,7 +1760,9 @@ async function doLogin() {
       "تعذر تسجيل الدخول. تأكدي من البريد وكلمة المرور.";
 
 
+
   } finally {
+
 
     loginBtn.disabled =
       false;
@@ -1060,10 +1771,17 @@ async function doLogin() {
     loginBtn.textContent =
       "تسجيل الدخول";
 
+
   }
+
 
 }
 
+
+
+/* =====================================================
+   زر تسجيل الدخول
+   ===================================================== */
 
 loginBtn.addEventListener(
   "click",
@@ -1071,52 +1789,76 @@ loginBtn.addEventListener(
 );
 
 
+
 loginPassword.addEventListener(
   "keydown",
   event => {
+
 
     if (
       event.key ===
       "Enter"
     ) {
 
+
       doLogin();
 
+
     }
+
 
   }
 );
 
 
+
+/* =====================================================
+   تسجيل الخروج
+   ===================================================== */
+
 logoutBtn.addEventListener(
   "click",
   async () => {
 
+
     try {
+
 
       await WRGraph.logout();
 
+
     } catch (error) {
+
 
       console.error(
         "Logout error:",
         error
       );
 
+
     }
+
 
 
     currentUserEmail.textContent =
       "";
 
 
+
     showLogin();
+
 
   }
 );
 
 
+
+/* =====================================================
+   حالة المزامنة
+   ===================================================== */
+
 function updateSync() {
+
 
   const configured =
     window.WRGraph
@@ -1125,11 +1867,13 @@ function updateSync() {
     false;
 
 
+
   const pending =
     typeof wrGetQueue ===
       "function"
       ? wrGetQueue().length
       : 0;
+
 
 
   const dot =
@@ -1144,14 +1888,18 @@ function updateSync() {
     );
 
 
+
   if (
     !dot ||
     !text
   ) {
 
+
     return;
 
+
   }
+
 
 
   dot.className =
@@ -1167,6 +1915,7 @@ function updateSync() {
     );
 
 
+
   text.textContent =
     configured
       ? (
@@ -1178,23 +1927,34 @@ function updateSync() {
           `الحفظ المحلي يعمل — ${pending} سجل في طابور المزامنة`
         );
 
+
 }
 
+
+
+/* =====================================================
+   المزامنة الآن
+   ===================================================== */
 
 syncNowBtn.addEventListener(
   "click",
   async () => {
 
+
     syncNowBtn.disabled =
       true;
 
 
+
     try {
+
 
       await wrSyncPending();
 
 
+
       updateSync();
+
 
 
       if (
@@ -1202,12 +1962,16 @@ syncNowBtn.addEventListener(
         "function"
       ) {
 
+
         await renderDashboard();
+
 
       }
 
 
+
     } catch (error) {
+
 
       console.error(
         "Sync error:",
@@ -1220,15 +1984,20 @@ syncNowBtn.addEventListener(
       );
 
 
+
     } finally {
+
 
       syncNowBtn.disabled =
         false;
 
+
     }
+
 
   }
 );
+
 
 
 window.addEventListener(
@@ -1237,19 +2006,25 @@ window.addEventListener(
 );
 
 
+
 document.addEventListener(
   "DOMContentLoaded",
   () => {
 
+
     updateSync();
+
 
     checkAuth();
 
+
   }
 );
+
 
 </script>
 
 
 </body>
+
 </html>
