@@ -6,14 +6,57 @@ async function renderDashboard() {
     return;
   }
 
-
   try {
 
     let records = [];
 
 
     /* =====================================
-       جلب البيانات من Supabase
+       بيانات المستخدم الحالي
+       ===================================== */
+
+    let currentProfile = null;
+
+    try {
+
+      const user =
+        await WRGraph.getAccount();
+
+      if (user) {
+
+        const sb =
+          window.supabase.createClient(
+            window.WR_CONFIG.supabaseUrl,
+            window.WR_CONFIG.supabaseKey
+          );
+
+        const {
+          data,
+          error
+        } = await sb
+          .from("profiles")
+          .select("id, full_name, role")
+          .eq("id", user.id)
+          .single();
+
+        if (!error) {
+          currentProfile = data;
+        }
+
+      }
+
+    } catch (profileError) {
+
+      console.warn(
+        "تعذر تحميل Profile:",
+        profileError
+      );
+
+    }
+
+
+    /* =====================================
+       جلب السجلات من Supabase
        ===================================== */
 
     if (
@@ -73,6 +116,16 @@ async function renderDashboard() {
         r =>
           r.type === "certificate"
       ).length;
+
+
+    /* =====================================
+       قسم نشاط المعلمات - Admin فقط
+       ===================================== */
+
+    renderTeacherActivity(
+      records,
+      currentProfile
+    );
 
 
     /* =====================================
@@ -211,7 +264,7 @@ async function renderDashboard() {
 
 
     console.log(
-      "Dashboard loaded from Supabase:",
+      "Dashboard loaded:",
       records.length,
       records
     );
@@ -257,6 +310,254 @@ async function renderDashboard() {
     `;
 
   }
+
+}
+
+
+/* =====================================
+   نشاط المعلمات
+   Admin فقط
+   ===================================== */
+
+function renderTeacherActivity(
+  records,
+  profile
+) {
+
+  const section =
+    document.getElementById(
+      "teacherActivitySection"
+    );
+
+  const box =
+    document.getElementById(
+      "teacherActivityList"
+    );
+
+
+  if (
+    !section ||
+    !box
+  ) {
+    return;
+  }
+
+
+  /*
+    المعلمة لا ترى هذا القسم إطلاقًا
+  */
+
+  if (
+    !profile ||
+    profile.role !== "admin"
+  ) {
+
+    section.style.display =
+      "none";
+
+    return;
+  }
+
+
+  section.style.display =
+    "block";
+
+
+  const activities =
+    records.filter(
+      record =>
+        record.type === "activity"
+    );
+
+
+  const teachers = {};
+
+
+  activities.forEach(
+    record => {
+
+      const payload =
+        record.payload || {};
+
+
+      const teacherName =
+        payload.owner_name ||
+        payload.executor ||
+        record.executor ||
+        "غير محدد";
+
+
+      if (!teachers[teacherName]) {
+
+        teachers[teacherName] = {
+          name: teacherName,
+          count: 0,
+          latestDate: null
+        };
+
+      }
+
+
+      teachers[teacherName].count++;
+
+
+      const recordDate =
+        getRecordDate(record);
+
+
+      if (
+        !teachers[teacherName].latestDate ||
+        recordDate >
+          teachers[teacherName].latestDate
+      ) {
+
+        teachers[teacherName].latestDate =
+          recordDate;
+
+      }
+
+    }
+  );
+
+
+  const teacherList =
+    Object.values(teachers)
+      .sort(
+        (a, b) =>
+          b.count - a.count
+      );
+
+
+  box.innerHTML =
+    "";
+
+
+  if (!teacherList.length) {
+
+    box.innerHTML = `
+      <div class="empty">
+        لا توجد تقارير فعاليات للمعلمات حتى الآن.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  teacherList.forEach(
+    teacher => {
+
+      const card =
+        document.createElement(
+          "div"
+        );
+
+
+      card.style.cssText = `
+        background:#fff;
+        border:1px solid #e2ebe6;
+        border-radius:14px;
+        padding:16px;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:12px;
+        margin-bottom:10px;
+        box-shadow:0 3px 12px rgba(0,0,0,.04);
+      `;
+
+
+      let latest =
+        "—";
+
+
+      if (
+        teacher.latestDate &&
+        teacher.latestDate.getTime() !== 0
+      ) {
+
+        latest =
+          teacher.latestDate
+            .toLocaleDateString(
+              "ar-BH",
+              {
+                year: "numeric",
+                month: "short",
+                day: "numeric"
+              }
+            );
+
+      }
+
+
+      card.innerHTML = `
+
+        <div>
+
+          <strong
+            style="
+              color:#075c40;
+              font-size:16px
+            "
+          >
+            ${escapeDashboardHtml(
+              teacher.name
+            )}
+          </strong>
+
+          <div
+            style="
+              color:#6b7a72;
+              font-size:12px;
+              margin-top:5px
+            "
+          >
+            آخر فعالية:
+            ${escapeDashboardHtml(
+              latest
+            )}
+          </div>
+
+        </div>
+
+
+        <div
+          style="
+            text-align:center;
+            min-width:75px
+          "
+        >
+
+          <strong
+            style="
+              display:block;
+              font-size:25px;
+              color:#075c40
+            "
+          >
+            ${teacher.count}
+          </strong>
+
+          <span
+            style="
+              font-size:12px;
+              color:#6b7a72
+            "
+          >
+            فعالية
+          </span>
+
+        </div>
+
+      `;
+
+
+      box.appendChild(
+        card
+      );
+
+    }
+  );
 
 }
 
@@ -477,7 +778,7 @@ function escapeDashboardHtml(value) {
 
 
 /* =====================================
-   تحديث تلقائي عند تغير السجلات
+   تحديث تلقائي
    ===================================== */
 
 window.addEventListener(
