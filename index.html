@@ -13,6 +13,7 @@
   <meta name="theme-color" content="#075c40">
 
   <style>
+
     .auth-overlay {
       position: fixed;
       inset: 0;
@@ -136,17 +137,60 @@
       font-size: 12px;
       color: #596c63;
     }
+
+    /* =====================================
+       نشاط المعلمات
+       ===================================== */
+
+    .teacher-activity-section {
+      display: none;
+      margin-top: 28px;
+      margin-bottom: 28px;
+    }
+
+    .teacher-activity-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .teacher-activity-head h3 {
+      margin: 0;
+    }
+
+    .teacher-activity-head p {
+      margin: 6px 0 0;
+      color: #6b7a72;
+      font-size: 13px;
+    }
+
+    .admin-badge {
+      background: #f5f8f6;
+      color: #075c40;
+      padding: 7px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
   </style>
 </head>
+
 
 <body>
 
 
-<!-- ==============================
+<!-- =====================================
      شاشة تسجيل الدخول
-     ============================== -->
+     ===================================== -->
 
-<div id="authOverlay" class="auth-overlay hidden">
+<div
+  id="authOverlay"
+  class="auth-overlay hidden"
+>
 
   <div class="auth-card">
 
@@ -156,7 +200,9 @@
       alt="شعار المدرسة"
     >
 
-    <h1>WestRiffa Smart Office</h1>
+    <h1>
+      WestRiffa Smart Office
+    </h1>
 
     <div class="school-name">
       مدرسة الرفاع الغربي الابتدائية للبنين
@@ -217,11 +263,16 @@
 </div>
 
 
-<!-- ==============================
-     المنصة
-     ============================== -->
 
-<div id="appRoot" class="auth-loading">
+<!-- =====================================
+     المنصة
+     ===================================== -->
+
+<div
+  id="appRoot"
+  class="auth-loading"
+>
+
 
 <header class="topbar">
 
@@ -233,8 +284,13 @@
     >
 
     <div>
-      <h1>WestRiffa Smart Office</h1>
-      <p>مدرسة الرفاع الغربي الابتدائية للبنين</p>
+      <h1>
+        WestRiffa Smart Office
+      </h1>
+
+      <p>
+        مدرسة الرفاع الغربي الابتدائية للبنين
+      </p>
     </div>
 
   </div>
@@ -247,6 +303,7 @@
       class="user-email"
     ></span>
 
+
     <a
       class="btn btn-soft"
       href="index.html"
@@ -254,12 +311,14 @@
       🏠 الرئيسية
     </a>
 
+
     <a
       class="btn btn-soft"
       href="pages/archive/index.html"
     >
       📂 الأرشيف
     </a>
+
 
     <button
       id="logoutBtn"
@@ -274,236 +333,390 @@
 </header>
 
 
+
 <div class="shell">
 
-  <aside class="sidebar">
 
-    <h3 class="sidebar-title">
-      القائمة الرئيسية
-    </h3>
+<!-- =====================================
+     القائمة الجانبية
+     ===================================== -->
 
-    <a
-      class="nav-link active"
-      href="index.html"
-    >
-      🏠 لوحة التحكم
-    </a>
+<aside class="sidebar">
 
-    <a
-      class="nav-link"
-      href="pages/meetings/index.html"
-    >
-      📅 الاجتماعات
-    </a>
-
-    <a
-      class="nav-link"
-      href="pages/activities/index.html"
-    >
-      🎯 الفعاليات
-    </a>
-
-    <a
-      class="nav-link"
-      href="pages/certificates/index.html"
-    >
-      🏅 الشهادات
-    </a>
-
-    <a
-      class="nav-link"
-      href="pages/archive/index.html"
-    >
-      📂 الأرشيف الذكي
-    </a>
-
-    <a
-      class="nav-link"
-      href="pages/settings/index.html"
-    >
-      ⚙️ الإعدادات
-    </a>
-
-  </aside>
+  <h3 class="sidebar-title">
+    القائمة الرئيسية
+  </h3>
 
 
-  <main class="content">
+  <a
+    class="nav-link active"
+    href="index.html"
+  >
+    🏠 لوحة التحكم
+  </a>
 
-    <div class="page-head">
+
+  <a
+    class="nav-link"
+    href="pages/meetings/index.html"
+  >
+    📅 الاجتماعات
+  </a>
+
+
+  <a
+    class="nav-link"
+    href="pages/activities/index.html"
+  >
+    🎯 الفعاليات
+  </a>
+
+
+  <a
+    class="nav-link"
+    href="pages/certificates/index.html"
+  >
+    🏅 الشهادات
+  </a>
+
+
+  <a
+    class="nav-link"
+    href="pages/archive/index.html"
+  >
+    📂 الأرشيف الذكي
+  </a>
+
+
+  <a
+    class="nav-link"
+    href="pages/settings/index.html"
+  >
+    ⚙️ الإعدادات
+  </a>
+
+</aside>
+
+
+
+<!-- =====================================
+     المحتوى
+     ===================================== -->
+
+<main class="content">
+
+
+  <div class="page-head">
+
+    <div>
+
+      <h2>
+        لوحة التحكم
+      </h2>
+
+      <p>
+        الوصول السريع ومتابعة السجلات المحفوظة.
+      </p>
+
+    </div>
+
+
+    <div class="page-actions">
+
+      <button
+        class="btn btn-gold"
+        type="button"
+        onclick="wrExport()"
+      >
+        نسخة احتياطية
+      </button>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- =====================================
+       المزامنة
+       ===================================== -->
+
+  <div class="sync-strip">
+
+    <div class="sync-state">
+
+      <span
+        id="syncDot"
+        class="dot"
+      ></span>
+
+      <span id="syncText">
+        جارٍ فحص المزامنة...
+      </span>
+
+    </div>
+
+
+    <div class="page-actions">
+
+      <button
+        id="syncNowBtn"
+        class="btn btn-primary"
+        type="button"
+      >
+        مزامنة الآن
+      </button>
+
+
+      <a
+        class="btn btn-soft"
+        href="pages/settings/index.html"
+      >
+        إعداد الربط
+      </a>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- =====================================
+       الإحصائيات
+       ===================================== -->
+
+  <div class="stats">
+
+    <article class="stat">
+
+      <strong id="statAll">
+        0
+      </strong>
+
+      <span>
+        إجمالي السجلات
+      </span>
+
+    </article>
+
+
+    <article class="stat">
+
+      <strong id="statActivities">
+        0
+      </strong>
+
+      <span>
+        الفعاليات
+      </span>
+
+    </article>
+
+
+    <article class="stat">
+
+      <strong id="statMeetings">
+        0
+      </strong>
+
+      <span>
+        الاجتماعات
+      </span>
+
+    </article>
+
+
+    <article class="stat">
+
+      <strong id="statCertificates">
+        0
+      </strong>
+
+      <span>
+        الشهادات
+      </span>
+
+    </article>
+
+  </div>
+
+
+
+  <!-- =====================================
+       نشاط المعلمات
+       Admin فقط
+       ===================================== -->
+
+  <section
+    id="teacherActivitySection"
+    class="teacher-activity-section"
+  >
+
+    <div class="teacher-activity-head">
 
       <div>
-        <h2>لوحة التحكم</h2>
-        <p>الوصول السريع ومتابعة السجلات المحفوظة.</p>
-      </div>
 
-      <div class="page-actions">
+        <h3 class="section-title">
+          👩‍🏫 نشاط المعلمات
+        </h3>
 
-        <button
-          class="btn btn-gold"
-          type="button"
-          onclick="wrExport()"
-        >
-          نسخة احتياطية
-        </button>
-
-      </div>
-
-    </div>
-
-
-    <div class="sync-strip">
-
-      <div class="sync-state">
-
-        <span
-          id="syncDot"
-          class="dot"
-        ></span>
-
-        <span id="syncText">
-          جارٍ فحص المزامنة...
-        </span>
+        <p>
+          متابعة عدد تقارير الفعاليات المسجلة لكل معلمة.
+        </p>
 
       </div>
 
 
-      <div class="page-actions">
-
-        <button
-          id="syncNowBtn"
-          class="btn btn-primary"
-          type="button"
-        >
-          مزامنة الآن
-        </button>
-
-        <a
-          class="btn btn-soft"
-          href="pages/settings/index.html"
-        >
-          إعداد الربط
-        </a>
-
-      </div>
+      <span class="admin-badge">
+        خاص بالإدارة
+      </span>
 
     </div>
 
-
-    <div class="stats">
-
-      <article class="stat">
-        <strong id="statAll">0</strong>
-        <span>إجمالي السجلات</span>
-      </article>
-
-      <article class="stat">
-        <strong id="statActivities">0</strong>
-        <span>الفعاليات</span>
-      </article>
-
-      <article class="stat">
-        <strong id="statMeetings">0</strong>
-        <span>الاجتماعات</span>
-      </article>
-
-      <article class="stat">
-        <strong id="statCertificates">0</strong>
-        <span>الشهادات</span>
-      </article>
-
-    </div>
-
-
-    <h3 class="section-title">
-      الوصول السريع
-    </h3>
-
-
-    <div class="cards">
-
-      <a
-        class="feature-card"
-        href="pages/activities/report.html"
-      >
-        📋
-        <b>تقرير فعالية</b>
-        <span>صور وPDF وأرشيف</span>
-      </a>
-
-
-      <a
-        class="feature-card"
-        href="pages/meetings/invitation.html"
-      >
-        📩
-        <b>دعوة اجتماع</b>
-        <span>بطاقة PNG</span>
-      </a>
-
-
-      <a
-        class="feature-card"
-        href="pages/meetings/minutes.html"
-      >
-        📝
-        <b>محضر اجتماع</b>
-        <span>PDF وحفظ</span>
-      </a>
-
-
-      <a
-        class="feature-card"
-        href="pages/meetings/attendance.html"
-      >
-        ✅
-        <b>سجل حضور</b>
-        <span>حضور وغياب</span>
-      </a>
-
-
-      <a
-        class="feature-card"
-        href="pages/meetings/recommendations.html"
-      >
-        📌
-        <b>متابعة توصيات</b>
-        <span>الحالة والمسؤول</span>
-      </a>
-
-
-      <a
-        class="feature-card"
-        href="pages/certificates/create.html"
-      >
-        🏅
-        <b>شهادة تقدير</b>
-        <span>جاهزة للطباعة</span>
-      </a>
-
-    </div>
-
-
-    <h3 class="section-title">
-      آخر العمليات
-    </h3>
 
     <div
-      id="recentList"
-      class="recent-list"
+      id="teacherActivityList"
     ></div>
 
-  </main>
+  </section>
+
+
+
+  <!-- =====================================
+       الوصول السريع
+       ===================================== -->
+
+  <h3 class="section-title">
+    الوصول السريع
+  </h3>
+
+
+  <div class="cards">
+
+
+    <a
+      class="feature-card"
+      href="pages/activities/report.html"
+    >
+      📋
+      <b>
+        تقرير فعالية
+      </b>
+
+      <span>
+        صور وPDF وأرشيف
+      </span>
+    </a>
+
+
+    <a
+      class="feature-card"
+      href="pages/meetings/invitation.html"
+    >
+      📩
+      <b>
+        دعوة اجتماع
+      </b>
+
+      <span>
+        بطاقة PNG
+      </span>
+    </a>
+
+
+    <a
+      class="feature-card"
+      href="pages/meetings/minutes.html"
+    >
+      📝
+      <b>
+        محضر اجتماع
+      </b>
+
+      <span>
+        PDF وحفظ
+      </span>
+    </a>
+
+
+    <a
+      class="feature-card"
+      href="pages/meetings/attendance.html"
+    >
+      ✅
+      <b>
+        سجل حضور
+      </b>
+
+      <span>
+        حضور وغياب
+      </span>
+    </a>
+
+
+    <a
+      class="feature-card"
+      href="pages/meetings/recommendations.html"
+    >
+      📌
+      <b>
+        متابعة توصيات
+      </b>
+
+      <span>
+        الحالة والمسؤول
+      </span>
+    </a>
+
+
+    <a
+      class="feature-card"
+      href="pages/certificates/create.html"
+    >
+      🏅
+      <b>
+        شهادة تقدير
+      </b>
+
+      <span>
+        جاهزة للطباعة
+      </span>
+    </a>
+
+  </div>
+
+
+
+  <!-- =====================================
+       آخر العمليات
+       ===================================== -->
+
+  <h3 class="section-title">
+    آخر العمليات
+  </h3>
+
+
+  <div
+    id="recentList"
+    class="recent-list"
+  ></div>
+
+
+</main>
 
 </div>
 
 </div>
 
 
-<!-- ==============================
+
+<!-- =====================================
      JavaScript
-     ============================== -->
+     ===================================== -->
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script
+  src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
 
 <script src="js/config.js"></script>
 <script src="js/graph.js"></script>
@@ -511,35 +724,67 @@
 <script src="js/dashboard.js"></script>
 
 
+
 <script>
 
 const authOverlay =
-  document.getElementById("authOverlay");
+  document.getElementById(
+    "authOverlay"
+  );
+
 
 const appRoot =
-  document.getElementById("appRoot");
+  document.getElementById(
+    "appRoot"
+  );
+
 
 const loginEmail =
-  document.getElementById("loginEmail");
+  document.getElementById(
+    "loginEmail"
+  );
+
 
 const loginPassword =
-  document.getElementById("loginPassword");
+  document.getElementById(
+    "loginPassword"
+  );
+
 
 const loginBtn =
-  document.getElementById("loginBtn");
+  document.getElementById(
+    "loginBtn"
+  );
+
 
 const authMessage =
-  document.getElementById("authMessage");
+  document.getElementById(
+    "authMessage"
+  );
+
 
 const logoutBtn =
-  document.getElementById("logoutBtn");
+  document.getElementById(
+    "logoutBtn"
+  );
+
 
 const currentUserEmail =
-  document.getElementById("currentUserEmail");
+  document.getElementById(
+    "currentUserEmail"
+  );
+
 
 const syncNowBtn =
-  document.getElementById("syncNowBtn");
+  document.getElementById(
+    "syncNowBtn"
+  );
 
+
+
+/* =====================================
+   إظهار شاشة الدخول
+   ===================================== */
 
 function showLogin() {
 
@@ -553,6 +798,11 @@ function showLogin() {
 
 }
 
+
+
+/* =====================================
+   إظهار المنصة
+   ===================================== */
 
 function showApp(user) {
 
@@ -583,6 +833,11 @@ function showApp(user) {
 
 }
 
+
+
+/* =====================================
+   التحقق من تسجيل الدخول
+   ===================================== */
 
 async function checkAuth() {
 
@@ -632,16 +887,25 @@ async function checkAuth() {
 }
 
 
+
+/* =====================================
+   تسجيل الدخول
+   ===================================== */
+
 async function doLogin() {
 
   const email =
     loginEmail.value.trim();
 
+
   const password =
     loginPassword.value;
 
 
-  if (!email || !password) {
+  if (
+    !email ||
+    !password
+  ) {
 
     authMessage.textContent =
       "أدخلي البريد الإلكتروني وكلمة المرور.";
@@ -654,8 +918,10 @@ async function doLogin() {
   loginBtn.disabled =
     true;
 
+
   loginBtn.textContent =
     "جاري تسجيل الدخول...";
+
 
   authMessage.textContent =
     "";
@@ -706,6 +972,7 @@ async function doLogin() {
     loginBtn.disabled =
       false;
 
+
     loginBtn.textContent =
       "تسجيل الدخول";
 
@@ -714,10 +981,12 @@ async function doLogin() {
 }
 
 
+
 loginBtn.addEventListener(
   "click",
   doLogin
 );
+
 
 
 loginPassword.addEventListener(
@@ -735,6 +1004,11 @@ loginPassword.addEventListener(
   }
 );
 
+
+
+/* =====================================
+   تسجيل الخروج
+   ===================================== */
 
 logoutBtn.addEventListener(
   "click",
@@ -757,11 +1031,17 @@ logoutBtn.addEventListener(
     currentUserEmail.textContent =
       "";
 
+
     showLogin();
 
   }
 );
 
+
+
+/* =====================================
+   حالة المزامنة
+   ===================================== */
 
 function updateSync() {
 
@@ -773,7 +1053,7 @@ function updateSync() {
 
   const pending =
     typeof wrGetQueue ===
-      "function"
+    "function"
       ? wrGetQueue().length
       : 0;
 
@@ -790,8 +1070,13 @@ function updateSync() {
     );
 
 
-  if (!dot || !text) {
+  if (
+    !dot ||
+    !text
+  ) {
+
     return;
+
   }
 
 
@@ -821,6 +1106,11 @@ function updateSync() {
 
 }
 
+
+
+/* =====================================
+   المزامنة اليدوية
+   ===================================== */
 
 syncNowBtn.addEventListener(
   "click",
@@ -871,10 +1161,12 @@ syncNowBtn.addEventListener(
 );
 
 
+
 window.addEventListener(
   "wr-sync-changed",
   updateSync
 );
+
 
 
 document.addEventListener(
