@@ -1,10 +1,22 @@
+let dashboardRecords = [];
+let dashboardCurrentProfile = null;
+let dashboardProfiles = [];
+
+
+/* =========================================================
+   تشغيل لوحة التحكم
+   ========================================================= */
+
 async function renderDashboard() {
 
-  const recentBox = $("recentList");
+  const recentBox =
+    $("recentList");
+
 
   if (!recentBox) {
     return;
   }
+
 
   try {
 
@@ -22,7 +34,9 @@ async function renderDashboard() {
 
 
     if (!user) {
-      throw new Error("لا يوجد مستخدم مسجل الدخول");
+      throw new Error(
+        "لا يوجد مستخدم مسجل الدخول"
+      );
     }
 
 
@@ -46,29 +60,39 @@ async function renderDashboard() {
       error: profileError
     } = await sb
       .from("profiles")
-      .select("id, full_name, role")
-      .eq("id", user.id)
+      .select(
+        "id, full_name, role"
+      )
+      .eq(
+        "id",
+        user.id
+      )
       .single();
 
 
     if (profileError) {
+
       console.warn(
         "تعذر تحميل Profile الحالي:",
         profileError
       );
+
     } else {
-      currentProfile = profileData;
+
+      currentProfile =
+        profileData;
+
     }
 
 
     /* =====================================
        جلب السجلات
-       RLS سيحدد ما يراه كل مستخدم
        ===================================== */
 
     if (
       window.WRGraph &&
-      typeof WRGraph.configured === "function" &&
+      typeof WRGraph.configured ===
+        "function" &&
       WRGraph.configured()
     ) {
 
@@ -78,7 +102,8 @@ async function renderDashboard() {
     } else {
 
       records =
-        typeof wrGetRecords === "function"
+        typeof wrGetRecords ===
+          "function"
           ? wrGetRecords()
           : [];
 
@@ -105,10 +130,15 @@ async function renderDashboard() {
         error: profilesError
       } = await sb
         .from("profiles")
-        .select("id, full_name, role, created_at")
-        .order("full_name", {
-          ascending: true
-        });
+        .select(
+          "id, full_name, role, created_at"
+        )
+        .order(
+          "full_name",
+          {
+            ascending: true
+          }
+        );
 
 
       if (profilesError) {
@@ -128,6 +158,22 @@ async function renderDashboard() {
       }
 
     }
+
+
+    /* =====================================
+       حفظ البيانات للاستخدام في الفلترة
+       ===================================== */
+
+    dashboardRecords =
+      records;
+
+
+    dashboardCurrentProfile =
+      currentProfile;
+
+
+    dashboardProfiles =
+      allProfiles;
 
 
     /* =====================================
@@ -153,7 +199,9 @@ async function renderDashboard() {
             "invitation",
             "attendance",
             "recommendation"
-          ].includes(record.type)
+          ].includes(
+            record.type
+          )
       ).length;
 
 
@@ -165,7 +213,7 @@ async function renderDashboard() {
 
 
     /* =====================================
-       نشاط المعلمات - Admin فقط
+       نشاط المعلمات
        ===================================== */
 
     renderTeacherActivity(
@@ -175,19 +223,22 @@ async function renderDashboard() {
     );
 
 
+    /*
+      تحديث رابط تقرير الأداء
+      حتى يحمل نفس الفترة المختارة.
+    */
+
+    updatePerformanceReportLink();
+
+
     /* =====================================
        ترتيب السجلات من الأحدث
        ===================================== */
 
     records.sort(
-      (a, b) => {
-
-        return (
-          getRecordDate(b).getTime() -
-          getRecordDate(a).getTime()
-        );
-
-      }
+      (a, b) =>
+        getRecordDate(b).getTime() -
+        getRecordDate(a).getTime()
     );
 
 
@@ -208,6 +259,7 @@ async function renderDashboard() {
       `;
 
       return;
+
     }
 
 
@@ -216,7 +268,9 @@ async function renderDashboard() {
       .forEach(record => {
 
         const row =
-          document.createElement("div");
+          document.createElement(
+            "div"
+          );
 
 
         row.className =
@@ -224,21 +278,31 @@ async function renderDashboard() {
 
 
         const title =
-          getRecordTitle(record);
+          getRecordTitle(
+            record
+          );
 
 
         const typeName =
-          typeof wrTypeLabel === "function"
-            ? wrTypeLabel(record.type)
-            : record.type || "سجل";
+          typeof wrTypeLabel ===
+            "function"
+            ? wrTypeLabel(
+                record.type
+              )
+            : record.type ||
+              "سجل";
 
 
         const dateText =
-          formatRecordDate(record);
+          formatRecordDate(
+            record
+          );
 
 
         const url =
-          getRecordUrl(record);
+          getRecordUrl(
+            record
+          );
 
 
         row.innerHTML = `
@@ -246,7 +310,9 @@ async function renderDashboard() {
           <div>
 
             <strong>
-              ${escapeDashboardHtml(title)}
+              ${escapeDashboardHtml(
+                title
+              )}
             </strong>
 
             <div
@@ -256,7 +322,9 @@ async function renderDashboard() {
                 margin-top:4px;
               "
             >
-              ${escapeDashboardHtml(dateText)}
+              ${escapeDashboardHtml(
+                dateText
+              )}
             </div>
 
           </div>
@@ -272,7 +340,9 @@ async function renderDashboard() {
           >
 
             <span class="tag">
-              ${escapeDashboardHtml(typeName)}
+              ${escapeDashboardHtml(
+                typeName
+              )}
             </span>
 
             ${
@@ -330,11 +400,14 @@ async function renderDashboard() {
     $("statAll").textContent =
       "0";
 
+
     $("statActivities").textContent =
       "0";
 
+
     $("statMeetings").textContent =
       "0";
+
 
     $("statCertificates").textContent =
       "0";
@@ -362,8 +435,165 @@ async function renderDashboard() {
 
 
 /* =========================================================
+   قراءة فترة الفلترة
+   ========================================================= */
+
+function getTeacherFilterRange() {
+
+  const fromInput =
+    document.getElementById(
+      "teacherFromDate"
+    );
+
+
+  const toInput =
+    document.getElementById(
+      "teacherToDate"
+    );
+
+
+  return {
+
+    from:
+      fromInput?.value ||
+      "",
+
+    to:
+      toInput?.value ||
+      ""
+
+  };
+
+}
+
+
+
+/* =========================================================
+   تاريخ الفعالية الحقيقي
+   نستخدم تاريخ التنفيذ وليس تاريخ إنشاء السجل
+   ========================================================= */
+
+function getActivityDate(
+  record
+) {
+
+  const rawDate =
+    record.record_date ||
+    record.payload?.date ||
+    record.date ||
+    "";
+
+
+  if (!rawDate) {
+
+    return new Date(0);
+
+  }
+
+
+  const date =
+    new Date(
+      String(rawDate)
+        .slice(
+          0,
+          10
+        ) +
+      "T00:00:00"
+    );
+
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+
+    return new Date(0);
+
+  }
+
+
+  return date;
+
+}
+
+
+
+/* =========================================================
+   هل الفعالية داخل الفترة؟
+   ========================================================= */
+
+function isActivityInRange(
+  record,
+  from,
+  to
+) {
+
+  const activityDate =
+    getActivityDate(
+      record
+    );
+
+
+  if (
+    activityDate.getTime() === 0
+  ) {
+
+    return false;
+
+  }
+
+
+  if (from) {
+
+    const fromDate =
+      new Date(
+        from +
+        "T00:00:00"
+      );
+
+
+    if (
+      activityDate <
+      fromDate
+    ) {
+
+      return false;
+
+    }
+
+  }
+
+
+  if (to) {
+
+    const toDate =
+      new Date(
+        to +
+        "T23:59:59"
+      );
+
+
+    if (
+      activityDate >
+      toDate
+    ) {
+
+      return false;
+
+    }
+
+  }
+
+
+  return true;
+
+}
+
+
+
+/* =========================================================
    نشاط المعلمات
-   التجميع حسب created_by
    ========================================================= */
 
 function renderTeacherActivity(
@@ -388,21 +618,27 @@ function renderTeacherActivity(
     !section ||
     !listBox
   ) {
+
     return;
+
   }
 
 
-  /* المعلمة لا ترى هذا القسم */
+  /* =====================================
+     يظهر للـ Admin فقط
+     ===================================== */
 
   if (
     !currentProfile ||
-    currentProfile.role !== "admin"
+    currentProfile.role !==
+      "admin"
   ) {
 
     section.style.display =
       "none";
 
     return;
+
   }
 
 
@@ -411,7 +647,7 @@ function renderTeacherActivity(
 
 
   /* =====================================
-     نحذف تفاصيل قديمة لو موجودة
+     إزالة التفاصيل القديمة
      ===================================== */
 
   const oldDetails =
@@ -421,7 +657,104 @@ function renderTeacherActivity(
 
 
   if (oldDetails) {
+
     oldDetails.remove();
+
+  }
+
+
+  /* =====================================
+     فترة الفلترة
+     ===================================== */
+
+  const {
+    from,
+    to
+  } =
+    getTeacherFilterRange();
+
+
+  /* =====================================
+     فعاليات الفترة
+     ===================================== */
+
+  const periodActivities =
+    records.filter(
+      record => {
+
+        return (
+          record.type ===
+            "activity" &&
+          isActivityInRange(
+            record,
+            from,
+            to
+          )
+        );
+
+      }
+    );
+
+
+  /* =====================================
+     تحديث ملخص الفترة
+     ===================================== */
+
+  const periodSummary =
+    document.getElementById(
+      "teacherPeriodSummary"
+    );
+
+
+  if (periodSummary) {
+
+    if (
+      from ||
+      to
+    ) {
+
+      let text =
+        `عدد الفعاليات في الفترة: ${periodActivities.length}`;
+
+
+      if (
+        from &&
+        to
+      ) {
+
+        text +=
+          ` — من ${formatSimpleDate(from)} إلى ${formatSimpleDate(to)}`;
+
+      } else if (from) {
+
+        text +=
+          ` — من ${formatSimpleDate(from)}`;
+
+      } else if (to) {
+
+        text +=
+          ` — حتى ${formatSimpleDate(to)}`;
+
+      }
+
+
+      periodSummary.textContent =
+        text;
+
+
+    } else {
+
+      periodSummary.textContent =
+        `جميع الفترات — إجمالي الفعاليات: ${
+          records.filter(
+            record =>
+              record.type ===
+              "activity"
+          ).length
+        }`;
+
+    }
+
   }
 
 
@@ -433,7 +766,8 @@ function renderTeacherActivity(
     (profiles || [])
       .filter(
         profile =>
-          profile.role === "teacher"
+          profile.role ===
+          "teacher"
       );
 
 
@@ -444,41 +778,45 @@ function renderTeacherActivity(
   if (!teachers.length) {
 
     listBox.innerHTML = `
+
       <div class="empty">
         لا توجد حسابات معلمات حتى الآن.
       </div>
+
     `;
 
     return;
+
   }
 
 
   /* =====================================
-     بطاقة لكل معلمة
+     بطاقة كل معلمة
      ===================================== */
 
   teachers.forEach(
     teacher => {
 
-      /*
-        نجيب فعاليات هذه المعلمة
-        من created_by الحقيقي
-      */
-
       const teacherRecords =
-        records.filter(
-          record =>
-            record.type === "activity" &&
-            String(record.created_by) ===
-            String(teacher.id)
-        );
-
-
-      teacherRecords.sort(
-        (a, b) =>
-          getRecordDate(b).getTime() -
-          getRecordDate(a).getTime()
-      );
+        periodActivities
+          .filter(
+            record =>
+              String(
+                record.created_by
+              ) ===
+              String(
+                teacher.id
+              )
+          )
+          .sort(
+            (a, b) =>
+              getActivityDate(
+                b
+              ).getTime() -
+              getActivityDate(
+                a
+              ).getTime()
+          );
 
 
       const count =
@@ -492,16 +830,22 @@ function renderTeacherActivity(
       if (count) {
 
         latestText =
-          getRecordDate(
+          getActivityDate(
             teacherRecords[0]
-          ).toLocaleDateString(
-            "ar-BH",
-            {
-              year: "numeric",
-              month: "short",
-              day: "numeric"
-            }
-          );
+          )
+            .toLocaleDateString(
+              "ar-BH",
+              {
+                year:
+                  "numeric",
+
+                month:
+                  "short",
+
+                day:
+                  "numeric"
+              }
+            );
 
       }
 
@@ -561,8 +905,15 @@ function renderTeacherActivity(
           >
             ${
               count
-                ? `آخر فعالية: ${escapeDashboardHtml(latestText)}`
-                : "لم تسجل فعاليات بعد"
+                ? `آخر فعالية: ${escapeDashboardHtml(
+                    latestText
+                  )}`
+                : (
+                    from ||
+                    to
+                      ? "لا توجد فعاليات في هذه الفترة"
+                      : "لم تسجل فعاليات بعد"
+                  )
             }
           </div>
 
@@ -617,7 +968,9 @@ function renderTeacherActivity(
 
           showTeacherReports(
             teacher,
-            teacherRecords
+            teacherRecords,
+            from,
+            to
           );
 
         }
@@ -636,12 +989,14 @@ function renderTeacherActivity(
 
 
 /* =========================================================
-   عرض تقارير معلمة واحدة
+   عرض تقارير معلمة
    ========================================================= */
 
 function showTeacherReports(
   teacher,
-  records
+  records,
+  from = "",
+  to = ""
 ) {
 
   const section =
@@ -689,6 +1044,31 @@ function showTeacherReports(
   }
 
 
+  let periodText =
+    "جميع الفترات";
+
+
+  if (
+    from &&
+    to
+  ) {
+
+    periodText =
+      `من ${formatSimpleDate(from)} إلى ${formatSimpleDate(to)}`;
+
+  } else if (from) {
+
+    periodText =
+      `من ${formatSimpleDate(from)}`;
+
+  } else if (to) {
+
+    periodText =
+      `حتى ${formatSimpleDate(to)}`;
+
+  }
+
+
   details.innerHTML = `
 
     <div
@@ -717,6 +1097,7 @@ function showTeacherReports(
           )}
         </h3>
 
+
         <div
           style="
             margin-top:5px;
@@ -724,7 +1105,10 @@ function showTeacherReports(
             font-size:13px;
           "
         >
-          عدد تقارير الفعاليات:
+          ${escapeDashboardHtml(
+            periodText
+          )}
+          — عدد الفعاليات:
           ${records.length}
         </div>
 
@@ -760,7 +1144,7 @@ function showTeacherReports(
     list.innerHTML = `
 
       <div class="empty">
-        لم تسجل هذه المعلمة أي فعالية حتى الآن.
+        لا توجد تقارير لهذه المعلمة في الفترة المحددة.
       </div>
 
     `;
@@ -781,15 +1165,21 @@ function showTeacherReports(
 
 
         const title =
-          getRecordTitle(record);
+          getRecordTitle(
+            record
+          );
 
 
         const date =
-          formatRecordDate(record);
+          formatActivityDate(
+            record
+          );
 
 
         const url =
-          getRecordUrl(record);
+          getRecordUrl(
+            record
+          );
 
 
         row.innerHTML = `
@@ -855,10 +1245,290 @@ function showTeacherReports(
     );
 
 
-  details.scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
+  details.scrollIntoView(
+    {
+      behavior:
+        "smooth",
+
+      block:
+        "start"
+    }
+  );
+
+}
+
+
+
+/* =========================================================
+   ربط فترة لوحة التحكم بتقرير أداء المعلمات
+   ========================================================= */
+
+function updatePerformanceReportLink() {
+
+  const reportLink =
+    document.getElementById(
+      "teacherPerformanceLink"
+    );
+
+
+  if (!reportLink) {
+
+    return;
+
+  }
+
+
+  const {
+    from,
+    to
+  } =
+    getTeacherFilterRange();
+
+
+  const params =
+    new URLSearchParams();
+
+
+  if (from) {
+
+    params.set(
+      "from",
+      from
+    );
+
+  }
+
+
+  if (to) {
+
+    params.set(
+      "to",
+      to
+    );
+
+  }
+
+
+  const query =
+    params.toString();
+
+
+  reportLink.href =
+    "pages/reports/teachers-performance.html" +
+    (
+      query
+        ? "?" + query
+        : ""
+    );
+
+}
+
+
+
+/* =========================================================
+   تطبيق فلتر الفترة
+   ========================================================= */
+
+function applyTeacherPeriodFilter() {
+
+  const {
+    from,
+    to
+  } =
+    getTeacherFilterRange();
+
+
+  if (
+    from &&
+    to &&
+    from > to
+  ) {
+
+    alert(
+      "تاريخ البداية يجب أن يكون قبل تاريخ النهاية."
+    );
+
+    return;
+
+  }
+
+
+  renderTeacherActivity(
+    dashboardRecords,
+    dashboardCurrentProfile,
+    dashboardProfiles
+  );
+
+
+  updatePerformanceReportLink();
+
+}
+
+
+
+/* =========================================================
+   إلغاء فلتر الفترة
+   ========================================================= */
+
+function clearTeacherPeriodFilter() {
+
+  const fromInput =
+    document.getElementById(
+      "teacherFromDate"
+    );
+
+
+  const toInput =
+    document.getElementById(
+      "teacherToDate"
+    );
+
+
+  if (fromInput) {
+
+    fromInput.value =
+      "";
+
+  }
+
+
+  if (toInput) {
+
+    toInput.value =
+      "";
+
+  }
+
+
+  renderTeacherActivity(
+    dashboardRecords,
+    dashboardCurrentProfile,
+    dashboardProfiles
+  );
+
+
+  updatePerformanceReportLink();
+
+}
+
+
+
+/* =========================================================
+   ربط أزرار الفلتر
+   ========================================================= */
+
+function setupTeacherFilters() {
+
+  const applyBtn =
+    document.getElementById(
+      "applyTeacherFilter"
+    );
+
+
+  const clearBtn =
+    document.getElementById(
+      "clearTeacherFilter"
+    );
+
+
+  if (applyBtn) {
+
+    applyBtn.onclick =
+      applyTeacherPeriodFilter;
+
+  }
+
+
+  if (clearBtn) {
+
+    clearBtn.onclick =
+      clearTeacherPeriodFilter;
+
+  }
+
+
+  updatePerformanceReportLink();
+
+}
+
+
+
+/* =========================================================
+   تنسيق تاريخ الفلتر
+   ========================================================= */
+
+function formatSimpleDate(
+  value
+) {
+
+  if (!value) {
+    return "—";
+  }
+
+
+  const date =
+    new Date(
+      value +
+      "T00:00:00"
+    );
+
+
+  return date
+    .toLocaleDateString(
+      "ar-BH",
+      {
+        year:
+          "numeric",
+
+        month:
+          "short",
+
+        day:
+          "numeric"
+      }
+    );
+
+}
+
+
+
+/* =========================================================
+   تنسيق تاريخ الفعالية
+   ========================================================= */
+
+function formatActivityDate(
+  record
+) {
+
+  const date =
+    getActivityDate(
+      record
+    );
+
+
+  if (
+    date.getTime() === 0
+  ) {
+
+    return "—";
+
+  }
+
+
+  return date
+    .toLocaleDateString(
+      "ar-BH",
+      {
+        year:
+          "numeric",
+
+        month:
+          "short",
+
+        day:
+          "numeric"
+      }
+    );
 
 }
 
@@ -868,7 +1538,9 @@ function showTeacherReports(
    عنوان السجل
    ========================================================= */
 
-function getRecordTitle(record) {
+function getRecordTitle(
+  record
+) {
 
   return (
     record.title ||
@@ -885,10 +1557,12 @@ function getRecordTitle(record) {
 
 
 /* =========================================================
-   تاريخ السجل
+   تاريخ السجل العام
    ========================================================= */
 
-function getRecordDate(record) {
+function getRecordDate(
+  record
+) {
 
   const rawDate =
     record.created_at ||
@@ -908,7 +1582,9 @@ function getRecordDate(record) {
 
 
   const date =
-    new Date(rawDate);
+    new Date(
+      rawDate
+    );
 
 
   if (
@@ -929,13 +1605,17 @@ function getRecordDate(record) {
 
 
 /* =========================================================
-   تنسيق التاريخ
+   تنسيق تاريخ السجل
    ========================================================= */
 
-function formatRecordDate(record) {
+function formatRecordDate(
+  record
+) {
 
   const date =
-    getRecordDate(record);
+    getRecordDate(
+      record
+    );
 
 
   if (
@@ -947,14 +1627,20 @@ function formatRecordDate(record) {
   }
 
 
-  return date.toLocaleString(
-    "ar-BH",
-    {
-      year: "numeric",
-      month: "short",
-      day: "numeric"
-    }
-  );
+  return date
+    .toLocaleString(
+      "ar-BH",
+      {
+        year:
+          "numeric",
+
+        month:
+          "short",
+
+        day:
+          "numeric"
+      }
+    );
 
 }
 
@@ -964,7 +1650,9 @@ function formatRecordDate(record) {
    رابط فتح السجل
    ========================================================= */
 
-function getRecordUrl(record) {
+function getRecordUrl(
+  record
+) {
 
   const id =
     encodeURIComponent(
@@ -973,7 +1661,8 @@ function getRecordUrl(record) {
 
 
   if (
-    record.type === "activity"
+    record.type ===
+    "activity"
   ) {
 
     return (
@@ -985,7 +1674,8 @@ function getRecordUrl(record) {
 
 
   if (
-    record.type === "invitation"
+    record.type ===
+    "invitation"
   ) {
 
     return (
@@ -997,7 +1687,8 @@ function getRecordUrl(record) {
 
 
   if (
-    record.type === "meeting"
+    record.type ===
+    "meeting"
   ) {
 
     return (
@@ -1009,7 +1700,8 @@ function getRecordUrl(record) {
 
 
   if (
-    record.type === "attendance"
+    record.type ===
+    "attendance"
   ) {
 
     return (
@@ -1021,7 +1713,8 @@ function getRecordUrl(record) {
 
 
   if (
-    record.type === "recommendation"
+    record.type ===
+    "recommendation"
   ) {
 
     return (
@@ -1033,7 +1726,8 @@ function getRecordUrl(record) {
 
 
   if (
-    record.type === "certificate"
+    record.type ===
+    "certificate"
   ) {
 
     return (
@@ -1054,7 +1748,9 @@ function getRecordUrl(record) {
    حماية النصوص
    ========================================================= */
 
-function escapeDashboardHtml(value) {
+function escapeDashboardHtml(
+  value
+) {
 
   return String(
     value ?? ""
@@ -1096,10 +1792,16 @@ window.addEventListener(
 
 
 /* =========================================================
-   تشغيل لوحة التحكم
+   بدء الصفحة
    ========================================================= */
 
 document.addEventListener(
   "DOMContentLoaded",
-  renderDashboard
+  () => {
+
+    setupTeacherFilters();
+
+    renderDashboard();
+
+  }
 );
