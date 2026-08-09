@@ -213,6 +213,16 @@ async function renderDashboard() {
 
 
     /* =====================================
+       تحليل أنواع الفعاليات
+       ===================================== */
+
+    renderActivityTypeBreakdown(
+      records,
+      currentProfile
+    );
+
+
+    /* =====================================
        نشاط المعلمات
        ===================================== */
 
@@ -433,6 +443,349 @@ async function renderDashboard() {
 }
 
 
+/* =========================================================
+   تحليل أنواع الفعاليات
+   يظهر للـ Admin فقط
+   ========================================================= */
+
+function renderActivityTypeBreakdown(
+  records,
+  currentProfile
+) {
+
+  const oldSection =
+    document.getElementById(
+      "activityTypeBreakdownSection"
+    );
+
+
+  if (oldSection) {
+    oldSection.remove();
+  }
+
+
+  if (
+    !currentProfile ||
+    currentProfile.role !== "admin"
+  ) {
+    return;
+  }
+
+
+  const statsBox =
+    document.querySelector(
+      ".stats"
+    );
+
+
+  if (!statsBox) {
+    return;
+  }
+
+
+  const activities =
+    (records || []).filter(
+      record =>
+        record.type === "activity"
+    );
+
+
+  const knownTypes = [
+    "فعالية",
+    "برنامج",
+    "مبادرة",
+    "ورشة عمل",
+    "احتفال",
+    "مسابقة",
+    "زيارة",
+    "اجتماع",
+    "تفعيل حصة احتياط",
+    "أخرى"
+  ];
+
+
+  const counts = {};
+
+
+  knownTypes.forEach(
+    type => {
+      counts[type] = 0;
+    }
+  );
+
+
+  activities.forEach(
+    record => {
+
+      const rawType =
+        record.payload?.activityType ||
+        record.payload?.activity_type ||
+        record.activityType ||
+        record.activity_type ||
+        "فعالية";
+
+
+      const activityType =
+        String(rawType).trim() ||
+        "فعالية";
+
+
+      if (
+        Object.prototype.hasOwnProperty.call(
+          counts,
+          activityType
+        )
+      ) {
+        counts[activityType] += 1;
+      } else {
+        counts["أخرى"] += 1;
+      }
+
+    }
+  );
+
+
+  const total =
+    activities.length;
+
+
+  const activeTypes =
+    knownTypes
+      .map(
+        type => ({
+          type,
+          count:
+            counts[type]
+        })
+      )
+      .sort(
+        (a, b) =>
+          b.count - a.count
+      );
+
+
+  const section =
+    document.createElement(
+      "section"
+    );
+
+
+  section.id =
+    "activityTypeBreakdownSection";
+
+
+  section.style.cssText = `
+    margin-top:28px;
+    margin-bottom:28px;
+  `;
+
+
+  const cardsHtml =
+    activeTypes
+      .map(
+        item => {
+
+          const percentage =
+            total
+              ? Math.round(
+                  (item.count / total) * 100
+                )
+              : 0;
+
+
+          return `
+            <div
+              style="
+                background:#fff;
+                border:1px solid #e1e9e5;
+                border-radius:14px;
+                padding:15px;
+                box-shadow:0 3px 12px rgba(0,0,0,.04);
+                min-height:106px;
+                display:flex;
+                flex-direction:column;
+                justify-content:space-between;
+              "
+            >
+
+              <div
+                style="
+                  color:#4f635a;
+                  font-size:13px;
+                  font-weight:700;
+                "
+              >
+                ${escapeDashboardHtml(
+                  item.type
+                )}
+              </div>
+
+              <div
+                style="
+                  display:flex;
+                  justify-content:space-between;
+                  align-items:flex-end;
+                  gap:10px;
+                  margin-top:10px;
+                "
+              >
+
+                <strong
+                  style="
+                    color:#075c40;
+                    font-size:28px;
+                    line-height:1;
+                  "
+                >
+                  ${item.count}
+                </strong>
+
+                <span
+                  style="
+                    color:#7b8982;
+                    font-size:12px;
+                  "
+                >
+                  ${percentage}%
+                </span>
+
+              </div>
+
+              <div
+                style="
+                  height:5px;
+                  background:#edf2ef;
+                  border-radius:20px;
+                  overflow:hidden;
+                  margin-top:10px;
+                "
+              >
+
+                <div
+                  style="
+                    height:100%;
+                    width:${percentage}%;
+                    background:#087451;
+                    border-radius:20px;
+                  "
+                ></div>
+
+              </div>
+
+            </div>
+          `;
+
+        }
+      )
+      .join("");
+
+
+  let highestText =
+    "لا توجد فعاليات محفوظة بعد";
+
+
+  if (
+    total &&
+    activeTypes.length
+  ) {
+
+    const highest =
+      activeTypes[0];
+
+
+    highestText =
+      `أعلى نوع توثيقًا: ${highest.type} (${highest.count})`;
+  }
+
+
+  section.innerHTML = `
+
+    <div
+      style="
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-start;
+        gap:12px;
+        flex-wrap:wrap;
+        margin-bottom:14px;
+      "
+    >
+
+      <div>
+
+        <h3
+          class="section-title"
+          style="margin:0;"
+        >
+          📊 توزيع الفعاليات حسب النوع
+        </h3>
+
+        <p
+          style="
+            margin:6px 0 0;
+            color:#6b7a72;
+            font-size:13px;
+          "
+        >
+          قراءة مباشرة لأنواع التوثيق المسجلة في المنصة.
+        </p>
+
+      </div>
+
+
+      <div
+        style="
+          background:#f5f8f6;
+          border:1px solid #e1e9e5;
+          border-radius:12px;
+          padding:10px 14px;
+          color:#075c40;
+          font-size:13px;
+          font-weight:700;
+        "
+      >
+        إجمالي الفعاليات: ${total}
+      </div>
+
+    </div>
+
+
+    <div
+      style="
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(155px,1fr));
+        gap:10px;
+      "
+    >
+      ${cardsHtml}
+    </div>
+
+
+    <div
+      style="
+        margin-top:12px;
+        padding:10px 12px;
+        border-radius:10px;
+        background:#f8faf9;
+        color:#5f7068;
+        font-size:12px;
+      "
+    >
+      ${escapeDashboardHtml(
+        highestText
+      )}
+    </div>
+
+  `;
+
+
+  statsBox.insertAdjacentElement(
+    "afterend",
+    section
+  );
+
+}
+
 
 /* =========================================================
    قراءة فترة الفلترة
@@ -467,10 +820,8 @@ function getTeacherFilterRange() {
 }
 
 
-
 /* =========================================================
    تاريخ الفعالية الحقيقي
-   نستخدم تاريخ التنفيذ وليس تاريخ إنشاء السجل
    ========================================================= */
 
 function getActivityDate(
@@ -485,9 +836,7 @@ function getActivityDate(
 
 
   if (!rawDate) {
-
     return new Date(0);
-
   }
 
 
@@ -507,16 +856,13 @@ function getActivityDate(
       date.getTime()
     )
   ) {
-
     return new Date(0);
-
   }
 
 
   return date;
 
 }
-
 
 
 /* =========================================================
@@ -538,9 +884,7 @@ function isActivityInRange(
   if (
     activityDate.getTime() === 0
   ) {
-
     return false;
-
   }
 
 
@@ -557,9 +901,7 @@ function isActivityInRange(
       activityDate <
       fromDate
     ) {
-
       return false;
-
     }
 
   }
@@ -578,9 +920,7 @@ function isActivityInRange(
       activityDate >
       toDate
     ) {
-
       return false;
-
     }
 
   }
@@ -589,7 +929,6 @@ function isActivityInRange(
   return true;
 
 }
-
 
 
 /* =========================================================
@@ -618,15 +957,9 @@ function renderTeacherActivity(
     !section ||
     !listBox
   ) {
-
     return;
-
   }
 
-
-  /* =====================================
-     يظهر للـ Admin فقط
-     ===================================== */
 
   if (
     !currentProfile ||
@@ -638,17 +971,12 @@ function renderTeacherActivity(
       "none";
 
     return;
-
   }
 
 
   section.style.display =
     "block";
 
-
-  /* =====================================
-     إزالة التفاصيل القديمة
-     ===================================== */
 
   const oldDetails =
     document.getElementById(
@@ -657,15 +985,9 @@ function renderTeacherActivity(
 
 
   if (oldDetails) {
-
     oldDetails.remove();
-
   }
 
-
-  /* =====================================
-     فترة الفلترة
-     ===================================== */
 
   const {
     from,
@@ -673,10 +995,6 @@ function renderTeacherActivity(
   } =
     getTeacherFilterRange();
 
-
-  /* =====================================
-     فعاليات الفترة
-     ===================================== */
 
   const periodActivities =
     records.filter(
@@ -695,10 +1013,6 @@ function renderTeacherActivity(
       }
     );
 
-
-  /* =====================================
-     تحديث ملخص الفترة
-     ===================================== */
 
   const periodSummary =
     document.getElementById(
@@ -758,10 +1072,6 @@ function renderTeacherActivity(
   }
 
 
-  /* =====================================
-     حسابات Teacher فقط
-     ===================================== */
-
   const teachers =
     (profiles || [])
       .filter(
@@ -789,10 +1099,6 @@ function renderTeacherActivity(
 
   }
 
-
-  /* =====================================
-     بطاقة كل معلمة
-     ===================================== */
 
   teachers.forEach(
     teacher => {
@@ -985,9 +1291,6 @@ function renderTeacherActivity(
   );
 
 }
-
-
-
 /* =========================================================
    عرض تقارير معلمة
    ========================================================= */
@@ -1182,6 +1485,12 @@ function showTeacherReports(
           );
 
 
+        const activityType =
+          getActivityTypeLabel(
+            record
+          );
+
+
         row.innerHTML = `
 
           <div>
@@ -1201,6 +1510,19 @@ function showTeacherReports(
             >
               ${escapeDashboardHtml(
                 date
+              )}
+            </div>
+
+            <div
+              style="
+                color:#087451;
+                font-size:11px;
+                margin-top:4px;
+                font-weight:700;
+              "
+            >
+              ${escapeDashboardHtml(
+                activityType
               )}
             </div>
 
@@ -1258,7 +1580,6 @@ function showTeacherReports(
 }
 
 
-
 /* =========================================================
    ربط فترة لوحة التحكم بتقرير أداء المعلمات
    ========================================================= */
@@ -1272,9 +1593,7 @@ function updatePerformanceReportLink() {
 
 
   if (!reportLink) {
-
     return;
-
   }
 
 
@@ -1324,7 +1643,6 @@ function updatePerformanceReportLink() {
 }
 
 
-
 /* =========================================================
    تطبيق فلتر الفترة
    ========================================================= */
@@ -1363,7 +1681,6 @@ function applyTeacherPeriodFilter() {
   updatePerformanceReportLink();
 
 }
-
 
 
 /* =========================================================
@@ -1412,7 +1729,6 @@ function clearTeacherPeriodFilter() {
 }
 
 
-
 /* =========================================================
    ربط أزرار الفلتر
    ========================================================= */
@@ -1452,7 +1768,6 @@ function setupTeacherFilters() {
 }
 
 
-
 /* =========================================================
    تنسيق تاريخ الفلتر
    ========================================================= */
@@ -1489,7 +1804,6 @@ function formatSimpleDate(
     );
 
 }
-
 
 
 /* =========================================================
@@ -1533,6 +1847,35 @@ function formatActivityDate(
 }
 
 
+/* =========================================================
+   استخراج نوع الفعالية من السجل
+   ========================================================= */
+
+function getActivityTypeLabel(
+  record
+) {
+
+  const rawType =
+    record?.payload?.activityType ||
+    record?.payload?.activity_type ||
+    record?.activityType ||
+    record?.activity_type ||
+    "فعالية";
+
+
+  const value =
+    String(
+      rawType
+    ).trim();
+
+
+  return (
+    value ||
+    "فعالية"
+  );
+
+}
+
 
 /* =========================================================
    عنوان السجل
@@ -1553,7 +1896,6 @@ function getRecordTitle(
   );
 
 }
-
 
 
 /* =========================================================
@@ -1603,7 +1945,6 @@ function getRecordDate(
 }
 
 
-
 /* =========================================================
    تنسيق تاريخ السجل
    ========================================================= */
@@ -1643,7 +1984,6 @@ function formatRecordDate(
     );
 
 }
-
 
 
 /* =========================================================
@@ -1743,7 +2083,6 @@ function getRecordUrl(
 }
 
 
-
 /* =========================================================
    حماية النصوص
    ========================================================= */
@@ -1779,7 +2118,6 @@ function escapeDashboardHtml(
 }
 
 
-
 /* =========================================================
    تحديث عند تغير السجلات
    ========================================================= */
@@ -1788,7 +2126,6 @@ window.addEventListener(
   "wr-records-changed",
   renderDashboard
 );
-
 
 
 /* =========================================================
