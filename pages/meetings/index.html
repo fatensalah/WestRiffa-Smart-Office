@@ -1,43 +1,1028 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>الاجتماعات</title>
-<link rel="stylesheet" href="../../css/app.css">
-<link rel="manifest" href="../../manifest.webmanifest">
-<meta name="theme-color" content="#075c40">
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  >
+
+  <title>
+    الاجتماعات
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="../../css/app.css"
+  >
+
+  <link
+    rel="manifest"
+    href="../../manifest.webmanifest"
+  >
+
+  <meta
+    name="theme-color"
+    content="#075c40"
+  >
+
+
+  <style>
+
+    .meeting-indicators{
+      margin-top:30px;
+    }
+
+    .meeting-indicators-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:16px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+
+    .meeting-indicators-head h3{
+      margin:0;
+      color:#075c40;
+      font-size:25px;
+    }
+
+    .meeting-indicators-head p{
+      margin:6px 0 0;
+      color:#6b7a72;
+      font-size:13px;
+      line-height:1.7;
+    }
+
+    .meeting-stats{
+      display:grid;
+      grid-template-columns:
+        repeat(
+          auto-fit,
+          minmax(170px,1fr)
+        );
+      gap:14px;
+    }
+
+    .meeting-stat-card{
+      background:#fff;
+      border:1px solid #e1e9e5;
+      border-top:4px solid #087451;
+      border-radius:16px;
+      padding:20px 15px;
+      text-align:center;
+      box-shadow:
+        0 6px 20px
+        rgba(0,0,0,.04);
+    }
+
+    .meeting-stat-card strong{
+      display:block;
+      color:#075c40;
+      font-size:34px;
+      margin-bottom:7px;
+    }
+
+    .meeting-stat-card span{
+      display:block;
+      color:#60736a;
+      font-size:14px;
+      font-weight:700;
+      line-height:1.6;
+    }
+
+    .meeting-stat-card.total{
+      background:#075c40;
+      border-top-color:#c99a38;
+    }
+
+    .meeting-stat-card.total strong,
+    .meeting-stat-card.total span{
+      color:#fff;
+    }
+
+    .meeting-domain-box{
+      margin-top:24px;
+      padding:19px;
+      background:#fff;
+      border:1px solid #e1e9e5;
+      border-radius:16px;
+    }
+
+    .meeting-domain-box h4{
+      margin:0 0 6px;
+      color:#075c40;
+      font-size:20px;
+    }
+
+    .meeting-domain-box > p{
+      margin:0 0 16px;
+      color:#6b7a72;
+      font-size:13px;
+    }
+
+    .meeting-domain-grid{
+      display:grid;
+      grid-template-columns:
+        repeat(
+          auto-fit,
+          minmax(200px,1fr)
+        );
+      gap:12px;
+    }
+
+    .meeting-domain-item{
+      background:#f7faf8;
+      border:1px solid #e5ece8;
+      border-right:4px solid #087451;
+      border-radius:12px;
+      padding:15px;
+    }
+
+    .meeting-domain-item b{
+      display:block;
+      color:#075c40;
+      font-size:26px;
+      margin-bottom:5px;
+    }
+
+    .meeting-domain-item span{
+      color:#65776e;
+      font-size:13px;
+      line-height:1.6;
+      font-weight:700;
+    }
+
+    .meeting-indicators-state{
+      margin-top:15px;
+      min-height:22px;
+      color:#687970;
+      font-size:13px;
+    }
+
+    .hidden{
+      display:none !important;
+    }
+
+  </style>
+
 </head>
+
+
 <body>
 
+
 <header class="topbar">
+
   <div class="brand">
-    <img src="../../assets/school-header.jpg" alt="شعار المدرسة">
-    <div><h1>الاجتماعات</h1><p>إدارة الاجتماعات</p></div>
+
+    <img
+      src="../../assets/school-header.jpg"
+      alt="شعار المدرسة"
+    >
+
+    <div>
+
+      <h1>
+        الاجتماعات
+      </h1>
+
+      <p>
+        إدارة الاجتماعات
+      </p>
+
+    </div>
+
   </div>
+
+
   <div class="header-actions">
-    <a class="btn btn-soft" href="../../index.html">🏠 الرئيسية</a>
-    <a class="btn btn-soft" href="../../pages/archive/index.html">📂 الأرشيف</a>
+
+    <a
+      class="btn btn-soft"
+      href="../../index.html"
+    >
+      🏠 الرئيسية
+    </a>
+
+    <a
+      class="btn btn-soft"
+      href="../../pages/archive/index.html"
+    >
+      📂 الأرشيف
+    </a>
+
   </div>
+
 </header>
 
+
+
 <div class="shell">
-<aside class="sidebar"><h3 class="sidebar-title">القائمة الرئيسية</h3><a class="nav-link " href="../../index.html">🏠 لوحة التحكم</a>
-<a class="nav-link active" href="../../pages/meetings/index.html">📅 الاجتماعات</a>
-<a class="nav-link " href="../../pages/activities/index.html">🎯 الفعاليات</a>
-<a class="nav-link " href="../../pages/certificates/index.html">🏅 الشهادات</a>
-<a class="nav-link " href="../../pages/archive/index.html">📂 الأرشيف الذكي</a>
-<a class="nav-link " href="../../pages/settings/index.html">⚙️ الإعدادات</a></aside>
+
+
+<aside class="sidebar">
+
+  <h3 class="sidebar-title">
+    القائمة الرئيسية
+  </h3>
+
+
+  <a
+    class="nav-link"
+    href="../../index.html"
+  >
+    🏠 لوحة التحكم
+  </a>
+
+
+  <a
+    class="nav-link active"
+    href="../../pages/meetings/index.html"
+  >
+    📅 الاجتماعات
+  </a>
+
+
+  <a
+    class="nav-link"
+    href="../../pages/activities/index.html"
+  >
+    🎯 الفعاليات
+  </a>
+
+
+  <a
+    class="nav-link"
+    href="../../pages/certificates/index.html"
+  >
+    🏅 الشهادات
+  </a>
+
+
+  <a
+    class="nav-link"
+    href="../../pages/archive/index.html"
+  >
+    📂 الأرشيف الذكي
+  </a>
+
+
+  <a
+    id="settingsNavLink"
+    class="nav-link"
+    href="../../pages/settings/index.html"
+    style="display:none"
+  >
+    ⚙️ الإعدادات
+  </a>
+
+</aside>
+
+
+
 <main class="content">
-<div class="page-head"><div><h2>إدارة الاجتماعات</h2><p>الدعوات والمحاضر والحضور والمتابعة.</p></div></div>
-<div class="cards">
-<a class="feature-card" href="invitation.html">📩<b>دعوة اجتماع</b><span>تحميل PNG</span></a>
-<a class="feature-card" href="minutes.html">📝<b>محضر اجتماع</b><span>طباعة PDF</span></a>
-<a class="feature-card" href="attendance.html">✅<b>سجل حضور</b><span>حضور وغياب</span></a>
-<a class="feature-card" href="recommendations.html">📌<b>متابعة توصيات</b><span>المسؤول والحالة</span></a>
-</div></main>
+
+
+<div class="page-head">
+
+  <div>
+
+    <h2>
+      إدارة الاجتماعات
+    </h2>
+
+    <p>
+      إنشاء الدعوات وتوثيق محاضر الاجتماعات ومتابعة المؤشرات.
+    </p>
+
+  </div>
+
 </div>
-<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"></script>
+
+
+
+<div class="cards">
+
+
+  <a
+    class="feature-card"
+    href="invitation.html"
+  >
+
+    📩
+
+    <b>
+      دعوة اجتماع
+    </b>
+
+    <span>
+      إنشاء وحفظ وتحميل PNG
+    </span>
+
+  </a>
+
+
+  <a
+    class="feature-card"
+    href="minutes.html"
+  >
+
+    📝
+
+    <b>
+      محضر اجتماع
+    </b>
+
+    <span>
+      حفظ وتعديل وطباعة PDF
+    </span>
+
+  </a>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     مؤشرات الاجتماعات — الإدارة فقط
+     ===================================================== -->
+
+<section
+  id="meetingIndicatorsSection"
+  class="meeting-indicators hidden"
+>
+
+
+  <div class="meeting-indicators-head">
+
+    <div>
+
+      <h3>
+        📊 مؤشرات الاجتماعات
+      </h3>
+
+      <p>
+        قراءة مباشرة لمحاضر الاجتماعات المحفوظة
+        حسب نوع الاجتماع والمحاور التي تمت مناقشتها.
+      </p>
+
+    </div>
+
+
+    <button
+      id="refreshMeetingIndicators"
+      class="btn btn-soft"
+      type="button"
+    >
+      🔄 تحديث المؤشرات
+    </button>
+
+  </div>
+
+
+
+  <div class="meeting-stats">
+
+
+    <div class="meeting-stat-card total">
+
+      <strong id="meetingTotal">
+        0
+      </strong>
+
+      <span>
+        إجمالي الاجتماعات
+      </span>
+
+    </div>
+
+
+    <div class="meeting-stat-card">
+
+      <strong id="meetingImprovement">
+        0
+      </strong>
+
+      <span>
+        اجتماعات التحسين
+      </span>
+
+    </div>
+
+
+    <div class="meeting-stat-card">
+
+      <strong id="meetingBoard">
+        0
+      </strong>
+
+      <span>
+        مجالس الإدارة
+      </span>
+
+    </div>
+
+
+    <div class="meeting-stat-card">
+
+      <strong id="meetingParents">
+        0
+      </strong>
+
+      <span>
+        اجتماعات أولياء الأمور
+      </span>
+
+    </div>
+
+
+    <div class="meeting-stat-card">
+
+      <strong id="meetingDepartment">
+        0
+      </strong>
+
+      <span>
+        اجتماعات الأقسام
+      </span>
+
+    </div>
+
+
+  </div>
+
+
+
+  <div class="meeting-domain-box">
+
+    <h4>
+      المحاور التي تناولتها الاجتماعات
+    </h4>
+
+    <p>
+      الاجتماع الواحد يمكن أن يُحسب في أكثر من محور
+      إذا كانت له بنود أو مناقشات في أكثر من مجال.
+    </p>
+
+
+    <div class="meeting-domain-grid">
+
+
+      <div class="meeting-domain-item">
+
+        <b id="domainAcademic">
+          0
+        </b>
+
+        <span>
+          الإنجاز الأكاديمي
+        </span>
+
+      </div>
+
+
+      <div class="meeting-domain-item">
+
+        <b id="domainTeaching">
+          0
+        </b>
+
+        <span>
+          التعليم والتعلم والتقويم
+        </span>
+
+      </div>
+
+
+      <div class="meeting-domain-item">
+
+        <b id="domainPersonal">
+          0
+        </b>
+
+        <span>
+          التطور الشخصي للطلبة ورعايتهم
+        </span>
+
+      </div>
+
+
+      <div class="meeting-domain-item">
+
+        <b id="domainLeadership">
+          0
+        </b>
+
+        <span>
+          القيادة والإدارة والحوكمة
+        </span>
+
+      </div>
+
+
+    </div>
+
+  </div>
+
+
+  <div
+    id="meetingIndicatorsState"
+    class="meeting-indicators-state"
+  ></div>
+
+
+</section>
+
+
+</main>
+
+
+</div>
+
+
+
+<script
+  src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
 <script src="../../js/config.js"></script>
 <script src="../../js/graph.js"></script>
 <script src="../../js/common.js"></script>
-</body></html>
+
+
+
+<script>
+
+"use strict";
+
+
+function meetingElement(
+  id
+){
+
+  return document.getElementById(
+    id
+  );
+
+}
+
+
+function setMeetingIndicator(
+  id,
+  value
+){
+
+  const element =
+    meetingElement(
+      id
+    );
+
+
+  if(element){
+
+    element.textContent =
+      String(
+        value ?? 0
+      );
+
+  }
+
+}
+
+
+function getMeetingPayload(
+  record
+){
+
+  return (
+    record?.payload &&
+    typeof record.payload ===
+      "object"
+  )
+    ? record.payload
+    : {};
+
+}
+
+
+function getMeetingType(
+  record
+){
+
+  const payload =
+    getMeetingPayload(
+      record
+    );
+
+
+  return String(
+    payload.meetingType ||
+    ""
+  ).trim();
+
+}
+
+
+/* =========================================================
+   هل الاجتماع تناول محورًا معينًا؟
+   ========================================================= */
+
+function meetingHasAxis(
+  record,
+  agendaField,
+  discussionField,
+  legacyField
+){
+
+  const payload =
+    getMeetingPayload(
+      record
+    );
+
+
+  const agenda =
+    String(
+      payload[
+        agendaField
+      ] ||
+      ""
+    ).trim();
+
+
+  const discussion =
+    String(
+      payload[
+        discussionField
+      ] ||
+      ""
+    ).trim();
+
+
+  const legacy =
+    String(
+      payload[
+        legacyField
+      ] ||
+      ""
+    ).trim();
+
+
+  return Boolean(
+    agenda ||
+    discussion ||
+    legacy
+  );
+
+}
+
+
+/* =========================================================
+   تحميل المؤشرات
+   ========================================================= */
+
+async function loadMeetingIndicators(){
+
+  const state =
+    meetingElement(
+      "meetingIndicatorsState"
+    );
+
+
+  if(state){
+
+    state.textContent =
+      "جارٍ تحديث مؤشرات الاجتماعات...";
+
+  }
+
+
+  try{
+
+
+    const records =
+      await WRGraph.fetchRecords();
+
+
+    const meetings =
+      (
+        Array.isArray(records)
+          ? records
+          : []
+      )
+      .filter(
+        record =>
+          String(
+            record?.type ||
+            ""
+          )
+            .trim()
+            .toLowerCase() ===
+          "meeting"
+      );
+
+
+    /* إجمالي الاجتماعات */
+
+    setMeetingIndicator(
+      "meetingTotal",
+      meetings.length
+    );
+
+
+    /* أنواع الاجتماعات */
+
+    setMeetingIndicator(
+      "meetingImprovement",
+
+      meetings.filter(
+        record =>
+          getMeetingType(
+            record
+          ) ===
+          "اجتماع تحسين"
+      ).length
+    );
+
+
+    setMeetingIndicator(
+      "meetingBoard",
+
+      meetings.filter(
+        record =>
+          getMeetingType(
+            record
+          ) ===
+          "مجلس إدارة"
+      ).length
+    );
+
+
+    setMeetingIndicator(
+      "meetingParents",
+
+      meetings.filter(
+        record =>
+          getMeetingType(
+            record
+          ) ===
+          "اجتماع أولياء أمور"
+      ).length
+    );
+
+
+    setMeetingIndicator(
+      "meetingDepartment",
+
+      meetings.filter(
+        record =>
+          getMeetingType(
+            record
+          ) ===
+          "اجتماع قسم"
+      ).length
+    );
+
+
+    /* المحاور الأربعة */
+
+    setMeetingIndicator(
+      "domainAcademic",
+
+      meetings.filter(
+        record =>
+          meetingHasAxis(
+            record,
+            "academicAgenda",
+            "academicDiscussion",
+            "academicAxis"
+          )
+      ).length
+    );
+
+
+    setMeetingIndicator(
+      "domainTeaching",
+
+      meetings.filter(
+        record =>
+          meetingHasAxis(
+            record,
+            "teachingAgenda",
+            "teachingDiscussion",
+            "teachingAxis"
+          )
+      ).length
+    );
+
+
+    setMeetingIndicator(
+      "domainPersonal",
+
+      meetings.filter(
+        record =>
+          meetingHasAxis(
+            record,
+            "personalAgenda",
+            "personalDiscussion",
+            "personalAxis"
+          )
+      ).length
+    );
+
+
+    setMeetingIndicator(
+      "domainLeadership",
+
+      meetings.filter(
+        record =>
+          meetingHasAxis(
+            record,
+            "leadershipAgenda",
+            "leadershipDiscussion",
+            "leadershipAxis"
+          )
+      ).length
+    );
+
+
+    const oldMeetingsWithoutType =
+      meetings.filter(
+        record =>
+          !getMeetingType(
+            record
+          )
+      ).length;
+
+
+    if(state){
+
+      if(
+        oldMeetingsWithoutType > 0
+      ){
+
+        state.textContent =
+          `تم تحديث المؤشرات. يوجد ${oldMeetingsWithoutType} محضر قديم بدون نوع اجتماع، وهو محسوب ضمن الإجمالي فقط بالنسبة لنوع الاجتماع.`;
+
+      }else{
+
+        state.textContent =
+          "تم تحديث مؤشرات الاجتماعات بنجاح.";
+
+      }
+
+    }
+
+
+  }catch(error){
+
+
+    console.error(
+      "Meeting indicators error:",
+      error
+    );
+
+
+    if(state){
+
+      state.textContent =
+        "تعذر تحميل مؤشرات الاجتماعات.";
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   صلاحيات الصفحة
+   ========================================================= */
+
+async function configureMeetingsPage(){
+
+  try{
+
+
+    const user =
+      await WRGraph.getAccount();
+
+
+    if(!user){
+
+      location.href =
+        "../../index.html";
+
+      return;
+
+    }
+
+
+    const profile =
+      await WRGraph.getUserProfile();
+
+
+    const role =
+      String(
+        profile?.role ||
+        "teacher"
+      )
+        .trim()
+        .toLowerCase();
+
+
+    const settingsLink =
+      meetingElement(
+        "settingsNavLink"
+      );
+
+
+    if(settingsLink){
+
+      settingsLink.style.display =
+        role === "admin"
+          ? ""
+          : "none";
+
+    }
+
+
+    const indicatorsSection =
+      meetingElement(
+        "meetingIndicatorsSection"
+      );
+
+
+    if(
+      role ===
+      "admin"
+    ){
+
+      indicatorsSection
+        ?.classList
+        .remove(
+          "hidden"
+        );
+
+
+      await loadMeetingIndicators();
+
+
+    }else{
+
+
+      indicatorsSection
+        ?.classList
+        .add(
+          "hidden"
+        );
+
+    }
+
+
+  }catch(error){
+
+
+    console.error(
+      "Meetings permissions error:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   تحديث المؤشرات
+   ========================================================= */
+
+meetingElement(
+  "refreshMeetingIndicators"
+)
+  ?.addEventListener(
+    "click",
+    loadMeetingIndicators
+  );
+
+
+/* =========================================================
+   تشغيل الصفحة
+   ========================================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  configureMeetingsPage
+);
+
+</script>
+
+
+</body>
+
+</html>

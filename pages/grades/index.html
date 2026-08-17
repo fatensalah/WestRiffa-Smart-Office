@@ -1,0 +1,2778 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>منظومة التحصيل والدرجات | WestRiffa Smart Office</title>
+
+  <link rel="stylesheet" href="../../css/app.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <style>
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:Tahoma,Arial,sans-serif;
+      background:#f4f7f6;
+      color:#173c34;
+    }
+
+    .page-header{
+      background:linear-gradient(135deg,#0f513f,#18705a);
+      color:#fff;
+      padding:28px 24px;
+      box-shadow:0 4px 18px rgba(0,0,0,.08);
+    }
+
+    .page-header-inner{
+      width:min(1450px,95%);
+      margin:auto;
+    }
+
+    .page-header h1{
+      margin:0 0 8px;
+      font-size:30px;
+    }
+
+    .page-header p{
+      margin:0;
+      opacity:.92;
+      line-height:1.8;
+    }
+
+    .container{
+      width:min(1450px,95%);
+      margin:26px auto 60px;
+    }
+
+    .top-actions{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+
+    .btn-link{
+      display:inline-block;
+      text-decoration:none;
+      padding:11px 17px;
+      border-radius:11px;
+      background:#fff;
+      color:#075c40;
+      border:1px solid #dce9e5;
+      font-weight:700;
+    }
+
+    .scope-box{
+      background:#edf8f3;
+      color:#075c40;
+      border:1px solid #d3eadf;
+      border-radius:12px;
+      padding:13px 16px;
+      margin-bottom:18px;
+      line-height:1.7;
+      font-weight:700;
+    }
+
+    .tabs{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+
+    .tab-btn{
+      border:1px solid #d7e4e0;
+      background:#fff;
+      color:#075c40;
+      border-radius:11px;
+      padding:11px 16px;
+      font-family:inherit;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .tab-btn.active{
+      background:#075c40;
+      color:#fff;
+      border-color:#075c40;
+    }
+
+    .tab-panel{display:none}
+    .tab-panel.active{display:block}
+
+    .card{
+      background:#fff;
+      border:1px solid #e1e9e5;
+      border-radius:18px;
+      padding:23px;
+      margin-bottom:20px;
+      box-shadow:0 8px 24px rgba(15,81,63,.05);
+    }
+
+    .card h2,
+    .card h3{
+      color:#075c40;
+      margin-top:0;
+    }
+
+    .sub{
+      color:#6b7a72;
+      font-size:13px;
+      line-height:1.8;
+      margin-top:-2px;
+      margin-bottom:18px;
+    }
+
+    .form-grid{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:14px;
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:7px;
+    }
+
+    .field.full{grid-column:1/-1}
+
+    .field label{
+      color:#334d42;
+      font-weight:700;
+      font-size:14px;
+    }
+
+    .field input,
+    .field select,
+    .field textarea{
+      width:100%;
+      border:1px solid #cfdad4;
+      border-radius:10px;
+      padding:11px 12px;
+      font-family:inherit;
+      background:#fff;
+      font-size:14px;
+    }
+
+    .field textarea{
+      min-height:90px;
+      resize:vertical;
+      line-height:1.8;
+    }
+
+    .auto-value{
+      background:#f5f8f6 !important;
+      color:#075c40;
+      font-weight:700;
+    }
+
+    .btn{
+      border:0;
+      border-radius:11px;
+      padding:11px 17px;
+      font-family:inherit;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .btn-primary{
+      background:#075c40;
+      color:#fff;
+    }
+
+    .btn-soft{
+      background:#eef4f2;
+      color:#075c40;
+      border:1px solid #d7e4e0;
+    }
+
+    .btn-gold{
+      background:#9a7420;
+      color:#fff;
+    }
+
+    .btn-danger{
+      background:#b42318;
+      color:#fff;
+    }
+
+    .btn:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+    }
+
+    .action-row{
+      display:flex;
+      gap:9px;
+      flex-wrap:wrap;
+      margin-top:16px;
+    }
+
+    .save-state{
+      min-height:24px;
+      margin-top:10px;
+      font-size:13px;
+      font-weight:700;
+    }
+
+    .save-state.ok{color:#087451}
+    .save-state.error{color:#b42318}
+
+    .students-wrapper{
+      overflow-x:auto;
+      border:1px solid #e1e9e5;
+      border-radius:14px;
+      margin-top:15px;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:850px;
+      background:#fff;
+    }
+
+    th,td{
+      padding:11px 10px;
+      border-bottom:1px solid #e7eeea;
+      text-align:right;
+      vertical-align:middle;
+      font-size:13px;
+    }
+
+    th{
+      background:#eef5f2;
+      color:#214c41;
+      white-space:nowrap;
+    }
+
+    td input.score-input{
+      width:110px;
+      padding:9px;
+      border:1px solid #ccd9d3;
+      border-radius:9px;
+      font-family:inherit;
+      text-align:center;
+    }
+
+    .empty{
+      text-align:center;
+      padding:34px;
+      color:#6b7a72;
+      border:1px dashed #d6e0db;
+      border-radius:14px;
+      background:#fafcfb;
+    }
+
+    .warning{
+      background:#fff7e7;
+      color:#7b5a16;
+      border:1px solid #eedcae;
+      border-radius:12px;
+      padding:14px 16px;
+      line-height:1.8;
+      margin-top:14px;
+    }
+
+    .stats-grid{
+      display:grid;
+      grid-template-columns:repeat(5,minmax(0,1fr));
+      gap:14px;
+      margin-bottom:20px;
+    }
+
+    .stat{
+      background:#fff;
+      border:1px solid #e1e9e5;
+      border-top:4px solid #087451;
+      border-radius:15px;
+      padding:17px;
+      text-align:center;
+    }
+
+    .stat span{
+      display:block;
+      color:#6b7a72;
+      font-size:13px;
+      margin-bottom:7px;
+    }
+
+    .stat strong{
+      display:block;
+      color:#075c40;
+      font-size:30px;
+    }
+
+    .filters{
+      display:grid;
+      grid-template-columns:1fr 170px 170px 170px 170px 170px auto;
+      gap:9px;
+      margin-bottom:16px;
+    }
+
+    .filters input,
+    .filters select{
+      width:100%;
+      padding:10px;
+      border:1px solid #d4ded9;
+      border-radius:9px;
+      background:#fff;
+      font-family:inherit;
+    }
+
+    .sheet-list{
+      display:grid;
+      gap:12px;
+    }
+
+    .sheet-card{
+      background:#fff;
+      border:1px solid #e1e9e5;
+      border-radius:15px;
+      padding:17px;
+    }
+
+    .sheet-head{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:flex-start;
+    }
+
+    .sheet-title{
+      color:#075c40;
+      font-size:17px;
+      font-weight:700;
+    }
+
+    .sheet-meta{
+      color:#6b7a72;
+      font-size:13px;
+      line-height:1.8;
+      margin-top:5px;
+    }
+
+    .chip{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:700;
+    }
+
+    .chip-draft{
+      background:#fff4dc;
+      color:#896511;
+    }
+
+    .chip-submitted{
+      background:#e9f7ef;
+      color:#087451;
+    }
+
+    .admin-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:14px;
+      margin-bottom:18px;
+    }
+
+    .analysis-card{
+      background:#fff;
+      border:1px solid #e1e9e5;
+      border-radius:15px;
+      padding:17px;
+    }
+
+    .analysis-card h3{
+      margin:0 0 12px;
+      color:#075c40;
+    }
+
+    .bar-list{
+      display:grid;
+      gap:10px;
+    }
+
+    .bar-row{
+      display:grid;
+      grid-template-columns:160px 1fr 70px;
+      align-items:center;
+      gap:10px;
+      font-size:13px;
+    }
+
+    .bar-track{
+      height:10px;
+      background:#edf2ef;
+      border-radius:999px;
+      overflow:hidden;
+    }
+
+    .bar-fill{
+      height:100%;
+      background:#087451;
+      border-radius:999px;
+    }
+
+    .student-admin-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:12px;
+    }
+
+    .upload-zone{
+      border:2px dashed #b8d4c9;
+      border-radius:14px;
+      padding:22px;
+      background:#f9fcfb;
+      text-align:center;
+      margin-top:14px;
+    }
+
+    .hidden{display:none !important}
+
+    @media(max-width:1150px){
+      .form-grid{grid-template-columns:repeat(2,1fr)}
+      .stats-grid{grid-template-columns:repeat(3,1fr)}
+      .filters{grid-template-columns:repeat(3,1fr)}
+      .student-admin-grid{grid-template-columns:repeat(2,1fr)}
+    }
+
+    @media(max-width:750px){
+      .form-grid,
+      .stats-grid,
+      .filters,
+      .admin-grid,
+      .student-admin-grid{
+        grid-template-columns:1fr;
+      }
+
+      .bar-row{
+        grid-template-columns:110px 1fr 55px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="page-header">
+  <div class="page-header-inner">
+    <h1>📊 منظومة التحصيل والدرجات</h1>
+    <p>إدخال الدرجات بصورة موحدة، حفظ سجلات الاختبارات، وقراءة مؤشرات التحصيل حسب المادة والصف والشعبة والاختبار.</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <div class="top-actions">
+    <a class="btn-link" href="../../index.html">🏠 لوحة التحكم</a>
+    <a class="btn-link" href="../archive/index.html">📂 الأرشيف الذكي</a>
+  </div>
+
+  <div id="scopeBox" class="scope-box">
+    جارٍ تحميل بيانات الحساب...
+  </div>
+
+  <div class="tabs">
+    <button id="entryTabBtn" class="tab-btn active" data-tab="entryTab">✍️ إدخال الدرجات</button>
+    <button id="recordsTabBtn" class="tab-btn" data-tab="recordsTab">📘 سجلاتي</button>
+    <button id="adminTabBtn" class="tab-btn hidden" data-tab="adminTab">📈 مؤشرات الإدارة</button>
+    <button id="studentsTabBtn" class="tab-btn hidden" data-tab="studentsTab">👥 إدارة الطلاب</button>
+  </div>
+
+  <!-- =====================================================
+       إدخال الدرجات
+       ===================================================== -->
+  <section id="entryTab" class="tab-panel active">
+
+    <section class="card">
+      <h2>بيانات الاختبار</h2>
+      <div class="sub">اختاري المادة والصف والشعبة ونوع الاختبار، ثم أدخلي درجات الطلاب المسجلين في الشعبة.</div>
+
+      <input id="editingSheetId" type="hidden">
+
+      <div class="form-grid">
+
+        <div class="field">
+          <label>اسم المعلمة</label>
+          <input id="teacherName" class="auto-value" type="text" readonly>
+        </div>
+
+        <div class="field">
+          <label for="subject">المادة *</label>
+          <select id="subject">
+            <option value="">— اختاري المادة —</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="grade">الصف *</label>
+          <select id="grade">
+            <option value="">— اختاري الصف —</option>
+            <option value="الأول">الأول</option>
+            <option value="الثاني">الثاني</option>
+            <option value="الثالث">الثالث</option>
+            <option value="الرابع">الرابع</option>
+            <option value="الخامس">الخامس</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="classSection">الشعبة *</label>
+          <select id="classSection">
+            <option value="">— اختاري الصف أولًا —</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="examType">نوع الاختبار *</label>
+          <select id="examType">
+            <option value="">— اختاري —</option>
+            <option value="تشخيصي">اختبار تشخيصي</option>
+            <option value="الاختبار الأول">الاختبار الأول</option>
+            <option value="الاختبار الثاني">الاختبار الثاني</option>
+            <option value="الاختبار الثالث">الاختبار الثالث</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="maxScore">الدرجة العظمى *</label>
+          <input id="maxScore" type="number" min="0.01" step="0.01" placeholder="مثال: 20">
+        </div>
+
+        <div class="field">
+          <label for="examDate">تاريخ الاختبار *</label>
+          <input id="examDate" type="date">
+        </div>
+
+        <div class="field full">
+          <label for="notes">ملاحظات</label>
+          <textarea id="notes" placeholder="ملاحظات اختيارية على الاختبار..."></textarea>
+        </div>
+
+      </div>
+
+      <div class="action-row">
+        <button id="loadStudentsBtn" class="btn btn-primary" type="button">
+          👥 تحميل طلاب الشعبة
+        </button>
+
+        <button id="resetEntryBtn" class="btn btn-soft" type="button">
+          ↺ سجل جديد
+        </button>
+      </div>
+
+      <div id="entryState" class="save-state"></div>
+    </section>
+
+    <section class="card">
+      <h3>درجات الطلاب</h3>
+
+      <div id="studentsArea">
+        <div class="empty">
+          اختاري بيانات الاختبار ثم اضغطي «تحميل طلاب الشعبة».
+        </div>
+      </div>
+
+      <div id="gradeActions" class="action-row hidden">
+        <button id="saveDraftBtn" class="btn btn-soft" type="button">
+          💾 حفظ كمسودة
+        </button>
+
+        <button id="submitSheetBtn" class="btn btn-primary" type="button">
+          ✅ اعتماد الدرجات
+        </button>
+      </div>
+
+      <div id="gradeSaveState" class="save-state"></div>
+    </section>
+
+  </section>
+
+  <!-- =====================================================
+       سجلات المعلمة
+       ===================================================== -->
+  <section id="recordsTab" class="tab-panel">
+
+    <section class="card">
+      <h2 id="recordsTitle">📘 سجلاتي</h2>
+
+      <div class="filters">
+        <input id="recordsSearch" type="search" placeholder="بحث بالمادة أو الاختبار...">
+
+        <select id="recordsSubject">
+          <option value="">كل المواد</option>
+        </select>
+
+        <select id="recordsGrade">
+          <option value="">كل الصفوف</option>
+          <option>الأول</option>
+          <option>الثاني</option>
+          <option>الثالث</option>
+          <option>الرابع</option>
+          <option>الخامس</option>
+        </select>
+
+        <select id="recordsExamType">
+          <option value="">كل الاختبارات</option>
+          <option value="تشخيصي">تشخيصي</option>
+          <option value="الاختبار الأول">الاختبار الأول</option>
+          <option value="الاختبار الثاني">الاختبار الثاني</option>
+          <option value="الاختبار الثالث">الاختبار الثالث</option>
+        </select>
+
+        <input id="recordsFrom" type="date" title="من تاريخ">
+        <input id="recordsTo" type="date" title="إلى تاريخ">
+
+        <button id="refreshRecordsBtn" class="btn btn-soft" type="button">
+          تحديث
+        </button>
+      </div>
+
+      <div id="sheetList" class="sheet-list">
+        <div class="empty">جارٍ تحميل سجلات الدرجات...</div>
+      </div>
+    </section>
+
+  </section>
+
+  <!-- =====================================================
+       لوحة الإدارة
+       ===================================================== -->
+  <section id="adminTab" class="tab-panel">
+
+    <div class="stats-grid">
+      <article class="stat">
+        <span>سجلات الاختبارات</span>
+        <strong id="adminSheetsCount">0</strong>
+      </article>
+
+      <article class="stat">
+        <span>الطلاب المقيمون</span>
+        <strong id="adminStudentsCount">0</strong>
+      </article>
+
+      <article class="stat">
+        <span>متوسط التحصيل</span>
+        <strong id="adminAverage">—</strong>
+      </article>
+
+      <article class="stat">
+        <span>نسبة الإتقان ≥ 80%</span>
+        <strong id="adminMasteryRate">—</strong>
+      </article>
+
+      <article class="stat">
+        <span>يحتاجون دعم &lt; 60%</span>
+        <strong id="adminSupportRate">—</strong>
+      </article>
+    </div>
+
+    <section class="card">
+      <h2>فلاتر مؤشرات الإدارة</h2>
+
+      <div class="filters">
+        <input id="adminSearch" type="search" placeholder="اسم المعلمة / المادة...">
+
+        <select id="adminSubject">
+          <option value="">كل المواد</option>
+        </select>
+
+        <select id="adminGrade">
+          <option value="">كل الصفوف</option>
+          <option>الأول</option>
+          <option>الثاني</option>
+          <option>الثالث</option>
+          <option>الرابع</option>
+          <option>الخامس</option>
+        </select>
+
+        <select id="adminExamType">
+          <option value="">كل الاختبارات</option>
+          <option value="تشخيصي">تشخيصي</option>
+          <option value="الاختبار الأول">الاختبار الأول</option>
+          <option value="الاختبار الثاني">الاختبار الثاني</option>
+          <option value="الاختبار الثالث">الاختبار الثالث</option>
+        </select>
+
+        <input id="adminFrom" type="date" title="من تاريخ">
+        <input id="adminTo" type="date" title="إلى تاريخ">
+
+        <button id="refreshAdminBtn" class="btn btn-soft" type="button">
+          تحديث
+        </button>
+      </div>
+    </section>
+
+    <div class="admin-grid">
+
+      <section class="analysis-card">
+        <h3>📚 متوسط التحصيل حسب المادة</h3>
+        <div id="subjectAnalysis" class="bar-list"></div>
+      </section>
+
+      <section class="analysis-card">
+        <h3>🏫 متوسط التحصيل حسب الصف</h3>
+        <div id="gradeAnalysis" class="bar-list"></div>
+      </section>
+
+      <section class="analysis-card">
+        <h3>📝 متوسط التحصيل حسب الاختبار</h3>
+        <div id="examAnalysis" class="bar-list"></div>
+      </section>
+
+      <section class="analysis-card">
+        <h3>🎯 مستويات الأداء</h3>
+        <div id="performanceAnalysis" class="bar-list"></div>
+      </section>
+
+    </div>
+
+    <section class="card">
+      <h3>سجلات الاختبارات</h3>
+      <div id="adminSheetList" class="sheet-list"></div>
+    </section>
+
+  </section>
+
+  <!-- =====================================================
+       إدارة الطلاب - Admin
+       ===================================================== -->
+  <section id="studentsTab" class="tab-panel">
+
+    <section class="card">
+      <h2>👥 إدارة الطلاب</h2>
+      <div class="sub">
+        يمكن إضافة طالب يدويًا الآن، أو رفع ملف Excel لاحقًا عندما تتوفر أسماء الطلاب.
+      </div>
+
+      <div class="student-admin-grid">
+
+        <div class="field">
+          <label for="adminStudentName">اسم الطالب</label>
+          <input id="adminStudentName" type="text">
+        </div>
+
+        <div class="field">
+          <label for="adminStudentGrade">الصف</label>
+          <select id="adminStudentGrade">
+            <option value="">— اختاري —</option>
+            <option>الأول</option>
+            <option>الثاني</option>
+            <option>الثالث</option>
+            <option>الرابع</option>
+            <option>الخامس</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="adminStudentSection">الشعبة</label>
+          <select id="adminStudentSection">
+            <option value="">— اختاري الصف أولًا —</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="action-row">
+        <button id="addStudentBtn" class="btn btn-primary" type="button">
+          + إضافة الطالب
+        </button>
+      </div>
+
+      <div id="studentAdminState" class="save-state"></div>
+
+      <div class="upload-zone">
+        <strong>📥 رفع أسماء الطلاب من Excel</strong>
+
+        <p>
+          استخدمي القالب المعتمد فقط. الأعمدة المطلوبة هي:
+          <b>اسم الطالب — الصف — الشعبة</b>.
+        </p>
+
+        <div class="action-row" style="justify-content:center">
+          <a
+            class="btn btn-soft"
+            href="../../assets/students_upload_template.xlsx"
+            download
+          >
+            ⬇️ تحميل قالب أسماء الطلاب
+          </a>
+        </div>
+
+        <input id="studentsExcelFile" type="file" accept=".xlsx,.xls">
+
+        <div class="action-row" style="justify-content:center">
+          <button id="importStudentsBtn" class="btn btn-gold" type="button">
+            ⬆️ رفع الملف بعد تعبئته
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>الطلاب المسجلون</h3>
+
+      <div class="filters">
+        <input id="studentSearch" type="search" placeholder="بحث باسم الطالب...">
+
+        <select id="studentGradeFilter">
+          <option value="">كل الصفوف</option>
+          <option>الأول</option>
+          <option>الثاني</option>
+          <option>الثالث</option>
+          <option>الرابع</option>
+          <option>الخامس</option>
+        </select>
+
+        <select id="studentSectionFilter">
+          <option value="">كل الشعب</option>
+        </select>
+
+        <span></span>
+        <span></span>
+        <span></span>
+
+        <button id="refreshStudentsBtn" class="btn btn-soft" type="button">
+          تحديث
+        </button>
+      </div>
+
+      <div id="adminStudentsList"></div>
+    </section>
+
+  </section>
+
+</main>
+
+<script src="../../js/config.js"></script>
+<script src="../../js/graph.js"></script>
+<script src="../../js/common.js"></script>
+
+<script>
+"use strict";
+
+let sb = null;
+let currentUser = null;
+let currentProfile = null;
+let isAdminUser = false;
+let isCoordinatorUser = false;
+let canViewDepartmentOverview = false;
+let coordinatorDepartmentNames = [];
+let coordinatorTeacherIds = [];
+
+let gradeSections = [];
+let currentStudents = [];
+let allSheets = [];
+let allStudents = [];
+let adminGradeRows = [];
+
+const SUBJECTS = [
+  "اللغة العربية",
+  "اللغة الإنجليزية",
+  "الرياضيات",
+  "العلوم",
+  "التربية الإسلامية",
+  "الاجتماعيات",
+  "التربية الرياضية",
+  "التربية الفنية",
+  "الحاسوب",
+  "التصميم والتقانة",
+  "التربية الأسرية",
+  "مصادر التعلم",
+  "أخرى"
+];
+
+function byId(id){
+  return document.getElementById(id);
+}
+
+function esc(value){
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function formatDate(value){
+  if(!value) return "—";
+
+  const date = new Date(value + "T00:00:00");
+
+  if(Number.isNaN(date.getTime())){
+    return value;
+  }
+
+  return date.toLocaleDateString(
+    "ar-BH",
+    {
+      year:"numeric",
+      month:"long",
+      day:"numeric"
+    }
+  );
+}
+
+function showTab(tabId){
+  document.querySelectorAll(".tab-panel")
+    .forEach(panel => {
+      panel.classList.toggle(
+        "active",
+        panel.id === tabId
+      );
+    });
+
+  document.querySelectorAll(".tab-btn")
+    .forEach(btn => {
+      btn.classList.toggle(
+        "active",
+        btn.dataset.tab === tabId
+      );
+    });
+}
+
+function fillSubjectSelects(){
+  const ids = [
+    "subject",
+    "recordsSubject",
+    "adminSubject"
+  ];
+
+  ids.forEach(id => {
+    const select = byId(id);
+    const first =
+      id === "subject"
+        ? '<option value="">— اختاري المادة —</option>'
+        : '<option value="">كل المواد</option>';
+
+    select.innerHTML =
+      first +
+      SUBJECTS.map(subject =>
+        `<option value="${esc(subject)}">${esc(subject)}</option>`
+      ).join("");
+  });
+}
+
+function sectionsForGrade(grade){
+  return gradeSections
+    .filter(item => item.grade === grade)
+    .sort((a,b) => a.sort_order - b.sort_order);
+}
+
+function fillSectionSelect(selectId,grade,allLabel = false){
+  const select = byId(selectId);
+
+  const sections =
+    sectionsForGrade(grade);
+
+  if(!grade){
+    select.innerHTML =
+      allLabel
+        ? '<option value="">كل الشعب</option>'
+        : '<option value="">— اختاري الصف أولًا —</option>';
+    return;
+  }
+
+  select.innerHTML =
+    (
+      allLabel
+        ? '<option value="">كل الشعب</option>'
+        : '<option value="">— اختاري الشعبة —</option>'
+    ) +
+    sections.map(item =>
+      `<option value="${esc(item.class_section)}">الشعبة ${esc(item.class_section)}</option>`
+    ).join("");
+}
+
+async function init(){
+  try{
+    sb =
+      window.supabase.createClient(
+        window.WR_CONFIG.supabaseUrl,
+        window.WR_CONFIG.supabaseKey
+      );
+
+    currentUser =
+      await WRGraph.getAccount();
+
+    if(!currentUser){
+      location.href = "../../index.html";
+      return;
+    }
+
+    currentProfile =
+      await WRGraph.getUserProfile();
+
+    if(!currentProfile?.role){
+      const { data: legacyProfile } =
+        await sb
+          .from("profiles")
+          .select("id, full_name, role")
+          .eq("id",currentUser.id)
+          .maybeSingle();
+
+      if(legacyProfile){
+        currentProfile = {
+          ...currentProfile,
+          full_name:
+            currentProfile?.full_name ||
+            legacyProfile.full_name ||
+            currentUser.email,
+          role:
+            legacyProfile.role || "teacher"
+        };
+      }
+    }
+
+    if(!currentProfile){
+      currentProfile = {
+        user_id:currentUser.id,
+        email:currentUser.email,
+        full_name:currentUser.email,
+        role:"teacher"
+      };
+    }
+
+    isAdminUser =
+      currentProfile.role === "admin";
+
+    isCoordinatorUser =
+      currentProfile.role === "coordinator";
+
+    canViewDepartmentOverview =
+      isAdminUser || isCoordinatorUser;
+
+    byId("teacherName").value =
+      currentProfile.full_name ||
+      currentUser.email ||
+      "";
+
+    byId("examDate").value =
+      new Date()
+        .toISOString()
+        .slice(0,10);
+
+    fillSubjectSelects();
+
+    await loadGradeSections();
+    await loadCoordinatorScope();
+
+    if(isAdminUser){
+      byId("scopeBox").textContent =
+        "صلاحية الإدارة — عرض جميع سجلات الاختبارات والمؤشرات فقط، دون تعديل درجات المعلمات.";
+
+      byId("adminTabBtn").classList.remove("hidden");
+      byId("studentsTabBtn").classList.remove("hidden");
+
+      byId("entryTabBtn").classList.add("hidden");
+
+      byId("recordsTabBtn").textContent =
+        "📚 كل السجلات";
+
+      showTab("adminTab");
+
+    }else if(isCoordinatorUser){
+      byId("scopeBox").textContent =
+        `صلاحية المنسقة — يمكنك إدخال درجاتكِ كمعلمة ومتابعة سجلات ومؤشرات معلمات ${coordinatorDepartmentNames.length ? "قسم/أقسام: " + coordinatorDepartmentNames.join("، ") : "القسم/الأقسام التابعة لكِ"} دون تعديل درجاتهن.`;
+
+      byId("adminTabBtn").classList.remove("hidden");
+      byId("adminTabBtn").textContent =
+        "📈 متابعة القسم";
+
+    }else{
+      byId("scopeBox").textContent =
+        "تظهر لكِ سجلات الدرجات التي أدخلتِها فقط، ولا يمكن لأي معلمة أخرى أو الإدارة تعديل درجاتكِ.";
+    }
+
+    await Promise.all([
+      loadStudentsMaster(),
+      loadSheets(),
+      canViewDepartmentOverview ? loadAdminGradeRows() : Promise.resolve()
+    ]);
+
+  }catch(error){
+    console.error("Grades init:",error);
+
+    alert(
+      "تعذر تحميل منظومة التحصيل والدرجات."
+    );
+  }
+}
+
+async function loadCoordinatorScope(){
+  coordinatorDepartmentNames = [];
+  coordinatorTeacherIds = [];
+
+  if(!isCoordinatorUser) return;
+
+  /*
+    مصدر الصلاحية المعتمد في المنصة:
+    profile_departments يربط المستخدم بقسم أو أكثر.
+    نحصل أولًا على أقسام المنسقة، ثم على معرفات المعلمات
+    المرتبطات بهذه الأقسام. الإدارة لا تمر من هذا الفلتر.
+  */
+  const profileId = currentProfile?.id || currentUser.id;
+
+  let linksResult = await sb
+    .from("profile_departments")
+    .select("department_id")
+    .eq("profile_id",profileId);
+
+  if(linksResult.error){
+    /* توافق مع المشاريع التي تستخدم user_id بدل profile_id */
+    linksResult = await sb
+      .from("profile_departments")
+      .select("department_id")
+      .eq("user_id",currentUser.id);
+  }
+
+  if(linksResult.error) throw linksResult.error;
+
+  const departmentIds = [
+    ...new Set((linksResult.data || []).map(x => x.department_id).filter(Boolean))
+  ];
+
+  if(!departmentIds.length){
+    coordinatorTeacherIds = [currentUser.id];
+    return;
+  }
+
+  /* نحاول قراءة أسماء الأقسام لعرضها في رسالة الصلاحية فقط. */
+  const departmentsResult = await sb
+    .from("departments")
+    .select("id,name")
+    .in("id",departmentIds);
+
+  if(!departmentsResult.error){
+    coordinatorDepartmentNames = (departmentsResult.data || [])
+      .map(x => x.name)
+      .filter(Boolean);
+  }
+
+  let teachersResult = await sb
+    .from("profile_departments")
+    .select("profile_id")
+    .in("department_id",departmentIds);
+
+  if(teachersResult.error){
+    teachersResult = await sb
+      .from("profile_departments")
+      .select("user_id")
+      .in("department_id",departmentIds);
+  }
+
+  if(teachersResult.error) throw teachersResult.error;
+
+  coordinatorTeacherIds = [
+    ...new Set(
+      (teachersResult.data || [])
+        .map(x => x.profile_id || x.user_id)
+        .filter(Boolean)
+        .concat(currentUser.id)
+    )
+  ];
+}
+
+function sheetVisibleToCurrentUser(sheet){
+  if(isAdminUser) return true;
+  if(isCoordinatorUser){
+    return coordinatorTeacherIds.includes(sheet.teacher_id);
+  }
+  return sheet.teacher_id === currentUser.id;
+}
+
+async function loadGradeSections(){
+  const { data,error } =
+    await sb
+      .from("grade_sections")
+      .select("*");
+
+  if(error) throw error;
+
+  gradeSections = data || [];
+}
+
+async function loadStudentsMaster(){
+  const { data,error } =
+    await sb
+      .from("students")
+      .select("*")
+      .eq("is_active",true)
+      .order("grade")
+      .order("class_section")
+      .order("student_name");
+
+  if(error) throw error;
+
+  allStudents = data || [];
+
+  renderAdminStudents();
+}
+
+async function loadStudentsForEntry(){
+  const grade =
+    byId("grade").value;
+
+  const section =
+    byId("classSection").value;
+
+  const subject =
+    byId("subject").value;
+
+  const examType =
+    byId("examType").value;
+
+  const maxScore =
+    Number(byId("maxScore").value);
+
+  const examDate =
+    byId("examDate").value;
+
+  const state =
+    byId("entryState");
+
+  state.textContent = "";
+  state.className = "save-state";
+
+  if(
+    !grade ||
+    !section ||
+    !subject ||
+    !examType ||
+    !maxScore ||
+    !examDate
+  ){
+    state.textContent =
+      "أكملي المادة والصف والشعبة ونوع الاختبار والدرجة العظمى والتاريخ.";
+
+    state.className =
+      "save-state error";
+
+    return;
+  }
+
+  currentStudents =
+    allStudents.filter(
+      student =>
+        student.grade === grade &&
+        student.class_section === section
+    );
+
+  if(!currentStudents.length){
+    byId("studentsArea").innerHTML = `
+      <div class="warning">
+        لا توجد أسماء طلاب مسجلة للصف ${esc(grade)} — الشعبة ${esc(section)} حتى الآن.
+        <br>
+        عند توفر أسماء الطلاب، يمكن للإدارة إضافتهم من تبويب «إدارة الطلاب» أو رفعهم من Excel مرة واحدة.
+      </div>
+    `;
+
+    byId("gradeActions")
+      .classList.add("hidden");
+
+    return;
+  }
+
+  renderStudentsTable();
+}
+
+function renderStudentsTable(existingGrades = new Map()){
+  const maxScore =
+    Number(byId("maxScore").value) || 0;
+
+  byId("studentsArea").innerHTML = `
+    <div class="students-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>اسم الطالب</th>
+            <th>الدرجة من ${esc(maxScore)}</th>
+            <th>النسبة</th>
+            <th>مستوى الأداء</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          ${
+            currentStudents.map((student,index) => {
+              const row =
+                existingGrades.get(student.id);
+
+              return `
+                <tr data-student-id="${student.id}">
+                  <td>${index + 1}</td>
+                  <td>${esc(student.student_name)}</td>
+                  <td>
+                    <input
+                      class="score-input"
+                      type="number"
+                      min="0"
+                      max="${esc(maxScore)}"
+                      step="0.01"
+                      value="${row?.score ?? ""}"
+                      oninput="previewScore(this, ${esc(maxScore)})"
+                    >
+                  </td>
+                  <td class="preview-percentage">
+                    ${row?.percentage != null ? esc(row.percentage + "%") : "—"}
+                  </td>
+                  <td class="preview-level">
+                    ${esc(row?.performance_level || "—")}
+                  </td>
+                </tr>
+              `;
+            }).join("")
+          }
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  byId("gradeActions")
+    .classList.remove("hidden");
+}
+
+function levelFromPercentage(value){
+  if(value >= 90) return "متقن جدًا";
+  if(value >= 80) return "متقن";
+  if(value >= 70) return "جيد";
+  if(value >= 60) return "مقبول";
+  return "يحتاج دعم";
+}
+
+function previewScore(input,maxScore){
+  const row =
+    input.closest("tr");
+
+  const percentageCell =
+    row.querySelector(".preview-percentage");
+
+  const levelCell =
+    row.querySelector(".preview-level");
+
+  if(input.value === ""){
+    percentageCell.textContent = "—";
+    levelCell.textContent = "—";
+    return;
+  }
+
+  const score =
+    Number(input.value);
+
+  if(
+    !Number.isFinite(score) ||
+    score < 0 ||
+    score > maxScore
+  ){
+    percentageCell.textContent = "خطأ";
+    levelCell.textContent = "—";
+    return;
+  }
+
+  const percentage =
+    Math.round(
+      (score / maxScore) * 10000
+    ) / 100;
+
+  percentageCell.textContent =
+    percentage + "%";
+
+  levelCell.textContent =
+    levelFromPercentage(percentage);
+}
+
+async function saveSheet(status){
+  const state =
+    byId("gradeSaveState");
+
+  state.textContent = "";
+  state.className = "save-state";
+
+  if(!currentStudents.length){
+    state.textContent =
+      "لا توجد أسماء طلاب في هذه الشعبة.";
+
+    state.className =
+      "save-state error";
+
+    return;
+  }
+
+  const scores =
+    [
+      ...document.querySelectorAll(
+        "#studentsArea tbody tr"
+      )
+    ].map(row => {
+      const input =
+        row.querySelector(".score-input");
+
+      return {
+        student_id:
+          row.dataset.studentId,
+        score:
+          input.value === ""
+            ? null
+            : Number(input.value)
+      };
+    });
+
+  const maxScore =
+    Number(byId("maxScore").value);
+
+  const invalid =
+    scores.find(
+      item =>
+        item.score != null &&
+        (
+          item.score < 0 ||
+          item.score > maxScore
+        )
+    );
+
+  if(invalid){
+    state.textContent =
+      "توجد درجة غير صحيحة أو أعلى من الدرجة العظمى.";
+
+    state.className =
+      "save-state error";
+
+    return;
+  }
+
+  const editingId =
+    byId("editingSheetId").value || null;
+
+  const sheetRow = {
+    teacher_id:currentUser.id,
+    teacher_name:
+      currentProfile.full_name ||
+      currentUser.email,
+    subject:byId("subject").value,
+    grade:byId("grade").value,
+    class_section:
+      byId("classSection").value,
+    exam_type:
+      byId("examType").value,
+    max_score:maxScore,
+    exam_date:
+      byId("examDate").value,
+    notes:
+      byId("notes").value.trim() || null,
+    status,
+    updated_at:
+      new Date().toISOString()
+  };
+
+  try{
+    let sheetId =
+      editingId;
+
+    if(editingId){
+      const { error } =
+        await sb
+          .from("grade_sheets")
+          .update(sheetRow)
+          .eq("id",editingId);
+
+      if(error) throw error;
+
+    }else{
+      const { data,error } =
+        await sb
+          .from("grade_sheets")
+          .insert(sheetRow)
+          .select("id")
+          .single();
+
+      if(error) throw error;
+
+      sheetId = data.id;
+    }
+
+    /*
+      نحذف درجات السجل ثم نعيد إدخالها.
+      هذا يجعل التعديل واضحًا وبسيطًا.
+    */
+    {
+      const { error } =
+        await sb
+          .from("student_grades")
+          .delete()
+          .eq("grade_sheet_id",sheetId);
+
+      if(error) throw error;
+    }
+
+    const gradeRows =
+      scores
+        .filter(item => item.score != null)
+        .map(item => ({
+          grade_sheet_id:sheetId,
+          student_id:item.student_id,
+          score:item.score
+        }));
+
+    if(gradeRows.length){
+      const { error } =
+        await sb
+          .from("student_grades")
+          .insert(gradeRows);
+
+      if(error) throw error;
+    }
+
+    byId("editingSheetId").value =
+      sheetId;
+
+    state.textContent =
+      status === "submitted"
+        ? "✓ تم اعتماد الدرجات وحفظها بنجاح."
+        : "✓ تم حفظ سجل الدرجات كمسودة.";
+
+    state.className =
+      "save-state ok";
+
+    await loadSheets();
+
+    if(canViewDepartmentOverview){
+      await loadAdminGradeRows();
+    }
+
+  }catch(error){
+    console.error("Save grades:",error);
+
+    state.textContent =
+      "تعذر حفظ الدرجات: " +
+      (error.message || "خطأ غير متوقع");
+
+    state.className =
+      "save-state error";
+  }
+}
+
+async function loadSheets(){
+  let query =
+    sb
+      .from("grade_sheets")
+      .select("*")
+      .order("exam_date",{ascending:false})
+      .order("created_at",{ascending:false});
+
+  if(isCoordinatorUser){
+    query = query.in(
+      "teacher_id",
+      coordinatorTeacherIds.length
+        ? coordinatorTeacherIds
+        : [currentUser.id]
+    );
+  }else if(!isAdminUser){
+    query = query.eq(
+      "teacher_id",
+      currentUser.id
+    );
+  }
+
+  const { data,error } =
+    await query;
+
+  if(error) throw error;
+
+  allSheets = data || [];
+
+  fillRecordSubjects();
+  renderRecords();
+  renderAdmin();
+}
+
+function fillRecordSubjects(){
+  const subjects =
+    [
+      ...new Set(
+        allSheets
+          .map(item => item.subject)
+          .filter(Boolean)
+      )
+    ].sort();
+
+  ["recordsSubject","adminSubject"]
+    .forEach(id => {
+      const select = byId(id);
+      const oldValue = select.value;
+
+      select.innerHTML =
+        '<option value="">كل المواد</option>' +
+        subjects.map(subject =>
+          `<option value="${esc(subject)}">${esc(subject)}</option>`
+        ).join("");
+
+      select.value = oldValue;
+    });
+}
+
+function filteredSheets(prefix){
+  const sourceSheets =
+    (
+      prefix === "records" &&
+      isCoordinatorUser
+    )
+      ? allSheets.filter(
+          sheet => sheet.teacher_id === currentUser.id
+        )
+      : allSheets;
+
+  const search =
+    byId(prefix + "Search")
+      .value
+      .trim()
+      .toLowerCase();
+
+  const subject =
+    byId(prefix + "Subject").value;
+
+  const grade =
+    byId(prefix + "Grade").value;
+
+  const examType =
+    byId(prefix + "ExamType").value;
+
+  const from =
+    byId(prefix + "From").value;
+
+  const to =
+    byId(prefix + "To").value;
+
+  return sourceSheets.filter(sheet => {
+    const text =
+      (
+        String(sheet.teacher_name || "") +
+        " " +
+        String(sheet.subject || "") +
+        " " +
+        String(sheet.exam_type || "")
+      ).toLowerCase();
+
+    if(search && !text.includes(search)){
+      return false;
+    }
+
+    if(subject && sheet.subject !== subject){
+      return false;
+    }
+
+    if(grade && sheet.grade !== grade){
+      return false;
+    }
+
+    if(examType && sheet.exam_type !== examType){
+      return false;
+    }
+
+    if(from && sheet.exam_date < from){
+      return false;
+    }
+
+    if(to && sheet.exam_date > to){
+      return false;
+    }
+
+    return true;
+  });
+}
+
+function renderRecords(){
+  const rows =
+    filteredSheets("records");
+
+  const container =
+    byId("sheetList");
+
+  if(!rows.length){
+    container.innerHTML =
+      '<div class="empty">لا توجد سجلات درجات مطابقة.</div>';
+    return;
+  }
+
+  container.innerHTML =
+    rows.map(sheet =>
+      renderSheetCard(sheet,false)
+    ).join("");
+}
+
+function renderSheetCard(sheet,adminView){
+  return `
+    <article class="sheet-card">
+
+      <div class="sheet-head">
+
+        <div>
+          <div class="sheet-title">
+            ${esc(sheet.subject)}
+            — ${esc(sheet.exam_type)}
+          </div>
+
+          <div class="sheet-meta">
+            ${adminView ? "المعلمة: " + esc(sheet.teacher_name || "—") + "<br>" : ""}
+            الصف: ${esc(sheet.grade)}
+            • الشعبة: ${esc(sheet.class_section)}
+            • الدرجة العظمى: ${esc(sheet.max_score)}
+            <br>
+            التاريخ: ${esc(formatDate(sheet.exam_date))}
+          </div>
+        </div>
+
+        <span class="chip ${
+          sheet.status === "submitted"
+            ? "chip-submitted"
+            : "chip-draft"
+        }">
+          ${
+            sheet.status === "submitted"
+              ? "معتمد"
+              : "مسودة"
+          }
+        </span>
+
+      </div>
+
+      <div class="action-row">
+
+        ${
+          (!adminView && sheet.teacher_id === currentUser.id)
+            ? `
+              <button
+                class="btn btn-soft"
+                type="button"
+                onclick="editSheet('${sheet.id}')"
+              >
+                ✏️ تعديل
+              </button>
+
+              <button
+                class="btn btn-danger"
+                type="button"
+                onclick="deleteSheet('${sheet.id}')"
+              >
+                حذف
+              </button>
+            `
+            : ""
+        }
+
+        <button
+          class="btn btn-gold"
+          type="button"
+          onclick="viewSheet('${sheet.id}')"
+        >
+          👁 عرض الدرجات
+        </button>
+
+      </div>
+
+    </article>
+  `;
+}
+
+async function getSheetGrades(sheetId){
+  const { data,error } =
+    await sb
+      .from("student_grades")
+      .select(`
+        id,
+        student_id,
+        score,
+        percentage,
+        performance_level,
+        students (
+          student_name,
+          academic_id,
+          grade,
+          class_section
+        )
+      `)
+      .eq("grade_sheet_id",sheetId);
+
+  if(error) throw error;
+
+  return data || [];
+}
+
+async function editSheet(sheetId){
+  try{
+    const sheet =
+      allSheets.find(
+        item => item.id === sheetId
+      );
+
+    if(!sheet) return;
+    if(sheet.teacher_id !== currentUser.id){
+      alert("لا يمكنكِ تعديل درجات معلمة أخرى.");
+      return;
+    }
+
+    byId("editingSheetId").value =
+      sheet.id;
+
+    byId("subject").value =
+      sheet.subject;
+
+    byId("grade").value =
+      sheet.grade;
+
+    fillSectionSelect(
+      "classSection",
+      sheet.grade,
+      false
+    );
+
+    byId("classSection").value =
+      sheet.class_section;
+
+    byId("examType").value =
+      sheet.exam_type;
+
+    byId("maxScore").value =
+      sheet.max_score;
+
+    byId("examDate").value =
+      sheet.exam_date;
+
+    byId("notes").value =
+      sheet.notes || "";
+
+    currentStudents =
+      allStudents.filter(
+        student =>
+          student.grade === sheet.grade &&
+          student.class_section === sheet.class_section
+      );
+
+    const grades =
+      await getSheetGrades(sheetId);
+
+    const map =
+      new Map(
+        grades.map(item => [
+          item.student_id,
+          item
+        ])
+      );
+
+    renderStudentsTable(map);
+
+    showTab("entryTab");
+
+    window.scrollTo({
+      top:0,
+      behavior:"smooth"
+    });
+
+  }catch(error){
+    console.error("Edit sheet:",error);
+    alert("تعذر تحميل سجل الدرجات للتعديل.");
+  }
+}
+
+async function deleteSheet(sheetId){
+  if(
+    !confirm(
+      "هل تريدين حذف سجل الدرجات نهائيًا؟"
+    )
+  ){
+    return;
+  }
+
+  const sheet = allSheets.find(item => item.id === sheetId);
+  if(!sheet || sheet.teacher_id !== currentUser.id){
+    alert("لا يمكنكِ حذف درجات معلمة أخرى.");
+    return;
+  }
+
+  try{
+    const { error } =
+      await sb
+        .from("grade_sheets")
+        .delete()
+        .eq("id",sheetId);
+
+    if(error) throw error;
+
+    await loadSheets();
+
+  }catch(error){
+    console.error("Delete sheet:",error);
+    alert("تعذر حذف سجل الدرجات.");
+  }
+}
+
+async function viewSheet(sheetId){
+  try{
+    const sheet =
+      allSheets.find(
+        item => item.id === sheetId
+      );
+
+    if(!sheet) return;
+
+    const grades =
+      await getSheetGrades(sheetId);
+
+    const rows =
+      grades
+        .sort(
+          (a,b) =>
+            String(a.students?.student_name || "")
+              .localeCompare(
+                String(b.students?.student_name || ""),
+                "ar"
+              )
+        );
+
+    const html = `
+      <div style="direction:rtl;font-family:Tahoma,Arial;padding:10px">
+        <h3 style="color:#075c40">
+          ${esc(sheet.subject)} — ${esc(sheet.exam_type)}
+        </h3>
+
+        <p>
+          ${canViewDepartmentOverview ? "المعلمة: " + esc(sheet.teacher_name) + "<br>" : ""}
+          الصف: ${esc(sheet.grade)}
+          — الشعبة: ${esc(sheet.class_section)}
+          — الدرجة العظمى: ${esc(sheet.max_score)}
+        </p>
+
+        ${
+          rows.length
+            ? `
+              <table style="width:100%;border-collapse:collapse">
+                <thead>
+                  <tr>
+                    <th style="border:1px solid #ddd;padding:8px">الطالب</th>
+                    <th style="border:1px solid #ddd;padding:8px">الدرجة</th>
+                    <th style="border:1px solid #ddd;padding:8px">النسبة</th>
+                    <th style="border:1px solid #ddd;padding:8px">المستوى</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${
+                    rows.map(item => `
+                      <tr>
+                        <td style="border:1px solid #ddd;padding:8px">${esc(item.students?.student_name || "—")}</td>
+                        <td style="border:1px solid #ddd;padding:8px">${esc(item.score ?? "—")}</td>
+                        <td style="border:1px solid #ddd;padding:8px">${item.percentage != null ? esc(item.percentage + "%") : "—"}</td>
+                        <td style="border:1px solid #ddd;padding:8px">${esc(item.performance_level || "—")}</td>
+                      </tr>
+                    `).join("")
+                  }
+                </tbody>
+              </table>
+            `
+            : "<p>لا توجد درجات طلاب محفوظة داخل هذا السجل.</p>"
+        }
+      </div>
+    `;
+
+    const win =
+      window.open(
+        "",
+        "_blank",
+        "width=900,height=700"
+      );
+
+    win.document.write(html);
+    win.document.close();
+
+  }catch(error){
+    console.error("View sheet:",error);
+    alert("تعذر عرض الدرجات.");
+  }
+}
+
+function resetEntry(){
+  byId("editingSheetId").value = "";
+  byId("subject").value = "";
+  byId("grade").value = "";
+  fillSectionSelect("classSection","",false);
+  byId("examType").value = "";
+  byId("maxScore").value = "";
+  byId("examDate").value =
+    new Date().toISOString().slice(0,10);
+  byId("notes").value = "";
+  currentStudents = [];
+
+  byId("studentsArea").innerHTML =
+    '<div class="empty">اختاري بيانات الاختبار ثم اضغطي «تحميل طلاب الشعبة».</div>';
+
+  byId("gradeActions")
+    .classList.add("hidden");
+
+  byId("entryState").textContent = "";
+  byId("gradeSaveState").textContent = "";
+}
+
+async function loadAdminGradeRows(){
+  if(!canViewDepartmentOverview) return;
+
+  const { data,error } =
+    await sb
+      .from("student_grades")
+      .select(`
+        id,
+        score,
+        percentage,
+        performance_level,
+        student_id,
+        grade_sheet_id,
+        students (
+          student_name,
+          grade,
+          class_section
+        ),
+        grade_sheets (
+          teacher_id,
+          teacher_name,
+          subject,
+          grade,
+          class_section,
+          exam_type,
+          exam_date,
+          status
+        )
+      `);
+
+  if(error) throw error;
+
+  adminGradeRows = (data || []).filter(row => {
+    const teacherId = row.grade_sheets?.teacher_id;
+    if(isAdminUser) return true;
+    if(isCoordinatorUser){
+      return coordinatorTeacherIds.includes(teacherId);
+    }
+    return teacherId === currentUser.id;
+  });
+
+  renderAdmin();
+}
+
+function adminFilteredSheets(){
+  return filteredSheets("admin");
+}
+
+function adminFilteredGrades(){
+  const sheetIds =
+    new Set(
+      adminFilteredSheets()
+        .map(sheet => sheet.id)
+    );
+
+  return adminGradeRows.filter(
+    row =>
+      sheetIds.has(row.grade_sheet_id)
+  );
+}
+
+function renderAdmin(){
+  if(!canViewDepartmentOverview) return;
+
+  const sheets =
+    adminFilteredSheets();
+
+  const grades =
+    adminFilteredGrades()
+      .filter(
+        row => row.percentage != null
+      );
+
+  byId("adminSheetsCount").textContent =
+    sheets.length;
+
+  byId("adminStudentsCount").textContent =
+    new Set(
+      grades.map(item => item.student_id)
+    ).size;
+
+  if(grades.length){
+    const average =
+      grades.reduce(
+        (sum,item) =>
+          sum + Number(item.percentage || 0),
+        0
+      ) / grades.length;
+
+    const mastery =
+      grades.filter(
+        item =>
+          Number(item.percentage) >= 80
+      ).length;
+
+    const support =
+      grades.filter(
+        item =>
+          Number(item.percentage) < 60
+      ).length;
+
+    byId("adminAverage").textContent =
+      average.toFixed(1) + "%";
+
+    byId("adminMasteryRate").textContent =
+      (
+        mastery /
+        grades.length *
+        100
+      ).toFixed(1) + "%";
+
+    byId("adminSupportRate").textContent =
+      (
+        support /
+        grades.length *
+        100
+      ).toFixed(1) + "%";
+
+  }else{
+    byId("adminAverage").textContent = "—";
+    byId("adminMasteryRate").textContent = "—";
+    byId("adminSupportRate").textContent = "—";
+  }
+
+  renderAverageBars(
+    "subjectAnalysis",
+    grades,
+    row => row.grade_sheets?.subject || "غير محدد"
+  );
+
+  renderAverageBars(
+    "gradeAnalysis",
+    grades,
+    row => row.grade_sheets?.grade || "غير محدد"
+  );
+
+  renderAverageBars(
+    "examAnalysis",
+    grades,
+    row => row.grade_sheets?.exam_type || "غير محدد"
+  );
+
+  renderPerformanceBars(
+    "performanceAnalysis",
+    grades
+  );
+
+  byId("adminSheetList").innerHTML =
+    sheets.length
+      ? sheets.map(
+          sheet => renderSheetCard(sheet,true)
+        ).join("")
+      : '<div class="empty">لا توجد سجلات مطابقة.</div>';
+}
+
+function renderAverageBars(containerId,rows,keyFn){
+  const map = new Map();
+
+  rows.forEach(row => {
+    const key = keyFn(row);
+    const item =
+      map.get(key) || {
+        total:0,
+        count:0
+      };
+
+    item.total +=
+      Number(row.percentage || 0);
+
+    item.count++;
+
+    map.set(key,item);
+  });
+
+  const items =
+    [...map.entries()]
+      .map(([name,item]) => [
+        name,
+        item.count
+          ? item.total / item.count
+          : 0
+      ])
+      .sort(
+        (a,b) => b[1] - a[1]
+      );
+
+  const container =
+    byId(containerId);
+
+  if(!items.length){
+    container.innerHTML =
+      '<div class="empty">لا توجد بيانات.</div>';
+    return;
+  }
+
+  container.innerHTML =
+    items.map(([name,value]) => `
+      <div class="bar-row">
+        <span>${esc(name)}</span>
+        <div class="bar-track">
+          <div
+            class="bar-fill"
+            style="width:${Math.max(0,Math.min(100,value))}%"
+          ></div>
+        </div>
+        <strong>${value.toFixed(1)}%</strong>
+      </div>
+    `).join("");
+}
+
+function renderPerformanceBars(containerId,rows){
+  const order = [
+    "متقن جدًا",
+    "متقن",
+    "جيد",
+    "مقبول",
+    "يحتاج دعم"
+  ];
+
+  const map =
+    new Map(
+      order.map(item => [item,0])
+    );
+
+  rows.forEach(row => {
+    const key =
+      row.performance_level ||
+      "غير محدد";
+
+    map.set(
+      key,
+      (map.get(key) || 0) + 1
+    );
+  });
+
+  const total =
+    rows.length || 1;
+
+  const container =
+    byId(containerId);
+
+  if(!rows.length){
+    container.innerHTML =
+      '<div class="empty">لا توجد بيانات.</div>';
+    return;
+  }
+
+  container.innerHTML =
+    [...map.entries()]
+      .filter(([,count]) => count > 0)
+      .map(([name,count]) => {
+        const percentage =
+          count / total * 100;
+
+        return `
+          <div class="bar-row">
+            <span>${esc(name)}</span>
+            <div class="bar-track">
+              <div
+                class="bar-fill"
+                style="width:${percentage}%"
+              ></div>
+            </div>
+            <strong>${count}</strong>
+          </div>
+        `;
+      }).join("");
+}
+
+/* =====================================================
+   إدارة الطلاب
+   ===================================================== */
+
+async function addStudent(){
+  if(!isAdminUser) return;
+
+  const name =
+    byId("adminStudentName")
+      .value
+      .trim();
+
+  const grade =
+    byId("adminStudentGrade").value;
+
+  const section =
+    byId("adminStudentSection").value;
+
+  const state =
+    byId("studentAdminState");
+
+  if(!name || !grade || !section){
+    state.textContent =
+      "اكتبي اسم الطالب واختاري الصف والشعبة.";
+
+    state.className =
+      "save-state error";
+
+    return;
+  }
+
+  try{
+    const { error } =
+      await sb
+        .from("students")
+        .insert({
+          student_name:name,
+          grade,
+          class_section:section,
+          is_active:true
+        });
+
+    if(error) throw error;
+
+    state.textContent =
+      "✓ تم إضافة الطالب.";
+
+    state.className =
+      "save-state ok";
+
+    byId("adminStudentName").value = "";
+
+    await loadStudentsMaster();
+
+  }catch(error){
+    console.error("Add student:",error);
+
+    state.textContent =
+      "تعذر إضافة الطالب: " +
+      (error.message || "");
+
+    state.className =
+      "save-state error";
+  }
+}
+
+function normalizeHeader(value){
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g,"");
+}
+
+function getExcelValue(row,names){
+  const entries =
+    Object.entries(row);
+
+  for(const [key,value] of entries){
+    const normalized =
+      normalizeHeader(key);
+
+    if(
+      names.some(
+        name =>
+          normalized === normalizeHeader(name)
+      )
+    ){
+      return value;
+    }
+  }
+
+  return "";
+}
+
+async function importStudentsExcel(){
+  if(!isAdminUser) return;
+
+  const file =
+    byId("studentsExcelFile").files?.[0];
+
+  if(!file){
+    alert("اختاري ملف Excel أولًا.");
+    return;
+  }
+
+  try{
+    const buffer =
+      await file.arrayBuffer();
+
+    const workbook =
+      XLSX.read(buffer);
+
+    const sheet =
+      workbook.Sheets[
+        workbook.SheetNames[0]
+      ];
+
+    const rows =
+      XLSX.utils.sheet_to_json(
+        sheet,
+        {defval:""}
+      );
+
+    const prepared =
+      rows.map(row => ({
+        student_name:String(
+          getExcelValue(
+            row,
+            [
+              "اسم الطالب",
+              "الطالب",
+              "student_name",
+              "name"
+            ]
+          ) || ""
+        ).trim(),
+
+        grade:String(
+          getExcelValue(
+            row,
+            [
+              "الصف",
+              "grade"
+            ]
+          ) || ""
+        ).trim(),
+
+        class_section:String(
+          getExcelValue(
+            row,
+            [
+              "الشعبة",
+              "الفصل",
+              "class_section",
+              "section"
+            ]
+          ) || ""
+        ).trim(),
+
+        is_active:true
+      }))
+      .filter(
+        item =>
+          item.student_name &&
+          item.grade &&
+          item.class_section
+      );
+
+    if(!prepared.length){
+      throw new Error(
+        "لم يتم العثور على صفوف صحيحة في الملف."
+      );
+    }
+
+    const validGrades =
+      new Set([
+        "الأول",
+        "الثاني",
+        "الثالث",
+        "الرابع",
+        "الخامس"
+      ]);
+
+    const valid =
+      prepared.filter(
+        item =>
+          validGrades.has(item.grade) &&
+          sectionsForGrade(item.grade)
+            .some(
+              section =>
+                section.class_section ===
+                item.class_section
+            )
+      );
+
+    if(!valid.length){
+      throw new Error(
+        "الصفوف أو الشعب في الملف لا تطابق إعدادات المدرسة."
+      );
+    }
+
+    const { error } =
+      await sb
+        .from("students")
+        .upsert(
+          valid,
+          {
+            onConflict:
+              "student_name,grade,class_section",
+            ignoreDuplicates:true
+          }
+        );
+
+    if(error) throw error;
+
+    byId("studentAdminState").textContent =
+      `✓ تم رفع ${valid.length} طالب/طلاب من Excel.`;
+
+    byId("studentAdminState").className =
+      "save-state ok";
+
+    await loadStudentsMaster();
+
+  }catch(error){
+    console.error("Import students:",error);
+
+    byId("studentAdminState").textContent =
+      "تعذر رفع الملف: " +
+      (error.message || "");
+
+    byId("studentAdminState").className =
+      "save-state error";
+  }
+}
+
+function filteredStudents(){
+  const search =
+    byId("studentSearch")
+      .value
+      .trim()
+      .toLowerCase();
+
+  const grade =
+    byId("studentGradeFilter").value;
+
+  const section =
+    byId("studentSectionFilter").value;
+
+  return allStudents.filter(student => {
+    if(
+      search &&
+      !String(student.student_name || "")
+        .toLowerCase()
+        .includes(search)
+    ){
+      return false;
+    }
+
+    if(
+      grade &&
+      student.grade !== grade
+    ){
+      return false;
+    }
+
+    if(
+      section &&
+      student.class_section !== section
+    ){
+      return false;
+    }
+
+    return true;
+  });
+}
+
+function renderAdminStudents(){
+  if(!isAdminUser) return;
+
+  const rows =
+    filteredStudents();
+
+  const container =
+    byId("adminStudentsList");
+
+  if(!rows.length){
+    container.innerHTML =
+      '<div class="empty">لا توجد أسماء طلاب مسجلة حتى الآن.</div>';
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="students-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>اسم الطالب</th>
+            <th>الصف</th>
+            <th>الشعبة</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${
+            rows.map((student,index) => `
+              <tr>
+                <td>${index + 1}</td>
+                <td>${esc(student.student_name)}</td>
+                <td>${esc(student.grade)}</td>
+                <td>${esc(student.class_section)}</td>
+              </tr>
+            `).join("")
+          }
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+/* =====================================================
+   الأحداث
+   ===================================================== */
+
+document.querySelectorAll(".tab-btn")
+  .forEach(btn => {
+    btn.addEventListener(
+      "click",
+      () => showTab(btn.dataset.tab)
+    );
+  });
+
+byId("grade")
+  .addEventListener(
+    "change",
+    () =>
+      fillSectionSelect(
+        "classSection",
+        byId("grade").value,
+        false
+      )
+  );
+
+byId("adminStudentGrade")
+  .addEventListener(
+    "change",
+    () =>
+      fillSectionSelect(
+        "adminStudentSection",
+        byId("adminStudentGrade").value,
+        false
+      )
+  );
+
+byId("studentGradeFilter")
+  .addEventListener(
+    "change",
+    () => {
+      fillSectionSelect(
+        "studentSectionFilter",
+        byId("studentGradeFilter").value,
+        true
+      );
+      renderAdminStudents();
+    }
+  );
+
+byId("studentSectionFilter")
+  .addEventListener(
+    "change",
+    renderAdminStudents
+  );
+
+byId("loadStudentsBtn")
+  .addEventListener(
+    "click",
+    loadStudentsForEntry
+  );
+
+byId("saveDraftBtn")
+  .addEventListener(
+    "click",
+    () => saveSheet("draft")
+  );
+
+byId("submitSheetBtn")
+  .addEventListener(
+    "click",
+    () => saveSheet("submitted")
+  );
+
+byId("resetEntryBtn")
+  .addEventListener(
+    "click",
+    resetEntry
+  );
+
+[
+  "recordsSearch",
+  "recordsSubject",
+  "recordsGrade",
+  "recordsExamType",
+  "recordsFrom",
+  "recordsTo"
+].forEach(id => {
+  byId(id).addEventListener(
+    id === "recordsSearch"
+      ? "input"
+      : "change",
+    renderRecords
+  );
+});
+
+byId("refreshRecordsBtn")
+  .addEventListener(
+    "click",
+    loadSheets
+  );
+
+[
+  "adminSearch",
+  "adminSubject",
+  "adminGrade",
+  "adminExamType",
+  "adminFrom",
+  "adminTo"
+].forEach(id => {
+  byId(id).addEventListener(
+    id === "adminSearch"
+      ? "input"
+      : "change",
+    renderAdmin
+  );
+});
+
+byId("refreshAdminBtn")
+  .addEventListener(
+    "click",
+    async () => {
+      await loadSheets();
+      if(canViewDepartmentOverview){
+        await loadAdminGradeRows();
+      }
+    }
+  );
+
+byId("addStudentBtn")
+  .addEventListener(
+    "click",
+    addStudent
+  );
+
+byId("importStudentsBtn")
+  .addEventListener(
+    "click",
+    importStudentsExcel
+  );
+
+byId("studentSearch")
+  .addEventListener(
+    "input",
+    renderAdminStudents
+  );
+
+byId("refreshStudentsBtn")
+  .addEventListener(
+    "click",
+    loadStudentsMaster
+  );
+
+document.addEventListener(
+  "DOMContentLoaded",
+  init
+);
+
+window.previewScore = previewScore;
+window.editSheet = editSheet;
+window.deleteSheet = deleteSheet;
+window.viewSheet = viewSheet;
+
+</script>
+
+</body>
+</html>

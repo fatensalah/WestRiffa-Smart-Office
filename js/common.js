@@ -1,64 +1,1181 @@
-const WR_KEY = "westriffa_full_records_v3";
-const WR_QUEUE_KEY = "westriffa_sync_queue_v3";
-const WR_DB_NAME = "WestRiffaSmartOffice";
-const WR_DB_VERSION = 2;
+"use strict";
 
-const $ = (id) => document.getElementById(id);
+
+/* =========================================================
+   WestRiffa Smart Office
+   COMMON SYSTEM
+   ========================================================= */
+
+
+/* =========================================================
+   ثوابت التخزين
+   ========================================================= */
+
+const WR_KEY =
+  "westriffa_full_records_v3";
+
+const WR_QUEUE_KEY =
+  "westriffa_sync_queue_v3";
+
+const WR_DB_NAME =
+  "WestRiffaSmartOffice";
+
+const WR_DB_VERSION =
+  2;
+
+
+/* =========================================================
+   Helpers
+   ========================================================= */
+
+const $ =
+  (id) =>
+    document.getElementById(id);
 
 
 /* =========================================================
    Supabase
    ========================================================= */
 
-const wrSupabase = window.supabase.createClient(
-  window.WR_CONFIG.supabaseUrl,
-  window.WR_CONFIG.supabaseKey
+const wrSupabase =
+  window.supabase.createClient(
+    window.WR_CONFIG.supabaseUrl,
+    window.WR_CONFIG.supabaseKey
+  );
+
+
+console.log(
+  "Supabase connected:",
+  wrSupabase
 );
 
-console.log("Supabase connected:", wrSupabase);
+
+/* =========================================================
+   نظام المستخدم والصلاحيات المركزي
+   ========================================================= */
+
+let __wrProfileCache =
+  null;
+
+let __wrProfileCacheAt =
+  0;
+
+
+/* مدة الاحتفاظ المؤقت بالـProfile */
+
+const WR_PROFILE_CACHE_MS =
+  30000;
+
+
+/* =========================================================
+   تنظيف Role
+   ========================================================= */
+
+function wrNormalizeRole(
+  role
+){
+
+  const value =
+    String(
+      role || ""
+    )
+      .trim()
+      .toLowerCase();
+
+
+  if(
+    value === "admin"
+  ){
+
+    return "admin";
+
+  }
+
+
+  if(
+    value === "coordinator"
+  ){
+
+    return "coordinator";
+
+  }
+
+
+  if(
+    value === "teacher"
+  ){
+
+    return "teacher";
+
+  }
+
+
+  return null;
+
+}
+
+
+/* =========================================================
+   اسم الصلاحية بالعربي
+   ========================================================= */
+
+function wrRoleLabel(
+  role
+){
+
+  const normalized =
+    wrNormalizeRole(
+      role
+    );
+
+
+  if(
+    normalized === "admin"
+  ){
+
+    return "القيادة العليا";
+
+  }
+
+
+  if(
+    normalized === "coordinator"
+  ){
+
+    return "القيادة الوسطى";
+
+  }
+
+
+  if(
+    normalized === "teacher"
+  ){
+
+    return "معلمة";
+
+  }
+
+
+  return "مستخدم";
+
+}
+
+
+/* =========================================================
+   قراءة Profile
+   تعتمد على WRGraph المركزي
+   ========================================================= */
+
+async function wrGetCurrentProfile(
+  force = false
+){
+
+  const now =
+    Date.now();
+
+
+  if(
+    !force &&
+    __wrProfileCache &&
+    (
+      now -
+      __wrProfileCacheAt
+    ) <
+    WR_PROFILE_CACHE_MS
+  ){
+
+    return __wrProfileCache;
+
+  }
+
+
+  if(
+    !window.WRGraph ||
+    typeof WRGraph.getUserProfile !==
+      "function"
+  ){
+
+    return null;
+
+  }
+
+
+  try{
+
+    const profile =
+      await WRGraph.getUserProfile();
+
+
+    if(!profile){
+
+      __wrProfileCache =
+        null;
+
+      __wrProfileCacheAt =
+        now;
+
+      return null;
+
+    }
+
+
+    profile.role =
+      wrNormalizeRole(
+        profile.role
+      );
+
+
+    __wrProfileCache =
+      profile;
+
+    __wrProfileCacheAt =
+      now;
+
+
+    return profile;
+
+
+  }catch(error){
+
+    console.error(
+      "wrGetCurrentProfile:",
+      error
+    );
+
+
+    return null;
+
+  }
+
+}
+
+
+/* =========================================================
+   مسح Cache المستخدم
+   ========================================================= */
+
+function wrClearProfileCache(){
+
+  __wrProfileCache =
+    null;
+
+  __wrProfileCacheAt =
+    0;
+
+}
+
+
+/* =========================================================
+   هل Admin؟
+   ========================================================= */
+
+async function wrIsAdmin(){
+
+  const profile =
+    await wrGetCurrentProfile();
+
+
+  return (
+    profile?.role ===
+    "admin"
+  );
+
+}
+
+
+/* =========================================================
+   هل Coordinator؟
+   ========================================================= */
+
+async function wrIsCoordinator(){
+
+  const profile =
+    await wrGetCurrentProfile();
+
+
+  return (
+    profile?.role ===
+    "coordinator"
+  );
+
+}
+
+
+/* =========================================================
+   هل Teacher؟
+   ========================================================= */
+
+async function wrIsTeacher(){
+
+  const profile =
+    await wrGetCurrentProfile();
+
+
+  return (
+    profile?.role ===
+    "teacher"
+  );
+
+}
+
+
+/* =========================================================
+   هل قيادة؟
+   ========================================================= */
+
+async function wrIsLeadership(){
+
+  const profile =
+    await wrGetCurrentProfile();
+
+
+  return [
+    "admin",
+    "coordinator"
+  ].includes(
+    profile?.role
+  );
+
+}
+
+
+/* =========================================================
+   مستوى القيادة
+   ========================================================= */
+
+async function wrLeadershipLevel(){
+
+  const profile =
+    await wrGetCurrentProfile();
+
+
+  if(
+    profile?.role ===
+    "admin"
+  ){
+
+    return "قيادة عليا";
+
+  }
+
+
+  if(
+    profile?.role ===
+    "coordinator"
+  ){
+
+    return "قيادة وسطى";
+
+  }
+
+
+  return null;
+
+}
+
+
+/* =========================================================
+   فحص Role أو عدة Roles
+   ========================================================= */
+
+async function wrHasRole(
+  roles = []
+){
+
+  const profile =
+    await wrGetCurrentProfile();
+
+
+  if(!profile){
+
+    return false;
+
+  }
+
+
+  const list =
+    Array.isArray(
+      roles
+    )
+      ? roles
+      : [roles];
+
+
+  const allowed =
+    list
+      .map(
+        wrNormalizeRole
+      )
+      .filter(
+        Boolean
+      );
+
+
+  return allowed.includes(
+    profile.role
+  );
+
+}
+
+
+/* =========================================================
+   فحص Permission
+   الإدارة لها صلاحية كاملة
+   ========================================================= */
+
+async function wrCan(
+  permission
+){
+
+  const profile =
+    await wrGetCurrentProfile();
+
+
+  if(!profile){
+
+    return false;
+
+  }
+
+
+  /*
+    القيادة العليا:
+    كامل صلاحيات الواجهة
+  */
+
+  if(
+    profile.role ===
+    "admin"
+  ){
+
+    return true;
+
+  }
+
+
+  /*
+    لو Graph أعاد permissions
+  */
+
+  if(
+    profile.permissions &&
+    Object.prototype
+      .hasOwnProperty
+      .call(
+        profile.permissions,
+        permission
+      )
+  ){
+
+    return Boolean(
+      profile.permissions[
+        permission
+      ]
+    );
+
+  }
+
+
+  /* fallback */
+
+  switch(
+    permission
+  ){
+
+    case "classroom_visits":
+
+      return [
+        "admin",
+        "coordinator"
+      ].includes(
+        profile.role
+      );
+
+
+    case "department_scope":
+
+      return (
+        profile.role ===
+        "coordinator"
+      );
+
+
+    case "create_own_records":
+
+    case "view_own_records":
+
+      return Boolean(
+        profile.role
+      );
+
+
+    case "manage_settings":
+
+    case "view_admin_indicators":
+
+    case "view_all_records":
+
+    case "all_departments":
+
+    case "edit_any_record":
+
+    case "delete_any_record":
+
+    case "manage_users":
+
+      return (
+        profile.role ===
+        "admin"
+      );
+
+
+    default:
+
+      return false;
+
+  }
+
+}
+
+
+/* =========================================================
+   نطاق المستخدم
+   ========================================================= */
+
+async function wrGetAccessScope(){
+
+  /*
+    لو Graph يوفر الدالة الجديدة
+  */
+
+  if(
+    window.WRGraph &&
+    typeof WRGraph.getAccessScope ===
+      "function"
+  ){
+
+    try{
+
+      return await WRGraph
+        .getAccessScope();
+
+    }catch(error){
+
+      console.warn(
+        "WRGraph.getAccessScope:",
+        error
+      );
+
+    }
+
+  }
+
+
+  const profile =
+    await wrGetCurrentProfile();
+
+
+  if(!profile){
+
+    return {
+
+      type:
+        "none",
+
+      department_ids:
+        [],
+
+      department_names:
+        []
+
+    };
+
+  }
+
+
+  if(
+    profile.role ===
+    "admin"
+  ){
+
+    return {
+
+      type:
+        "all",
+
+      department_ids:
+        [],
+
+      department_names:
+        []
+
+    };
+
+  }
+
+
+  if(
+    profile.role ===
+    "coordinator"
+  ){
+
+    return {
+
+      type:
+        "departments",
+
+      department_ids:
+        profile.department_ids ||
+        (
+          profile.department_id
+            ? [
+                profile.department_id
+              ]
+            : []
+        ),
+
+      department_names:
+        profile.department_names ||
+        (
+          profile.department_name
+            ? [
+                profile.department_name
+              ]
+            : []
+        )
+
+    };
+
+  }
+
+
+  return {
+
+    type:
+      "self",
+
+    department_ids:
+      profile.department_ids ||
+      (
+        profile.department_id
+          ? [
+              profile.department_id
+            ]
+          : []
+      ),
+
+    department_names:
+      profile.department_names ||
+      (
+        profile.department_name
+          ? [
+              profile.department_name
+            ]
+          : []
+      )
+
+  };
+
+}
+
+
+/* =========================================================
+   الأقسام التابعة للمستخدم
+   ========================================================= */
+
+async function wrGetDepartmentIds(){
+
+  const scope =
+    await wrGetAccessScope();
+
+
+  return (
+    scope.department_ids ||
+    []
+  );
+
+}
+
+
+async function wrGetDepartmentNames(){
+
+  const scope =
+    await wrGetAccessScope();
+
+
+  return (
+    scope.department_names ||
+    []
+  );
+
+}
+
+
+/* =========================================================
+   إنشاء شاشة "غير مصرح"
+   ========================================================= */
+
+function wrShowAccessDenied(
+  message =
+    "ليس لديكِ صلاحية للوصول إلى هذه الصفحة."
+){
+
+  document.documentElement
+    .style
+    .visibility =
+      "visible";
+
+
+  document.body.innerHTML =
+    `
+
+      <div
+        style="
+          max-width:650px;
+          margin:70px auto;
+          padding:35px;
+          background:#fff;
+          border:1px solid #e1e9e5;
+          border-radius:18px;
+          box-shadow:0 8px 28px rgba(0,0,0,.06);
+          text-align:center;
+          font-family:inherit;
+        "
+      >
+
+        <div
+          style="
+            font-size:42px;
+            margin-bottom:12px;
+          "
+        >
+          🔒
+        </div>
+
+        <h2
+          style="
+            color:#075c40;
+            margin:0 0 10px;
+          "
+        >
+          غير مصرح بالدخول
+        </h2>
+
+        <p
+          style="
+            color:#66776f;
+            line-height:1.8;
+            margin-bottom:22px;
+          "
+        >
+          ${wrEscapeHtml(
+            message
+          )}
+        </p>
+
+        <a
+          href="../../index.html"
+          style="
+            display:inline-block;
+            background:#075c40;
+            color:#fff;
+            text-decoration:none;
+            padding:11px 18px;
+            border-radius:10px;
+            font-weight:700;
+          "
+        >
+          العودة للرئيسية
+        </a>
+
+      </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   حماية صفحة حسب Roles
+   ========================================================= */
+
+async function wrRequireRoles(
+  roles = [],
+  options = {}
+){
+
+  const allowedRoles =
+    Array.isArray(
+      roles
+    )
+      ? roles
+      : [roles];
+
+
+  const profile =
+    await wrGetCurrentProfile(
+      true
+    );
+
+
+  if(!profile){
+
+    if(
+      options.redirect !==
+      false
+    ){
+
+      window.location.replace(
+        options.loginUrl ||
+        "../../index.html"
+      );
+
+    }
+
+
+    return false;
+
+  }
+
+
+  /*
+    الإدارة لها كامل الصلاحيات
+    حتى لو الصفحة طلبت Role آخر.
+  */
+
+  if(
+    profile.role ===
+    "admin"
+  ){
+
+    return true;
+
+  }
+
+
+  const allowed =
+    allowedRoles
+      .map(
+        wrNormalizeRole
+      )
+      .filter(
+        Boolean
+      );
+
+
+  if(
+    allowed.includes(
+      profile.role
+    )
+  ){
+
+    return true;
+
+  }
+
+
+  if(
+    options.showDenied !==
+    false
+  ){
+
+    wrShowAccessDenied(
+      options.message ||
+      "هذه الصفحة غير متاحة لصلاحية حسابك."
+    );
+
+  }
+
+
+  return false;
+
+}
+
+
+/* =========================================================
+   Admin فقط
+   ========================================================= */
+
+async function wrRequireAdmin(
+  options = {}
+){
+
+  return wrRequireRoles(
+    ["admin"],
+    options
+  );
+
+}
+
+
+/* =========================================================
+   القيادة العليا والوسطى فقط
+   ========================================================= */
+
+async function wrRequireLeadership(
+  options = {}
+){
+
+  return wrRequireRoles(
+    [
+      "admin",
+      "coordinator"
+    ],
+    options
+  );
+
+}
+
+
+/* =========================================================
+   الإدارة والمنسقة والمعلمة
+   ========================================================= */
+
+async function wrRequireAuthenticatedRole(
+  options = {}
+){
+
+  return wrRequireRoles(
+    [
+      "admin",
+      "coordinator",
+      "teacher"
+    ],
+    options
+  );
+
+}
+
+
+/* =========================================================
+   عناصر تظهر حسب Role
+   الاستخدام:
+   data-wr-roles="admin"
+   data-wr-roles="admin,coordinator"
+   ========================================================= */
+
+async function wrApplyRoleVisibility(){
+
+  const profile =
+    await wrGetCurrentProfile();
+
+
+  if(!profile){
+
+    return;
+
+  }
+
+
+  const elements =
+    document.querySelectorAll(
+      "[data-wr-roles]"
+    );
+
+
+  elements.forEach(
+    element => {
+
+      const roles =
+        String(
+          element.getAttribute(
+            "data-wr-roles"
+          ) ||
+          ""
+        )
+          .split(",")
+          .map(
+            role =>
+              wrNormalizeRole(
+                role
+              )
+          )
+          .filter(
+            Boolean
+          );
+
+
+      /*
+        Admin يرى كل عناصر الأدوار
+      */
+
+      const visible =
+        profile.role === "admin" ||
+        roles.includes(
+          profile.role
+        );
+
+
+      element.style.display =
+        visible
+          ? ""
+          : "none";
+
+    }
+  );
+
+
+  /*
+    اختصارات إضافية
+  */
+
+  document
+    .querySelectorAll(
+      "[data-admin-only]"
+    )
+    .forEach(
+      element => {
+
+        element.style.display =
+          profile.role === "admin"
+            ? ""
+            : "none";
+
+      }
+    );
+
+
+  document
+    .querySelectorAll(
+      "[data-leadership-only]"
+    )
+    .forEach(
+      element => {
+
+        element.style.display =
+          [
+            "admin",
+            "coordinator"
+          ].includes(
+            profile.role
+          )
+            ? ""
+            : "none";
+
+      }
+    );
+
+
+  document
+    .querySelectorAll(
+      "[data-coordinator-only]"
+    )
+    .forEach(
+      element => {
+
+        element.style.display =
+          profile.role ===
+          "coordinator"
+            ? ""
+            : "none";
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   HTML Escape
+   ========================================================= */
+
+function wrEscapeHtml(
+  value
+){
+
+  return String(
+    value ?? ""
+  )
+
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+
+}
 
 
 /* =========================================================
    حماية صفحات المنصة الداخلية
    ========================================================= */
 
-async function wrProtectPage() {
+async function wrProtectPage(){
 
   /*
-    الصفحة الرئيسية index.html هي صفحة تسجيل الدخول،
-    لذلك لا نعيد توجيهها.
+    الصفحة الرئيسية index.html
+    هي صفحة تسجيل الدخول.
   */
 
-  const path = window.location.pathname.toLowerCase();
+  const path =
+    window.location.pathname
+      .toLowerCase();
+
 
   const isHomePage =
-    path.endsWith("/index.html") &&
-    !path.includes("/pages/");
+    path.endsWith(
+      "/index.html"
+    ) &&
+    !path.includes(
+      "/pages/"
+    );
+
 
   const isRoot =
     path === "/" ||
-    !path.includes("/pages/");
+    !path.includes(
+      "/pages/"
+    );
 
 
-  if (isHomePage || isRoot) {
+  if(
+    isHomePage ||
+    isRoot
+  ){
+
     return true;
+
   }
 
 
   /*
-    نخفي الصفحة أثناء التحقق حتى لا يظهر
-    المحتوى للحظة قبل التأكد من تسجيل الدخول.
+    إخفاء الصفحة لحين
+    التأكد من الجلسة.
   */
 
-  document.documentElement.style.visibility = "hidden";
+  document.documentElement
+    .style
+    .visibility =
+      "hidden";
 
 
-  try {
+  try{
 
-    if (
+
+    if(
       !window.WRGraph ||
-      typeof WRGraph.getAccount !== "function"
-    ) {
+      typeof WRGraph.getAccount !==
+        "function"
+    ){
 
       throw new Error(
         "نظام تسجيل الدخول غير متاح"
@@ -71,31 +1188,29 @@ async function wrProtectPage() {
       await WRGraph.getAccount();
 
 
-    if (!user) {
-
-      /*
-        أي صفحة داخل pages تكون على هذا العمق:
-        pages/section/file.html
-
-        لذلك ../../index.html يرجع للرئيسية.
-      */
+    if(!user){
 
       window.location.replace(
         "../../index.html"
       );
 
+
       return false;
+
     }
 
 
-    document.documentElement.style.visibility =
-      "visible";
+    document.documentElement
+      .style
+      .visibility =
+        "visible";
 
 
     return true;
 
 
-  } catch (error) {
+  }catch(error){
+
 
     console.error(
       "Page protection error:",
@@ -115,13 +1230,16 @@ async function wrProtectPage() {
 }
 
 
-/*
-  تشغيل الحماية تلقائيًا للصفحات الداخلية.
-*/
+/* =========================================================
+   تشغيل الحماية تلقائيًا للصفحات الداخلية
+   ========================================================= */
 
-if (
-  window.location.pathname.includes("/pages/")
-) {
+if(
+  window.location.pathname
+    .includes(
+      "/pages/"
+    )
+){
 
   wrProtectPage();
 
@@ -129,18 +1247,42 @@ if (
 
 
 /* =========================================================
+   تطبيق ظهور عناصر الصلاحيات تلقائيًا
+   ========================================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
+
+    wrApplyRoleVisibility()
+      .catch(
+        error =>
+          console.warn(
+            "Role visibility:",
+            error
+          )
+      );
+
+  }
+);
+
+
+/* =========================================================
    Local Storage
    ========================================================= */
 
-function wrGetRecords() {
+function wrGetRecords(){
 
-  try {
+  try{
 
     return JSON.parse(
-      localStorage.getItem(WR_KEY)
+      localStorage.getItem(
+        WR_KEY
+      )
     ) || [];
 
-  } catch {
+
+  }catch{
 
     return [];
 
@@ -149,23 +1291,30 @@ function wrGetRecords() {
 }
 
 
-function wrSetRecords(records) {
+function wrSetRecords(
+  records
+){
 
   localStorage.setItem(
     WR_KEY,
-    JSON.stringify(records)
+    JSON.stringify(
+      records
+    )
   );
 
+
   window.dispatchEvent(
-    new Event("wr-records-changed")
+    new Event(
+      "wr-records-changed"
+    )
   );
 
 }
 
 
-function wrGetQueue() {
+function wrGetQueue(){
 
-  try {
+  try{
 
     return JSON.parse(
       localStorage.getItem(
@@ -173,7 +1322,8 @@ function wrGetQueue() {
       )
     ) || [];
 
-  } catch {
+
+  }catch{
 
     return [];
 
@@ -182,15 +1332,22 @@ function wrGetQueue() {
 }
 
 
-function wrSetQueue(q) {
+function wrSetQueue(
+  queue
+){
 
   localStorage.setItem(
     WR_QUEUE_KEY,
-    JSON.stringify(q)
+    JSON.stringify(
+      queue
+    )
   );
 
+
   window.dispatchEvent(
-    new Event("wr-sync-changed")
+    new Event(
+      "wr-sync-changed"
+    )
   );
 
 }
@@ -200,63 +1357,77 @@ function wrSetQueue(q) {
    IndexedDB
    ========================================================= */
 
-function wrOpenDB() {
+function wrOpenDB(){
 
   return new Promise(
-    (resolve, reject) => {
+    (
+      resolve,
+      reject
+    ) => {
 
-      const req =
+
+      const request =
         indexedDB.open(
           WR_DB_NAME,
           WR_DB_VERSION
         );
 
 
-      req.onupgradeneeded =
+      request.onupgradeneeded =
         () => {
 
+
           const db =
-            req.result;
+            request.result;
 
 
-          if (
-            db.objectStoreNames.contains(
-              "files"
-            )
-          ) {
+          if(
+            db.objectStoreNames
+              .contains(
+                "files"
+              )
+          ){
 
-            const tx =
-              req.transaction;
+            const transaction =
+              request.transaction;
+
 
             const store =
-              tx.objectStore(
-                "files"
-              );
+              transaction
+                .objectStore(
+                  "files"
+                );
 
 
-            if (
-              store.keyPath !== "id"
-            ) {
+            if(
+              store.keyPath !==
+              "id"
+            ){
 
               db.deleteObjectStore(
                 "files"
               );
 
+
               db.createObjectStore(
                 "files",
                 {
-                  keyPath: "id"
+                  keyPath:
+                    "id"
                 }
               );
 
             }
 
-          } else {
+
+          }else{
+
 
             db.createObjectStore(
               "files",
               {
-                keyPath: "id"
+                keyPath:
+                  "id"
               }
             );
 
@@ -265,16 +1436,18 @@ function wrOpenDB() {
         };
 
 
-      req.onsuccess =
-        () => resolve(
-          req.result
-        );
+      request.onsuccess =
+        () =>
+          resolve(
+            request.result
+          );
 
 
-      req.onerror =
-        () => reject(
-          req.error
-        );
+      request.onerror =
+        () =>
+          reject(
+            request.error
+          );
 
     }
   );
@@ -283,13 +1456,13 @@ function wrOpenDB() {
 
 
 /* =========================================================
-   حفظ الملفات
+   حفظ الملفات محليًا
    ========================================================= */
 
 async function wrStoreFile(
   blob,
   meta = {}
-) {
+){
 
   const db =
     await wrOpenDB();
@@ -302,9 +1475,13 @@ async function wrStoreFile(
 
 
   await new Promise(
-    (resolve, reject) => {
+    (
+      resolve,
+      reject
+    ) => {
 
-      const tx =
+
+      const transaction =
         db.transaction(
           "files",
           "readwrite"
@@ -312,7 +1489,7 @@ async function wrStoreFile(
 
 
       const store =
-        tx.objectStore(
+        transaction.objectStore(
           "files"
         );
 
@@ -341,35 +1518,39 @@ async function wrStoreFile(
 
 
       request.onerror =
-        () => reject(
-          request.error
-        );
+        () =>
+          reject(
+            request.error
+          );
 
 
-      tx.oncomplete =
+      transaction.oncomplete =
         resolve;
 
 
-      tx.onerror =
-        () => reject(
-          tx.error ||
-          request.error
-        );
+      transaction.onerror =
+        () =>
+          reject(
+            transaction.error ||
+            request.error
+          );
 
 
-      tx.onabort =
-        () => reject(
-          tx.error ||
-          new Error(
-            "تم إلغاء حفظ الصورة"
-          )
-        );
+      transaction.onabort =
+        () =>
+          reject(
+            transaction.error ||
+            new Error(
+              "تم إلغاء حفظ الصورة"
+            )
+          );
 
     }
   );
 
 
   db.close();
+
 
   return id;
 
@@ -380,10 +1561,14 @@ async function wrStoreFile(
    استرجاع ملف
    ========================================================= */
 
-async function wrGetFile(id) {
+async function wrGetFile(
+  id
+){
 
-  if (!id) {
+  if(!id){
+
     return null;
+
   }
 
 
@@ -393,9 +1578,13 @@ async function wrGetFile(id) {
 
   const value =
     await new Promise(
-      (resolve, reject) => {
+      (
+        resolve,
+        reject
+      ) => {
 
-        const req =
+
+        const request =
           db
             .transaction(
               "files",
@@ -404,26 +1593,31 @@ async function wrGetFile(id) {
             .objectStore(
               "files"
             )
-            .get(id);
+            .get(
+              id
+            );
 
 
-        req.onsuccess =
-          () => resolve(
-            req.result ||
-            null
-          );
+        request.onsuccess =
+          () =>
+            resolve(
+              request.result ||
+              null
+            );
 
 
-        req.onerror =
-          () => reject(
-            req.error
-          );
+        request.onerror =
+          () =>
+            reject(
+              request.error
+            );
 
       }
     );
 
 
   db.close();
+
 
   return value;
 
@@ -434,10 +1628,14 @@ async function wrGetFile(id) {
    حذف ملف
    ========================================================= */
 
-async function wrDeleteFile(id) {
+async function wrDeleteFile(
+  id
+){
 
-  if (!id) {
+  if(!id){
+
     return;
+
   }
 
 
@@ -446,30 +1644,37 @@ async function wrDeleteFile(id) {
 
 
   await new Promise(
-    (resolve, reject) => {
+    (
+      resolve,
+      reject
+    ) => {
 
-      const tx =
+
+      const transaction =
         db.transaction(
           "files",
           "readwrite"
         );
 
 
-      tx
+      transaction
         .objectStore(
           "files"
         )
-        .delete(id);
+        .delete(
+          id
+        );
 
 
-      tx.oncomplete =
+      transaction.oncomplete =
         resolve;
 
 
-      tx.onerror =
-        () => reject(
-          tx.error
-        );
+      transaction.onerror =
+        () =>
+          reject(
+            transaction.error
+          );
 
     }
   );
@@ -484,28 +1689,36 @@ async function wrDeleteFile(id) {
    Blob إلى DataURL
    ========================================================= */
 
-function wrBlobToDataURL(blob) {
+function wrBlobToDataURL(
+  blob
+){
 
   return new Promise(
-    (resolve, reject) => {
+    (
+      resolve,
+      reject
+    ) => {
 
-      const r =
+
+      const reader =
         new FileReader();
 
 
-      r.onload =
-        () => resolve(
-          r.result
-        );
+      reader.onload =
+        () =>
+          resolve(
+            reader.result
+          );
 
 
-      r.onerror =
-        () => reject(
-          r.error
-        );
+      reader.onerror =
+        () =>
+          reject(
+            reader.error
+          );
 
 
-      r.readAsDataURL(
+      reader.readAsDataURL(
         blob
       );
 
@@ -522,7 +1735,7 @@ function wrBlobToDataURL(blob) {
 async function wrAddRecord(
   record,
   files = []
-) {
+){
 
   const id =
     record.id ||
@@ -536,28 +1749,38 @@ async function wrAddRecord(
 
   const oldIndex =
     records.findIndex(
-      x =>
-        String(x.id) ===
-        String(id)
+      item =>
+        String(
+          item.id
+        ) ===
+        String(
+          id
+        )
     );
 
 
   const old =
     oldIndex >= 0
-      ? records[oldIndex]
+      ? records[
+          oldIndex
+        ]
       : null;
 
 
-  const imageRefs = [];
+  const imageRefs =
+    [];
 
 
-  if (files.length) {
+  if(
+    files.length
+  ){
 
-    for (
+    for(
       const file of files
-    ) {
+    ){
 
       imageRefs.push(
+
         await wrStoreFile(
           file,
           {
@@ -568,18 +1791,53 @@ async function wrAddRecord(
               file.type
           }
         )
+
       );
 
     }
 
-  } else if (
+
+  }else if(
     old?.imageRefs?.length
-  ) {
+  ){
 
     imageRefs.push(
       ...old.imageRefs
     );
 
+  }
+
+
+  /*
+    نحاول حفظ اسم المستخدم الحقيقي
+    بدل اسم محلي قديم.
+  */
+
+  let createdByName =
+    old?.createdBy ||
+    localStorage.getItem(
+      "wr_user_name"
+    ) ||
+    "";
+
+
+  try{
+
+    const profile =
+      await wrGetCurrentProfile();
+
+
+    if(
+      profile?.full_name
+    ){
+
+      createdByName =
+        profile.full_name;
+
+    }
+
+  }catch{
+    /* لا نوقف الحفظ */
   }
 
 
@@ -598,11 +1856,7 @@ async function wrAddRecord(
         .toISOString(),
 
     createdBy:
-      old?.createdBy ||
-      localStorage.getItem(
-        "wr_user_name"
-      ) ||
-      "",
+      createdByName,
 
     syncStatus:
       "local",
@@ -614,20 +1868,25 @@ async function wrAddRecord(
   };
 
 
-  if (oldIndex >= 0) {
+  if(
+    oldIndex >= 0
+  ){
 
-    if (files.length) {
+    if(
+      files.length
+    ){
 
-      for (
+      for(
         const ref of
-        old.imageRefs || []
-      ) {
+        old.imageRefs ||
+        []
+      ){
 
-        if (
+        if(
           !imageRefs.includes(
             ref
           )
-        ) {
+        ){
 
           await wrDeleteFile(
             ref
@@ -640,11 +1899,14 @@ async function wrAddRecord(
     }
 
 
-    records[oldIndex] =
+    records[
+      oldIndex
+    ] =
       full;
 
 
-  } else {
+  }else{
+
 
     records.unshift(
       full
@@ -658,22 +1920,26 @@ async function wrAddRecord(
   );
 
 
-  const q =
+  const queue =
     wrGetQueue()
       .filter(
-        x =>
-          String(x.id) !==
-          String(id)
+        item =>
+          String(
+            item.id
+          ) !==
+          String(
+            id
+          )
       );
 
 
-  q.push(
+  queue.push(
     full
   );
 
 
   wrSetQueue(
-    q
+    queue
   );
 
 
@@ -684,9 +1950,9 @@ async function wrAddRecord(
   );
 
 
-  if (
+  if(
     navigator.onLine
-  ) {
+  ){
 
     wrSyncPending();
 
@@ -702,24 +1968,31 @@ async function wrAddRecord(
    حذف سجل محلي
    ========================================================= */
 
-async function wrDeleteRecord(id) {
+async function wrDeleteRecord(
+  id
+){
 
   const records =
     wrGetRecords();
 
 
-  const rec =
+  const record =
     records.find(
-      r =>
-        String(r.id) ===
-        String(id)
+      item =>
+        String(
+          item.id
+        ) ===
+        String(
+          id
+        )
     );
 
 
-  for (
+  for(
     const ref of
-    rec?.imageRefs || []
-  ) {
+    record?.imageRefs ||
+    []
+  ){
 
     await wrDeleteFile(
       ref
@@ -729,21 +2002,33 @@ async function wrDeleteRecord(id) {
 
 
   wrSetRecords(
+
     records.filter(
-      r =>
-        String(r.id) !==
-        String(id)
+      item =>
+        String(
+          item.id
+        ) !==
+        String(
+          id
+        )
     )
+
   );
 
 
   wrSetQueue(
+
     wrGetQueue()
       .filter(
-        r =>
-          String(r.id) !==
-          String(id)
+        item =>
+          String(
+            item.id
+          ) !==
+          String(
+            id
+          )
       )
+
   );
 
 }
@@ -753,16 +2038,17 @@ async function wrDeleteRecord(id) {
    المزامنة
    ========================================================= */
 
-async function wrSyncPending() {
+async function wrSyncPending(){
 
-  if (
+  if(
     !window.WRGraph
       ?.configured()
-  ) {
+  ){
 
     return {
 
-      synced: 0,
+      synced:
+        0,
 
       pending:
         wrGetQueue()
@@ -780,19 +2066,23 @@ async function wrSyncPending() {
     wrGetQueue();
 
 
-  const remain = [];
+  const remain =
+    [];
 
-  let synced = 0;
+
+  let synced =
+    0;
 
 
-  for (
-    const r of queue
-  ) {
+  for(
+    const record of queue
+  ){
 
-    try {
+    try{
+
 
       await WRGraph.uploadJson(
-        r
+        record
       );
 
 
@@ -803,21 +2093,31 @@ async function wrSyncPending() {
         wrGetRecords();
 
 
-      const ix =
+      const index =
         all.findIndex(
-          x =>
-            String(x.id) ===
-            String(r.id)
+          item =>
+            String(
+              item.id
+            ) ===
+            String(
+              record.id
+            )
         );
 
 
-      if (ix >= 0) {
+      if(
+        index >= 0
+      ){
 
-        all[ix].syncStatus =
+        all[
+          index
+        ].syncStatus =
           "synced";
 
 
-        all[ix].syncedAt =
+        all[
+          index
+        ].syncedAt =
           new Date()
             .toISOString();
 
@@ -829,14 +2129,15 @@ async function wrSyncPending() {
       }
 
 
-    } catch (e) {
+    }catch(error){
 
-      r.lastSyncError =
-        e.message;
+
+      record.lastSyncError =
+        error.message;
 
 
       remain.push(
-        r
+        record
       );
 
     }
@@ -849,7 +2150,9 @@ async function wrSyncPending() {
   );
 
 
-  if (synced) {
+  if(
+    synced
+  ){
 
     wrToast(
       `تمت مزامنة ${synced} سجل`
@@ -877,23 +2180,36 @@ async function wrSyncPending() {
    تنسيق التاريخ
    ========================================================= */
 
-function wrFormatDate(v) {
+function wrFormatDate(
+  value
+){
 
-  if (!v) {
+  if(!value){
+
     return "—";
+
   }
 
 
   return new Date(
-    v + "T00:00:00"
-  ).toLocaleDateString(
-    "ar-BH",
-    {
-      day: "numeric",
-      month: "long",
-      year: "numeric"
-    }
-  );
+    value +
+    "T00:00:00"
+  )
+    .toLocaleDateString(
+      "ar-BH",
+      {
+
+        day:
+          "numeric",
+
+        month:
+          "long",
+
+        year:
+          "numeric"
+
+      }
+    );
 
 }
 
@@ -902,62 +2218,85 @@ function wrFormatDate(v) {
    تنسيق الوقت
    ========================================================= */
 
-function wrFormatTime(v) {
+function wrFormatTime(
+  value
+){
 
-  if (!v) {
+  if(!value){
+
     return "—";
+
   }
 
 
-  let [h, m] =
-    v.split(":");
+  let [
+    hours,
+    minutes
+  ] =
+    value.split(
+      ":"
+    );
 
 
-  h =
-    Number(h);
+  hours =
+    Number(
+      hours
+    );
 
 
-  const p =
-    h >= 12
+  const period =
+    hours >= 12
       ? "م"
       : "ص";
 
 
-  h =
-    h % 12 ||
+  hours =
+    hours % 12 ||
     12;
 
 
-  return `${h}:${m} ${p}`;
+  return (
+    `${hours}:${minutes} ${period}`
+  );
 
 }
 
 
 /* =========================================================
-   نقاط
+   تحويل السطور إلى نقاط
    ========================================================= */
 
-function wrBullets(v) {
+function wrBullets(
+  value
+){
 
-  const arr =
-    (v || "")
-      .split("\n")
+  const array =
+    (
+      value ||
+      ""
+    )
+      .split(
+        "\n"
+      )
       .map(
-        x =>
-          x.trim()
+        item =>
+          item.trim()
       )
       .filter(
         Boolean
       );
 
 
-  return arr.length
-    ? arr
+  return array.length
+    ? array
         .map(
-          x =>
-            "• " + x
+          item =>
+            "• " +
+            item
         )
-        .join("\n")
+        .join(
+          "\n"
+        )
     : "—";
 
 }
@@ -967,28 +2306,30 @@ function wrBullets(v) {
    Toast
    ========================================================= */
 
-function wrToast(msg) {
+function wrToast(
+  message
+){
 
-  let e =
+  let element =
     document.getElementById(
       "wrToast"
     );
 
 
-  if (!e) {
+  if(!element){
 
-    e =
+    element =
       document.createElement(
         "div"
       );
 
 
-    e.id =
+    element.id =
       "wrToast";
 
 
     Object.assign(
-      e.style,
+      element.style,
       {
 
         position:
@@ -1023,17 +2364,17 @@ function wrToast(msg) {
 
 
     document.body.appendChild(
-      e
+      element
     );
 
   }
 
 
-  e.textContent =
-    msg;
+  element.textContent =
+    message;
 
 
-  e.style.display =
+  element.style.display =
     "block";
 
 
@@ -1044,9 +2385,12 @@ function wrToast(msg) {
 
   window.__wrToast =
     setTimeout(
-      () =>
-        e.style.display =
-          "none",
+      () => {
+
+        element.style.display =
+          "none";
+
+      },
       2600
     );
 
@@ -1057,21 +2401,27 @@ function wrToast(msg) {
    اسم آمن للملفات
    ========================================================= */
 
-function wrSafeName(v) {
+function wrSafeName(
+  value
+){
 
   return (
-    v ||
+    value ||
     "تقرير"
   )
+
     .replace(
       /[\\/:*?"<>|#%]/g,
       "-"
     )
+
     .replace(
       /\s+/g,
       " "
     )
+
     .trim()
+
     .slice(
       0,
       90
@@ -1087,41 +2437,41 @@ function wrSafeName(v) {
 function wrDownloadBlob(
   blob,
   name
-) {
+){
 
-  const a =
+  const link =
     document.createElement(
       "a"
     );
 
 
-  a.href =
+  link.href =
     URL.createObjectURL(
       blob
     );
 
 
-  a.download =
+  link.download =
     name;
 
 
   document.body.appendChild(
-    a
+    link
   );
 
 
-  a.click();
+  link.click();
 
 
   setTimeout(
     () => {
 
       URL.revokeObjectURL(
-        a.href
+        link.href
       );
 
 
-      a.remove();
+      link.remove();
 
     },
     1200
@@ -1134,7 +2484,7 @@ function wrDownloadBlob(
    نسخة احتياطية
    ========================================================= */
 
-async function wrExport() {
+async function wrExport(){
 
   const records =
     wrGetRecords();
@@ -1143,34 +2493,40 @@ async function wrExport() {
   const files = {};
 
 
-  for (
-    const rec of records
-  ) {
+  for(
+    const record of
+    records
+  ){
 
-    for (
+    for(
       const ref of
-      rec.imageRefs || []
-    ) {
+      record.imageRefs ||
+      []
+    ){
 
-      const f =
+      const file =
         await wrGetFile(
           ref
         );
 
 
-      if (f) {
+      if(
+        file
+      ){
 
-        files[ref] = {
+        files[
+          ref
+        ] = {
 
           name:
-            f.name,
+            file.name,
 
           type:
-            f.type,
+            file.type,
 
           data:
             await wrBlobToDataURL(
-              f.blob
+              file.blob
             )
 
         };
@@ -1189,7 +2545,8 @@ async function wrExport() {
         JSON.stringify(
           {
 
-            version: 3,
+            version:
+              3,
 
             exportedAt:
               new Date()
@@ -1226,10 +2583,15 @@ async function wrExport() {
 
 function wrDataURLToBlob(
   dataURL
-) {
+){
 
-  const [head, data] =
-    dataURL.split(",");
+  const [
+    head,
+    data
+  ] =
+    dataURL.split(
+      ","
+    );
 
 
   const mime =
@@ -1242,32 +2604,41 @@ function wrDataURLToBlob(
     "application/octet-stream";
 
 
-  const bin =
-    atob(data);
-
-
-  const arr =
-    new Uint8Array(
-      bin.length
+  const binary =
+    atob(
+      data
     );
 
 
-  for (
-    let i = 0;
-    i < bin.length;
-    i++
-  ) {
+  const array =
+    new Uint8Array(
+      binary.length
+    );
 
-    arr[i] =
-      bin.charCodeAt(i);
+
+  for(
+    let i = 0;
+    i < binary.length;
+    i++
+  ){
+
+    array[
+      i
+    ] =
+      binary.charCodeAt(
+        i
+      );
 
   }
 
 
   return new Blob(
-    [arr],
+    [
+      array
+    ],
     {
-      type: mime
+      type:
+        mime
     }
   );
 
@@ -1280,21 +2651,23 @@ function wrDataURLToBlob(
 
 function wrImport(
   file,
-  cb
-) {
+  callback
+){
 
-  const r =
+  const reader =
     new FileReader();
 
 
-  r.onload =
+  reader.onload =
     async () => {
 
-      try {
+
+      try{
+
 
         const data =
           JSON.parse(
-            r.result
+            reader.result
           );
 
 
@@ -1306,20 +2679,22 @@ function wrImport(
             : data.records;
 
 
-        if (
+        if(
           !Array.isArray(
             records
           )
-        ) {
+        ){
 
-          throw new Error();
+          throw new Error(
+            "ملف النسخة الاحتياطية غير صالح"
+          );
 
         }
 
 
-        if (
+        if(
           data.files
-        ) {
+        ){
 
           const db =
             await wrOpenDB();
@@ -1331,7 +2706,8 @@ function wrImport(
               reject
             ) => {
 
-              const tx =
+
+              const transaction =
                 db.transaction(
                   "files",
                   "readwrite"
@@ -1339,49 +2715,56 @@ function wrImport(
 
 
               const store =
-                tx.objectStore(
+                transaction.objectStore(
                   "files"
                 );
 
 
               Object.entries(
                 data.files
-              ).forEach(
-                ([id, f]) => {
-
-                  store.put({
-
-                    id,
-
-                    blob:
-                      wrDataURLToBlob(
-                        f.data
-                      ),
-
-                    name:
-                      f.name,
-
-                    type:
-                      f.type,
-
-                    createdAt:
-                      new Date()
-                        .toISOString()
-
-                  });
-
-                }
-              );
+              )
+                .forEach(
+                  (
+                    [
+                      id,
+                      fileData
+                    ]
+                  ) => {
 
 
-              tx.oncomplete =
+                    store.put({
+
+                      id,
+
+                      blob:
+                        wrDataURLToBlob(
+                          fileData.data
+                        ),
+
+                      name:
+                        fileData.name,
+
+                      type:
+                        fileData.type,
+
+                      createdAt:
+                        new Date()
+                          .toISOString()
+
+                    });
+
+                  }
+                );
+
+
+              transaction.oncomplete =
                 resolve;
 
 
-              tx.onerror =
+              transaction.onerror =
                 () =>
                   reject(
-                    tx.error
+                    transaction.error
                   );
 
             }
@@ -1398,11 +2781,11 @@ function wrImport(
         );
 
 
-        if (
+        if(
           Array.isArray(
             data.queue
           )
-        ) {
+        ){
 
           wrSetQueue(
             data.queue
@@ -1411,20 +2794,33 @@ function wrImport(
         }
 
 
-        if (cb) {
-          cb(true);
+        if(
+          callback
+        ){
+
+          callback(
+            true
+          );
+
         }
 
 
-      } catch (e) {
+      }catch(error){
+
 
         console.error(
-          e
+          error
         );
 
 
-        if (cb) {
-          cb(false);
+        if(
+          callback
+        ){
+
+          callback(
+            false
+          );
+
         }
 
       }
@@ -1432,7 +2828,7 @@ function wrImport(
     };
 
 
-  r.readAsText(
+  reader.readAsText(
     file
   );
 
@@ -1443,9 +2839,12 @@ function wrImport(
    أسماء أنواع السجلات
    ========================================================= */
 
-function wrTypeLabel(t) {
+function wrTypeLabel(
+  type
+){
 
   return (
+
     {
 
       activity:
@@ -1464,10 +2863,24 @@ function wrTypeLabel(t) {
         "متابعة توصية",
 
       certificate:
-        "شهادة"
+        "شهادة",
+
+      classroom_visit:
+        "زيارة صفية",
+
+      exchange_visit:
+        "زيارة تبادلية",
+
+      permission:
+        "استئذان",
+
+      plan:
+        "خطة تدفقية"
 
     }
-  )[t] || t;
+
+  )[type] ||
+  type;
 
 }
 
@@ -1478,8 +2891,11 @@ function wrTypeLabel(t) {
 
 window.addEventListener(
   "online",
-  () =>
-    wrSyncPending()
+  () => {
+
+    wrSyncPending();
+
+  }
 );
 
 
@@ -1487,31 +2903,39 @@ window.addEventListener(
    Service Worker
    ========================================================= */
 
-if (
-  "serviceWorker" in navigator
-) {
+if(
+  "serviceWorker" in
+  navigator
+){
 
   window.addEventListener(
     "load",
     async () => {
 
-      if (
+
+      /*
+        أثناء العمل المحلي
+        لا نريد Cache قديم.
+      */
+
+      if(
         [
           "127.0.0.1",
           "localhost"
         ].includes(
           location.hostname
         )
-      ) {
+      ){
 
-        for (
-          const r of
+        for(
+          const registration of
           await navigator
             .serviceWorker
             .getRegistrations()
-        ) {
+        ){
 
-          await r.unregister();
+          await registration
+            .unregister();
 
         }
 
@@ -1525,9 +2949,10 @@ if (
         .serviceWorker
         .register(
           (
-            location.pathname.includes(
-              "/pages/"
-            )
+            location.pathname
+              .includes(
+                "/pages/"
+              )
               ? "../../"
               : ""
           ) +
@@ -1541,3 +2966,107 @@ if (
   );
 
 }
+
+
+/* =========================================================
+   أدوات الصلاحيات متاحة للصفحات
+   ========================================================= */
+
+/*
+  يمكن استخدام هذه الدوال مباشرة
+  من أي صفحة لأن function declarations
+  موجودة في النطاق العام:
+
+  wrGetCurrentProfile()
+
+  wrIsAdmin()
+
+  wrIsCoordinator()
+
+  wrIsTeacher()
+
+  wrIsLeadership()
+
+  wrLeadershipLevel()
+
+  wrHasRole(["admin","coordinator"])
+
+  wrCan("view_admin_indicators")
+
+  wrGetAccessScope()
+
+  wrGetDepartmentIds()
+
+  wrGetDepartmentNames()
+
+  wrRequireAdmin()
+
+  wrRequireLeadership()
+
+  wrRequireRoles(["admin"])
+
+  wrRequireRoles(["admin","coordinator"])
+*/
+
+
+/* =========================================================
+   API إضافي اختياري
+   ========================================================= */
+
+window.WRAccess = {
+
+  getProfile:
+    wrGetCurrentProfile,
+
+  clearCache:
+    wrClearProfileCache,
+
+  normalizeRole:
+    wrNormalizeRole,
+
+  roleLabel:
+    wrRoleLabel,
+
+  isAdmin:
+    wrIsAdmin,
+
+  isCoordinator:
+    wrIsCoordinator,
+
+  isTeacher:
+    wrIsTeacher,
+
+  isLeadership:
+    wrIsLeadership,
+
+  leadershipLevel:
+    wrLeadershipLevel,
+
+  hasRole:
+    wrHasRole,
+
+  can:
+    wrCan,
+
+  getScope:
+    wrGetAccessScope,
+
+  getDepartmentIds:
+    wrGetDepartmentIds,
+
+  getDepartmentNames:
+    wrGetDepartmentNames,
+
+  requireRoles:
+    wrRequireRoles,
+
+  requireAdmin:
+    wrRequireAdmin,
+
+  requireLeadership:
+    wrRequireLeadership,
+
+  applyRoleVisibility:
+    wrApplyRoleVisibility
+
+};

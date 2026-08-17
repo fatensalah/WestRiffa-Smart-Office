@@ -2,34 +2,176 @@
 <html lang="ar" dir="rtl">
 
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
 
-  <title>دعوة اجتماع</title>
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  >
 
-  <link rel="stylesheet" href="../../css/app.css">
+  <title>
+    دعوة اجتماع
+  </title>
 
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <link
+    rel="stylesheet"
+    href="../../css/app.css?v=20260816-meeting-invitation-access"
+  >
 
-  <link rel="manifest" href="../../manifest.webmanifest">
-  <meta name="theme-color" content="#075c40">
+  <script
+    src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"
+  ></script>
+
+  <link
+    rel="manifest"
+    href="../../manifest.webmanifest"
+  >
+
+  <meta
+    name="theme-color"
+    content="#075c40"
+  >
+
+
+  <style>
+
+    .meeting-axis-box{
+      margin-top:18px;
+      padding:18px;
+      border:1px solid #dce6e1;
+      border-radius:14px;
+      background:#f8faf9;
+    }
+
+    .meeting-axis-box h3{
+      margin:0 0 6px;
+      color:#075c40;
+    }
+
+    .meeting-axis-note{
+      margin-bottom:16px;
+      color:#6b7a72;
+      font-size:13px;
+      line-height:1.7;
+    }
+
+    .axis-item{
+      margin-bottom:16px;
+    }
+
+    .axis-item:last-child{
+      margin-bottom:0;
+    }
+
+    .axis-item label{
+      display:block;
+      margin-bottom:7px;
+      color:#075c40;
+      font-weight:700;
+    }
+
+    .axis-item textarea{
+      width:100%;
+      min-height:95px;
+      box-sizing:border-box;
+    }
+
+    .agenda-preview{
+      margin:18px 0;
+      text-align:right;
+    }
+
+    .agenda-preview-item{
+      margin-bottom:12px;
+      padding:13px 15px;
+      border:1px solid #e2e9e5;
+      border-right:4px solid #087451;
+      border-radius:10px;
+      background:#fff;
+    }
+
+    .agenda-preview-item strong{
+      display:block;
+      margin-bottom:7px;
+      color:#075c40;
+    }
+
+    .agenda-preview-item div{
+      color:#425d53;
+      line-height:1.8;
+      white-space:pre-wrap;
+    }
+
+    .agenda-preview-item.empty-axis{
+      display:none;
+    }
+
+    .legacy-box{
+      margin-top:15px;
+      padding:14px;
+      border:1px solid #eadcb7;
+      border-radius:11px;
+      background:#fffaf0;
+    }
+
+    .legacy-box label{
+      color:#7b5b16;
+    }
+
+    .hidden{
+      display:none !important;
+    }
+
+  
+
+.access-loader{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#f4f7f6;
+  color:#075c40;
+  font-weight:700;
+}
+
+</style>
+
 </head>
 
+
 <body>
+
+<div id="accessLoader" class="access-loader">
+  جاري التحقق من صلاحية الحساب...
+</div>
+
 
 <header class="topbar">
 
   <div class="brand">
+
     <img
       src="../../assets/school-header.jpg"
       alt="شعار المدرسة"
     >
 
     <div>
-      <h1>دعوة اجتماع</h1>
-      <p>بطاقة PNG موحدة</p>
+
+      <h1>
+        دعوة اجتماع
+      </h1>
+
+      <p>
+        بطاقة PNG موحدة
+      </p>
+
     </div>
+
   </div>
+
 
   <div class="header-actions">
 
@@ -52,302 +194,709 @@
 </header>
 
 
+
 <div class="shell">
 
-  <aside class="sidebar">
 
-    <h3 class="sidebar-title">
-      القائمة الرئيسية
-    </h3>
+<aside class="sidebar">
 
-    <a
-      class="nav-link"
-      href="../../index.html"
+  <h3 class="sidebar-title">
+    القائمة الرئيسية
+  </h3>
+
+
+  <a
+    class="nav-link"
+    href="../../index.html"
+  >
+    🏠 لوحة التحكم
+  </a>
+
+
+  <a
+    class="nav-link active"
+    href="../../pages/meetings/index.html"
+  >
+    📅 الاجتماعات
+  </a>
+
+
+  <a
+    class="nav-link"
+    href="../../pages/activities/index.html"
+  >
+    🎯 الفعاليات
+  </a>
+
+
+  <a
+    class="nav-link"
+    href="../../pages/certificates/index.html"
+  >
+    🏅 الشهادات
+  </a>
+
+
+  <a
+    class="nav-link"
+    href="../../pages/archive/index.html"
+  >
+    📂 الأرشيف الذكي
+  </a>
+
+
+  <a
+    class="nav-link"
+    href="../../pages/settings/index.html"
+  >
+    ⚙️ الإعدادات
+  </a>
+
+</aside>
+
+
+
+<main class="content">
+
+
+<div class="page-head">
+
+  <div>
+
+    <h2 id="pageTitle">
+      دعوة اجتماع
+    </h2>
+
+    <p>
+      إنشاء وحفظ بطاقة دعوة اجتماع.
+    </p>
+
+  </div>
+
+
+  <div class="page-actions">
+
+    <button
+      id="newBtn"
+      class="btn btn-soft"
+      type="button"
     >
-      🏠 لوحة التحكم
-    </a>
+      نموذج جديد
+    </button>
 
-    <a
-      class="nav-link active"
-      href="../../pages/meetings/index.html"
-    >
-      📅 الاجتماعات
-    </a>
-
-    <a
-      class="nav-link"
-      href="../../pages/activities/index.html"
-    >
-      🎯 الفعاليات
-    </a>
-
-    <a
-      class="nav-link"
-      href="../../pages/certificates/index.html"
-    >
-      🏅 الشهادات
-    </a>
-
-    <a
-      class="nav-link"
-      href="../../pages/archive/index.html"
-    >
-      📂 الأرشيف الذكي
-    </a>
-
-    <a
-      class="nav-link"
-      href="../../pages/settings/index.html"
-    >
-      ⚙️ الإعدادات
-    </a>
-
-  </aside>
-
-
-  <main class="content">
-
-    <div class="page-head">
-
-      <div>
-
-        <h2 id="pageTitle">
-          دعوة اجتماع
-        </h2>
-
-        <p>
-          إنشاء وحفظ بطاقة دعوة اجتماع.
-        </p>
-
-      </div>
-
-
-      <div class="page-actions">
-
-        <button
-          id="newBtn"
-          class="btn btn-soft"
-          type="button"
-        >
-          نموذج جديد
-        </button>
-
-      </div>
-
-    </div>
-
-
-    <div class="tool-layout">
-
-
-      <section class="panel form-panel">
-
-        <h3>بيانات الاجتماع</h3>
-
-
-        <label>
-          رقم / كود الاجتماع
-        </label>
-
-        <input
-          id="number"
-          type="text"
-        >
-
-
-        <label>
-          عنوان الاجتماع *
-        </label>
-
-        <input
-          id="title"
-          type="text"
-          required
-        >
-
-
-        <label>
-          التاريخ *
-        </label>
-
-        <input
-          id="date"
-          type="date"
-          required
-        >
-
-
-        <label>
-          الوقت
-        </label>
-
-        <input
-          id="time"
-          type="time"
-        >
-
-
-        <label>
-          المكان
-        </label>
-
-        <input
-          id="place"
-          type="text"
-        >
-
-
-        <label>
-          الفئة المستهدفة
-        </label>
-
-        <input
-          id="target"
-          type="text"
-        >
-
-
-        <label>
-          المحاور / التفاصيل
-        </label>
-
-        <textarea
-          id="topics"
-          rows="7"
-        ></textarea>
-
-
-        <div class="form-actions">
-
-          <button
-            id="saveBtn"
-            class="btn btn-primary"
-            type="button"
-          >
-            💾 حفظ ذكي
-          </button>
-
-
-          <button
-            id="downloadBtn"
-            class="btn btn-gold"
-            type="button"
-          >
-            ⬇ تحميل PNG
-          </button>
-
-
-          <button
-            id="deleteBtn"
-            class="btn btn-danger hidden"
-            type="button"
-          >
-            🗑 حذف الدعوة
-          </button>
-
-        </div>
-
-      </section>
-
-
-      <section class="panel preview">
-
-        <article
-          id="card"
-          class="invitation-card"
-        >
-
-          <img
-            class="school-header"
-            src="../../assets/school-header.jpg"
-            alt="شعار المدرسة"
-          >
-
-          <div class="gold-line"></div>
-
-
-          <p
-            style="
-              color:var(--gold);
-              font-size:27px;
-              font-weight:700
-            "
-          >
-            دعوة لحضور اجتماع
-          </p>
-
-
-          <h1 id="pTitle">
-            اجتماع
-          </h1>
-
-
-          <p>
-            رقم
-            <strong id="pNumber">
-              1
-            </strong>
-          </p>
-
-
-          <div
-            id="pTopics"
-            class="topics-box"
-          ></div>
-
-
-          <div class="details-grid">
-
-            <div class="detail-box">
-              <span>التاريخ</span>
-              <strong id="pDate">—</strong>
-            </div>
-
-            <div class="detail-box">
-              <span>الوقت</span>
-              <strong id="pTime">—</strong>
-            </div>
-
-            <div class="detail-box">
-              <span>المكان</span>
-              <strong id="pPlace">—</strong>
-            </div>
-
-            <div class="detail-box">
-              <span>الفئة المستهدفة</span>
-              <strong id="pTarget">—</strong>
-            </div>
-
-          </div>
-
-        </article>
-
-      </section>
-
-    </div>
-
-  </main>
+  </div>
 
 </div>
 
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<script src="../../js/config.js"></script>
-<script src="../../js/graph.js"></script>
-<script src="../../js/common.js"></script>
+<div class="tool-layout">
+
+
+<!-- =====================================================
+     نموذج الدعوة
+     ===================================================== -->
+
+<section class="panel form-panel">
+
+
+  <h3>
+    بيانات الاجتماع
+  </h3>
+
+
+  <label>
+    رقم / كود الاجتماع
+  </label>
+
+  <input
+    id="number"
+    type="text"
+  >
+
+
+  <label>
+    عنوان الاجتماع *
+  </label>
+
+  <input
+    id="title"
+    type="text"
+    required
+  >
+
+
+  <label>
+    نوع الاجتماع *
+  </label>
+
+  <select
+    id="meetingType"
+    required
+  >
+
+    <option value="">
+      — اختاري نوع الاجتماع —
+    </option>
+
+    <option value="اجتماع تحسين">
+      اجتماع تحسين
+    </option>
+
+    <option value="مجلس إدارة">
+      مجلس إدارة
+    </option>
+
+    <option value="اجتماع أولياء أمور">
+      اجتماع أولياء أمور
+    </option>
+
+    <option value="اجتماع قسم">
+      اجتماع قسم
+    </option>
+
+  </select>
+
+
+  <label>
+    التاريخ *
+  </label>
+
+  <input
+    id="date"
+    type="date"
+    required
+  >
+
+
+  <label>
+    الوقت
+  </label>
+
+  <input
+    id="time"
+    type="time"
+  >
+
+
+  <label>
+    المكان
+  </label>
+
+  <input
+    id="place"
+    type="text"
+  >
+
+
+  <label>
+    الفئة المستهدفة
+  </label>
+
+  <input
+    id="target"
+    type="text"
+  >
+
+
+
+  <!-- =====================================================
+       بنود الاجتماع حسب المجالات الأربعة
+       ===================================================== -->
+
+  <div class="meeting-axis-box">
+
+    <h3>
+      بنود الاجتماع
+    </h3>
+
+    <div class="meeting-axis-note">
+      اكتبي البنود المقرر مناقشتها تحت المجال المناسب.
+      يمكن استخدام مجال واحد أو أكثر حسب طبيعة الاجتماع.
+    </div>
+
+
+    <div class="axis-item">
+
+      <label for="academicAgenda">
+        1. الإنجاز الأكاديمي
+      </label>
+
+      <textarea
+        id="academicAgenda"
+        placeholder="اكتبي بنود الاجتماع المرتبطة بالإنجاز الأكاديمي..."
+      ></textarea>
+
+    </div>
+
+
+    <div class="axis-item">
+
+      <label for="teachingAgenda">
+        2. التعليم والتعلم والتقويم
+      </label>
+
+      <textarea
+        id="teachingAgenda"
+        placeholder="اكتبي بنود الاجتماع المرتبطة بالتعليم والتعلم والتقويم..."
+      ></textarea>
+
+    </div>
+
+
+    <div class="axis-item">
+
+      <label for="personalAgenda">
+        3. التطور الشخصي للطلبة ورعايتهم
+      </label>
+
+      <textarea
+        id="personalAgenda"
+        placeholder="اكتبي بنود الاجتماع المرتبطة بالتطور الشخصي للطلبة ورعايتهم..."
+      ></textarea>
+
+    </div>
+
+
+    <div class="axis-item">
+
+      <label for="leadershipAgenda">
+        4. القيادة والإدارة والحوكمة
+      </label>
+
+      <textarea
+        id="leadershipAgenda"
+        placeholder="اكتبي بنود الاجتماع المرتبطة بالقيادة والإدارة والحوكمة..."
+      ></textarea>
+
+    </div>
+
+
+    <!-- للمحاضر القديمة فقط -->
+
+    <div
+      id="legacyTopicsWrap"
+      class="legacy-box hidden"
+    >
+
+      <label>
+        محاور محفوظة من دعوة قديمة
+      </label>
+
+      <textarea
+        id="legacyTopics"
+        readonly
+      ></textarea>
+
+    </div>
+
+
+  </div>
+
+
+
+  <div class="form-actions">
+
+
+    <button
+      id="saveBtn"
+      class="btn btn-primary"
+      type="button"
+    >
+      💾 حفظ ذكي
+    </button>
+
+
+    <button
+      id="downloadBtn"
+      class="btn btn-gold"
+      type="button"
+    >
+      ⬇ تحميل PNG
+    </button>
+
+
+    <button
+      id="deleteBtn"
+      class="btn btn-danger hidden"
+      type="button"
+    >
+      🗑 حذف الدعوة
+    </button>
+
+
+  </div>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     معاينة بطاقة الدعوة
+     ===================================================== -->
+
+<section class="panel preview">
+
+
+<article
+  id="card"
+  class="invitation-card"
+>
+
+
+  <img
+    class="school-header"
+    src="../../assets/school-header.jpg"
+    alt="شعار المدرسة"
+  >
+
+
+  <div class="gold-line"></div>
+
+
+  <p
+    style="
+      color:var(--gold);
+      font-size:27px;
+      font-weight:700
+    "
+  >
+    دعوة لحضور اجتماع
+  </p>
+
+
+  <h1 id="pTitle">
+    اجتماع
+  </h1>
+
+
+  <p>
+
+    نوع الاجتماع:
+
+    <strong id="pMeetingType">
+      —
+    </strong>
+
+  </p>
+
+
+  <p>
+
+    رقم
+
+    <strong id="pNumber">
+      1
+    </strong>
+
+  </p>
+
+
+
+  <div
+    id="agendaPreview"
+    class="agenda-preview"
+  >
+
+
+    <div
+      id="pAcademicWrap"
+      class="agenda-preview-item empty-axis"
+    >
+
+      <strong>
+        الإنجاز الأكاديمي
+      </strong>
+
+      <div id="pAcademicAgenda"></div>
+
+    </div>
+
+
+    <div
+      id="pTeachingWrap"
+      class="agenda-preview-item empty-axis"
+    >
+
+      <strong>
+        التعليم والتعلم والتقويم
+      </strong>
+
+      <div id="pTeachingAgenda"></div>
+
+    </div>
+
+
+    <div
+      id="pPersonalWrap"
+      class="agenda-preview-item empty-axis"
+    >
+
+      <strong>
+        التطور الشخصي للطلبة ورعايتهم
+      </strong>
+
+      <div id="pPersonalAgenda"></div>
+
+    </div>
+
+
+    <div
+      id="pLeadershipWrap"
+      class="agenda-preview-item empty-axis"
+    >
+
+      <strong>
+        القيادة والإدارة والحوكمة
+      </strong>
+
+      <div id="pLeadershipAgenda"></div>
+
+    </div>
+
+
+    <div
+      id="pLegacyWrap"
+      class="agenda-preview-item empty-axis"
+    >
+
+      <strong>
+        المحاور
+      </strong>
+
+      <div id="pLegacyTopics"></div>
+
+    </div>
+
+
+  </div>
+
+
+
+  <div class="details-grid">
+
+
+    <div class="detail-box">
+
+      <span>
+        التاريخ
+      </span>
+
+      <strong id="pDate">
+        —
+      </strong>
+
+    </div>
+
+
+    <div class="detail-box">
+
+      <span>
+        الوقت
+      </span>
+
+      <strong id="pTime">
+        —
+      </strong>
+
+    </div>
+
+
+    <div class="detail-box">
+
+      <span>
+        المكان
+      </span>
+
+      <strong id="pPlace">
+        —
+      </strong>
+
+    </div>
+
+
+    <div class="detail-box">
+
+      <span>
+        الفئة المستهدفة
+      </span>
+
+      <strong id="pTarget">
+        —
+      </strong>
+
+    </div>
+
+
+  </div>
+
+
+</article>
+
+
+</section>
+
+
+</div>
+
+
+</main>
+
+
+</div>
+
+
+
+<script
+  src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+<script src="../../js/config.js?v=20260816-meeting-invitation-access"></script>
+<script src="../../js/graph.js?v=20260816-meeting-invitation-access"></script>
+<script src="../../js/common.js?v=20260816-meeting-invitation-access"></script>
+
 
 
 <script>
 
-let currentId = null;
+"use strict";
 
 
-function getData() {
+let currentId =
+  null;
+
+
+/* =========================================================
+   التاريخ المحلي
+   ========================================================= */
+
+function getLocalToday(){
+
+  const now =
+    new Date();
+
+
+  const year =
+    now.getFullYear();
+
+
+  const month =
+    String(
+      now.getMonth() + 1
+    )
+      .padStart(
+        2,
+        "0"
+      );
+
+
+  const day =
+    String(
+      now.getDate()
+    )
+      .padStart(
+        2,
+        "0"
+      );
+
+
+  return `${year}-${month}-${day}`;
+
+}
+
+
+/* =========================================================
+   بناء نسخة مجمعة من البنود
+   للتوافق مع حقل topics القديم
+   ========================================================= */
+
+function buildCombinedTopics(){
+
+  const sections = [];
+
+
+  const academic =
+    $("academicAgenda")
+      .value
+      .trim();
+
+
+  const teaching =
+    $("teachingAgenda")
+      .value
+      .trim();
+
+
+  const personal =
+    $("personalAgenda")
+      .value
+      .trim();
+
+
+  const leadership =
+    $("leadershipAgenda")
+      .value
+      .trim();
+
+
+  if(academic){
+
+    sections.push(
+      "الإنجاز الأكاديمي:\n" +
+      academic
+    );
+
+  }
+
+
+  if(teaching){
+
+    sections.push(
+      "التعليم والتعلم والتقويم:\n" +
+      teaching
+    );
+
+  }
+
+
+  if(personal){
+
+    sections.push(
+      "التطور الشخصي للطلبة ورعايتهم:\n" +
+      personal
+    );
+
+  }
+
+
+  if(leadership){
+
+    sections.push(
+      "القيادة والإدارة والحوكمة:\n" +
+      leadership
+    );
+
+  }
+
+
+  return sections.join(
+    "\n\n"
+  );
+
+}
+
+
+/* =========================================================
+   قراءة البيانات
+   ========================================================= */
+
+function getData(){
 
   return {
 
-    type: "invitation",
+    type:
+      "invitation",
 
     title:
       $("title").value.trim() ||
@@ -355,6 +904,9 @@ function getData() {
 
     number:
       $("number").value.trim(),
+
+    meetingType:
+      $("meetingType").value,
 
     date:
       $("date").value,
@@ -368,115 +920,343 @@ function getData() {
     target:
       $("target").value.trim(),
 
+
+    academicAgenda:
+      $("academicAgenda").value,
+
+    teachingAgenda:
+      $("teachingAgenda").value,
+
+    personalAgenda:
+      $("personalAgenda").value,
+
+    leadershipAgenda:
+      $("leadershipAgenda").value,
+
+
+    /*
+      الحقل القديم يبقى موجودًا
+      لتوافق الأرشيف وبقية النظام.
+    */
+
     topics:
-      $("topics").value
+      buildCombinedTopics() ||
+      $("legacyTopics").value ||
+      "",
+
+    legacyTopics:
+      $("legacyTopics").value || ""
 
   };
 
 }
 
 
-function update() {
+/* =========================================================
+   تحديث مجال في معاينة الدعوة
+   ========================================================= */
 
-  const d = getData();
+function updateAgendaPreview(
+  wrapId,
+  textId,
+  value
+){
 
-
-  $("pTitle").textContent =
-    d.title || "اجتماع";
-
-
-  $("pNumber").textContent =
-    d.number || "1";
-
-
-  $("pDate").textContent =
-    wrFormatDate(d.date);
+  const wrap =
+    $(wrapId);
 
 
-  $("pTime").textContent =
-    wrFormatTime(d.time);
+  const text =
+    $(textId);
 
 
-  $("pPlace").textContent =
-    d.place || "—";
+  const clean =
+    String(
+      value || ""
+    ).trim();
 
 
-  $("pTarget").textContent =
-    d.target || "—";
+  text.textContent =
+    clean;
 
 
-  $("pTopics").textContent =
-    wrBullets(
-      d.topics ||
-      "مراجعة التفاصيل\nتوزيع المهام"
-    );
+  wrap.classList.toggle(
+    "empty-axis",
+    !clean
+  );
 
 }
 
 
-function applyData(data = {}) {
+/* =========================================================
+   تحديث المعاينة
+   ========================================================= */
 
-  if (data.number !== undefined) {
-    $("number").value =
-      data.number || "";
+function update(){
+
+  const d =
+    getData();
+
+
+  $("pTitle").textContent =
+    d.title ||
+    "اجتماع";
+
+
+  $("pMeetingType").textContent =
+    d.meetingType ||
+    "—";
+
+
+  $("pNumber").textContent =
+    d.number ||
+    "1";
+
+
+  $("pDate").textContent =
+    wrFormatDate(
+      d.date
+    );
+
+
+  $("pTime").textContent =
+    wrFormatTime(
+      d.time
+    );
+
+
+  $("pPlace").textContent =
+    d.place ||
+    "—";
+
+
+  $("pTarget").textContent =
+    d.target ||
+    "—";
+
+
+  updateAgendaPreview(
+    "pAcademicWrap",
+    "pAcademicAgenda",
+    d.academicAgenda
+  );
+
+
+  updateAgendaPreview(
+    "pTeachingWrap",
+    "pTeachingAgenda",
+    d.teachingAgenda
+  );
+
+
+  updateAgendaPreview(
+    "pPersonalWrap",
+    "pPersonalAgenda",
+    d.personalAgenda
+  );
+
+
+  updateAgendaPreview(
+    "pLeadershipWrap",
+    "pLeadershipAgenda",
+    d.leadershipAgenda
+  );
+
+
+  updateAgendaPreview(
+    "pLegacyWrap",
+    "pLegacyTopics",
+    d.legacyTopics
+  );
+
+}
+
+
+/* =========================================================
+   تطبيق سجل محفوظ
+   ========================================================= */
+
+function applyData(
+  data = {}
+){
+
+  $("number").value =
+    data.number ||
+    "";
+
+
+  $("title").value =
+    data.title ||
+    "";
+
+
+  $("meetingType").value =
+    data.meetingType ||
+    "";
+
+
+  $("date").value =
+    data.date ||
+    "";
+
+
+  $("time").value =
+    data.time ||
+    "";
+
+
+  $("place").value =
+    data.place ||
+    "";
+
+
+  $("target").value =
+    data.target ||
+    "";
+
+
+  $("academicAgenda").value =
+    data.academicAgenda ||
+    "";
+
+
+  $("teachingAgenda").value =
+    data.teachingAgenda ||
+    "";
+
+
+  $("personalAgenda").value =
+    data.personalAgenda ||
+    "";
+
+
+  $("leadershipAgenda").value =
+    data.leadershipAgenda ||
+    "";
+
+
+  /*
+    دعم الدعوات القديمة التي كانت
+    تحتوي topics فقط.
+  */
+
+  const hasNewAgenda =
+    Boolean(
+      String(
+        data.academicAgenda ||
+        ""
+      ).trim() ||
+
+      String(
+        data.teachingAgenda ||
+        ""
+      ).trim() ||
+
+      String(
+        data.personalAgenda ||
+        ""
+      ).trim() ||
+
+      String(
+        data.leadershipAgenda ||
+        ""
+      ).trim()
+    );
+
+
+  if(
+    !hasNewAgenda &&
+    data.topics
+  ){
+
+    $("legacyTopics").value =
+      data.topics;
+
+
+    $("legacyTopicsWrap")
+      .classList
+      .remove(
+        "hidden"
+      );
+
+
+  }else{
+
+
+    $("legacyTopics").value =
+      data.legacyTopics ||
+      "";
+
+
+    $("legacyTopicsWrap")
+      .classList
+      .toggle(
+        "hidden",
+        !$("legacyTopics").value
+      );
+
   }
 
-  if (data.title !== undefined) {
-    $("title").value =
-      data.title || "";
-  }
-
-  if (data.date !== undefined) {
-    $("date").value =
-      data.date || "";
-  }
-
-  if (data.time !== undefined) {
-    $("time").value =
-      data.time || "";
-  }
-
-  if (data.place !== undefined) {
-    $("place").value =
-      data.place || "";
-  }
-
-  if (data.target !== undefined) {
-    $("target").value =
-      data.target || "";
-  }
-
-  if (data.topics !== undefined) {
-    $("topics").value =
-      data.topics || "";
-  }
 
   update();
 
 }
 
 
+/* =========================================================
+   تحديث المعاينة أثناء الإدخال
+   ========================================================= */
+
 [
   "number",
   "title",
+  "meetingType",
   "date",
   "time",
   "place",
   "target",
-  "topics"
-].forEach(id => {
+  "academicAgenda",
+  "teachingAgenda",
+  "personalAgenda",
+  "leadershipAgenda"
+]
+.forEach(
+  id => {
 
-  $(id).addEventListener(
-    "input",
-    update
-  );
-
-});
+    const el =
+      $(id);
 
 
-async function loadRecord(id) {
+    if(!el){
+      return;
+    }
 
-  try {
+
+    el.addEventListener(
+      "input",
+      update
+    );
+
+
+    el.addEventListener(
+      "change",
+      update
+    );
+
+  }
+);
+
+
+/* =========================================================
+   استرجاع دعوة محفوظة
+   ========================================================= */
+
+async function loadRecord(
+  id
+){
+
+  try{
+
 
     const records =
       await WRGraph.fetchRecords();
@@ -485,12 +1265,16 @@ async function loadRecord(id) {
     const rec =
       records.find(
         r =>
-          String(r.id) ===
-          String(id)
+          String(
+            r.id
+          ) ===
+          String(
+            id
+          )
       );
 
 
-    if (!rec) {
+    if(!rec){
 
       alert(
         "لم يتم العثور على الدعوة"
@@ -501,7 +1285,8 @@ async function loadRecord(id) {
     }
 
 
-    currentId = rec.id;
+    currentId =
+      rec.id;
 
 
     const data = {
@@ -509,10 +1294,10 @@ async function loadRecord(id) {
     };
 
 
-    if (
+    if(
       !data.title &&
       rec.title
-    ) {
+    ){
 
       data.title =
         rec.title;
@@ -520,10 +1305,10 @@ async function loadRecord(id) {
     }
 
 
-    if (
+    if(
       !data.date &&
       rec.record_date
-    ) {
+    ){
 
       data.date =
         rec.record_date;
@@ -531,7 +1316,9 @@ async function loadRecord(id) {
     }
 
 
-    applyData(data);
+    applyData(
+      data
+    );
 
 
     $("pageTitle").textContent =
@@ -544,16 +1331,13 @@ async function loadRecord(id) {
 
     $("deleteBtn")
       .classList
-      .remove("hidden");
+      .remove(
+        "hidden"
+      );
 
 
-    console.log(
-      "تم استرجاع الدعوة:",
-      rec
-    );
+  }catch(error){
 
-
-  } catch (error) {
 
     console.error(
       "خطأ في استرجاع الدعوة:",
@@ -570,315 +1354,405 @@ async function loadRecord(id) {
 }
 
 
+/* =========================================================
+   حفظ / تحديث الدعوة
+   ========================================================= */
+
 $("saveBtn").onclick =
-  async () => {
-
-    const data =
-      getData();
+async () => {
 
 
-    if (
-      !data.title ||
-      !data.date
-    ) {
+  const data =
+    getData();
 
-      wrToast(
-        "أكملي عنوان الاجتماع والتاريخ"
+
+  if(
+    !data.title ||
+    !data.date ||
+    !data.meetingType
+  ){
+
+    wrToast(
+      "أكملي عنوان الاجتماع ونوع الاجتماع والتاريخ"
+    );
+
+    return;
+
+  }
+
+
+  $("saveBtn").disabled =
+    true;
+
+
+  try{
+
+
+    const rec =
+      await wrAddRecord({
+
+        ...data,
+
+        id:
+          currentId ||
+          undefined
+
+      });
+
+
+    currentId =
+      rec.id;
+
+
+    history.replaceState(
+      null,
+      "",
+      `?id=${encodeURIComponent(
+        currentId
+      )}`
+    );
+
+
+    $("pageTitle").textContent =
+      "تعديل دعوة اجتماع";
+
+
+    $("saveBtn").textContent =
+      "💾 تحديث الدعوة";
+
+
+    $("deleteBtn")
+      .classList
+      .remove(
+        "hidden"
       );
 
-      return;
 
-    }
+    wrToast(
+      "تم حفظ الدعوة بنجاح"
+    );
+
+
+  }catch(error){
+
+
+    console.error(
+      "خطأ حفظ الدعوة:",
+      error
+    );
+
+
+    wrToast(
+      "تعذر حفظ الدعوة: " +
+      (
+        error.message ||
+        error
+      )
+    );
+
+
+  }finally{
 
 
     $("saveBtn").disabled =
-      true;
+      false;
+
+  }
+
+};
 
 
-    try {
-
-      const rec =
-        await wrAddRecord({
-
-          ...data,
-
-          id:
-            currentId ||
-            undefined
-
-        });
-
-
-      currentId =
-        rec.id;
-
-
-      history.replaceState(
-        null,
-        "",
-        `?id=${encodeURIComponent(
-          currentId
-        )}`
-      );
-
-
-      $("pageTitle").textContent =
-        "تعديل دعوة اجتماع";
-
-
-      $("saveBtn").textContent =
-        "💾 تحديث الدعوة";
-
-
-      $("deleteBtn")
-        .classList
-        .remove("hidden");
-
-
-      wrToast(
-        "تم حفظ الدعوة بنجاح"
-      );
-
-
-    } catch (error) {
-
-      console.error(
-        "خطأ حفظ الدعوة:",
-        error
-      );
-
-
-      wrToast(
-        "تعذر حفظ الدعوة: " +
-        (
-          error.message ||
-          error
-        )
-      );
-
-
-    } finally {
-
-      $("saveBtn").disabled =
-        false;
-
-    }
-
-  };
-
+/* =========================================================
+   حذف الدعوة
+   ========================================================= */
 
 $("deleteBtn").onclick =
-  async () => {
-
-    if (!currentId) {
-
-      wrToast(
-        "لا توجد دعوة محفوظة لحذفها"
-      );
-
-      return;
-
-    }
+async () => {
 
 
-    const confirmed =
-      confirm(
-        "هل أنتِ متأكدة من حذف هذه الدعوة نهائيًا؟"
-      );
+  if(!currentId){
+
+    wrToast(
+      "لا توجد دعوة محفوظة لحذفها"
+    );
+
+    return;
+
+  }
 
 
-    if (!confirmed) {
-      return;
-    }
+  const confirmed =
+    confirm(
+      "هل أنتِ متأكدة من حذف هذه الدعوة نهائيًا؟"
+    );
 
 
-    $("deleteBtn").disabled =
-      true;
+  if(!confirmed){
+
+    return;
+
+  }
 
 
-    try {
-
-      /*
-       * الحذف الحقيقي من Supabase
-       */
-      await WRGraph.deleteRecord(
-        currentId
-      );
+  $("deleteBtn").disabled =
+    true;
 
 
-      /*
-       * تنظيف النسخة المحلية
-       * إن كانت موجودة.
-       */
-      try {
+  try{
 
-        if (
-          typeof wrDeleteRecord ===
-          "function"
-        ) {
 
-          await wrDeleteRecord(
-            currentId
-          );
+    await WRGraph.deleteRecord(
+      currentId
+    );
 
-        }
 
-      } catch (localError) {
+    try{
 
-        console.warn(
-          "تعذر تنظيف النسخة المحلية:",
-          localError
+
+      if(
+        typeof wrDeleteRecord ===
+        "function"
+      ){
+
+        await wrDeleteRecord(
+          currentId
         );
 
       }
 
 
-      wrToast(
-        "تم حذف الدعوة بنجاح"
+    }catch(localError){
+
+
+      console.warn(
+        "تعذر تنظيف النسخة المحلية:",
+        localError
       );
-
-
-      setTimeout(
-        () => {
-
-          location.href =
-            "../archive/index.html";
-
-        },
-        400
-      );
-
-
-    } catch (error) {
-
-      console.error(
-        "خطأ حذف الدعوة:",
-        error
-      );
-
-
-      wrToast(
-        "تعذر حذف الدعوة: " +
-        (
-          error.message ||
-          error
-        )
-      );
-
-
-      $("deleteBtn").disabled =
-        false;
 
     }
 
-  };
 
+    wrToast(
+      "تم حذف الدعوة بنجاح"
+    );
+
+
+    setTimeout(
+      () => {
+
+        location.href =
+          "../archive/index.html";
+
+      },
+      400
+    );
+
+
+  }catch(error){
+
+
+    console.error(
+      "خطأ حذف الدعوة:",
+      error
+    );
+
+
+    wrToast(
+      "تعذر حذف الدعوة: " +
+      (
+        error.message ||
+        error
+      )
+    );
+
+
+    $("deleteBtn").disabled =
+      false;
+
+  }
+
+};
+
+
+/* =========================================================
+   تحميل PNG
+   ========================================================= */
 
 $("downloadBtn").onclick =
-  async () => {
-
-    try {
-
-      update();
+async () => {
 
 
-      const canvas =
-        await html2canvas(
-          $("card"),
-          {
-            scale: 2,
-            backgroundColor:
-              "#fffdf8",
-            useCORS: true
-          }
-        );
+  try{
 
 
-      const link =
-        document.createElement(
-          "a"
-        );
+    update();
 
 
-      link.download =
-        "دعوة-" +
-        wrSafeName(
-          $("title").value ||
-          "اجتماع"
-        ) +
-        ".png";
-
-
-      link.href =
-        canvas.toDataURL(
-          "image/png"
-        );
-
-
-      link.click();
-
-
-    } catch (error) {
-
-      console.error(
-        "تعذر إنشاء PNG:",
-        error
+    const canvas =
+      await html2canvas(
+        $("card"),
+        {
+          scale:2,
+          backgroundColor:"#fffdf8",
+          useCORS:true
+        }
       );
 
 
-      wrToast(
-        "تعذر تحميل صورة الدعوة"
+    const link =
+      document.createElement(
+        "a"
       );
 
-    }
 
-  };
+    link.download =
+      "دعوة-" +
+      wrSafeName(
+        $("title").value ||
+        "اجتماع"
+      ) +
+      ".png";
 
+
+    link.href =
+      canvas.toDataURL(
+        "image/png"
+      );
+
+
+    link.click();
+
+
+  }catch(error){
+
+
+    console.error(
+      "تعذر إنشاء PNG:",
+      error
+    );
+
+
+    wrToast(
+      "تعذر تحميل صورة الدعوة"
+    );
+
+  }
+
+};
+
+
+/* =========================================================
+   نموذج جديد
+   ========================================================= */
 
 $("newBtn").onclick =
-  () => {
+() => {
 
-    if (
-      confirm(
-        "بدء دعوة اجتماع جديدة؟"
-      )
-    ) {
 
-      location.href =
-        "invitation.html";
+  if(
+    confirm(
+      "بدء دعوة اجتماع جديدة؟"
+    )
+  ){
+
+    location.href =
+      "invitation.html";
+
+  }
+
+};
+
+
+/* =========================================================
+   تشغيل الصفحة
+   ========================================================= */
+
+(async function init(){
+
+
+  try{
+
+    const allowed =
+      await WRAccess.requireLeadership({
+        showDenied:false
+      });
+
+
+    if(!allowed){
+
+      alert(
+        "دعوات الاجتماعات متاحة للقيادة العليا والوسطى فقط."
+      );
+
+      location.replace(
+        "../../index.html"
+      );
+
+      return;
 
     }
 
-  };
+
+    const accessLoader =
+      document.getElementById(
+        "accessLoader"
+      );
 
 
-(async function init() {
+    if(accessLoader){
+      accessLoader.style.display =
+        "none";
+    }
+
+
+  }catch(error){
+
+    console.error(
+      "Meeting invitation access error:",
+      error
+    );
+
+    location.replace(
+      "../../index.html"
+    );
+
+    return;
+
+  }
+
 
   const id =
     new URLSearchParams(
       location.search
-    ).get("id");
+    )
+      .get(
+        "id"
+      );
 
 
-  if (id) {
+  if(id){
 
-    await loadRecord(id);
+    await loadRecord(
+      id
+    );
 
-  } else {
+
+  }else{
+
 
     $("deleteBtn")
       .classList
-      .add("hidden");
+      .add(
+        "hidden"
+      );
 
 
-    if (
+    if(
       !$("date").value
-    ) {
+    ){
 
       $("date").value =
-        new Date()
-          .toISOString()
-          .slice(0, 10);
+        getLocalToday();
 
     }
 
@@ -887,10 +1761,12 @@ $("newBtn").onclick =
 
   }
 
+
 })();
 
 </script>
 
 
 </body>
+
 </html>

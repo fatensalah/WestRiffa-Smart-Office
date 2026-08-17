@@ -1,0 +1,1842 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#075c40">
+
+<title>
+  ملاحظاتي | WestRiffa Smart Office
+</title>
+
+<link
+  rel="stylesheet"
+  href="../../css/app.css?v=20260816-my-notes2"
+>
+
+<style>
+
+.notes-wrap{
+  max-width:980px;
+  margin:auto;
+}
+
+.notes-summary{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.summary-card{
+  background:#fff;
+  border-radius:16px;
+  padding:16px;
+  border-top:4px solid #087451;
+  box-shadow:0 8px 22px rgba(0,0,0,.05);
+}
+
+.summary-card span{
+  display:block;
+  color:#6b7a72;
+  font-size:12px;
+  margin-bottom:5px;
+}
+
+.summary-card strong{
+  font-size:27px;
+  color:#075c40;
+}
+
+.notes-toolbar{
+  display:grid;
+  grid-template-columns:2fr 1fr auto;
+  gap:9px;
+  margin-bottom:16px;
+}
+
+.notes-toolbar input,
+.notes-toolbar select{
+  width:100%;
+  padding:10px;
+  border:1px solid #d4ded9;
+  border-radius:10px;
+  background:#fff;
+  box-sizing:border-box;
+}
+
+.note-card{
+  background:#fff;
+  border:1px solid #e0e8e4;
+  border-radius:17px;
+  padding:18px;
+  margin-bottom:13px;
+  box-shadow:0 8px 22px rgba(0,0,0,.04);
+}
+
+.note-card.unread{
+  border-right:5px solid #b58a36;
+}
+
+.note-card.done{
+  border-right:5px solid #087451;
+}
+
+.note-head{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:flex-start;
+  flex-wrap:wrap;
+}
+
+.note-title{
+  font-size:18px;
+  font-weight:700;
+  color:#075c40;
+}
+
+.note-meta{
+  color:#718078;
+  font-size:12px;
+  margin-top:5px;
+  line-height:1.7;
+}
+
+.sender-line{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  margin-top:8px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#edf6f2;
+  color:#075c40;
+  font-size:11px;
+  font-weight:700;
+}
+
+.note-message{
+  margin-top:14px;
+  background:#f8faf9;
+  border-radius:11px;
+  padding:14px;
+  line-height:1.9;
+  white-space:pre-wrap;
+}
+
+.priority{
+  display:inline-block;
+  border-radius:999px;
+  padding:5px 9px;
+  font-size:11px;
+  font-weight:700;
+}
+
+.priority.normal{
+  background:#eaf3ef;
+  color:#075c40;
+}
+
+.priority.important{
+  background:#fff7e8;
+  color:#b54708;
+}
+
+.priority.urgent{
+  background:#fff0ef;
+  color:#b42318;
+}
+
+.status-row{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+
+.chip{
+  border-radius:999px;
+  padding:5px 8px;
+  font-size:11px;
+  font-weight:700;
+}
+
+.chip.unread{
+  background:#f3f5f4;
+  color:#596c63;
+}
+
+.chip.read{
+  background:#eef4ff;
+  color:#175cd3;
+}
+
+.chip.done{
+  background:#e8f6ed;
+  color:#067647;
+}
+
+.chip.late{
+  background:#fff0ef;
+  color:#b42318;
+}
+
+.reply-box{
+  margin-top:14px;
+  padding-top:13px;
+  border-top:1px solid #e5ebe8;
+}
+
+.reply-box label{
+  display:block;
+  font-weight:700;
+  color:#334d42;
+  margin-bottom:7px;
+}
+
+.reply-box textarea{
+  width:100%;
+  min-height:80px;
+  padding:10px;
+  border:1px solid #ccd8d2;
+  border-radius:10px;
+  resize:vertical;
+  box-sizing:border-box;
+}
+
+.reply-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:9px;
+}
+
+.saved-reply{
+  margin-top:12px;
+  background:#f4f8f6;
+  border-right:4px solid #087451;
+  border-radius:9px;
+  padding:11px;
+  line-height:1.7;
+}
+
+.empty{
+  text-align:center;
+  color:#6b7a72;
+  padding:35px;
+  background:#fff;
+  border:1px dashed #d6e0db;
+  border-radius:15px;
+}
+
+.loading{
+  text-align:center;
+  padding:25px;
+  color:#6b7a72;
+}
+
+@media(max-width:750px){
+
+  .notes-summary{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .notes-toolbar{
+    grid-template-columns:1fr;
+  }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+  <div class="brand">
+
+    <img
+      src="../../assets/school-header.jpg"
+      alt="شعار المدرسة"
+    >
+
+    <div>
+
+      <h1>
+        ملاحظاتي
+      </h1>
+
+      <p>
+        الملاحظات والتكليفات الموجهة إليكِ
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <div class="header-actions">
+
+    <a
+      class="btn btn-soft"
+      href="../../index.html"
+    >
+      🏠 الرئيسية
+    </a>
+
+  </div>
+
+</header>
+
+
+<div class="shell">
+
+
+<aside class="sidebar">
+
+  <h3 class="sidebar-title">
+    القائمة الرئيسية
+  </h3>
+
+  <a
+    class="nav-link"
+    href="../../index.html"
+  >
+    🏠 لوحة التحكم
+  </a>
+
+  <a
+    class="nav-link active"
+    href="../../pages/notes/my-notes.html"
+  >
+    🔔 ملاحظاتي
+  </a>
+
+  <a
+    class="nav-link"
+    href="../../pages/meetings/index.html"
+  >
+    📅 الاجتماعات
+  </a>
+
+  <a
+    class="nav-link"
+    href="../../pages/activities/index.html"
+  >
+    🎯 الفعاليات
+  </a>
+
+  <a
+    class="nav-link"
+    href="../../pages/certificates/index.html"
+  >
+    🏅 الشهادات
+  </a>
+
+  <a
+    class="nav-link"
+    href="../../pages/archive/index.html"
+  >
+    📂 الأرشيف الذكي
+  </a>
+
+</aside>
+
+
+<main class="content">
+
+
+<div class="notes-wrap">
+
+
+  <div class="page-head">
+
+    <div>
+
+      <h2>
+        🔔 ملاحظاتي
+      </h2>
+
+      <p>
+        هنا تظهر فقط الملاحظات المرسلة إلى حسابك مع اسم المرسل وحالة التنفيذ.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <div class="notes-summary">
+
+    <div class="summary-card">
+
+      <span>
+        إجمالي الملاحظات
+      </span>
+
+      <strong id="totalCount">
+        0
+      </strong>
+
+    </div>
+
+
+    <div class="summary-card">
+
+      <span>
+        غير مقروءة
+      </span>
+
+      <strong id="unreadCount">
+        0
+      </strong>
+
+    </div>
+
+
+    <div class="summary-card">
+
+      <span>
+        مطلوب تنفيذها
+      </span>
+
+      <strong id="pendingCount">
+        0
+      </strong>
+
+    </div>
+
+
+    <div class="summary-card">
+
+      <span>
+        تم التنفيذ
+      </span>
+
+      <strong id="doneCount">
+        0
+      </strong>
+
+    </div>
+
+  </div>
+
+
+  <div class="notes-toolbar">
+
+    <input
+      id="searchBox"
+      type="search"
+      placeholder="بحث في الملاحظات أو اسم المرسل..."
+    >
+
+
+    <select id="statusFilter">
+
+      <option value="">
+        كل الحالات
+      </option>
+
+      <option value="unread">
+        غير مقروءة
+      </option>
+
+      <option value="pending">
+        مطلوب التنفيذ
+      </option>
+
+      <option value="done">
+        تم التنفيذ
+      </option>
+
+      <option value="late">
+        متأخرة
+      </option>
+
+    </select>
+
+
+    <button
+      id="refreshBtn"
+      class="btn btn-soft"
+      type="button"
+    >
+      تحديث
+    </button>
+
+  </div>
+
+
+  <div
+    id="notesList"
+    class="loading"
+  >
+    جاري تحميل ملاحظاتك...
+  </div>
+
+
+</div>
+
+
+</main>
+
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="../../js/config.js?v=20260816-my-notes2"></script>
+<script src="../../js/graph.js?v=20260816-my-notes2"></script>
+<script src="../../js/common.js?v=20260816-my-notes2"></script>
+
+
+<script>
+
+"use strict";
+
+
+let sb =
+  null;
+
+let currentUser =
+  null;
+
+let myNotes =
+  [];
+
+let senderProfiles =
+  new Map();
+
+
+const byId =
+  id =>
+    document.getElementById(
+      id
+    );
+
+
+/* =========================================================
+   Escape
+   ========================================================= */
+
+function esc(
+  value
+){
+
+  return String(
+    value ?? ""
+  )
+
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+
+}
+
+
+/* =========================================================
+   Priority
+   ========================================================= */
+
+function priorityLabel(
+  value
+){
+
+  return (
+    {
+      normal:
+        "عادية",
+
+      important:
+        "مهمة",
+
+      urgent:
+        "عاجلة"
+    }
+  )[value] ||
+  "عادية";
+
+}
+
+
+/* =========================================================
+   Date Time
+   ========================================================= */
+
+function dt(
+  value
+){
+
+  if(!value){
+
+    return "—";
+
+  }
+
+
+  const date =
+    new Date(
+      value
+    );
+
+
+  if(
+    Number.isNaN(
+      date.getTime()
+    )
+  ){
+
+    return "—";
+
+  }
+
+
+  return date.toLocaleString(
+    "ar-BH",
+    {
+      year:
+        "numeric",
+
+      month:
+        "short",
+
+      day:
+        "numeric",
+
+      hour:
+        "2-digit",
+
+      minute:
+        "2-digit"
+    }
+  );
+
+}
+
+
+/* =========================================================
+   Date only
+   ========================================================= */
+
+function dateOnly(
+  value
+){
+
+  if(!value){
+
+    return "—";
+
+  }
+
+
+  const date =
+    new Date(
+      value +
+      "T00:00:00"
+    );
+
+
+  return Number.isNaN(
+    date.getTime()
+  )
+    ? value
+    : date.toLocaleDateString(
+        "ar-BH",
+        {
+          year:
+            "numeric",
+
+          month:
+            "short",
+
+          day:
+            "numeric"
+        }
+      );
+
+}
+
+
+/* =========================================================
+   صفة المرسل
+   ========================================================= */
+
+function senderTitleFromName(
+  name
+){
+
+  const value =
+    String(
+      name ||
+      ""
+    ).trim();
+
+
+  if(
+    value ===
+    "أحلام السويدي"
+  ){
+
+    return "مديرة المدرسة";
+
+  }
+
+
+  if(
+    value ===
+    "خلود الكعبي"
+  ){
+
+    return "المديرة المساعدة";
+
+  }
+
+
+  if(
+    value ===
+    "زينب عبدالسلام"
+  ){
+
+    return "المديرة المساعدة";
+
+  }
+
+
+  return "القيادة العليا";
+
+}
+
+
+/* =========================================================
+   الحالة
+   ========================================================= */
+
+function stateOf(
+  item
+){
+
+  if(
+    item.is_completed
+  ){
+
+    return "done";
+
+  }
+
+
+  if(
+    item.note?.due_date &&
+    new Date(
+      item.note.due_date +
+      "T23:59:59"
+    ).getTime() <
+    Date.now()
+  ){
+
+    return "late";
+
+  }
+
+
+  if(
+    !item.is_read
+  ){
+
+    return "unread";
+
+  }
+
+
+  return "pending";
+
+}
+
+
+/* =========================================================
+   تشغيل الصفحة
+   ========================================================= */
+
+async function init(){
+
+  try{
+
+
+    if(
+      !window.WR_CONFIG?.supabaseUrl ||
+      !window.WR_CONFIG?.supabaseKey
+    ){
+
+      throw new Error(
+        "إعدادات Supabase غير مكتملة"
+      );
+
+    }
+
+
+    sb =
+      window.supabase.createClient(
+        window.WR_CONFIG.supabaseUrl,
+        window.WR_CONFIG.supabaseKey
+      );
+
+
+    currentUser =
+      await WRGraph.getAccount();
+
+
+    if(!currentUser){
+
+      alert(
+        "يجب تسجيل الدخول أولًا."
+      );
+
+
+      location.href =
+        "../../index.html";
+
+
+      return;
+
+    }
+
+
+    await loadNotes();
+
+
+  }catch(error){
+
+
+    console.error(
+      error
+    );
+
+
+    byId(
+      "notesList"
+    ).className =
+      "";
+
+
+    byId(
+      "notesList"
+    ).innerHTML =
+      '<div class="empty">تعذر تحميل الملاحظات. تأكدي من تسجيل الدخول واتصال قاعدة البيانات.</div>';
+
+  }
+
+}
+
+
+/* =========================================================
+   تحميل بيانات المرسلين
+   ========================================================= */
+
+async function loadSenderProfiles(
+  senderIds
+){
+
+  senderProfiles =
+    new Map();
+
+
+  const ids =
+    [
+      ...new Set(
+        (
+          senderIds ||
+          []
+        )
+          .filter(
+            Boolean
+          )
+          .map(
+            String
+          )
+      )
+    ];
+
+
+  if(
+    !ids.length
+  ){
+
+    return;
+
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await sb
+      .from(
+        "profiles"
+      )
+      .select(
+        "id, full_name, role"
+      )
+      .in(
+        "id",
+        ids
+      );
+
+
+  if(error){
+
+    console.warn(
+      "Sender profiles error:",
+      error
+    );
+
+    return;
+
+  }
+
+
+  (
+    data ||
+    []
+  )
+    .forEach(
+      profile => {
+
+        senderProfiles.set(
+          String(
+            profile.id
+          ),
+          profile
+        );
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   تحميل الملاحظات
+   ========================================================= */
+
+async function loadNotes(){
+
+  byId(
+    "notesList"
+  ).className =
+    "loading";
+
+
+  byId(
+    "notesList"
+  ).textContent =
+    "جاري تحميل ملاحظاتك...";
+
+
+  const {
+    data,
+    error
+  } =
+    await sb
+      .from(
+        "note_recipients"
+      )
+      .select(
+        `
+        id,
+        note_id,
+        teacher_id,
+        is_read,
+        read_at,
+        is_completed,
+        completed_at,
+        teacher_reply,
+        created_at,
+        notes (
+          id,
+          title,
+          message,
+          priority,
+          due_date,
+          created_at,
+          created_by
+        )
+        `
+      )
+      .eq(
+        "teacher_id",
+        currentUser.id
+      )
+      .order(
+        "created_at",
+        {
+          ascending:false
+        }
+      );
+
+
+  if(error){
+
+    throw error;
+
+  }
+
+
+  const rows =
+    (
+      data ||
+      []
+    )
+      .map(
+        row => ({
+
+          ...row,
+
+          note:
+            row.notes ||
+            null
+
+        })
+      )
+      .filter(
+        row =>
+          row.note
+      );
+
+
+  await loadSenderProfiles(
+
+    rows.map(
+      row =>
+        row.note
+          ?.created_by
+    )
+
+  );
+
+
+  myNotes =
+    rows.map(
+      row => {
+
+
+        const sender =
+          senderProfiles.get(
+            String(
+              row.note
+                ?.created_by ||
+              ""
+            )
+          ) ||
+          null;
+
+
+        return {
+
+          ...row,
+
+          sender
+
+        };
+
+      }
+    );
+
+
+  updateCounters();
+
+  renderNotes();
+
+}
+
+
+/* =========================================================
+   Counters
+   ========================================================= */
+
+function updateCounters(){
+
+  byId(
+    "totalCount"
+  ).textContent =
+    myNotes.length;
+
+
+  byId(
+    "unreadCount"
+  ).textContent =
+    myNotes.filter(
+      item =>
+        !item.is_read
+    ).length;
+
+
+  byId(
+    "pendingCount"
+  ).textContent =
+    myNotes.filter(
+      item =>
+        !item.is_completed
+    ).length;
+
+
+  byId(
+    "doneCount"
+  ).textContent =
+    myNotes.filter(
+      item =>
+        item.is_completed
+    ).length;
+
+}
+
+
+/* =========================================================
+   عرض الملاحظات
+   ========================================================= */
+
+function renderNotes(){
+
+  const query =
+    byId(
+      "searchBox"
+    )
+      .value
+      .trim()
+      .toLowerCase();
+
+
+  const filter =
+    byId(
+      "statusFilter"
+    ).value;
+
+
+  const rows =
+    myNotes.filter(
+      item => {
+
+
+        const state =
+          stateOf(
+            item
+          );
+
+
+        if(
+          filter ===
+          "unread" &&
+          state !==
+          "unread"
+        ){
+
+          return false;
+
+        }
+
+
+        if(
+          filter ===
+          "pending" &&
+          ![
+            "pending",
+            "unread",
+            "late"
+          ].includes(
+            state
+          )
+        ){
+
+          return false;
+
+        }
+
+
+        if(
+          filter ===
+          "done" &&
+          state !==
+          "done"
+        ){
+
+          return false;
+
+        }
+
+
+        if(
+          filter ===
+          "late" &&
+          state !==
+          "late"
+        ){
+
+          return false;
+
+        }
+
+
+        if(
+          query
+        ){
+
+          const senderName =
+            item.sender?.full_name ||
+            "";
+
+
+          const text =
+            (
+              String(
+                item.note.title ||
+                ""
+              ) +
+              " " +
+              String(
+                item.note.message ||
+                ""
+              ) +
+              " " +
+              String(
+                senderName
+              )
+            )
+              .toLowerCase();
+
+
+          if(
+            !text.includes(
+              query
+            )
+          ){
+
+            return false;
+
+          }
+
+        }
+
+
+        return true;
+
+      }
+    );
+
+
+  byId(
+    "notesList"
+  ).className =
+    "";
+
+
+  if(
+    !rows.length
+  ){
+
+    byId(
+      "notesList"
+    ).innerHTML =
+      '<div class="empty">لا توجد ملاحظات مطابقة.</div>';
+
+    return;
+
+  }
+
+
+  byId(
+    "notesList"
+  ).innerHTML =
+
+    rows
+      .map(
+        item => {
+
+
+          const state =
+            stateOf(
+              item
+            );
+
+
+          const note =
+            item.note;
+
+
+          const senderName =
+            item.sender?.full_name ||
+            "القيادة العليا";
+
+
+          const senderTitle =
+            senderTitleFromName(
+              senderName
+            );
+
+
+          return `
+
+            <article
+              class="
+                note-card
+                ${state === "unread" ? "unread" : ""}
+                ${state === "done" ? "done" : ""}
+              "
+              data-id="${esc(
+                item.id
+              )}"
+            >
+
+
+              <div class="note-head">
+
+
+                <div>
+
+
+                  <div class="note-title">
+
+                    ${esc(
+                      note.title
+                    )}
+
+                  </div>
+
+
+                  <div class="note-meta">
+
+                    أُرسلت:
+                    ${dt(
+                      note.created_at
+                    )}
+
+                    ${
+                      note.due_date
+                        ? `
+                          — مطلوب التنفيذ قبل:
+                          ${dateOnly(
+                            note.due_date
+                          )}
+                        `
+                        : ""
+                    }
+
+                  </div>
+
+
+                  <div class="sender-line">
+
+                    👤 المرسل:
+                    ${esc(
+                      senderName
+                    )}
+
+                    —
+                    ${esc(
+                      senderTitle
+                    )}
+
+                  </div>
+
+
+                </div>
+
+
+                <span
+                  class="
+                    priority
+                    ${esc(
+                      note.priority
+                    )}
+                  "
+                >
+
+                  ${esc(
+                    priorityLabel(
+                      note.priority
+                    )
+                  )}
+
+                </span>
+
+
+              </div>
+
+
+              <div class="note-message">
+
+                ${esc(
+                  note.message
+                )}
+
+              </div>
+
+
+              <div class="status-row">
+
+
+                ${
+                  !item.is_read
+                    ? `
+                      <span class="chip unread">
+                        غير مقروءة
+                      </span>
+                    `
+                    : `
+                      <span class="chip read">
+                        تمت القراءة
+                      </span>
+                    `
+                }
+
+
+                ${
+                  state ===
+                  "late"
+                    ? `
+                      <span class="chip late">
+                        متأخرة
+                      </span>
+                    `
+                    : ""
+                }
+
+
+                ${
+                  item.is_completed
+                    ? `
+                      <span class="chip done">
+                        تم التنفيذ
+                      </span>
+                    `
+                    : ""
+                }
+
+
+              </div>
+
+
+              <div class="note-meta">
+
+
+                ${
+                  item.read_at
+                    ? `
+                      وقت القراءة:
+                      ${dt(
+                        item.read_at
+                      )}
+                    `
+                    : ""
+                }
+
+
+                ${
+                  item.completed_at
+                    ? `
+                      — وقت التنفيذ:
+                      ${dt(
+                        item.completed_at
+                      )}
+                    `
+                    : ""
+                }
+
+
+              </div>
+
+
+              ${
+                item.is_completed
+
+                  ? `
+
+                    <div class="saved-reply">
+
+                      <strong>
+                        ردك على التنفيذ:
+                      </strong>
+
+                      <br>
+
+                      ${esc(
+                        item.teacher_reply ||
+                        "تم التنفيذ"
+                      )}
+
+                    </div>
+
+                  `
+
+                  : `
+
+                    <div class="reply-box">
+
+                      <label
+                        for="reply-${esc(
+                          item.id
+                        )}"
+                      >
+                        رد على الملاحظة / توضيح التنفيذ
+                      </label>
+
+                      <textarea
+                        id="reply-${esc(
+                          item.id
+                        )}"
+                        placeholder="مثال: تم تنفيذ المطلوب ورفع التقرير..."
+                      >${esc(
+                        item.teacher_reply ||
+                        ""
+                      )}</textarea>
+
+
+                      <div class="reply-actions">
+
+                        <button
+                          class="btn btn-primary"
+                          type="button"
+                          onclick="completeNote('${esc(
+                            item.id
+                          )}')"
+                        >
+                          ✅ تم التنفيذ
+                        </button>
+
+                      </div>
+
+                    </div>
+
+                  `
+              }
+
+
+            </article>
+
+          `;
+
+        }
+      )
+      .join(
+        ""
+      );
+
+
+  markVisibleUnreadAsRead(
+    rows
+  );
+
+}
+
+
+/* =========================================================
+   تسجيل القراءة
+   ========================================================= */
+
+async function markVisibleUnreadAsRead(
+  rows
+){
+
+  const unread =
+    rows.filter(
+      item =>
+        !item.is_read
+    );
+
+
+  if(
+    !unread.length
+  ){
+
+    return;
+
+  }
+
+
+  const now =
+    new Date()
+      .toISOString();
+
+
+  for(
+    const item of unread
+  ){
+
+    const {
+      error
+    } =
+      await sb
+        .from(
+          "note_recipients"
+        )
+        .update({
+
+          is_read:
+            true,
+
+          read_at:
+            now
+
+        })
+        .eq(
+          "id",
+          item.id
+        )
+        .eq(
+          "teacher_id",
+          currentUser.id
+        );
+
+
+    if(!error){
+
+      item.is_read =
+        true;
+
+
+      item.read_at =
+        now;
+
+
+    }else{
+
+
+      console.error(
+        "Read update error:",
+        error
+      );
+
+    }
+
+  }
+
+
+  updateCounters();
+
+
+  if(
+    unread.length
+  ){
+
+    setTimeout(
+      renderNotes,
+      50
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   إتمام التنفيذ
+   ========================================================= */
+
+async function completeNote(
+  recipientId
+){
+
+  const item =
+    myNotes.find(
+      row =>
+        String(
+          row.id
+        ) ===
+        String(
+          recipientId
+        )
+    );
+
+
+  if(!item){
+
+    return;
+
+  }
+
+
+  const textarea =
+    byId(
+      "reply-" +
+      recipientId
+    );
+
+
+  const reply =
+    textarea
+      ? textarea.value.trim()
+      : "";
+
+
+  const ok =
+    confirm(
+      "تأكيد تسجيل هذه الملاحظة كـ «تم التنفيذ»؟"
+    );
+
+
+  if(!ok){
+
+    return;
+
+  }
+
+
+  const now =
+    new Date()
+      .toISOString();
+
+
+  const {
+    error
+  } =
+    await sb
+      .from(
+        "note_recipients"
+      )
+      .update({
+
+        is_read:
+          true,
+
+        read_at:
+          item.read_at ||
+          now,
+
+        is_completed:
+          true,
+
+        completed_at:
+          now,
+
+        teacher_reply:
+          reply ||
+          "تم التنفيذ"
+
+      })
+      .eq(
+        "id",
+        recipientId
+      )
+      .eq(
+        "teacher_id",
+        currentUser.id
+      );
+
+
+  if(error){
+
+    console.error(
+      error
+    );
+
+
+    alert(
+      "تعذر تحديث حالة التنفيذ."
+    );
+
+
+    return;
+
+  }
+
+
+  item.is_read =
+    true;
+
+
+  item.read_at =
+    item.read_at ||
+    now;
+
+
+  item.is_completed =
+    true;
+
+
+  item.completed_at =
+    now;
+
+
+  item.teacher_reply =
+    reply ||
+    "تم التنفيذ";
+
+
+  updateCounters();
+
+  renderNotes();
+
+
+  alert(
+    "✓ تم تسجيل التنفيذ بنجاح."
+  );
+
+}
+
+
+/* =========================================================
+   Events
+   ========================================================= */
+
+byId(
+  "searchBox"
+).addEventListener(
+  "input",
+  renderNotes
+);
+
+
+byId(
+  "statusFilter"
+).addEventListener(
+  "change",
+  renderNotes
+);
+
+
+byId(
+  "refreshBtn"
+).addEventListener(
+  "click",
+  loadNotes
+);
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  init
+);
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,1968 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>مؤشرات الخطة التدفقية | WestRiffa Smart Office</title>
+
+  <link rel="stylesheet" href="../../css/app.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Tahoma, Arial, sans-serif;
+      background: #f4f7f6;
+      color: #173c34;
+    }
+
+    .page-header {
+      background: linear-gradient(135deg, #0f513f, #18705a);
+      color: white;
+      padding: 30px 24px;
+    }
+
+    .page-header-inner {
+      width: min(1450px, 95%);
+      margin: auto;
+    }
+
+    .page-header h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+    }
+
+    .page-header p {
+      margin: 0;
+      opacity: .92;
+      line-height: 1.8;
+    }
+
+    .container {
+      width: min(1450px, 95%);
+      margin: 26px auto 60px;
+    }
+
+    .top-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .btn-link {
+      display: inline-block;
+      text-decoration: none;
+      padding: 11px 18px;
+      border-radius: 12px;
+      background: white;
+      color: #0f513f;
+      border: 1px solid #dce9e5;
+      font-weight: bold;
+    }
+
+    .card {
+      background: white;
+      border-radius: 18px;
+      padding: 24px;
+      border: 1px solid #e3ece9;
+      box-shadow: 0 8px 24px rgba(15,81,63,.05);
+      margin-bottom: 22px;
+    }
+
+    .card h2 {
+      margin-top: 0;
+      color: #0f513f;
+    }
+
+    .filters-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field label {
+      font-weight: bold;
+      color: #234f44;
+    }
+
+    .field select {
+      min-height: 46px;
+      border: 1px solid #ccdcd7;
+      border-radius: 11px;
+      padding: 0 12px;
+      font-size: 15px;
+      background: white;
+      color: #173c34;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .kpi {
+      background: white;
+      border-radius: 16px;
+      border: 1px solid #e3ece9;
+      padding: 20px 14px;
+      text-align: center;
+      box-shadow: 0 6px 18px rgba(15,81,63,.04);
+    }
+
+    .kpi strong {
+      display: block;
+      font-size: 30px;
+      color: #0f654f;
+      margin-bottom: 7px;
+    }
+
+    .kpi span {
+      color: #6e827b;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .progress-card {
+      background: linear-gradient(135deg, #0f513f, #18705a);
+      color: white;
+    }
+
+    .progress-card strong,
+    .progress-card span {
+      color: white;
+    }
+
+    .progress-bar-wrap {
+      height: 13px;
+      background: rgba(255,255,255,.25);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 13px;
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      background: white;
+      border-radius: 999px;
+      transition: width .3s ease;
+    }
+
+    .status {
+      display: none;
+      margin-bottom: 18px;
+      border-radius: 12px;
+      padding: 14px 16px;
+      line-height: 1.7;
+    }
+
+    .status.info {
+      display: block;
+      background: #eef7ff;
+      color: #214f72;
+      border: 1px solid #cfdef0;
+    }
+
+    .status.success {
+      display: block;
+      background: #eaf8ef;
+      color: #166534;
+      border: 1px solid #c7e8d1;
+    }
+
+    .status.error {
+      display: block;
+      background: #fff0f0;
+      color: #9b1c1c;
+      border: 1px solid #f1caca;
+    }
+
+    .two-column {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      border: 1px solid #e2ebe8;
+      border-radius: 14px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid #e6eeeb;
+      padding: 12px 10px;
+      text-align: right;
+      font-size: 13px;
+    }
+
+    th {
+      background: #eef5f2;
+      color: #214c41;
+      white-space: nowrap;
+    }
+
+    .percent {
+      font-weight: bold;
+      color: #0f654f;
+    }
+
+    .mini-progress {
+      width: 100%;
+      min-width: 100px;
+      height: 8px;
+      background: #e8efed;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 5px;
+    }
+
+    .mini-progress div {
+      height: 100%;
+      background: #18705a;
+      border-radius: 999px;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 30px 10px;
+      color: #71847e;
+    }
+
+    @media (max-width: 1200px) {
+      .kpi-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .filters-grid,
+      .two-column {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 650px) {
+      .kpi-grid,
+      .filters-grid,
+      .two-column {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="page-header">
+  <div class="page-header-inner">
+
+    <h1>📊 لوحة مؤشرات الخطة التدفقية</h1>
+
+    <p>
+      متابعة تنفيذ الخطط المدرسية وتحليل مستوى الإنجاز حسب القسم والمجال والشهر.
+    </p>
+
+  </div>
+</header>
+
+
+<main class="container">
+
+  <div class="top-actions">
+
+    <a class="btn-link" href="index.html">
+      ← العودة إلى الخطة التدفقية
+    </a>
+
+    <a class="btn-link" href="../../index.html">
+      لوحة التحكم
+    </a>
+
+  </div>
+
+
+  <section class="card">
+
+    <h2>تصفية المؤشرات</h2>
+
+    <div class="filters-grid">
+
+      <div class="field">
+        <label for="yearFilter">
+          السنة الدراسية
+        </label>
+
+        <select id="yearFilter">
+          <option value="2026-2027">
+            2026 / 2027
+          </option>
+
+          <option value="2027-2028">
+            2027 / 2028
+          </option>
+        </select>
+      </div>
+
+
+      <div class="field">
+        <label for="monthFilter">
+          الشهر
+        </label>
+
+        <select id="monthFilter">
+          <option value="all">جميع الشهور</option>
+          <option value="9">سبتمبر</option>
+          <option value="10">أكتوبر</option>
+          <option value="11">نوفمبر</option>
+          <option value="12">ديسمبر</option>
+          <option value="1">يناير</option>
+          <option value="2">فبراير</option>
+          <option value="3">مارس</option>
+          <option value="4">أبريل</option>
+          <option value="5">مايو</option>
+          <option value="6">يونيو</option>
+        </select>
+      </div>
+
+
+      <div class="field">
+        <label for="departmentFilter">
+          القسم
+        </label>
+
+        <select id="departmentFilter">
+          <option value="all">
+            جميع الأقسام
+          </option>
+        </select>
+      </div>
+
+
+      <div class="field">
+        <label for="domainFilter">
+          المجال
+        </label>
+
+        <select id="domainFilter">
+
+          <option value="all">
+            جميع المجالات
+          </option>
+
+          <option value="academic">
+            مجال الإنجاز الأكاديمي
+          </option>
+
+          <option value="personal">
+            مجال التطور الشخصي للطلبة ورعايتهم
+          </option>
+
+          <option value="teaching">
+            مجال التعليم والتعلم والتقويم
+          </option>
+
+          <option value="leadership">
+            مجال القيادة والإدارة
+          </option>
+
+        </select>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <div id="pageStatus" class="status"></div>
+
+
+  <section class="kpi-grid">
+
+    <div class="kpi">
+      <strong id="plansCount">0</strong>
+      <span>الخطط المعتمدة</span>
+    </div>
+
+    <div class="kpi">
+      <strong id="proceduresCount">0</strong>
+      <span>إجمالي الإجراءات</span>
+    </div>
+
+    <div class="kpi">
+      <strong id="completedCount">0</strong>
+      <span>متابعات نفذت</span>
+    </div>
+
+    <div class="kpi">
+      <strong id="progressCount">0</strong>
+      <span>جاري التنفيذ</span>
+    </div>
+
+    <div class="kpi">
+      <strong id="notCompletedCount">0</strong>
+      <span>لم ينفذ</span>
+    </div>
+
+
+    <div class="kpi progress-card">
+
+      <strong id="procedureRate">
+        0%
+      </strong>
+
+      <span>
+        نسبة إنجاز الإجراءات
+      </span>
+
+      <div class="progress-bar-wrap">
+        <div
+          id="procedureProgress"
+          class="progress-bar">
+        </div>
+      </div>
+
+    </div>
+
+
+    <div class="kpi progress-card">
+
+      <strong id="executionRate">
+        0%
+      </strong>
+
+      <span>
+        نسبة تنفيذ المتابعات الشهرية
+      </span>
+
+      <div class="progress-bar-wrap">
+        <div
+          id="executionProgress"
+          class="progress-bar">
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <div class="two-column">
+
+    <section class="card">
+
+      <h2>المؤشرات حسب القسم</h2>
+
+      <div class="table-wrapper">
+
+        <table>
+
+          <thead>
+            <tr>
+              <th>القسم</th>
+              <th>الإجراءات</th>
+              <th>نفذ</th>
+              <th>جاري</th>
+              <th>لم ينفذ</th>
+              <th>نسبة المتابعة</th>
+            </tr>
+          </thead>
+
+          <tbody id="departmentStatsBody"></tbody>
+
+        </table>
+
+      </div>
+
+    </section>
+
+
+    <section class="card">
+
+      <h2>المؤشرات حسب المجال</h2>
+
+      <div class="table-wrapper">
+
+        <table>
+
+          <thead>
+            <tr>
+              <th>المجال</th>
+              <th>الإجراءات</th>
+              <th>نفذ</th>
+              <th>جاري</th>
+              <th>لم ينفذ</th>
+              <th>نسبة المتابعة</th>
+            </tr>
+          </thead>
+
+          <tbody id="domainStatsBody"></tbody>
+
+        </table>
+
+      </div>
+
+    </section>
+
+  </div>
+
+
+  <section class="card">
+
+    <h2>المتابعة حسب الشهر</h2>
+
+    <div class="table-wrapper">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>الشهر</th>
+            <th>إجراءات المتابعة</th>
+            <th>نفذ</th>
+            <th>جاري التنفيذ</th>
+            <th>لم ينفذ</th>
+            <th>لم يتم التحديث</th>
+            <th>نسبة التنفيذ</th>
+          </tr>
+        </thead>
+
+        <tbody id="monthStatsBody"></tbody>
+
+      </table>
+
+    </div>
+
+  </section>
+
+</main>
+
+
+<script src="../../js/config.js"></script>
+<script src="../../js/graph.js"></script>
+
+
+<script>
+
+"use strict";
+
+
+const dashboardSupabase =
+  window.supabase.createClient(
+    window.WR_CONFIG.supabaseUrl,
+    window.WR_CONFIG.supabaseKey
+  );
+
+
+const yearFilter =
+  document.getElementById("yearFilter");
+
+const monthFilter =
+  document.getElementById("monthFilter");
+
+const departmentFilter =
+  document.getElementById("departmentFilter");
+
+const domainFilter =
+  document.getElementById("domainFilter");
+
+const pageStatus =
+  document.getElementById("pageStatus");
+
+
+const plansCount =
+  document.getElementById("plansCount");
+
+const proceduresCount =
+  document.getElementById("proceduresCount");
+
+const completedCount =
+  document.getElementById("completedCount");
+
+const progressCount =
+  document.getElementById("progressCount");
+
+const notCompletedCount =
+  document.getElementById("notCompletedCount");
+
+
+const procedureRate =
+  document.getElementById("procedureRate");
+
+const procedureProgress =
+  document.getElementById("procedureProgress");
+
+const executionRate =
+  document.getElementById("executionRate");
+
+const executionProgress =
+  document.getElementById("executionProgress");
+
+
+const departmentStatsBody =
+  document.getElementById("departmentStatsBody");
+
+const domainStatsBody =
+  document.getElementById("domainStatsBody");
+
+const monthStatsBody =
+  document.getElementById("monthStatsBody");
+
+
+const MONTH_NAMES = {
+  1: "يناير",
+  2: "فبراير",
+  3: "مارس",
+  4: "أبريل",
+  5: "مايو",
+  6: "يونيو",
+  9: "سبتمبر",
+  10: "أكتوبر",
+  11: "نوفمبر",
+  12: "ديسمبر"
+};
+
+
+const SCHOOL_MONTHS = [
+  9,
+  10,
+  11,
+  12,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6
+];
+
+
+const DOMAIN_NAMES = {
+
+  academic:
+    "مجال الإنجاز الأكاديمي",
+
+  personal:
+    "مجال التطور الشخصي للطلبة ورعايتهم",
+
+  teaching:
+    "مجال التعليم والتعلم والتقويم",
+
+  leadership:
+    "مجال القيادة والإدارة",
+
+  unknown:
+    "غير محدد"
+
+};
+
+
+let allDepartments = [];
+let allPlans = [];
+let allProcedures = [];
+let allFollowups = [];
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  initializeDashboard
+);
+
+
+yearFilter.addEventListener(
+  "change",
+  loadDashboard
+);
+
+
+monthFilter.addEventListener(
+  "change",
+  renderDashboard
+);
+
+
+departmentFilter.addEventListener(
+  "change",
+  renderDashboard
+);
+
+
+domainFilter.addEventListener(
+  "change",
+  renderDashboard
+);
+
+
+async function initializeDashboard() {
+
+  try {
+
+    await WRGraph.init();
+
+    const account = await WRGraph.getAccount();
+
+    if (!account) {
+      window.location.href = "../../index.html";
+      return;
+    }
+
+    const profile = await WRGraph.getUserProfile();
+
+    if (!profile || profile.role !== "admin") {
+      window.location.replace("index.html");
+      return;
+    }
+
+    await loadDepartments();
+    await loadDashboard();
+
+  } catch (error) {
+
+    console.error("Dashboard permission error:", error);
+    window.location.replace("index.html");
+
+  }
+
+}
+
+
+async function loadDepartments() {
+
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await dashboardSupabase
+        .from("departments")
+        .select("id, name")
+        .order(
+          "name",
+          {
+            ascending: true
+          }
+        );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    allDepartments =
+      data || [];
+
+
+    departmentFilter.innerHTML =
+      `
+        <option value="all">
+          جميع الأقسام
+        </option>
+      `;
+
+
+    allDepartments.forEach(
+      department => {
+
+        const option =
+          document.createElement(
+            "option"
+          );
+
+        option.value =
+          department.id;
+
+        option.textContent =
+          department.name;
+
+        departmentFilter.appendChild(
+          option
+        );
+
+      }
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Departments error:",
+      error
+    );
+
+  }
+
+}
+
+
+async function loadDashboard() {
+
+  const year =
+    yearFilter.value;
+
+
+  resetDashboard();
+
+
+  showStatus(
+    "جاري تحميل مؤشرات الخطة...",
+    "info"
+  );
+
+
+  try {
+
+    /*
+      1
+      قراءة الخطط.
+    */
+
+    const {
+      data: plans,
+      error: plansError
+    } =
+      await dashboardSupabase
+        .from("plans")
+        .select(`
+          id,
+          department_id,
+          school_year,
+          plan_title,
+          status
+        `)
+        .eq(
+          "school_year",
+          year
+        );
+
+
+    if (plansError) {
+      throw plansError;
+    }
+
+
+    allPlans =
+      plans || [];
+
+
+    if (
+      allPlans.length === 0
+    ) {
+
+      allProcedures = [];
+      allFollowups = [];
+
+      renderDashboard();
+
+      showStatus(
+        "لا توجد خطط معتمدة في السنة الدراسية المحددة.",
+        "info"
+      );
+
+      return;
+    }
+
+
+    const planIds =
+      allPlans.map(
+        item => item.id
+      );
+
+
+    /*
+      2
+      قراءة الإجراءات.
+    */
+
+    const {
+      data: procedures,
+      error: proceduresError
+    } =
+      await dashboardSupabase
+        .from("plan_procedures")
+        .select(`
+          id,
+          plan_id,
+          sequence_no,
+          path_code,
+          program_name,
+          procedure_text
+        `)
+        .in(
+          "plan_id",
+          planIds
+        );
+
+
+    if (proceduresError) {
+      throw proceduresError;
+    }
+
+
+    allProcedures =
+      procedures || [];
+
+
+    /*
+      3
+      قراءة المتابعات.
+    */
+
+    const {
+      data: followups,
+      error: followupsError
+    } =
+      await dashboardSupabase
+        .from(
+          "plan_monthly_followups"
+        )
+        .select(`
+          id,
+          plan_id,
+          procedure_id,
+          month_no,
+          execution_status,
+          non_completion_reason,
+          followup_notes,
+          updated_at
+        `)
+        .in(
+          "plan_id",
+          planIds
+        );
+
+
+    if (followupsError) {
+      throw followupsError;
+    }
+
+
+    allFollowups =
+      followups || [];
+
+
+    renderDashboard();
+
+
+    showStatus(
+      "تم تحديث مؤشرات الخطة التدفقية بنجاح.",
+      "success"
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Dashboard load error:",
+      error
+    );
+
+
+    showStatus(
+      `تعذر تحميل المؤشرات: ${
+        error.message ||
+        "حدث خطأ غير متوقع."
+      }`,
+      "error"
+    );
+
+  }
+
+}
+
+
+function renderDashboard() {
+
+  const selectedMonth =
+    monthFilter.value;
+
+  const selectedDepartment =
+    departmentFilter.value;
+
+  const selectedDomain =
+    domainFilter.value;
+
+
+  /*
+    تصفية الخطط حسب القسم.
+  */
+
+  const filteredPlans =
+    allPlans.filter(
+      plan => {
+
+        if (
+          selectedDepartment !==
+          "all" &&
+          plan.department_id !==
+          selectedDepartment
+        ) {
+
+          return false;
+
+        }
+
+        return true;
+
+      }
+    );
+
+
+  const allowedPlanIds =
+    new Set(
+      filteredPlans.map(
+        item => item.id
+      )
+    );
+
+
+  /*
+    تصفية الإجراءات حسب القسم والمجال.
+  */
+
+  const filteredProcedures =
+    allProcedures.filter(
+      procedure => {
+
+        if (
+          !allowedPlanIds.has(
+            procedure.plan_id
+          )
+        ) {
+
+          return false;
+
+        }
+
+
+        const domainKey =
+          getDomainKey(
+            procedure.program_name
+          );
+
+
+        if (
+          selectedDomain !==
+          "all" &&
+          domainKey !==
+          selectedDomain
+        ) {
+
+          return false;
+
+        }
+
+
+        return true;
+
+      }
+    );
+
+
+  const allowedProcedureIds =
+    new Set(
+      filteredProcedures.map(
+        item => item.id
+      )
+    );
+
+
+  /*
+    تصفية المتابعات.
+  */
+
+  let filteredFollowups =
+    allFollowups.filter(
+      item =>
+        allowedProcedureIds.has(
+          item.procedure_id
+        )
+    );
+
+
+  if (
+    selectedMonth !==
+    "all"
+  ) {
+
+    filteredFollowups =
+      filteredFollowups.filter(
+        item =>
+          item.month_no ===
+          Number(
+            selectedMonth
+          )
+      );
+
+  }
+
+
+  /*
+    أعداد حالات المتابعات.
+  */
+
+  const completed =
+    filteredFollowups.filter(
+      item =>
+        item.execution_status ===
+        "completed"
+    ).length;
+
+
+  const progress =
+    filteredFollowups.filter(
+      item =>
+        item.execution_status ===
+        "in_progress"
+    ).length;
+
+
+  const notCompleted =
+    filteredFollowups.filter(
+      item =>
+        item.execution_status ===
+        "not_completed"
+    ).length;
+
+
+  /*
+    نسبة تنفيذ المتابعات الشهرية.
+  */
+
+  const totalFollowups =
+    filteredFollowups.length;
+
+
+  const followupExecutionRate =
+    totalFollowups > 0
+      ? Math.round(
+          (
+            completed /
+            totalFollowups
+          ) * 100
+        )
+      : 0;
+
+
+  /*
+    نسبة إنجاز الإجراءات.
+
+    الإجراء يعتبر منجزًا
+    إذا كان لديه متابعة واحدة على الأقل
+    بحالة completed.
+
+    لذلك في بياناتنا التجريبية الحالية:
+    1 إجراء منجز من 3 = 33%.
+  */
+
+  const completedProcedureIds =
+    new Set(
+      filteredFollowups
+        .filter(
+          item =>
+            item.execution_status ===
+            "completed"
+        )
+        .map(
+          item =>
+            item.procedure_id
+        )
+    );
+
+
+  const procedureAchievementRate =
+    filteredProcedures.length > 0
+      ? Math.round(
+          (
+            completedProcedureIds.size /
+            filteredProcedures.length
+          ) * 100
+        )
+      : 0;
+
+
+  /*
+    تحديث البطاقات.
+  */
+
+  plansCount.textContent =
+    filteredPlans.length;
+
+
+  proceduresCount.textContent =
+    filteredProcedures.length;
+
+
+  completedCount.textContent =
+    completed;
+
+
+  progressCount.textContent =
+    progress;
+
+
+  notCompletedCount.textContent =
+    notCompleted;
+
+
+  procedureRate.textContent =
+    `${procedureAchievementRate}%`;
+
+
+  procedureProgress.style.width =
+    `${procedureAchievementRate}%`;
+
+
+  executionRate.textContent =
+    `${followupExecutionRate}%`;
+
+
+  executionProgress.style.width =
+    `${followupExecutionRate}%`;
+
+
+  /*
+    الجداول.
+  */
+
+  renderDepartmentStats(
+    filteredProcedures,
+    filteredFollowups
+  );
+
+
+  renderDomainStats(
+    filteredProcedures,
+    filteredFollowups
+  );
+
+
+  /*
+    جدول الشهور لا يتأثر
+    بفلتر الشهر نفسه حتى يظل
+    يعرض السنة كاملة.
+
+    لكنه يتأثر بالقسم والمجال.
+  */
+
+  const annualFilteredFollowups =
+    allFollowups.filter(
+      item =>
+        allowedProcedureIds.has(
+          item.procedure_id
+        )
+    );
+
+
+  renderMonthStats(
+    annualFilteredFollowups
+  );
+
+}
+
+
+function renderDepartmentStats(
+  procedures,
+  followups
+) {
+
+  departmentStatsBody.innerHTML =
+    "";
+
+
+  const planMap =
+    new Map(
+      allPlans.map(
+        item => [
+          item.id,
+          item
+        ]
+      )
+    );
+
+
+  const procedureMap =
+    new Map(
+      procedures.map(
+        item => [
+          item.id,
+          item
+        ]
+      )
+    );
+
+
+  const departmentNameMap =
+    new Map(
+      allDepartments.map(
+        item => [
+          item.id,
+          item.name
+        ]
+      )
+    );
+
+
+  const stats =
+    new Map();
+
+
+  procedures.forEach(
+    procedure => {
+
+      const plan =
+        planMap.get(
+          procedure.plan_id
+        );
+
+
+      if (!plan) {
+        return;
+      }
+
+
+      const departmentId =
+        plan.department_id;
+
+
+      if (
+        !stats.has(
+          departmentId
+        )
+      ) {
+
+        stats.set(
+          departmentId,
+          {
+            procedureIds:
+              new Set(),
+
+            followups:
+              []
+          }
+        );
+
+      }
+
+
+      stats
+        .get(
+          departmentId
+        )
+        .procedureIds
+        .add(
+          procedure.id
+        );
+
+    }
+  );
+
+
+  followups.forEach(
+    followup => {
+
+      const procedure =
+        procedureMap.get(
+          followup.procedure_id
+        );
+
+
+      if (!procedure) {
+        return;
+      }
+
+
+      const plan =
+        planMap.get(
+          procedure.plan_id
+        );
+
+
+      if (!plan) {
+        return;
+      }
+
+
+      const item =
+        stats.get(
+          plan.department_id
+        );
+
+
+      if (item) {
+
+        item.followups.push(
+          followup
+        );
+
+      }
+
+    }
+  );
+
+
+  if (
+    stats.size === 0
+  ) {
+
+    departmentStatsBody.innerHTML =
+      `
+        <tr>
+          <td colspan="6" class="empty">
+            لا توجد بيانات.
+          </td>
+        </tr>
+      `;
+
+    return;
+
+  }
+
+
+  stats.forEach(
+    (item, departmentId) => {
+
+      renderStatsRow(
+        departmentStatsBody,
+        departmentNameMap.get(
+          departmentId
+        ) || "—",
+        item.procedureIds.size,
+        item.followups
+      );
+
+    }
+  );
+
+}
+
+
+function renderDomainStats(
+  procedures,
+  followups
+) {
+
+  domainStatsBody.innerHTML =
+    "";
+
+
+  const procedureMap =
+    new Map(
+      procedures.map(
+        item => [
+          item.id,
+          item
+        ]
+      )
+    );
+
+
+  const stats =
+    new Map();
+
+
+  procedures.forEach(
+    procedure => {
+
+      const domain =
+        getDomainKey(
+          procedure.program_name
+        );
+
+
+      if (
+        !stats.has(
+          domain
+        )
+      ) {
+
+        stats.set(
+          domain,
+          {
+            procedureIds:
+              new Set(),
+
+            followups:
+              []
+          }
+        );
+
+      }
+
+
+      stats
+        .get(domain)
+        .procedureIds
+        .add(
+          procedure.id
+        );
+
+    }
+  );
+
+
+  followups.forEach(
+    followup => {
+
+      const procedure =
+        procedureMap.get(
+          followup.procedure_id
+        );
+
+
+      if (!procedure) {
+        return;
+      }
+
+
+      const domain =
+        getDomainKey(
+          procedure.program_name
+        );
+
+
+      const item =
+        stats.get(
+          domain
+        );
+
+
+      if (item) {
+
+        item.followups.push(
+          followup
+        );
+
+      }
+
+    }
+  );
+
+
+  if (
+    stats.size === 0
+  ) {
+
+    domainStatsBody.innerHTML =
+      `
+        <tr>
+          <td colspan="6" class="empty">
+            لا توجد بيانات.
+          </td>
+        </tr>
+      `;
+
+    return;
+
+  }
+
+
+  stats.forEach(
+    (item, domain) => {
+
+      renderStatsRow(
+        domainStatsBody,
+        DOMAIN_NAMES[domain] ||
+        "غير محدد",
+        item.procedureIds.size,
+        item.followups
+      );
+
+    }
+  );
+
+}
+
+
+function renderStatsRow(
+  tbody,
+  name,
+  procedureCount,
+  followups
+) {
+
+  const completed =
+    followups.filter(
+      item =>
+        item.execution_status ===
+        "completed"
+    ).length;
+
+
+  const progress =
+    followups.filter(
+      item =>
+        item.execution_status ===
+        "in_progress"
+    ).length;
+
+
+  const notCompleted =
+    followups.filter(
+      item =>
+        item.execution_status ===
+        "not_completed"
+    ).length;
+
+
+  const total =
+    followups.length;
+
+
+  const rate =
+    total > 0
+      ? Math.round(
+          completed /
+          total *
+          100
+        )
+      : 0;
+
+
+  const tr =
+    document.createElement(
+      "tr"
+    );
+
+
+  tr.innerHTML = `
+
+    <td>
+      ${escapeHtml(name)}
+    </td>
+
+    <td>
+      ${procedureCount}
+    </td>
+
+    <td>
+      ${completed}
+    </td>
+
+    <td>
+      ${progress}
+    </td>
+
+    <td>
+      ${notCompleted}
+    </td>
+
+    <td>
+
+      <span class="percent">
+        ${rate}%
+      </span>
+
+      <div class="mini-progress">
+        <div
+          style="width:${rate}%">
+        </div>
+      </div>
+
+    </td>
+
+  `;
+
+
+  tbody.appendChild(
+    tr
+  );
+
+}
+
+
+function renderMonthStats(
+  followups
+) {
+
+  monthStatsBody.innerHTML =
+    "";
+
+
+  SCHOOL_MONTHS.forEach(
+    monthNo => {
+
+      const monthFollowups =
+        followups.filter(
+          item =>
+            item.month_no ===
+            monthNo
+        );
+
+
+      const completed =
+        monthFollowups.filter(
+          item =>
+            item.execution_status ===
+            "completed"
+        ).length;
+
+
+      const progress =
+        monthFollowups.filter(
+          item =>
+            item.execution_status ===
+            "in_progress"
+        ).length;
+
+
+      const notCompleted =
+        monthFollowups.filter(
+          item =>
+            item.execution_status ===
+            "not_completed"
+        ).length;
+
+
+      const pending =
+        monthFollowups.filter(
+          item =>
+            item.execution_status ===
+            "pending"
+        ).length;
+
+
+      const total =
+        monthFollowups.length;
+
+
+      const rate =
+        total > 0
+          ? Math.round(
+              completed /
+              total *
+              100
+            )
+          : 0;
+
+
+      const tr =
+        document.createElement(
+          "tr"
+        );
+
+
+      tr.innerHTML = `
+
+        <td>
+          ${MONTH_NAMES[monthNo]}
+        </td>
+
+        <td>
+          ${total}
+        </td>
+
+        <td>
+          ${completed}
+        </td>
+
+        <td>
+          ${progress}
+        </td>
+
+        <td>
+          ${notCompleted}
+        </td>
+
+        <td>
+          ${pending}
+        </td>
+
+        <td>
+
+          <span class="percent">
+            ${rate}%
+          </span>
+
+          <div class="mini-progress">
+            <div
+              style="width:${rate}%">
+            </div>
+          </div>
+
+        </td>
+
+      `;
+
+
+      monthStatsBody.appendChild(
+        tr
+      );
+
+    }
+  );
+
+}
+
+
+function getDomainKey(
+  programName
+) {
+
+  const program =
+    String(
+      programName || ""
+    ).trim();
+
+
+  if (
+    program.includes("آفاق")
+  ) {
+
+    return "academic";
+
+  }
+
+
+  if (
+    program.includes("رايات")
+  ) {
+
+    return "personal";
+
+  }
+
+
+  if (
+    program.includes("مداد")
+  ) {
+
+    return "teaching";
+
+  }
+
+
+  if (
+    program.includes("خطى")
+  ) {
+
+    return "leadership";
+
+  }
+
+
+  return "unknown";
+
+}
+
+
+function resetDashboard() {
+
+  plansCount.textContent =
+    "0";
+
+  proceduresCount.textContent =
+    "0";
+
+  completedCount.textContent =
+    "0";
+
+  progressCount.textContent =
+    "0";
+
+  notCompletedCount.textContent =
+    "0";
+
+
+  procedureRate.textContent =
+    "0%";
+
+  procedureProgress.style.width =
+    "0%";
+
+
+  executionRate.textContent =
+    "0%";
+
+  executionProgress.style.width =
+    "0%";
+
+
+  departmentStatsBody.innerHTML =
+    "";
+
+  domainStatsBody.innerHTML =
+    "";
+
+  monthStatsBody.innerHTML =
+    "";
+
+}
+
+
+function showStatus(
+  message,
+  type = "info"
+) {
+
+  pageStatus.className =
+    `status ${type}`;
+
+  pageStatus.textContent =
+    message;
+
+}
+
+
+function escapeHtml(
+  text
+) {
+
+  return String(text)
+
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+
+}
+
+</script>
+
+</body>
+</html>

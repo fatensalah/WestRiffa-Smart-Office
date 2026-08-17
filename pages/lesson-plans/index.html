@@ -1,0 +1,2746 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>دفتر التحضير الإلكتروني | WestRiffa Smart Office</title>
+
+  <link rel="stylesheet" href="../../css/app.css?v=20260816-lessonplans2">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <style>
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:Tahoma,Arial,sans-serif;
+      background:#f4f7f6;
+      color:#173c34;
+    }
+
+    .page-header{
+      background:linear-gradient(135deg,#0f513f,#18705a);
+      color:#fff;
+      padding:28px 24px;
+      box-shadow:0 4px 18px rgba(0,0,0,.08);
+    }
+
+    .page-header-inner{
+      width:min(1400px,95%);
+      margin:auto;
+    }
+
+    .page-header h1{
+      margin:0 0 8px;
+      font-size:30px;
+    }
+
+    .page-header p{
+      margin:0;
+      opacity:.92;
+      line-height:1.8;
+    }
+
+    .container{
+      width:min(1400px,95%);
+      margin:26px auto 60px;
+    }
+
+    .top-actions{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+
+    .btn-link{
+      display:inline-block;
+      text-decoration:none;
+      padding:11px 17px;
+      border-radius:11px;
+      background:#fff;
+      color:#075c40;
+      border:1px solid #dce9e5;
+      font-weight:700;
+    }
+
+    .scope-box{
+      background:#edf8f3;
+      color:#075c40;
+      border:1px solid #d3eadf;
+      border-radius:12px;
+      padding:13px 16px;
+      margin-bottom:18px;
+      line-height:1.7;
+      font-weight:700;
+    }
+
+    .tabs{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+
+    .tab-btn{
+      border:1px solid #d7e4e0;
+      background:#fff;
+      color:#075c40;
+      border-radius:11px;
+      padding:11px 16px;
+      font-family:inherit;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .tab-btn.active{
+      background:#075c40;
+      color:#fff;
+      border-color:#075c40;
+    }
+
+    .tab-panel{display:none}
+    .tab-panel.active{display:block}
+
+    .card{
+      background:#fff;
+      border:1px solid #e1e9e5;
+      border-radius:18px;
+      padding:23px;
+      margin-bottom:20px;
+      box-shadow:0 8px 24px rgba(15,81,63,.05);
+    }
+
+    .card h2,
+    .card h3{
+      color:#075c40;
+      margin-top:0;
+    }
+
+    .sub{
+      color:#6b7a72;
+      font-size:13px;
+      line-height:1.8;
+      margin-top:-2px;
+      margin-bottom:18px;
+    }
+
+    .section-title{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+
+    .form-grid{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:14px;
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:7px;
+    }
+
+    .field.span-2{grid-column:span 2}
+    .field.full{grid-column:1/-1}
+
+    .field label{
+      color:#334d42;
+      font-weight:700;
+      font-size:14px;
+    }
+
+    .field input,
+    .field select,
+    .field textarea{
+      width:100%;
+      border:1px solid #cfdad4;
+      border-radius:10px;
+      padding:11px 12px;
+      font-family:inherit;
+      background:#fff;
+      font-size:14px;
+    }
+
+    .field textarea{
+      min-height:105px;
+      resize:vertical;
+      line-height:1.8;
+    }
+
+    .auto-value{
+      background:#f5f8f6 !important;
+      color:#075c40;
+      font-weight:700;
+    }
+
+    .check-grid{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:9px;
+    }
+
+    .check-item{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 11px;
+      border:1px solid #e1e9e5;
+      border-radius:10px;
+      background:#f9fbfa;
+      cursor:pointer;
+      min-height:44px;
+      font-size:13px;
+    }
+
+    .check-item input{
+      width:auto;
+      margin:0;
+    }
+
+    .objectives-list,
+    .support-list{
+      display:grid;
+      gap:12px;
+    }
+
+    .objective-card,
+    .support-card{
+      background:#f8faf9;
+      border:1px solid #e2ebe7;
+      border-radius:14px;
+      padding:15px;
+    }
+
+    .objective-head,
+    .support-head{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+      margin-bottom:12px;
+    }
+
+    .objective-head strong,
+    .support-head strong{
+      color:#075c40;
+    }
+
+    .mini-btn{
+      border:0;
+      border-radius:9px;
+      padding:8px 11px;
+      cursor:pointer;
+      font-family:inherit;
+      font-weight:700;
+    }
+
+    .btn-add{
+      background:#eaf3ef;
+      color:#075c40;
+    }
+
+    .btn-remove{
+      background:#fff0ef;
+      color:#b42318;
+    }
+
+    .action-row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:18px;
+    }
+
+    .btn{
+      border:0;
+      border-radius:11px;
+      padding:11px 17px;
+      font-family:inherit;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .btn-primary{
+      background:#075c40;
+      color:#fff;
+    }
+
+    .btn-gold{
+      background:#9a7420;
+      color:#fff;
+    }
+
+    .btn-soft{
+      background:#eef4f2;
+      color:#075c40;
+      border:1px solid #d7e4e0;
+    }
+
+    .btn-danger{
+      background:#b42318;
+      color:#fff;
+    }
+
+    .btn:disabled{
+      opacity:.55;
+      cursor:wait;
+    }
+
+    .save-state{
+      min-height:24px;
+      margin-top:10px;
+      font-size:13px;
+      font-weight:700;
+    }
+
+    .save-state.ok{color:#087451}
+    .save-state.error{color:#b42318}
+
+    .stats-grid{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:14px;
+      margin-bottom:20px;
+    }
+
+    .stat{
+      background:#fff;
+      border:1px solid #e1e9e5;
+      border-top:4px solid #087451;
+      border-radius:15px;
+      padding:17px;
+      text-align:center;
+    }
+
+    .stat span{
+      display:block;
+      color:#6b7a72;
+      font-size:13px;
+      margin-bottom:7px;
+    }
+
+    .stat strong{
+      display:block;
+      color:#075c40;
+      font-size:30px;
+    }
+
+    .filters{
+      display:grid;
+      grid-template-columns:1fr 180px 180px 170px 170px auto;
+      gap:9px;
+      margin-bottom:16px;
+    }
+
+    .filters input,
+    .filters select{
+      width:100%;
+      padding:10px;
+      border:1px solid #d4ded9;
+      border-radius:9px;
+      background:#fff;
+      font-family:inherit;
+    }
+
+    .plan-list{
+      display:grid;
+      gap:12px;
+    }
+
+    .plan-card{
+      background:#fff;
+      border:1px solid #e1e9e5;
+      border-radius:15px;
+      padding:17px;
+    }
+
+    .plan-head{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:flex-start;
+    }
+
+    .plan-title{
+      color:#075c40;
+      font-size:17px;
+      font-weight:700;
+    }
+
+    .plan-meta{
+      color:#6b7a72;
+      font-size:13px;
+      line-height:1.8;
+      margin-top:5px;
+    }
+
+    .chip{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:700;
+    }
+
+    .chip-draft{
+      background:#fff4dc;
+      color:#896511;
+    }
+
+    .chip-completed{
+      background:#e9f7ef;
+      color:#087451;
+    }
+
+    .analysis-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:14px;
+      margin-bottom:18px;
+    }
+
+    .analysis-box{
+      background:#fff;
+      border:1px solid #e1e9e5;
+      border-radius:15px;
+      padding:16px;
+    }
+
+    .analysis-box h3{
+      margin:0 0 12px;
+      font-size:16px;
+    }
+
+    .frequency-list{
+      display:flex;
+      gap:7px;
+      flex-wrap:wrap;
+    }
+
+    .frequency-chip{
+      background:#f3f7f5;
+      color:#075c40;
+      border:1px solid #dce8e3;
+      border-radius:999px;
+      padding:7px 10px;
+      font-size:12px;
+      font-weight:700;
+    }
+
+    .empty{
+      text-align:center;
+      padding:34px;
+      color:#6b7a72;
+      border:1px dashed #d6e0db;
+      border-radius:14px;
+      background:#fafcfb;
+    }
+
+    .hidden{display:none !important}
+
+    /* PDF */
+    #pdfSheet{
+      display:none;
+      direction:rtl;
+      font-family:Tahoma,Arial,sans-serif;
+      color:#173c34;
+      background:#fff;
+      padding:22px;
+    }
+
+    #pdfSheet.pdf-visible{
+      display:block;
+    }
+
+    .pdf-title{
+      text-align:center;
+      color:#075c40;
+      border-bottom:2px solid #075c40;
+      padding-bottom:10px;
+      margin-bottom:16px;
+    }
+
+    .pdf-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:8px;
+      margin-bottom:12px;
+    }
+
+    .pdf-box{
+      border:1px solid #ccd9d3;
+      border-radius:8px;
+      padding:9px;
+      line-height:1.7;
+      font-size:12px;
+    }
+
+    .pdf-box strong{
+      color:#075c40;
+    }
+
+    .pdf-wide{grid-column:1/-1}
+
+    @media(max-width:1100px){
+      .form-grid{grid-template-columns:repeat(2,1fr)}
+      .check-grid{grid-template-columns:repeat(3,1fr)}
+      .filters{grid-template-columns:repeat(3,1fr)}
+      .analysis-grid{grid-template-columns:1fr}
+    }
+
+    @media(max-width:700px){
+      .form-grid,
+      .check-grid,
+      .stats-grid,
+      .filters{
+        grid-template-columns:1fr;
+      }
+
+      .field.span-2,
+      .field.full{
+        grid-column:auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="page-header">
+  <div class="page-header-inner">
+    <h1>📚 دفتر التحضير الإلكتروني</h1>
+    <p>إعداد التحضير اليومي، حفظه، نسخه، تعديله، تنزيله PDF، وتحليل الممارسات التعليمية.</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <div class="top-actions">
+    <a class="btn-link" href="../../index.html">🏠 لوحة التحكم</a>
+    <a class="btn-link" href="../archive/index.html">📂 الأرشيف الذكي</a>
+  </div>
+
+  <div id="scopeBox" class="scope-box">
+    جارٍ تحميل بيانات الحساب...
+  </div>
+
+  <div class="tabs">
+    <button id="tabNewBtn" class="tab-btn active" data-tab="newTab">➕ تحضير جديد</button>
+    <button id="tabMineBtn" class="tab-btn" data-tab="mineTab">📘 تحضيراتي</button>
+    <button id="tabAdminBtn" class="tab-btn hidden" data-tab="adminTab">📊 مؤشرات الإدارة</button>
+  </div>
+
+  <!-- ======================================================
+       تحضير جديد
+       ====================================================== -->
+  <section id="newTab" class="tab-panel active">
+
+    <section class="card">
+      <div class="section-title">
+        <div>
+          <h2>بيانات التحضير</h2>
+          <div class="sub">الحقول الثابتة القابلة للحصر تظهر كاختيارات، والكتابة الحرة فقط للأجزاء الوصفية.</div>
+        </div>
+      </div>
+
+      <input id="editingPlanId" type="hidden">
+
+      <div class="form-grid">
+
+        <div class="field">
+          <label>اسم المعلمة</label>
+          <input id="teacherName" class="auto-value" type="text" readonly>
+        </div>
+
+        <div class="field">
+          <label for="lessonDate">التاريخ *</label>
+          <input id="lessonDate" type="date">
+        </div>
+
+        <div class="field">
+          <label for="lessonDay">اليوم *</label>
+          <select id="lessonDay">
+            <option value="">— اختاري اليوم —</option>
+            <option value="الأحد">الأحد</option>
+            <option value="الاثنين">الاثنين</option>
+            <option value="الثلاثاء">الثلاثاء</option>
+            <option value="الأربعاء">الأربعاء</option>
+            <option value="الخميس">الخميس</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="period">الحصة</label>
+          <select id="period">
+            <option value="">— اختاري —</option>
+            <option>الأولى</option>
+            <option>الثانية</option>
+            <option>الثالثة</option>
+            <option>الرابعة</option>
+            <option>الخامسة</option>
+            <option>السادسة</option>
+            <option>السابعة</option>
+            <option>الثامنة</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="subject">المادة *</label>
+          <input id="subject" type="text" placeholder="مثال: الرياضيات">
+        </div>
+
+        <div class="field">
+          <label for="grade">الصف *</label>
+          <select id="grade">
+            <option value="">— اختاري الصف —</option>
+            <option>الأول</option>
+            <option>الثاني</option>
+            <option>الثالث</option>
+            <option>الرابع</option>
+            <option>الخامس</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="classSection">الشعبة</label>
+          <input id="classSection" type="text" placeholder="مثال: 1">
+        </div>
+
+        <div class="field">
+          <label for="unitName">الوحدة</label>
+          <input id="unitName" type="text">
+        </div>
+
+        <div class="field span-2">
+          <label for="lessonTitle">عنوان الدرس *</label>
+          <input id="lessonTitle" type="text">
+        </div>
+
+        <div class="field">
+          <label for="subjectConnection">الربط بالمادة / المواد</label>
+          <input id="subjectConnection" type="text" placeholder="مثال: الرياضيات">
+        </div>
+
+        <div class="field">
+          <label for="valuesConnection">القيم</label>
+          <input id="valuesConnection" type="text" placeholder="مثال: الاحترام">
+        </div>
+
+        <div class="field">
+          <label for="introductionMinutes">زمن المقدمة بالدقائق</label>
+          <input id="introductionMinutes" type="number" min="0">
+        </div>
+
+        <div class="field full">
+          <label for="introduction">المقدمة / التمهيد</label>
+          <textarea id="introduction" placeholder="اكتبي المقدمة أو التهيئة للدرس..."></textarea>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- الموارد -->
+    <section class="card">
+      <h3>🧰 الموارد والمصادر</h3>
+      <div class="sub">اختاري كل ما تم استخدامه حتى يمكن حصر أكثر الموارد استخدامًا.</div>
+      <div id="resourcesChecks" class="check-grid"></div>
+    </section>
+
+    <!-- أنماط التعلم -->
+    <section class="card">
+      <h3>👁 أنماط التعلم</h3>
+      <div id="learningStylesChecks" class="check-grid"></div>
+    </section>
+
+    <!-- الاستراتيجيات -->
+    <section class="card">
+      <h3>🧠 استراتيجيات التدريس المستخدمة</h3>
+      <div class="sub">اختيارات متعددة قابلة للحصر في مؤشرات الإدارة.</div>
+      <div id="strategiesChecks" class="check-grid"></div>
+    </section>
+
+    <!-- التقييم -->
+    <section class="card">
+      <h3>✅ أساليب التقييم من أجل التعلم</h3>
+      <div id="assessmentChecks" class="check-grid"></div>
+    </section>
+
+    <!-- القرن 21 -->
+    <section class="card">
+      <h3>🌐 مهارات القرن الحادي والعشرين</h3>
+      <div class="sub">المهارات السبع الواردة في نموذج التحضير المعتمد.</div>
+      <div id="centuryChecks" class="check-grid"></div>
+    </section>
+
+    <!-- الأهداف -->
+    <section class="card">
+      <div class="section-title">
+        <div>
+          <h3>🎯 أهداف التعلم وإجراءات سير الدرس</h3>
+          <div class="sub">يمكن إضافة أكثر من هدف داخل التحضير نفسه.</div>
+        </div>
+
+        <button id="addObjectiveBtn" class="mini-btn btn-add" type="button">
+          + إضافة هدف
+        </button>
+      </div>
+
+      <div id="objectivesList" class="objectives-list"></div>
+    </section>
+
+    <!-- الإنتاج والتأمل -->
+    <section class="card">
+      <h3>📝 الإنتاج الطلابي والتأمل الذاتي</h3>
+
+      <div class="form-grid">
+
+        <div class="field span-2">
+          <label>نوع الإنتاج الطلابي</label>
+          <div id="productChecks" class="check-grid"></div>
+        </div>
+
+        <div class="field span-2">
+          <label for="productDescription">وصف الإنتاج الطلابي</label>
+          <textarea id="productDescription"></textarea>
+        </div>
+
+        <div class="field span-2">
+          <label for="reflectionStatus">التأمل الذاتي</label>
+          <select id="reflectionStatus">
+            <option value="">— اختاري —</option>
+            <option>تم الانتهاء من الدرس بنجاح</option>
+            <option>يحتاج إلى مزيد من الأنشطة</option>
+            <option>تم تأجيل جزء من الدرس</option>
+            <option>أخرى</option>
+          </select>
+        </div>
+
+        <div class="field span-2">
+          <label for="reflectionNotes">ملاحظات التأمل الذاتي</label>
+          <textarea id="reflectionNotes"></textarea>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- الدعم -->
+    <section class="card">
+      <div class="section-title">
+        <div>
+          <h3>🤲 الدعم والمساندة</h3>
+          <div class="sub">اختاري الفئات المستخدمة في التحضير، ويمكن إضافة تفاصيل الطلاب عند الحاجة.</div>
+        </div>
+
+        <button id="addSupportBtn" class="mini-btn btn-add" type="button">
+          + إضافة طالب / إجراء دعم
+        </button>
+      </div>
+
+      <div id="supportCategoryChecks" class="check-grid" style="margin-bottom:14px"></div>
+
+      <div id="supportList" class="support-list"></div>
+    </section>
+
+    <section class="card">
+      <div class="action-row">
+        <button id="saveDraftBtn" class="btn btn-soft" type="button">💾 حفظ كمسودة</button>
+        <button id="saveCompleteBtn" class="btn btn-primary" type="button">✅ اعتماد التحضير</button>
+        <button id="downloadCurrentPdfBtn" class="btn btn-gold hidden" type="button">⬇️ تنزيل التحضير PDF</button>
+        <button id="resetFormBtn" class="btn btn-soft" type="button">↺ تحضير جديد</button>
+      </div>
+
+      <div id="saveState" class="save-state"></div>
+    </section>
+
+  </section>
+
+  <!-- ======================================================
+       تحضيراتي
+       ====================================================== -->
+  <section id="mineTab" class="tab-panel">
+
+    <section class="card">
+      <h2 id="mineTitle">📘 تحضيراتي</h2>
+
+      <div class="filters">
+        <input id="mineSearch" type="search" placeholder="بحث بعنوان الدرس أو المادة...">
+
+        <select id="mineStatus">
+          <option value="">كل الحالات</option>
+          <option value="draft">مسودة</option>
+          <option value="completed">مكتمل</option>
+        </select>
+
+        <select id="mineSubject">
+          <option value="">كل المواد</option>
+        </select>
+
+        <input id="mineFrom" type="date" title="من تاريخ">
+        <input id="mineTo" type="date" title="إلى تاريخ">
+
+        <button id="refreshMineBtn" class="btn btn-soft" type="button">تحديث</button>
+      </div>
+
+      <div id="plansList" class="plan-list">
+        <div class="empty">جارٍ تحميل التحاضير...</div>
+      </div>
+    </section>
+
+  </section>
+
+  <!-- ======================================================
+       مؤشرات الإدارة
+       ====================================================== -->
+  <section id="adminTab" class="tab-panel">
+
+    <div class="stats-grid">
+      <article class="stat">
+        <span>إجمالي التحاضير</span>
+        <strong id="adminTotal">0</strong>
+      </article>
+
+      <article class="stat">
+        <span>تحاضير مكتملة</span>
+        <strong id="adminCompleted">0</strong>
+      </article>
+
+      <article class="stat">
+        <span>مسودات</span>
+        <strong id="adminDrafts">0</strong>
+      </article>
+
+      <article class="stat">
+        <span>عدد المعلمات</span>
+        <strong id="adminTeachers">0</strong>
+      </article>
+    </div>
+
+    <section class="card">
+      <h2>📊 تحليل ممارسات التحضير</h2>
+
+      <div class="filters">
+        <input id="adminSearch" type="search" placeholder="بحث باسم المعلمة أو المادة...">
+        <select id="adminSubject">
+          <option value="">كل المواد</option>
+        </select>
+        <select id="adminGrade">
+          <option value="">كل الصفوف</option>
+          <option>الأول</option>
+          <option>الثاني</option>
+          <option>الثالث</option>
+          <option>الرابع</option>
+          <option>الخامس</option>
+        </select>
+        <input id="adminFrom" type="date" title="من تاريخ">
+        <input id="adminTo" type="date" title="إلى تاريخ">
+        <button id="refreshAdminBtn" class="btn btn-soft" type="button">تحديث</button>
+      </div>
+
+      <div class="analysis-grid">
+
+        <div class="analysis-box">
+          <h3>🧠 أكثر الاستراتيجيات استخدامًا</h3>
+          <div id="strategiesAnalysis" class="frequency-list"></div>
+        </div>
+
+        <div class="analysis-box">
+          <h3>🌐 مهارات القرن 21</h3>
+          <div id="centuryAnalysis" class="frequency-list"></div>
+        </div>
+
+        <div class="analysis-box">
+          <h3>✅ أساليب التقييم</h3>
+          <div id="assessmentAnalysis" class="frequency-list"></div>
+        </div>
+
+        <div class="analysis-box">
+          <h3>🧰 الموارد والمصادر</h3>
+          <div id="resourcesAnalysis" class="frequency-list"></div>
+        </div>
+
+        <div class="analysis-box">
+          <h3>👁 أنماط التعلم</h3>
+          <div id="stylesAnalysis" class="frequency-list"></div>
+        </div>
+
+        <div class="analysis-box">
+          <h3>🤲 فئات الدعم</h3>
+          <div id="supportAnalysis" class="frequency-list"></div>
+        </div>
+
+      </div>
+
+      <h3>سجل التحاضير</h3>
+      <div id="adminPlansList" class="plan-list"></div>
+    </section>
+
+  </section>
+
+</main>
+
+<!-- ورقة PDF المخفية -->
+<section id="pdfSheet"></section>
+
+<script src="../../js/config.js?v=20260816-lessonplans2"></script>
+<script src="../../js/graph.js?v=20260816-lessonplans2"></script>
+<script src="../../js/common.js?v=20260816-lessonplans2"></script>
+
+<script>
+"use strict";
+
+let sb = null;
+let currentUser = null;
+let currentProfile = null;
+let isAdminUser = false;
+let isCoordinatorUser = false;
+let canViewDepartmentOverview = false;
+
+/*
+  نطاق المنسقة: جميع الأقسام المرتبطة بها + معلمات هذه الأقسام.
+  نستخدمه كفلترة صريحة داخل الصفحة، بالإضافة إلى RLS في Supabase.
+*/
+let coordinatorDepartmentIds = [];
+let coordinatorVisibleTeacherIds = [];
+
+let allPlans = [];
+let objectiveCounter = 0;
+let supportCounter = 0;
+
+const RESOURCES = [
+  "لابتوب",
+  "سبورات فردية صغيرة",
+  "الكتاب المدرسي",
+  "قرطاسية",
+  "الإنترنت",
+  "عارض شرائح",
+  "بوربوينت",
+  "سبورة ذكية",
+  "QR",
+  "يوتيوب"
+];
+
+const LEARNING_STYLES = [
+  "سمعي",
+  "بصري",
+  "حركي",
+  "قراءة وكتابة"
+];
+
+const STRATEGIES = [
+  "التعلم التعاوني",
+  "حل المشكلات",
+  "الاستقصاء",
+  "العصف الذهني",
+  "التعلم بالأقران",
+  "التعلم باللعب",
+  "المحطات التعليمية",
+  "التعلم القائم على المشروع",
+  "التعلم الذاتي",
+  "التعلم الرقمي",
+  "الصف المقلوب",
+  "التعلم المتمايز"
+];
+
+const ASSESSMENTS = [
+  "التقييم الذاتي",
+  "تقييم الأقران",
+  "التغذية الراجعة",
+  "الأسئلة الشفهية",
+  "التقييم التحريري",
+  "الملاحظة",
+  "بطاقة الخروج",
+  "نشاط فردي",
+  "نشاط تمايزي"
+];
+
+const CENTURY_SKILLS = [
+  "التفكير الناقد وحل المشكلات",
+  "التعاون والتواصل",
+  "المعرفة المعلوماتية",
+  "المعرفة الرقمية",
+  "الوعي العالمي والثقافي",
+  "القدرة على التكيف والمرونة",
+  "الذكاء العاطفي"
+];
+
+const SUPPORT_CATEGORIES = [
+  "صعوبات التعلم والتوحد",
+  "متدنو التحصيل",
+  "الناطقون بغير اللغة العربية"
+];
+
+const PRODUCTS = [
+  "ورقة عمل",
+  "منتج رقمي",
+  "عرض تقديمي",
+  "مشروع",
+  "مهمة أدائية",
+  "بحث",
+  "إنتاج كتابي",
+  "أخرى"
+];
+
+function byId(id){
+  return document.getElementById(id);
+}
+
+function esc(value){
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function formatDate(value){
+  if(!value) return "—";
+
+  const date = new Date(value + "T00:00:00");
+
+  if(Number.isNaN(date.getTime())){
+    return value;
+  }
+
+  return date.toLocaleDateString(
+    "ar-BH",
+    {
+      year:"numeric",
+      month:"long",
+      day:"numeric"
+    }
+  );
+}
+
+
+function renderChecks(containerId, name, values){
+  const container = byId(containerId);
+
+  container.innerHTML = values.map(value => `
+    <label class="check-item">
+      <input type="checkbox" name="${esc(name)}" value="${esc(value)}">
+      <span>${esc(value)}</span>
+    </label>
+  `).join("");
+}
+
+function getChecked(name){
+  return [
+    ...document.querySelectorAll(
+      `input[name="${name}"]:checked`
+    )
+  ].map(input => input.value);
+}
+
+function setChecked(name, values){
+  const set = new Set(values || []);
+
+  document
+    .querySelectorAll(`input[name="${name}"]`)
+    .forEach(input => {
+      input.checked = set.has(input.value);
+    });
+}
+
+function showTab(tabId){
+  document.querySelectorAll(".tab-panel")
+    .forEach(panel => {
+      panel.classList.toggle(
+        "active",
+        panel.id === tabId
+      );
+    });
+
+  document.querySelectorAll(".tab-btn")
+    .forEach(btn => {
+      btn.classList.toggle(
+        "active",
+        btn.dataset.tab === tabId
+      );
+    });
+}
+
+function addObjective(data = {}){
+  objectiveCounter++;
+
+  const id = objectiveCounter;
+
+  const card = document.createElement("div");
+  card.className = "objective-card";
+  card.dataset.objectiveId = id;
+
+  card.innerHTML = `
+    <div class="objective-head">
+      <strong>هدف تعلم ${id}</strong>
+
+      <button
+        type="button"
+        class="mini-btn btn-remove"
+        onclick="removeObjective(${id})"
+      >
+        حذف
+      </button>
+    </div>
+
+    <div class="form-grid">
+
+      <div class="field">
+        <label>الزمن بالدقائق</label>
+        <input
+          class="objective-duration"
+          type="number"
+          min="0"
+          value="${esc(data.duration_minutes ?? "")}"
+        >
+      </div>
+
+      <div class="field span-2">
+        <label>هدف التعلم *</label>
+        <textarea class="objective-text">${esc(data.learning_objective || "")}</textarea>
+      </div>
+
+      <div class="field full">
+        <label>إجراءات سير الدرس</label>
+        <textarea class="objective-procedures">${esc(data.lesson_procedures || "")}</textarea>
+      </div>
+
+      <div class="field full">
+        <label>تفاصيل التقييم لهذا الهدف</label>
+        <textarea class="objective-assessment">${esc(data.assessment_details || "")}</textarea>
+      </div>
+
+    </div>
+  `;
+
+  byId("objectivesList").appendChild(card);
+}
+
+function removeObjective(id){
+  const card =
+    document.querySelector(
+      `[data-objective-id="${id}"]`
+    );
+
+  card?.remove();
+
+  if(!byId("objectivesList").children.length){
+    addObjective();
+  }
+}
+
+function collectObjectives(){
+  return [
+    ...document.querySelectorAll(".objective-card")
+  ].map((card,index) => ({
+    objective_order:index + 1,
+    duration_minutes:
+      Number(
+        card.querySelector(".objective-duration").value
+      ) || null,
+    learning_objective:
+      card.querySelector(".objective-text").value.trim(),
+    lesson_procedures:
+      card.querySelector(".objective-procedures").value.trim() || null,
+    assessment_details:
+      card.querySelector(".objective-assessment").value.trim() || null
+  })).filter(item => item.learning_objective);
+}
+
+function addSupport(data = {}){
+  supportCounter++;
+
+  const id = supportCounter;
+
+  const card = document.createElement("div");
+  card.className = "support-card";
+  card.dataset.supportId = id;
+
+  card.innerHTML = `
+    <div class="support-head">
+      <strong>إجراء دعم</strong>
+
+      <button
+        type="button"
+        class="mini-btn btn-remove"
+        onclick="removeSupport(${id})"
+      >
+        حذف
+      </button>
+    </div>
+
+    <div class="form-grid">
+
+      <div class="field">
+        <label>الفئة</label>
+
+        <select class="support-category">
+          <option value="">— اختاري —</option>
+
+          ${SUPPORT_CATEGORIES.map(value => `
+            <option
+              value="${esc(value)}"
+              ${data.category === value ? "selected" : ""}
+            >
+              ${esc(value)}
+            </option>
+          `).join("")}
+
+        </select>
+      </div>
+
+      <div class="field">
+        <label>اسم الطالب/الطالبة</label>
+        <input
+          class="support-student"
+          type="text"
+          value="${esc(data.student_name || "")}"
+        >
+      </div>
+
+      <div class="field">
+        <label>نوع الصعوبة</label>
+        <input
+          class="support-difficulty"
+          type="text"
+          value="${esc(data.difficulty_type || "")}"
+        >
+      </div>
+
+      <div class="field">
+        <label>الطالب/الطالبة المساندة</label>
+        <input
+          class="support-helper"
+          type="text"
+          value="${esc(data.supporting_student || "")}"
+        >
+      </div>
+
+      <div class="field full">
+        <label>إجراءات الدعم</label>
+        <textarea class="support-procedure">${esc(data.support_procedure || "")}</textarea>
+      </div>
+
+    </div>
+  `;
+
+  byId("supportList").appendChild(card);
+}
+
+function removeSupport(id){
+  document
+    .querySelector(`[data-support-id="${id}"]`)
+    ?.remove();
+}
+
+function collectSupport(){
+  return [
+    ...document.querySelectorAll(".support-card")
+  ].map(card => ({
+    category:
+      card.querySelector(".support-category").value,
+    student_name:
+      card.querySelector(".support-student").value.trim() || null,
+    difficulty_type:
+      card.querySelector(".support-difficulty").value.trim() || null,
+    supporting_student:
+      card.querySelector(".support-helper").value.trim() || null,
+    support_procedure:
+      card.querySelector(".support-procedure").value.trim() || null
+  })).filter(
+    item =>
+      item.category ||
+      item.student_name ||
+      item.support_procedure
+  );
+}
+
+function populateStaticOptions(){
+  renderChecks("resourcesChecks","resources",RESOURCES);
+  renderChecks("learningStylesChecks","learning_styles",LEARNING_STYLES);
+  renderChecks("strategiesChecks","strategies",STRATEGIES);
+  renderChecks("assessmentChecks","assessments",ASSESSMENTS);
+  renderChecks("centuryChecks","century",CENTURY_SKILLS);
+  renderChecks("supportCategoryChecks","support_categories",SUPPORT_CATEGORIES);
+  renderChecks("productChecks","products",PRODUCTS);
+}
+
+async function loadCoordinatorLessonPlanScope(){
+  coordinatorDepartmentIds = [];
+  coordinatorVisibleTeacherIds = [];
+
+  if(!isCoordinatorUser){
+    return [];
+  }
+
+  try{
+    let scope = null;
+
+    if(
+      window.WRAccess &&
+      typeof WRAccess.getScope === "function"
+    ){
+      try{
+        scope = await WRAccess.getScope();
+      }catch(scopeError){
+        console.warn(
+          "تعذر قراءة نطاق المنسقة من WRAccess:",
+          scopeError
+        );
+      }
+    }
+
+    if(
+      Array.isArray(scope?.department_ids) &&
+      scope.department_ids.length
+    ){
+      coordinatorDepartmentIds =
+        scope.department_ids
+          .filter(Boolean)
+          .map(String);
+    }
+
+    if(
+      !coordinatorDepartmentIds.length &&
+      Array.isArray(currentProfile?.department_ids)
+    ){
+      coordinatorDepartmentIds =
+        currentProfile.department_ids
+          .filter(Boolean)
+          .map(String);
+    }
+
+    if(
+      !coordinatorDepartmentIds.length &&
+      currentProfile?.department_id
+    ){
+      coordinatorDepartmentIds = [
+        String(currentProfile.department_id)
+      ];
+    }
+
+    const visibleIds = new Set([
+      String(currentUser.id)
+    ]);
+
+    if(coordinatorDepartmentIds.length){
+      const {
+        data: assignments,
+        error: assignmentsError
+      } = await sb
+        .from("profile_departments")
+        .select(`
+          profile_id,
+          department_id,
+          assignment_type
+        `)
+        .in(
+          "department_id",
+          coordinatorDepartmentIds
+        );
+
+      if(assignmentsError){
+        console.warn(
+          "profile_departments:",
+          assignmentsError
+        );
+      }else{
+        (assignments || []).forEach(item => {
+          const assignmentType =
+            String(item.assignment_type || "")
+              .trim()
+              .toLowerCase();
+
+          if(
+            item.profile_id &&
+            (
+              !assignmentType ||
+              assignmentType === "teacher"
+            )
+          ){
+            visibleIds.add(
+              String(item.profile_id)
+            );
+          }
+        });
+      }
+
+      const {
+        data: legacyTeachers,
+        error: legacyError
+      } = await sb
+        .from("user_profiles")
+        .select(`
+          user_id,
+          role,
+          department_id
+        `)
+        .eq("role","teacher")
+        .in(
+          "department_id",
+          coordinatorDepartmentIds
+        );
+
+      if(legacyError){
+        console.warn(
+          "user_profiles legacy departments:",
+          legacyError
+        );
+      }else{
+        (legacyTeachers || []).forEach(item => {
+          if(item.user_id){
+            visibleIds.add(
+              String(item.user_id)
+            );
+          }
+        });
+      }
+    }
+
+    coordinatorVisibleTeacherIds = [
+      ...visibleIds
+    ];
+
+    return coordinatorVisibleTeacherIds;
+
+  }catch(error){
+    console.error(
+      "Coordinator lesson plan scope:",
+      error
+    );
+
+    coordinatorVisibleTeacherIds = [
+      String(currentUser.id)
+    ];
+
+    return coordinatorVisibleTeacherIds;
+  }
+}
+
+async function init(){
+  try{
+    sb = window.supabase.createClient(
+      window.WR_CONFIG.supabaseUrl,
+      window.WR_CONFIG.supabaseKey
+    );
+
+    currentUser =
+      await WRGraph.getAccount();
+
+    if(!currentUser){
+      location.href = "../../index.html";
+      return;
+    }
+
+    currentProfile =
+      await WRGraph.getUserProfile();
+
+    /*
+      دعم الحسابات القديمة الموجودة في جدول profiles
+      إذا لم يكن لها user_profiles بعد.
+    */
+    if(!currentProfile?.role){
+      const { data: legacyProfile } =
+        await sb
+          .from("profiles")
+          .select("id, full_name, role")
+          .eq("id",currentUser.id)
+          .maybeSingle();
+
+      if(legacyProfile){
+        currentProfile = {
+          ...currentProfile,
+          full_name:
+            currentProfile?.full_name ||
+            legacyProfile.full_name ||
+            currentUser.email,
+          role:
+            legacyProfile.role || "teacher"
+        };
+      }
+    }
+
+    if(!currentProfile){
+      currentProfile = {
+        user_id:currentUser.id,
+        email:currentUser.email,
+        full_name:currentUser.email,
+        role:"teacher"
+      };
+    }
+
+    isAdminUser =
+      currentProfile.role === "admin";
+
+    isCoordinatorUser =
+      currentProfile.role === "coordinator";
+
+    canViewDepartmentOverview =
+      isAdminUser || isCoordinatorUser;
+
+    if(isCoordinatorUser){
+      await loadCoordinatorLessonPlanScope();
+    }
+
+    populateStaticOptions();
+
+    byId("teacherName").value =
+      currentProfile.full_name ||
+      currentUser.email ||
+      "";
+
+    byId("lessonDate").value =
+      new Date().toISOString().slice(0,10);
+
+    byId("lessonDay").value = "";
+
+
+    addObjective();
+
+    if(isAdminUser){
+      byId("scopeBox").textContent =
+        "صلاحية الإدارة — يمكنك الاطلاع على جميع التحاضير ومؤشرات الممارسات التعليمية.";
+
+      byId("tabAdminBtn").classList.remove("hidden");
+
+      /*
+        الإدارة لا تحتاج نموذج كتابة تحضير.
+      */
+      byId("tabNewBtn").classList.add("hidden");
+
+      byId("tabMineBtn").textContent =
+        "📚 سجل التحاضير";
+
+      showTab("adminTab");
+
+    }else if(isCoordinatorUser){
+      const departmentText =
+        Array.isArray(currentProfile?.department_names) &&
+        currentProfile.department_names.length
+          ? currentProfile.department_names.join("، ")
+          : currentProfile?.department_name ||
+            "الأقسام المرتبطة بحسابك";
+
+      byId("scopeBox").textContent =
+        "صلاحية المنسقة — يمكنك إعداد تحضيركِ كمعلمة، ومتابعة تحاضير معلمات أقسامك فقط دون تعديلها: " +
+        departmentText +
+        ".";
+
+      byId("tabAdminBtn").classList.remove("hidden");
+      byId("tabAdminBtn").textContent =
+        "📊 متابعة القسم";
+
+    }else{
+      byId("scopeBox").textContent =
+        "دفتر التحضير الخاص بكِ — يمكنك إنشاء التحاضير وحفظها ونسخها وتعديلها وتنزيلها PDF.";
+    }
+
+    await loadPlans();
+
+  }catch(error){
+    console.error("Lesson plans init:",error);
+
+    alert(
+      "تعذر تحميل دفتر التحضير الإلكتروني."
+    );
+  }
+}
+
+async function savePlan(status){
+  const state = byId("saveState");
+
+  state.textContent = "";
+  state.className = "save-state";
+
+  const objectives = collectObjectives();
+
+  if(
+    !byId("lessonDate").value ||
+    !byId("subject").value.trim() ||
+    !byId("grade").value ||
+    !byId("lessonTitle").value.trim() ||
+    !objectives.length
+  ){
+    state.textContent =
+      "أكملي التاريخ والمادة والصف وعنوان الدرس وهدف تعلم واحد على الأقل.";
+
+    state.className =
+      "save-state error";
+
+    return;
+  }
+
+  const editingId =
+    byId("editingPlanId").value || null;
+
+  const row = {
+    teacher_id:currentUser.id,
+    teacher_name:
+      currentProfile.full_name ||
+      currentUser.email,
+
+    lesson_date:byId("lessonDate").value,
+    lesson_day:byId("lessonDay").value || null,
+    subject:byId("subject").value.trim(),
+    grade:byId("grade").value,
+    class_section:
+      byId("classSection").value.trim() || null,
+    period:byId("period").value || null,
+    unit_name:
+      byId("unitName").value.trim() || null,
+    lesson_title:
+      byId("lessonTitle").value.trim(),
+
+    subject_connection:
+      byId("subjectConnection").value.trim() || null,
+    values_connection:
+      byId("valuesConnection").value.trim() || null,
+
+    introduction:
+      byId("introduction").value.trim() || null,
+    introduction_minutes:
+      Number(byId("introductionMinutes").value) || null,
+
+    resources:getChecked("resources"),
+    learning_styles:getChecked("learning_styles"),
+    teaching_strategies:getChecked("strategies"),
+    assessment_methods:getChecked("assessments"),
+    century21_skills:getChecked("century"),
+    support_categories:getChecked("support_categories"),
+
+    student_product_type:
+      getChecked("products").join("، ") || null,
+    student_product_description:
+      byId("productDescription").value.trim() || null,
+
+    reflection_status:
+      byId("reflectionStatus").value || null,
+    reflection_notes:
+      byId("reflectionNotes").value.trim() || null,
+
+    status,
+    updated_at:new Date().toISOString()
+  };
+
+  const button =
+    status === "completed"
+      ? byId("saveCompleteBtn")
+      : byId("saveDraftBtn");
+
+  button.disabled = true;
+
+  try{
+    let planId = editingId;
+
+    if(editingId){
+      const { error } =
+        await sb
+          .from("lesson_plans")
+          .update(row)
+          .eq("id",editingId);
+
+      if(error) throw error;
+
+    }else{
+      const { data, error } =
+        await sb
+          .from("lesson_plans")
+          .insert(row)
+          .select("id")
+          .single();
+
+      if(error) throw error;
+
+      planId = data.id;
+    }
+
+    /*
+      نستبدل أهداف التحضير بالكامل عند الحفظ
+      لتسهيل التعديل بدون تعقيد.
+    */
+    {
+      const { error } =
+        await sb
+          .from("lesson_plan_objectives")
+          .delete()
+          .eq("lesson_plan_id",planId);
+
+      if(error) throw error;
+    }
+
+    const objectiveRows =
+      objectives.map(item => ({
+        ...item,
+        lesson_plan_id:planId
+      }));
+
+    if(objectiveRows.length){
+      const { error } =
+        await sb
+          .from("lesson_plan_objectives")
+          .insert(objectiveRows);
+
+      if(error) throw error;
+    }
+
+    {
+      const { error } =
+        await sb
+          .from("lesson_plan_support")
+          .delete()
+          .eq("lesson_plan_id",planId);
+
+      if(error) throw error;
+    }
+
+    const supportRows =
+      collectSupport()
+        .filter(item => item.category)
+        .map(item => ({
+          ...item,
+          lesson_plan_id:planId
+        }));
+
+    if(supportRows.length){
+      const { error } =
+        await sb
+          .from("lesson_plan_support")
+          .insert(supportRows);
+
+      if(error) throw error;
+    }
+
+    state.textContent =
+      status === "completed"
+        ? "✓ تم اعتماد التحضير وحفظه بنجاح."
+        : "✓ تم حفظ التحضير كمسودة.";
+
+    state.className =
+      "save-state ok";
+
+    byId("editingPlanId").value = planId;
+
+    byId("downloadCurrentPdfBtn")
+      .classList.remove("hidden");
+
+    await loadPlans();
+
+  }catch(error){
+    console.error("Save lesson plan:",error);
+
+    state.textContent =
+      "تعذر حفظ التحضير: " +
+      (error.message || "خطأ غير متوقع");
+
+    state.className =
+      "save-state error";
+
+  }finally{
+    button.disabled = false;
+  }
+}
+
+async function loadPlans(){
+  try{
+    let query =
+      sb
+        .from("lesson_plans")
+        .select("*")
+        .order(
+          "lesson_date",
+          {ascending:false}
+        )
+        .order(
+          "created_at",
+          {ascending:false}
+        );
+
+    /*
+      فلترة صريحة حسب الدور، بالإضافة إلى RLS:
+      - المعلمة: تحاضيرها فقط.
+      - المنسقة: تحضيرها + تحاضير معلمات جميع أقسامها.
+      - القيادة العليا: جميع تحاضير المدرسة.
+    */
+    if(isCoordinatorUser){
+      if(!coordinatorVisibleTeacherIds.length){
+        await loadCoordinatorLessonPlanScope();
+      }
+
+      const visibleIds =
+        coordinatorVisibleTeacherIds.length
+          ? coordinatorVisibleTeacherIds
+          : [String(currentUser.id)];
+
+      query = query.in(
+        "teacher_id",
+        visibleIds
+      );
+
+    }else if(!isAdminUser){
+      query = query.eq(
+        "teacher_id",
+        currentUser.id
+      );
+    }
+
+    const { data, error } =
+      await query;
+
+    if(error) throw error;
+
+    allPlans = data || [];
+
+    if(isCoordinatorUser){
+      const visibleIds = new Set(
+        coordinatorVisibleTeacherIds.map(String)
+      );
+
+      allPlans = allPlans.filter(plan =>
+        visibleIds.has(
+          String(plan.teacher_id || "")
+        )
+      );
+    }
+
+    if(!isAdminUser && !isCoordinatorUser){
+      allPlans = allPlans.filter(plan =>
+        String(plan.teacher_id || "") ===
+        String(currentUser.id)
+      );
+    }
+
+    fillSubjectFilters();
+    renderMine();
+    renderAdmin();
+
+  }catch(error){
+    console.error("Load lesson plans:",error);
+
+    byId("plansList").innerHTML =
+      '<div class="empty">تعذر تحميل التحاضير.</div>';
+
+    byId("adminPlansList").innerHTML =
+      '<div class="empty">تعذر تحميل التحاضير.</div>';
+  }
+}
+
+function fillSubjectFilters(){
+  const subjects = [
+    ...new Set(
+      allPlans
+        .map(item => item.subject)
+        .filter(Boolean)
+    )
+  ].sort();
+
+  const mineValue = byId("mineSubject").value;
+  const adminValue = byId("adminSubject").value;
+
+  byId("mineSubject").innerHTML =
+    '<option value="">كل المواد</option>' +
+    subjects.map(subject =>
+      `<option value="${esc(subject)}">${esc(subject)}</option>`
+    ).join("");
+
+  byId("adminSubject").innerHTML =
+    '<option value="">كل المواد</option>' +
+    subjects.map(subject =>
+      `<option value="${esc(subject)}">${esc(subject)}</option>`
+    ).join("");
+
+  byId("mineSubject").value = mineValue;
+  byId("adminSubject").value = adminValue;
+}
+
+function mineFilteredPlans(){
+  const personalPlans =
+    isCoordinatorUser
+      ? allPlans.filter(plan => plan.teacher_id === currentUser.id)
+      : allPlans;
+
+  const search =
+    byId("mineSearch").value
+      .trim()
+      .toLowerCase();
+
+  const status =
+    byId("mineStatus").value;
+
+  const subject =
+    byId("mineSubject").value;
+
+  const from =
+    byId("mineFrom").value;
+
+  const to =
+    byId("mineTo").value;
+
+  return personalPlans.filter(plan => {
+    const text =
+      (
+        String(plan.lesson_title || "") +
+        " " +
+        String(plan.subject || "") +
+        " " +
+        String(plan.teacher_name || "")
+      ).toLowerCase();
+
+    if(search && !text.includes(search)){
+      return false;
+    }
+
+    if(status && plan.status !== status){
+      return false;
+    }
+
+    if(subject && plan.subject !== subject){
+      return false;
+    }
+
+    if(from && plan.lesson_date < from){
+      return false;
+    }
+
+    if(to && plan.lesson_date > to){
+      return false;
+    }
+
+    return true;
+  });
+}
+
+function renderMine(){
+  const rows = mineFilteredPlans();
+
+  const container = byId("plansList");
+
+  if(!rows.length){
+    container.innerHTML =
+      '<div class="empty">لا توجد تحاضير مطابقة.</div>';
+    return;
+  }
+
+  container.innerHTML =
+    rows.map(plan => renderPlanCard(plan,false))
+      .join("");
+}
+
+function renderPlanCard(plan,adminView){
+  return `
+    <article class="plan-card">
+
+      <div class="plan-head">
+
+        <div>
+          <div class="plan-title">
+            ${esc(plan.lesson_title || "تحضير")}
+          </div>
+
+          <div class="plan-meta">
+            ${adminView ? "المعلمة: " + esc(plan.teacher_name || "—") + "<br>" : ""}
+            المادة: ${esc(plan.subject || "—")}
+            • الصف: ${esc(plan.grade || "—")}
+            ${plan.class_section ? " • الشعبة: " + esc(plan.class_section) : ""}
+            <br>
+            ${esc(plan.lesson_day || "—")}
+            • ${esc(formatDate(plan.lesson_date))}
+            ${plan.period ? " • الحصة: " + esc(plan.period) : ""}
+          </div>
+        </div>
+
+        <span class="chip ${
+          plan.status === "completed"
+            ? "chip-completed"
+            : "chip-draft"
+        }">
+          ${
+            plan.status === "completed"
+              ? "مكتمل"
+              : "مسودة"
+          }
+        </span>
+
+      </div>
+
+      <div class="action-row">
+
+        ${
+          !adminView
+            ? `
+              <button
+                class="btn btn-soft"
+                type="button"
+                onclick="editPlan('${plan.id}')"
+              >
+                ✏️ تعديل
+              </button>
+
+              <button
+                class="btn btn-soft"
+                type="button"
+                onclick="copyPlan('${plan.id}')"
+              >
+                📄 نسخ التحضير
+              </button>
+
+              <button
+                class="btn btn-danger"
+                type="button"
+                onclick="deletePlan('${plan.id}')"
+              >
+                حذف
+              </button>
+            `
+            : ""
+        }
+
+        <button
+          class="btn btn-gold"
+          type="button"
+          onclick="downloadPlanPdf('${plan.id}')"
+        >
+          ⬇️ PDF
+        </button>
+
+      </div>
+
+    </article>
+  `;
+}
+
+async function getPlanChildren(planId){
+  const [
+    objectivesResult,
+    supportResult
+  ] =
+    await Promise.all([
+      sb
+        .from("lesson_plan_objectives")
+        .select("*")
+        .eq("lesson_plan_id",planId)
+        .order("objective_order"),
+      sb
+        .from("lesson_plan_support")
+        .select("*")
+        .eq("lesson_plan_id",planId)
+        .order("created_at")
+    ]);
+
+  if(objectivesResult.error){
+    throw objectivesResult.error;
+  }
+
+  if(supportResult.error){
+    throw supportResult.error;
+  }
+
+  return {
+    objectives:objectivesResult.data || [],
+    support:supportResult.data || []
+  };
+}
+
+async function editPlan(planId){
+  try{
+    const plan =
+      allPlans.find(
+        item => item.id === planId
+      );
+
+    if(!plan) return;
+
+    const {
+      objectives,
+      support
+    } =
+      await getPlanChildren(planId);
+
+    resetForm(false);
+
+    byId("editingPlanId").value = plan.id;
+
+    byId("downloadCurrentPdfBtn")
+      .classList.remove("hidden");
+
+    byId("teacherName").value =
+      plan.teacher_name || "";
+
+    byId("lessonDate").value =
+      plan.lesson_date || "";
+
+    byId("lessonDay").value =
+      plan.lesson_day || "";
+
+    byId("subject").value =
+      plan.subject || "";
+
+    byId("grade").value =
+      plan.grade || "";
+
+    byId("classSection").value =
+      plan.class_section || "";
+
+    byId("period").value =
+      plan.period || "";
+
+    byId("unitName").value =
+      plan.unit_name || "";
+
+    byId("lessonTitle").value =
+      plan.lesson_title || "";
+
+    byId("subjectConnection").value =
+      plan.subject_connection || "";
+
+    byId("valuesConnection").value =
+      plan.values_connection || "";
+
+    byId("introduction").value =
+      plan.introduction || "";
+
+    byId("introductionMinutes").value =
+      plan.introduction_minutes || "";
+
+    setChecked("resources",plan.resources || []);
+    setChecked("learning_styles",plan.learning_styles || []);
+    setChecked("strategies",plan.teaching_strategies || []);
+    setChecked("assessments",plan.assessment_methods || []);
+    setChecked("century",plan.century21_skills || []);
+    setChecked("support_categories",plan.support_categories || []);
+
+    setChecked(
+      "products",
+      String(plan.student_product_type || "")
+        .split("،")
+        .map(item => item.trim())
+        .filter(Boolean)
+    );
+
+    byId("productDescription").value =
+      plan.student_product_description || "";
+
+    byId("reflectionStatus").value =
+      plan.reflection_status || "";
+
+    byId("reflectionNotes").value =
+      plan.reflection_notes || "";
+
+    byId("objectivesList").innerHTML = "";
+    objectiveCounter = 0;
+
+    if(objectives.length){
+      objectives.forEach(item => addObjective(item));
+    }else{
+      addObjective();
+    }
+
+    byId("supportList").innerHTML = "";
+    supportCounter = 0;
+
+    support.forEach(item => addSupport(item));
+
+    showTab("newTab");
+
+    window.scrollTo({
+      top:0,
+      behavior:"smooth"
+    });
+
+  }catch(error){
+    console.error("Edit lesson:",error);
+
+    alert("تعذر تحميل التحضير للتعديل.");
+  }
+}
+
+async function copyPlan(planId){
+  await editPlan(planId);
+
+  byId("editingPlanId").value = "";
+
+  byId("downloadCurrentPdfBtn")
+    .classList.add("hidden");
+
+  byId("lessonDate").value =
+    new Date().toISOString().slice(0,10);
+
+  byId("lessonDay").value = "";
+
+
+  byId("saveState").textContent =
+    "تم إنشاء نسخة من التحضير. عدلي التاريخ أو البيانات المطلوبة ثم احفظيها.";
+
+  byId("saveState").className =
+    "save-state ok";
+}
+
+async function deletePlan(planId){
+  if(
+    !confirm(
+      "هل تريدين حذف هذا التحضير نهائيًا؟"
+    )
+  ){
+    return;
+  }
+
+  try{
+    const { error } =
+      await sb
+        .from("lesson_plans")
+        .delete()
+        .eq("id",planId);
+
+    if(error) throw error;
+
+    await loadPlans();
+
+  }catch(error){
+    console.error("Delete lesson:",error);
+    alert("تعذر حذف التحضير.");
+  }
+}
+
+function resetForm(clearStatus = true){
+  byId("editingPlanId").value = "";
+
+  byId("downloadCurrentPdfBtn")
+    .classList.add("hidden");
+
+  byId("teacherName").value =
+    currentProfile?.full_name ||
+    currentUser?.email ||
+    "";
+
+  byId("lessonDate").value =
+    new Date().toISOString().slice(0,10);
+
+  byId("lessonDay").value = "";
+
+
+  [
+    "subject",
+    "classSection",
+    "unitName",
+    "lessonTitle",
+    "subjectConnection",
+    "valuesConnection",
+    "introduction",
+    "introductionMinutes",
+    "productDescription",
+    "reflectionNotes"
+  ].forEach(id => {
+    byId(id).value = "";
+  });
+
+  byId("grade").value = "";
+  byId("period").value = "";
+  byId("reflectionStatus").value = "";
+
+  document
+    .querySelectorAll(
+      '#newTab input[type="checkbox"]'
+    )
+    .forEach(input => {
+      input.checked = false;
+    });
+
+  byId("objectivesList").innerHTML = "";
+  objectiveCounter = 0;
+  addObjective();
+
+  byId("supportList").innerHTML = "";
+  supportCounter = 0;
+
+  if(clearStatus){
+    byId("saveState").textContent = "";
+    byId("saveState").className = "save-state";
+  }
+}
+
+function adminFilteredPlans(){
+  const search =
+    byId("adminSearch").value
+      .trim()
+      .toLowerCase();
+
+  const subject =
+    byId("adminSubject").value;
+
+  const grade =
+    byId("adminGrade").value;
+
+  const from =
+    byId("adminFrom").value;
+
+  const to =
+    byId("adminTo").value;
+
+  return allPlans.filter(plan => {
+    const text =
+      (
+        String(plan.teacher_name || "") +
+        " " +
+        String(plan.subject || "") +
+        " " +
+        String(plan.lesson_title || "")
+      ).toLowerCase();
+
+    if(search && !text.includes(search)){
+      return false;
+    }
+
+    if(subject && plan.subject !== subject){
+      return false;
+    }
+
+    if(grade && plan.grade !== grade){
+      return false;
+    }
+
+    if(from && plan.lesson_date < from){
+      return false;
+    }
+
+    if(to && plan.lesson_date > to){
+      return false;
+    }
+
+    return true;
+  });
+}
+
+function frequencyMap(rows,field){
+  const map = new Map();
+
+  rows.forEach(row => {
+    const values =
+      Array.isArray(row[field])
+        ? row[field]
+        : [];
+
+    values.forEach(value => {
+      map.set(
+        value,
+        (map.get(value) || 0) + 1
+      );
+    });
+  });
+
+  return [
+    ...map.entries()
+  ].sort(
+    (a,b) => b[1] - a[1]
+  );
+}
+
+function renderFrequency(containerId,items){
+  const container = byId(containerId);
+
+  if(!items.length){
+    container.innerHTML =
+      '<span class="frequency-chip">لا توجد بيانات</span>';
+    return;
+  }
+
+  container.innerHTML =
+    items.map(([name,count]) => `
+      <span class="frequency-chip">
+        ${esc(name)} • ${count}
+      </span>
+    `).join("");
+}
+
+function renderAdmin(){
+  if(!canViewDepartmentOverview) return;
+
+  const rows = adminFilteredPlans();
+
+  byId("adminTotal").textContent =
+    rows.length;
+
+  byId("adminCompleted").textContent =
+    rows.filter(
+      item => item.status === "completed"
+    ).length;
+
+  byId("adminDrafts").textContent =
+    rows.filter(
+      item => item.status === "draft"
+    ).length;
+
+  byId("adminTeachers").textContent =
+    new Set(
+      rows.map(item => item.teacher_id)
+    ).size;
+
+  renderFrequency(
+    "strategiesAnalysis",
+    frequencyMap(rows,"teaching_strategies")
+  );
+
+  renderFrequency(
+    "centuryAnalysis",
+    frequencyMap(rows,"century21_skills")
+  );
+
+  renderFrequency(
+    "assessmentAnalysis",
+    frequencyMap(rows,"assessment_methods")
+  );
+
+  renderFrequency(
+    "resourcesAnalysis",
+    frequencyMap(rows,"resources")
+  );
+
+  renderFrequency(
+    "stylesAnalysis",
+    frequencyMap(rows,"learning_styles")
+  );
+
+  renderFrequency(
+    "supportAnalysis",
+    frequencyMap(rows,"support_categories")
+  );
+
+  byId("adminPlansList").innerHTML =
+    rows.length
+      ? rows.map(
+          plan => renderPlanCard(plan,true)
+        ).join("")
+      : '<div class="empty">لا توجد تحاضير مطابقة.</div>';
+}
+
+async function downloadPlanPdf(planId){
+  try{
+    const plan =
+      allPlans.find(
+        item => item.id === planId
+      );
+
+    if(!plan){
+      throw new Error("التحضير غير موجود");
+    }
+
+    const {
+      objectives,
+      support
+    } =
+      await getPlanChildren(planId);
+
+    const pdf = byId("pdfSheet");
+
+    const listHtml = values =>
+      (values || []).length
+        ? (values || []).map(item => "✓ " + esc(item)).join(" • ")
+        : "—";
+
+    pdf.innerHTML = `
+      <div class="pdf-title">
+        <h2>خطة التحضير اليومية</h2>
+        <div>WestRiffa Smart Office</div>
+      </div>
+
+      <div class="pdf-grid">
+
+        <div class="pdf-box">
+          <strong>اسم المعلمة:</strong>
+          ${esc(plan.teacher_name || "—")}
+        </div>
+
+        <div class="pdf-box">
+          <strong>التاريخ:</strong>
+          ${esc(formatDate(plan.lesson_date))}
+          — ${esc(plan.lesson_day || "—")}
+        </div>
+
+        <div class="pdf-box">
+          <strong>المادة:</strong>
+          ${esc(plan.subject || "—")}
+        </div>
+
+        <div class="pdf-box">
+          <strong>الصف / الشعبة:</strong>
+          ${esc(plan.grade || "—")}
+          ${plan.class_section ? " / " + esc(plan.class_section) : ""}
+        </div>
+
+        <div class="pdf-box">
+          <strong>الحصة:</strong>
+          ${esc(plan.period || "—")}
+        </div>
+
+        <div class="pdf-box">
+          <strong>الوحدة:</strong>
+          ${esc(plan.unit_name || "—")}
+        </div>
+
+        <div class="pdf-box pdf-wide">
+          <strong>عنوان الدرس:</strong>
+          ${esc(plan.lesson_title || "—")}
+        </div>
+
+        <div class="pdf-box">
+          <strong>الربط:</strong>
+          ${esc(plan.subject_connection || "—")}
+        </div>
+
+        <div class="pdf-box">
+          <strong>القيم:</strong>
+          ${esc(plan.values_connection || "—")}
+        </div>
+
+        <div class="pdf-box pdf-wide">
+          <strong>المقدمة (${esc(plan.introduction_minutes || "—")} د):</strong><br>
+          ${esc(plan.introduction || "—")}
+        </div>
+
+        <div class="pdf-box pdf-wide">
+          <strong>الموارد والمصادر:</strong><br>
+          ${listHtml(plan.resources)}
+        </div>
+
+        <div class="pdf-box pdf-wide">
+          <strong>أنماط التعلم:</strong><br>
+          ${listHtml(plan.learning_styles)}
+        </div>
+
+        <div class="pdf-box pdf-wide">
+          <strong>استراتيجيات التدريس:</strong><br>
+          ${listHtml(plan.teaching_strategies)}
+        </div>
+
+        <div class="pdf-box pdf-wide">
+          <strong>أساليب التقييم:</strong><br>
+          ${listHtml(plan.assessment_methods)}
+        </div>
+
+        <div class="pdf-box pdf-wide">
+          <strong>مهارات القرن 21:</strong><br>
+          ${listHtml(plan.century21_skills)}
+        </div>
+
+        ${
+          objectives.map((item,index) => `
+            <div class="pdf-box pdf-wide">
+              <strong>هدف التعلم ${index + 1} (${esc(item.duration_minutes || "—")} د)</strong><br>
+              ${esc(item.learning_objective || "—")}
+              <br><br>
+              <strong>إجراءات سير الدرس:</strong><br>
+              ${esc(item.lesson_procedures || "—")}
+              <br><br>
+              <strong>التقييم:</strong><br>
+              ${esc(item.assessment_details || "—")}
+            </div>
+          `).join("")
+        }
+
+        <div class="pdf-box pdf-wide">
+          <strong>الإنتاج الطلابي:</strong><br>
+          ${esc(plan.student_product_type || "—")}
+          <br>
+          ${esc(plan.student_product_description || "")}
+        </div>
+
+        <div class="pdf-box pdf-wide">
+          <strong>التأمل الذاتي:</strong><br>
+          ${esc(plan.reflection_status || "—")}
+          <br>
+          ${esc(plan.reflection_notes || "")}
+        </div>
+
+        ${
+          support.length
+            ? `
+              <div class="pdf-box pdf-wide">
+                <strong>الدعم والمساندة:</strong><br>
+                ${
+                  support.map(item => `
+                    • ${esc(item.category || "—")}
+                    ${item.student_name ? " — " + esc(item.student_name) : ""}
+                    ${item.difficulty_type ? " — " + esc(item.difficulty_type) : ""}
+                    ${item.support_procedure ? "<br>" + esc(item.support_procedure) : ""}
+                    <br>
+                  `).join("")
+                }
+              </div>
+            `
+            : ""
+        }
+
+      </div>
+    `;
+
+    pdf.classList.add("pdf-visible");
+
+    const fileName =
+      "تحضير_" +
+      String(plan.subject || "درس").replace(/\s+/g,"_") +
+      "_" +
+      String(plan.lesson_date || "");
+
+    await html2pdf()
+      .set({
+        margin:8,
+        filename:fileName + ".pdf",
+        image:{
+          type:"jpeg",
+          quality:0.98
+        },
+        html2canvas:{
+          scale:2,
+          useCORS:true
+        },
+        jsPDF:{
+          unit:"mm",
+          format:"a4",
+          orientation:"portrait"
+        },
+        pagebreak:{
+          mode:["css","legacy"]
+        }
+      })
+      .from(pdf)
+      .save();
+
+    pdf.classList.remove("pdf-visible");
+    pdf.innerHTML = "";
+
+  }catch(error){
+    console.error("PDF lesson plan:",error);
+
+    byId("pdfSheet").classList.remove("pdf-visible");
+
+    alert(
+      "تعذر إنشاء ملف PDF للتحضير."
+    );
+  }
+}
+
+/* ======================================================
+   الأحداث
+   ====================================================== */
+
+document.querySelectorAll(".tab-btn")
+  .forEach(btn => {
+    btn.addEventListener(
+      "click",
+      () => showTab(btn.dataset.tab)
+    );
+  });
+
+byId("addObjectiveBtn")
+  .addEventListener(
+    "click",
+    () => addObjective()
+  );
+
+byId("addSupportBtn")
+  .addEventListener(
+    "click",
+    () => addSupport()
+  );
+
+byId("saveDraftBtn")
+  .addEventListener(
+    "click",
+    () => savePlan("draft")
+  );
+
+byId("saveCompleteBtn")
+  .addEventListener(
+    "click",
+    () => savePlan("completed")
+  );
+
+byId("resetFormBtn")
+  .addEventListener(
+    "click",
+    () => resetForm()
+  );
+
+
+byId("downloadCurrentPdfBtn")
+  .addEventListener(
+    "click",
+    () => {
+      const planId = byId("editingPlanId").value;
+
+      if(!planId){
+        alert("احفظي التحضير أولًا قبل تنزيله PDF.");
+        return;
+      }
+
+      downloadPlanPdf(planId);
+    }
+  );
+
+[
+  "mineSearch",
+  "mineStatus",
+  "mineSubject",
+  "mineFrom",
+  "mineTo"
+].forEach(id => {
+  byId(id).addEventListener(
+    id === "mineSearch"
+      ? "input"
+      : "change",
+    renderMine
+  );
+});
+
+byId("refreshMineBtn")
+  .addEventListener(
+    "click",
+    loadPlans
+  );
+
+[
+  "adminSearch",
+  "adminSubject",
+  "adminGrade",
+  "adminFrom",
+  "adminTo"
+].forEach(id => {
+  byId(id).addEventListener(
+    id === "adminSearch"
+      ? "input"
+      : "change",
+    renderAdmin
+  );
+});
+
+byId("refreshAdminBtn")
+  .addEventListener(
+    "click",
+    loadPlans
+  );
+
+document.addEventListener(
+  "DOMContentLoaded",
+  init
+);
+
+window.removeObjective = removeObjective;
+window.removeSupport = removeSupport;
+window.editPlan = editPlan;
+window.copyPlan = copyPlan;
+window.deletePlan = deletePlan;
+window.downloadPlanPdf = downloadPlanPdf;
+
+</script>
+
+</body>
+</html>

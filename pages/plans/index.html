@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>
+  الخطة التدفقية | WestRiffa Smart Office
+</title>
+
+<link
+  rel="stylesheet"
+  href="../../css/app.css?v=20260816-plans-home3"
+>
+
+<script
+  src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Tahoma,Arial,sans-serif;
+  background:#f4f7f6;
+  color:#173c34;
+}
+
+.plans-page{
+  min-height:100vh;
+}
+
+.plans-header{
+  background:linear-gradient(
+    135deg,
+    #0f513f,
+    #18705a
+  );
+  color:white;
+  padding:32px 24px;
+  box-shadow:0 4px 18px rgba(0,0,0,.08);
+}
+
+.plans-header-inner{
+  width:min(1200px,94%);
+  margin:auto;
+}
+
+.plans-header h1{
+  margin:0 0 8px;
+  font-size:30px;
+}
+
+.plans-header p{
+  margin:0;
+  opacity:.9;
+  line-height:1.8;
+}
+
+.plans-container{
+  width:min(1200px,94%);
+  margin:28px auto 50px;
+}
+
+.top-actions{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:24px;
+  flex-wrap:wrap;
+}
+
+.back-link{
+  text-decoration:none;
+  color:#0f513f;
+  background:white;
+  padding:11px 18px;
+  border-radius:12px;
+  border:1px solid #dfe9e5;
+  font-weight:bold;
+}
+
+.school-year{
+  background:#fff8e6;
+  color:#76570b;
+  padding:10px 17px;
+  border-radius:12px;
+  font-weight:bold;
+  border:1px solid #f0dfac;
+}
+
+.access-box{
+  display:none;
+  background:#eaf8ef;
+  border:1px solid #c7e8d1;
+  color:#166534;
+  padding:14px 18px;
+  border-radius:14px;
+  margin-bottom:20px;
+  font-weight:700;
+  line-height:1.8;
+}
+
+.user-box{
+  display:none;
+  background:white;
+  border:1px solid #e2ece8;
+  border-radius:14px;
+  padding:15px 18px;
+  margin-bottom:20px;
+}
+
+.user-box strong{
+  color:#0f513f;
+}
+
+.intro-card{
+  background:white;
+  border-radius:18px;
+  padding:24px;
+  margin-bottom:24px;
+  box-shadow:0 8px 24px rgba(15,81,63,.06);
+  border:1px solid #e5eeeb;
+}
+
+.intro-card h2{
+  margin-top:0;
+  color:#0f513f;
+}
+
+.intro-card p{
+  margin-bottom:0;
+  line-height:1.9;
+  color:#55716a;
+}
+
+.plans-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+}
+
+.plan-card{
+  background:white;
+  border-radius:18px;
+  padding:24px;
+  border:1px solid #e3ece9;
+  box-shadow:0 7px 22px rgba(0,0,0,.045);
+  transition:.2s ease;
+  min-height:220px;
+  display:flex;
+  flex-direction:column;
+}
+
+.plan-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 12px 28px rgba(15,81,63,.10);
+}
+
+.plan-icon{
+  width:54px;
+  height:54px;
+  border-radius:16px;
+  display:grid;
+  place-items:center;
+  font-size:27px;
+  margin-bottom:15px;
+  background:#e9f5f0;
+}
+
+.plan-card h3{
+  margin:0 0 9px;
+  color:#153f35;
+  font-size:20px;
+}
+
+.plan-card p{
+  color:#617972;
+  line-height:1.8;
+  font-size:14px;
+  flex:1;
+}
+
+.plan-card a{
+  display:block;
+  text-align:center;
+  text-decoration:none;
+  background:#0f654f;
+  color:white;
+  border-radius:12px;
+  padding:12px;
+  font-weight:bold;
+  margin-top:12px;
+}
+
+.plan-card a:hover{
+  background:#0c5744;
+}
+
+.admin-card{
+  display:none;
+}
+
+.admin-card .plan-icon{
+  background:#fff4d9;
+}
+
+.admin-card a{
+  background:#8a6916;
+}
+
+.admin-card a:hover{
+  background:#70540f;
+}
+
+.stats-preview{
+  margin-top:26px;
+  background:white;
+  border-radius:18px;
+  border:1px solid #e3ece9;
+  padding:23px;
+}
+
+.stats-preview h3{
+  margin-top:0;
+  color:#0f513f;
+}
+
+.stats-subtitle{
+  color:#6a7f79;
+  font-size:14px;
+  margin:-5px 0 18px;
+  line-height:1.7;
+}
+
+.stats-row{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+}
+
+.mini-stat{
+  background:#f7faf9;
+  border:1px solid #e6efec;
+  padding:18px;
+  border-radius:14px;
+  text-align:center;
+}
+
+.mini-stat strong{
+  display:block;
+  font-size:25px;
+  color:#0f654f;
+  margin-bottom:5px;
+}
+
+.mini-stat span{
+  color:#71847e;
+  font-size:13px;
+}
+
+.loading-text{
+  margin-top:14px;
+  font-size:13px;
+  color:#71847e;
+}
+
+.error-text{
+  color:#9b1c1c;
+}
+
+.access-loader{
+  position:fixed;
+  inset:0;
+  background:#f4f7f6;
+  z-index:99999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#075c40;
+  font-weight:700;
+}
+
+@media(max-width:850px){
+
+  .plans-grid{
+    grid-template-columns:1fr;
+  }
+
+  .stats-row{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+}
+
+@media(max-width:480px){
+
+  .stats-row{
+    grid-template-columns:1fr;
+  }
+
+  .plans-header h1{
+    font-size:24px;
+  }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div
+  id="accessLoader"
+  class="access-loader"
+>
+  جاري التحقق من صلاحية الحساب...
+</div>
+
+
+<div class="plans-page">
+
+
+<header class="plans-header">
+
+  <div class="plans-header-inner">
+
+    <h1>
+      📊 الخطة التدفقية للمدرسة
+    </h1>
+
+    <p>
+      إدارة الخطط السنوية للأقسام ومتابعة تنفيذ الإجراءات بصورة شهرية
+      وإظهار مؤشرات التنفيذ.
+    </p>
+
+  </div>
+
+</header>
+
+
+<main class="plans-container">
+
+
+<div class="top-actions">
+
+  <a
+    href="../../index.html"
+    class="back-link"
+  >
+    ← العودة إلى لوحة التحكم
+  </a>
+
+  <div class="school-year">
+    العام الدراسي 2026 / 2027
+  </div>
+
+</div>
+
+
+<div
+  id="userBox"
+  class="user-box"
+>
+  الحساب:
+  <strong id="currentUserName"></strong>
+</div>
+
+
+<div
+  id="accessBox"
+  class="access-box"
+></div>
+
+
+<section class="intro-card">
+
+  <h2>
+    منظومة متابعة الخطة التدفقية
+  </h2>
+
+  <p>
+    ترفع منسقة القسم الخطة السنوية كاملة مرة واحدة في بداية العام،
+    ثم تتم متابعة الإجراءات شهريًا من داخل المنصة من خلال حالات:
+    نفذ، جاري التنفيذ، ولم ينفذ، مع تسجيل سبب عدم التنفيذ
+    وملاحظات المتابعة.
+  </p>
+
+</section>
+
+
+<section class="plans-grid">
+
+
+<article
+  id="uploadCard"
+  class="plan-card"
+>
+
+  <div class="plan-icon">
+    📤
+  </div>
+
+  <h3>
+    رفع خطة القسم
+  </h3>
+
+  <p>
+    رفع ملف Excel الخاص بالخطة السنوية كاملة،
+    وفحص الإجراءات وشهور التنفيذ قبل اعتمادها وحفظها.
+  </p>
+
+  <a href="upload.html">
+    رفع خطة سنوية
+  </a>
+
+</article>
+
+
+<article
+  id="followupCard"
+  class="plan-card"
+>
+
+  <div class="plan-icon">
+    📅
+  </div>
+
+  <h3>
+    المتابعة الشهرية
+  </h3>
+
+  <p>
+    عرض الإجراءات المستحقة في كل شهر وتسجيل
+    نفذ أو جاري التنفيذ أو لم ينفذ مع الملاحظات.
+  </p>
+
+  <a href="followup.html">
+    متابعة إجراءات الشهر
+  </a>
+
+</article>
+
+
+<article
+  id="adminDashboardCard"
+  class="plan-card admin-card"
+>
+
+  <div class="plan-icon">
+    📈
+  </div>
+
+  <h3>
+    مؤشرات الإدارة
+  </h3>
+
+  <p>
+    عرض إجمالي إجراءات المدرسة ونسب التنفيذ حسب
+    الأقسام والمجالات والشهور.
+  </p>
+
+  <a href="dashboard.html">
+    فتح لوحة المؤشرات
+  </a>
+
+</article>
+
+
+</section>
+
+
+<section class="stats-preview">
+
+  <h3 id="statsTitle">
+    مؤشرات الخطة الحالية
+  </h3>
+
+  <div
+    id="statsSubtitle"
+    class="stats-subtitle"
+  >
+    جاري تحديد نطاق الخطة حسب صلاحية الحساب...
+  </div>
+
+
+  <div class="stats-row">
+
+
+    <div class="mini-stat">
+
+      <strong id="totalProcedures">
+        —
+      </strong>
+
+      <span>
+        إجمالي الإجراءات
+      </span>
+
+    </div>
+
+
+    <div class="mini-stat">
+
+      <strong id="implementedProcedures">
+        —
+      </strong>
+
+      <span>
+        إجراءات تم تنفيذها
+      </span>
+
+    </div>
+
+
+    <div class="mini-stat">
+
+      <strong id="inProgressProcedures">
+        —
+      </strong>
+
+      <span>
+        جاري التنفيذ
+      </span>
+
+    </div>
+
+
+    <div class="mini-stat">
+
+      <strong id="executionRate">
+        —
+      </strong>
+
+      <span>
+        نسبة إنجاز الإجراءات
+      </span>
+
+    </div>
+
+
+  </div>
+
+
+  <div
+    id="statsStatus"
+    class="loading-text"
+  >
+    جاري تحميل المؤشرات...
+  </div>
+
+</section>
+
+
+</main>
+
+</div>
+
+
+<script src="../../js/config.js?v=20260816-plans-home3"></script>
+<script src="../../js/graph.js?v=20260816-plans-home3"></script>
+<script src="../../js/common.js?v=20260816-plans-home3"></script>
+
+
+<script>
+
+"use strict";
+
+
+const plansHomeSupabase =
+  window.supabase.createClient(
+    window.WR_CONFIG.supabaseUrl,
+    window.WR_CONFIG.supabaseKey
+  );
+
+
+const CURRENT_SCHOOL_YEAR =
+  "2026-2027";
+
+
+const ENRICHMENT_PLAN_NAME =
+  "المواد الإثرائية";
+
+
+const ENRICHMENT_COORDINATOR_EMAIL =
+  "marwa.i.khalifa@moe.bh";
+
+
+const totalProcedures =
+  document.getElementById(
+    "totalProcedures"
+  );
+
+
+const implementedProcedures =
+  document.getElementById(
+    "implementedProcedures"
+  );
+
+
+const inProgressProcedures =
+  document.getElementById(
+    "inProgressProcedures"
+  );
+
+
+const executionRate =
+  document.getElementById(
+    "executionRate"
+  );
+
+
+const statsStatus =
+  document.getElementById(
+    "statsStatus"
+  );
+
+
+const statsTitle =
+  document.getElementById(
+    "statsTitle"
+  );
+
+
+const statsSubtitle =
+  document.getElementById(
+    "statsSubtitle"
+  );
+
+
+const adminDashboardCard =
+  document.getElementById(
+    "adminDashboardCard"
+  );
+
+
+const accessBox =
+  document.getElementById(
+    "accessBox"
+  );
+
+
+const accessLoader =
+  document.getElementById(
+    "accessLoader"
+  );
+
+
+const userBox =
+  document.getElementById(
+    "userBox"
+  );
+
+
+const currentUserName =
+  document.getElementById(
+    "currentUserName"
+  );
+
+
+let currentAccount =
+  null;
+
+
+let currentProfile =
+  null;
+
+
+let allowedDepartmentIds =
+  [];
+
+
+/* ==============================================
+   Helpers
+   ============================================== */
+
+function normalizeText(value){
+
+  return String(
+    value ||
+    ""
+  )
+    .trim()
+    .replace(
+      /\s+/g,
+      " "
+    );
+
+}
+
+
+function normalizeRole(value){
+
+  return String(
+    value ||
+    ""
+  )
+    .trim()
+    .toLowerCase();
+
+}
+
+
+function setZeroStats(){
+
+  totalProcedures.textContent =
+    "0";
+
+
+  implementedProcedures.textContent =
+    "0";
+
+
+  inProgressProcedures.textContent =
+    "0";
+
+
+  executionRate.textContent =
+    "0%";
+
+}
+
+
+function setErrorStats(){
+
+  totalProcedures.textContent =
+    "—";
+
+
+  implementedProcedures.textContent =
+    "—";
+
+
+  inProgressProcedures.textContent =
+    "—";
+
+
+  executionRate.textContent =
+    "—";
+
+}
+
+
+/* ==============================================
+   تحديد مروة
+   ============================================== */
+
+function isEnrichmentCoordinator(){
+
+  const email =
+    normalizeText(
+      currentAccount?.email
+    )
+      .toLowerCase();
+
+
+  if(
+    email ===
+    ENRICHMENT_COORDINATOR_EMAIL
+  ){
+
+    return true;
+
+  }
+
+
+  const names =
+    new Set(
+      (
+        currentProfile
+          ?.department_names ||
+        []
+      )
+        .map(
+          normalizeText
+        )
+    );
+
+
+  return (
+    names.has("الحاسوب") &&
+    names.has("الفن") &&
+    names.has("التصميم والتقانة")
+  );
+
+}
+
+
+/* ==============================================
+   جلب قسم المواد الإثرائية
+   ============================================== */
+
+async function getEnrichmentDepartment(){
+
+  const {
+    data,
+    error
+  } =
+    await plansHomeSupabase
+
+      .from("departments")
+
+      .select(
+        "id, name"
+      )
+
+      .eq(
+        "name",
+        ENRICHMENT_PLAN_NAME
+      )
+
+      .maybeSingle();
+
+
+  if(error){
+
+    throw error;
+
+  }
+
+
+  return data ||
+    null;
+
+}
+
+
+/* ==============================================
+   تحديد صلاحية الخطط
+   ============================================== */
+
+async function configurePlanAccess(){
+
+  const role =
+    normalizeRole(
+      currentProfile?.role
+    );
+
+
+  /*
+    المعلمة أو أي دور غير الإدارة والمنسقة
+    لا يدخل منظومة إدارة الخطط.
+  */
+
+  if(
+    ![
+      "admin",
+      "coordinator"
+    ].includes(role)
+  ){
+
+    alert(
+      "إدارة الخطة التدفقية متاحة للقيادة العليا ومنسقات الأقسام فقط."
+    );
+
+
+    location.replace(
+      "../../index.html"
+    );
+
+
+    return false;
+
+  }
+
+
+  /*
+    عرض اسم المستخدم.
+  */
+
+  currentUserName.textContent =
+    currentProfile?.full_name ||
+    currentAccount?.email ||
+    "";
+
+
+  userBox.style.display =
+    "block";
+
+
+  /*
+    القيادة العليا.
+  */
+
+  if(
+    role ===
+    "admin"
+  ){
+
+    allowedDepartmentIds =
+      [];
+
+
+    adminDashboardCard.style.display =
+      "flex";
+
+
+    accessBox.style.display =
+      "block";
+
+
+    accessBox.textContent =
+      "صلاحية القيادة العليا — يمكنكِ إدارة ومتابعة جميع خطط المدرسة والاطلاع على مؤشرات المدرسة كاملة.";
+
+
+    statsTitle.textContent =
+      "مؤشرات الخطة المدرسية";
+
+
+    statsSubtitle.textContent =
+      "المؤشرات تشمل جميع خطط الأقسام للعام الدراسي 2026 / 2027.";
+
+
+    return true;
+
+  }
+
+
+  /*
+    المنسقة لا ترى لوحة الإدارة.
+  */
+
+  adminDashboardCard.style.display =
+    "none";
+
+
+  /*
+    مروة:
+    المواد الإثرائية = خطة واحدة.
+  */
+
+  if(
+    isEnrichmentCoordinator()
+  ){
+
+    const enrichment =
+      await getEnrichmentDepartment();
+
+
+    if(!enrichment){
+
+      statsStatus.textContent =
+        "لم يتم العثور على قسم المواد الإثرائية.";
+
+
+      statsStatus.classList.add(
+        "error-text"
+      );
+
+
+      return false;
+
+    }
+
+
+    allowedDepartmentIds = [
+      enrichment.id
+    ];
+
+
+    accessBox.style.display =
+      "block";
+
+
+    accessBox.textContent =
+      "صلاحية منسقة المواد الإثرائية — الحاسوب والفن والتصميم والتقانة تتم متابعتها كخطة قسم واحدة باسم «المواد الإثرائية».";
+
+
+    statsTitle.textContent =
+      "مؤشرات خطة المواد الإثرائية";
+
+
+    statsSubtitle.textContent =
+      "المؤشرات التالية تخص خطة المواد الإثرائية الموحدة فقط.";
+
+
+    return true;
+
+  }
+
+
+  /*
+    باقي المنسقات:
+    نستخدم جميع الأقسام المرتبطة بالحساب.
+  */
+
+  let scope =
+    null;
+
+
+  if(
+    window.WRAccess &&
+    typeof WRAccess.getScope ===
+    "function"
+  ){
+
+    try{
+
+      scope =
+        await WRAccess.getScope();
+
+    }catch(error){
+
+      console.warn(
+        "تعذر قراءة نطاق المستخدم:",
+        error
+      );
+
+    }
+
+  }
+
+
+  let ids =
+    [];
+
+
+  if(
+    Array.isArray(
+      scope?.department_ids
+    )
+  ){
+
+    ids =
+      scope.department_ids;
+
+  }
+
+
+  if(
+    !ids.length &&
+    Array.isArray(
+      currentProfile?.department_ids
+    )
+  ){
+
+    ids =
+      currentProfile.department_ids;
+
+  }
+
+
+  if(
+    !ids.length &&
+    currentProfile?.department_id
+  ){
+
+    ids = [
+      currentProfile.department_id
+    ];
+
+  }
+
+
+  allowedDepartmentIds =
+    [
+      ...new Set(
+        ids
+          .filter(Boolean)
+          .map(String)
+      )
+    ];
+
+
+  if(
+    !allowedDepartmentIds.length
+  ){
+
+    statsStatus.textContent =
+      "لم يتم ربط هذا الحساب بأي قسم.";
+
+
+    statsStatus.classList.add(
+      "error-text"
+    );
+
+
+    return false;
+
+  }
+
+
+  const departmentNames =
+    Array.isArray(
+      currentProfile?.department_names
+    )
+      ? currentProfile
+          .department_names
+          .filter(Boolean)
+
+      : currentProfile
+          ?.department_name
+
+        ? [
+            currentProfile
+              .department_name
+          ]
+
+        : [];
+
+
+  accessBox.style.display =
+    "block";
+
+
+  accessBox.textContent =
+    departmentNames.length
+
+      ? `صلاحية منسقة — الخطط الظاهرة تخص: ${departmentNames.join("، ")}.`
+
+      : "صلاحية منسقة — المؤشرات والخطط تخص القسم أو الأقسام المرتبطة بحسابك فقط.";
+
+
+  statsTitle.textContent =
+    "مؤشرات خطة القسم";
+
+
+  statsSubtitle.textContent =
+    departmentNames.length
+
+      ? `المؤشرات التالية تخص: ${departmentNames.join("، ")}.`
+
+      : "المؤشرات التالية تخص خطتك فقط.";
+
+
+  return true;
+
+}
+
+
+/* ==============================================
+   تشغيل الصفحة
+   ============================================== */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  initializePlansHome
+);
+
+
+async function initializePlansHome(){
+
+  try{
+
+
+    if(
+      window.WRGraph &&
+      typeof WRGraph.init ===
+      "function"
+    ){
+
+      await WRGraph.init();
+
+    }
+
+
+    /*
+      الحساب الحالي.
+    */
+
+    if(
+      window.WRGraph &&
+      typeof WRGraph.getAccount ===
+      "function"
+    ){
+
+      currentAccount =
+        await WRGraph.getAccount();
+
+    }else{
+
+
+      const {
+        data
+      } =
+        await plansHomeSupabase
+          .auth
+          .getUser();
+
+
+      currentAccount =
+        data?.user ||
+        null;
+
+    }
+
+
+    if(
+      !currentAccount
+    ){
+
+      location.replace(
+        "../../index.html"
+      );
+
+
+      return;
+
+    }
+
+
+    /*
+      قراءة Profile.
+    */
+
+    if(
+      window.WRAccess &&
+      typeof WRAccess.getProfile ===
+      "function"
+    ){
+
+      currentProfile =
+        await WRAccess.getProfile(
+          true
+        );
+
+    }else if(
+      window.WRGraph &&
+      typeof WRGraph.getUserProfile ===
+      "function"
+    ){
+
+      currentProfile =
+        await WRGraph.getUserProfile();
+
+    }
+
+
+    if(
+      !currentProfile
+    ){
+
+      throw new Error(
+        "تعذر قراءة صلاحيات الحساب."
+      );
+
+    }
+
+
+    const accessOk =
+      await configurePlanAccess();
+
+
+    if(!accessOk){
+
+      return;
+
+    }
+
+
+    await loadPlanHomeStats();
+
+
+  }catch(error){
+
+
+    console.error(
+      "Plans home initialization error:",
+      error
+    );
+
+
+    setErrorStats();
+
+
+    statsStatus.textContent =
+      "تعذر تحميل بيانات الخطة أو صلاحيات الحساب.";
+
+
+    statsStatus.classList.add(
+      "error-text"
+    );
+
+
+  }finally{
+
+
+    accessLoader.style.display =
+      "none";
+
+  }
+
+}
+
+
+/* ==============================================
+   تحميل الخطط حسب الصلاحية
+   ============================================== */
+
+async function loadPlanHomeStats(){
+
+  try{
+
+
+    statsStatus.classList.remove(
+      "error-text"
+    );
+
+
+    statsStatus.textContent =
+      "جاري تحميل المؤشرات...";
+
+
+    const role =
+      normalizeRole(
+        currentProfile?.role
+      );
+
+
+    /*
+      قراءة خطط السنة الحالية.
+    */
+
+    let query =
+      plansHomeSupabase
+
+        .from("plans")
+
+        .select(
+          `
+          id,
+          department_id,
+          school_year
+          `
+        )
+
+        .eq(
+          "school_year",
+          CURRENT_SCHOOL_YEAR
+        );
+
+
+    /*
+      المنسقة:
+      نفلتر على القسم/الأقسام المسموحة.
+    */
+
+    if(
+      role ===
+      "coordinator"
+    ){
+
+      if(
+        !allowedDepartmentIds.length
+      ){
+
+        setZeroStats();
+
+
+        statsStatus.textContent =
+          "لا توجد خطة مرتبطة بهذا الحساب.";
+
+
+        return;
+
+      }
+
+
+      query =
+        query.in(
+          "department_id",
+          allowedDepartmentIds
+        );
+
+    }
+
+
+    const {
+      data: plans,
+      error: plansError
+    } =
+      await query;
+
+
+    if(plansError){
+
+      throw plansError;
+
+    }
+
+
+    if(
+      !plans ||
+      !plans.length
+    ){
+
+      setZeroStats();
+
+
+      statsStatus.textContent =
+        role ===
+        "admin"
+
+          ? "لا توجد خطط مسجلة للعام الدراسي الحالي."
+
+          : "لم يتم رفع خطة القسم للعام الدراسي الحالي بعد.";
+
+
+      return;
+
+    }
+
+
+    const planIds =
+      plans.map(
+        item =>
+          item.id
+      );
+
+
+    /*
+      قراءة الإجراءات.
+    */
+
+    const {
+      data: procedures,
+      error: proceduresError
+    } =
+      await plansHomeSupabase
+
+        .from(
+          "plan_procedures"
+        )
+
+        .select(
+          `
+          id,
+          plan_id
+          `
+        )
+
+        .in(
+          "plan_id",
+          planIds
+        );
+
+
+    if(proceduresError){
+
+      throw proceduresError;
+
+    }
+
+
+    const procedureList =
+      procedures ||
+      [];
+
+
+    const procedureIds =
+      procedureList.map(
+        item =>
+          item.id
+      );
+
+
+    if(
+      !procedureIds.length
+    ){
+
+      setZeroStats();
+
+
+      statsStatus.textContent =
+        "لا توجد إجراءات مسجلة في الخطة.";
+
+
+      return;
+
+    }
+
+
+    /*
+      قراءة المتابعات الشهرية.
+    */
+
+    const {
+      data: followups,
+      error: followupsError
+    } =
+      await plansHomeSupabase
+
+        .from(
+          "plan_monthly_followups"
+        )
+
+        .select(
+          `
+          procedure_id,
+          execution_status
+          `
+        )
+
+        .in(
+          "procedure_id",
+          procedureIds
+        );
+
+
+    if(followupsError){
+
+      throw followupsError;
+
+    }
+
+
+    const followupList =
+      followups ||
+      [];
+
+
+    /*
+      الإجراء يعتبر منفذًا
+      إذا ظهر completed مرة واحدة على الأقل.
+    */
+
+    const completedProcedureIds =
+      new Set(
+
+        followupList
+
+          .filter(
+            item =>
+              item.execution_status ===
+              "completed"
+          )
+
+          .map(
+            item =>
+              String(
+                item.procedure_id
+              )
+          )
+
+      );
+
+
+    /*
+      جاري التنفيذ:
+      بشرط ألا يكون الإجراء قد تم تنفيذه بالفعل.
+    */
+
+    const progressProcedureIds =
+      new Set(
+
+        followupList
+
+          .filter(
+            item =>
+              item.execution_status ===
+              "in_progress"
+          )
+
+          .map(
+            item =>
+              String(
+                item.procedure_id
+              )
+          )
+
+          .filter(
+            id =>
+              !completedProcedureIds
+                .has(id)
+          )
+
+      );
+
+
+    const total =
+      procedureList.length;
+
+
+    const completed =
+      completedProcedureIds.size;
+
+
+    const progress =
+      progressProcedureIds.size;
+
+
+    const rate =
+      total > 0
+
+        ? Math.round(
+            completed /
+            total *
+            100
+          )
+
+        : 0;
+
+
+    totalProcedures.textContent =
+      total;
+
+
+    implementedProcedures.textContent =
+      completed;
+
+
+    inProgressProcedures.textContent =
+      progress;
+
+
+    executionRate.textContent =
+      `${rate}%`;
+
+
+    if(
+      role ===
+      "admin"
+    ){
+
+      statsStatus.textContent =
+        `تم تحديث مؤشرات المدرسة من ${plans.length} خطة مسجلة.`;
+
+    }else if(
+      isEnrichmentCoordinator()
+    ){
+
+      statsStatus.textContent =
+        "تم تحديث مؤشرات خطة المواد الإثرائية الموحدة.";
+
+    }else{
+
+
+      statsStatus.textContent =
+        plans.length > 1
+
+          ? `تم تحديث المؤشرات من ${plans.length} خطط مرتبطة بحسابك.`
+
+          : "تم تحديث مؤشرات خطة القسم.";
+
+    }
+
+
+  }catch(error){
+
+
+    console.error(
+      "Plans home stats error:",
+      error
+    );
+
+
+    setErrorStats();
+
+
+    statsStatus.textContent =
+      `تعذر تحميل المؤشرات: ${
+        error.message ||
+        "حدث خطأ غير متوقع."
+      }`;
+
+
+    statsStatus.classList.add(
+      "error-text"
+    );
+
+  }
+
+}
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,2709 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#075c40">
+
+<title>
+  إرسال الملاحظات | WestRiffa Smart Office
+</title>
+
+<link
+  rel="stylesheet"
+  href="../../css/app.css?v=20260816-notes4"
+>
+
+<style>
+
+.notes-layout{
+  display:grid;
+  grid-template-columns:minmax(340px,430px) minmax(0,1fr);
+  gap:20px;
+  align-items:start;
+}
+
+.notes-panel{
+  background:#fff;
+  border:1px solid #e1e9e5;
+  border-radius:18px;
+  padding:20px;
+  box-shadow:0 8px 24px rgba(0,0,0,.05);
+}
+
+.notes-panel h3{
+  margin:0 0 8px;
+  color:#075c40;
+}
+
+.notes-panel p{
+  margin:0 0 16px;
+  color:#6b7a72;
+  line-height:1.7;
+  font-size:13px;
+}
+
+.sender-box{
+  margin-bottom:18px;
+  padding:14px 15px;
+  background:#f3f8f5;
+  border:1px solid #dce8e1;
+  border-right:4px solid #075c40;
+  border-radius:12px;
+}
+
+.sender-box span{
+  display:block;
+  margin-bottom:4px;
+  color:#6b7a72;
+  font-size:11px;
+}
+
+.sender-box strong{
+  display:block;
+  color:#075c40;
+  font-size:15px;
+}
+
+.sender-box small{
+  display:block;
+  margin-top:3px;
+  color:#8a682a;
+  font-weight:700;
+}
+
+.field{
+  margin-bottom:14px;
+}
+
+.field label{
+  display:block;
+  margin-bottom:7px;
+  font-weight:700;
+  color:#334d42;
+}
+
+.field input,
+.field textarea,
+.field select{
+  width:100%;
+  padding:11px 12px;
+  border:1px solid #cfdad4;
+  border-radius:10px;
+  font-family:inherit;
+  background:#fff;
+  box-sizing:border-box;
+}
+
+.field textarea{
+  min-height:120px;
+  resize:vertical;
+}
+
+.teacher-list{
+  max-height:270px;
+  overflow:auto;
+  border:1px solid #dfe7e3;
+  border-radius:12px;
+  padding:8px;
+  background:#fafcfb;
+}
+
+.teacher-option{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:9px 8px;
+  border-bottom:1px solid #edf1ef;
+}
+
+.teacher-option:last-child{
+  border-bottom:0;
+}
+
+.teacher-option input{
+  width:auto;
+}
+
+.teacher-name{
+  font-weight:700;
+  color:#344b41;
+}
+
+.teacher-sub{
+  display:block;
+  margin-top:2px;
+  color:#7a8982;
+  font-size:11px;
+}
+
+.form-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:16px;
+}
+
+.send-state{
+  min-height:22px;
+  margin-top:10px;
+  font-size:13px;
+  font-weight:700;
+}
+
+.send-state.ok{
+  color:#087451;
+}
+
+.send-state.error{
+  color:#b42318;
+}
+
+.notes-stats{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+  margin-bottom:15px;
+}
+
+.note-stat{
+  background:#f8faf9;
+  border:1px solid #e1e9e5;
+  border-radius:13px;
+  padding:13px;
+}
+
+.note-stat span{
+  display:block;
+  color:#6b7a72;
+  font-size:11px;
+  margin-bottom:6px;
+}
+
+.note-stat strong{
+  color:#075c40;
+  font-size:24px;
+}
+
+.leadership-overview{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  margin-bottom:16px;
+}
+
+.leader-summary{
+  background:#fff;
+  border:1px solid #e1e9e5;
+  border-radius:15px;
+  padding:14px;
+  box-shadow:0 6px 18px rgba(0,0,0,.035);
+}
+
+.leader-summary.overall{
+  grid-column:1 / -1;
+  border-top:4px solid #075c40;
+  background:#fbfdfc;
+}
+
+.leader-summary h4{
+  margin:0 0 10px;
+  color:#075c40;
+  font-size:15px;
+}
+
+.leader-summary .leader-role{
+  display:block;
+  margin-top:3px;
+  color:#8a682a;
+  font-size:11px;
+  font-weight:700;
+}
+
+.leader-mini-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
+}
+
+.leader-mini{
+  background:#f8faf9;
+  border:1px solid #edf1ef;
+  border-radius:11px;
+  padding:9px;
+  text-align:center;
+}
+
+.leader-mini span{
+  display:block;
+  color:#6b7a72;
+  font-size:10px;
+  margin-bottom:4px;
+}
+
+.leader-mini strong{
+  color:#075c40;
+  font-size:20px;
+}
+
+@media(max-width:800px){
+  .leadership-overview{grid-template-columns:1fr}
+  .leader-summary.overall{grid-column:auto}
+  .leader-mini-grid{grid-template-columns:repeat(2,1fr)}
+}
+
+.notes-filter{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr 1fr auto;
+  gap:8px;
+  margin-bottom:14px;
+}
+
+.notes-filter input,
+.notes-filter select{
+  width:100%;
+  padding:9px 10px;
+  border:1px solid #d4ded9;
+  border-radius:9px;
+  font-family:inherit;
+  background:#fff;
+  box-sizing:border-box;
+}
+
+.note-card{
+  border:1px solid #e1e9e5;
+  border-radius:14px;
+  padding:15px;
+  margin-bottom:10px;
+  background:#fff;
+}
+
+.note-card-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.note-title{
+  color:#075c40;
+  font-weight:700;
+  font-size:16px;
+}
+
+.note-meta{
+  margin-top:5px;
+  color:#708078;
+  font-size:12px;
+  line-height:1.7;
+}
+
+.note-sender{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  margin-top:7px;
+  padding:5px 9px;
+  background:#edf6f2;
+  border-radius:999px;
+  color:#075c40;
+  font-size:11px;
+  font-weight:700;
+}
+
+.priority{
+  display:inline-block;
+  border-radius:999px;
+  padding:5px 9px;
+  font-size:11px;
+  font-weight:700;
+}
+
+.priority.normal{
+  background:#eaf3ef;
+  color:#075c40;
+}
+
+.priority.important{
+  background:#fff7e8;
+  color:#b54708;
+}
+
+.priority.urgent{
+  background:#fff0ef;
+  color:#b42318;
+}
+
+.recipient-row{
+  margin-top:10px;
+  padding:10px;
+  border-radius:10px;
+  background:#f8faf9;
+  border:1px solid #edf1ef;
+}
+
+.recipient-head{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+.status-chips{
+  display:flex;
+  gap:5px;
+  flex-wrap:wrap;
+}
+
+.chip{
+  border-radius:999px;
+  padding:4px 7px;
+  font-size:10px;
+  font-weight:700;
+}
+
+.chip.unread{
+  background:#f3f5f4;
+  color:#596c63;
+}
+
+.chip.read{
+  background:#eef4ff;
+  color:#175cd3;
+}
+
+.chip.done{
+  background:#e8f6ed;
+  color:#067647;
+}
+
+.chip.late{
+  background:#fff0ef;
+  color:#b42318;
+}
+
+.reply{
+  margin-top:7px;
+  font-size:12px;
+  color:#52685f;
+  line-height:1.7;
+}
+
+.empty{
+  padding:30px;
+  text-align:center;
+  color:#6b7a72;
+  background:#fff;
+  border:1px dashed #d6e0db;
+  border-radius:14px;
+}
+
+@media(max-width:1050px){
+
+  .notes-layout{
+    grid-template-columns:1fr;
+  }
+
+  .notes-stats{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+}
+
+@media(max-width:650px){
+
+  .notes-filter{
+    grid-template-columns:1fr;
+  }
+
+  .notes-stats{
+    grid-template-columns:1fr 1fr;
+  }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+  <div class="brand">
+
+    <img
+      src="../../assets/school-header.jpg"
+      alt="شعار المدرسة"
+    >
+
+    <div>
+
+      <h1>
+        إرسال الملاحظات
+      </h1>
+
+      <p>
+        ملاحظات موجهة ومتابعة القراءة والتنفيذ
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <div class="header-actions">
+
+    <a
+      class="btn btn-soft"
+      href="../../index.html"
+    >
+      🏠 الرئيسية
+    </a>
+
+    <a
+      class="btn btn-soft"
+      href="../../pages/archive/index.html"
+    >
+      📂 الأرشيف
+    </a>
+
+  </div>
+
+</header>
+
+
+<div class="shell">
+
+
+<aside class="sidebar">
+
+  <h3 class="sidebar-title">
+    القائمة الرئيسية
+  </h3>
+
+  <a
+    class="nav-link"
+    href="../../index.html"
+  >
+    🏠 لوحة التحكم
+  </a>
+
+  <a
+    class="nav-link active"
+    href="../../pages/notes/index.html"
+  >
+    📨 إرسال الملاحظات
+  </a>
+
+  <a
+    class="nav-link"
+    href="../../pages/meetings/index.html"
+  >
+    📅 الاجتماعات
+  </a>
+
+  <a
+    class="nav-link"
+    href="../../pages/activities/index.html"
+  >
+    🎯 الفعاليات
+  </a>
+
+  <a
+    class="nav-link"
+    href="../../pages/certificates/index.html"
+  >
+    🏅 الشهادات
+  </a>
+
+  <a
+    class="nav-link"
+    href="../../pages/archive/index.html"
+  >
+    📂 الأرشيف الذكي
+  </a>
+
+  <a
+    class="nav-link"
+    href="../../pages/settings/index.html"
+  >
+    ⚙️ الإعدادات
+  </a>
+
+</aside>
+
+
+<main class="content">
+
+
+<div class="page-head">
+
+  <div>
+
+    <h2>
+      📨 إرسال ومتابعة الملاحظات
+    </h2>
+
+    <p>
+      اختاري معلمة واحدة أو أكثر، وأرسلي الملاحظة مع متابعة القراءة والتنفيذ لكل معلمة.
+    </p>
+
+  </div>
+
+</div>
+
+
+<div class="notes-layout">
+
+
+<!-- =====================================================
+     إرسال ملاحظة
+     ===================================================== -->
+
+<section class="notes-panel">
+
+
+  <h3>
+    إرسال ملاحظة جديدة
+  </h3>
+
+  <p>
+    الملاحظة لن تظهر إلا للمعلمات المحددات، وسيُسجل اسم المرسل تلقائيًا من الحساب الحالي.
+  </p>
+
+
+  <div class="sender-box">
+
+    <span>
+      المرسل
+    </span>
+
+    <strong id="currentSenderName">
+      جاري تحديد الحساب...
+    </strong>
+
+    <small id="currentSenderTitle">
+      القيادة العليا
+    </small>
+
+  </div>
+
+
+  <div class="field">
+
+    <label for="noteTitle">
+      عنوان الملاحظة *
+    </label>
+
+    <input
+      id="noteTitle"
+      type="text"
+      placeholder="مثال: استكمال توثيق الفعالية"
+    >
+
+  </div>
+
+
+  <div class="field">
+
+    <label for="noteMessage">
+      نص الملاحظة *
+    </label>
+
+    <textarea
+      id="noteMessage"
+      placeholder="اكتبي الملاحظة المطلوب تنفيذها..."
+    ></textarea>
+
+  </div>
+
+
+  <div class="field">
+
+    <label for="notePriority">
+      الأولوية
+    </label>
+
+    <select id="notePriority">
+
+      <option value="normal">
+        عادية
+      </option>
+
+      <option value="important">
+        مهمة
+      </option>
+
+      <option value="urgent">
+        عاجلة
+      </option>
+
+    </select>
+
+  </div>
+
+
+  <div class="field">
+
+    <label for="noteDueDate">
+      مطلوب التنفيذ قبل
+    </label>
+
+    <input
+      id="noteDueDate"
+      type="date"
+    >
+
+  </div>
+
+
+  <div class="field">
+
+    <label>
+      المعلمات المستلمات *
+    </label>
+
+
+    <div
+      style="
+        display:flex;
+        gap:8px;
+        flex-wrap:wrap;
+        margin-bottom:8px
+      "
+    >
+
+      <button
+        id="selectAllTeachers"
+        class="btn btn-soft"
+        type="button"
+      >
+        تحديد الكل
+      </button>
+
+      <button
+        id="clearTeachers"
+        class="btn btn-soft"
+        type="button"
+      >
+        إلغاء التحديد
+      </button>
+
+    </div>
+
+
+    <div
+      id="teacherList"
+      class="teacher-list"
+    >
+      جاري تحميل المعلمات...
+    </div>
+
+  </div>
+
+
+  <div class="form-actions">
+
+    <button
+      id="sendNoteBtn"
+      class="btn btn-primary"
+      type="button"
+    >
+      📨 إرسال الملاحظة
+    </button>
+
+    <button
+      id="clearFormBtn"
+      class="btn btn-soft"
+      type="button"
+    >
+      تفريغ النموذج
+    </button>
+
+  </div>
+
+
+  <div
+    id="sendState"
+    class="send-state"
+  ></div>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     متابعة الملاحظات
+     ===================================================== -->
+
+<section class="notes-panel">
+
+
+  <h3>
+    متابعة الملاحظات
+  </h3>
+
+  <p>
+    متابعة ملاحظات القيادة العليا مجتمعة، مع مؤشرات مستقلة لأحلام وخلود وزينب.
+  </p>
+
+
+  <div class="leadership-overview">
+
+    <div class="leader-summary overall">
+      <h4>📊 إجمالي القيادة العليا <span class="leader-role">أحلام + خلود + زينب</span></h4>
+      <div class="leader-mini-grid">
+        <div class="leader-mini"><span>إجمالي التكليفات</span><strong id="allTotal">0</strong></div>
+        <div class="leader-mini"><span>غير مقروءة</span><strong id="allUnread">0</strong></div>
+        <div class="leader-mini"><span>مقروءة</span><strong id="allRead">0</strong></div>
+        <div class="leader-mini"><span>تم التنفيذ</span><strong id="allDone">0</strong></div>
+      </div>
+    </div>
+
+    <div class="leader-summary">
+      <h4>أحلام السويدي <span class="leader-role">مديرة المدرسة</span></h4>
+      <div class="leader-mini-grid">
+        <div class="leader-mini"><span>إجمالي التكليفات</span><strong id="ahlamTotal">0</strong></div>
+        <div class="leader-mini"><span>غير مقروءة</span><strong id="ahlamUnread">0</strong></div>
+        <div class="leader-mini"><span>مقروءة</span><strong id="ahlamRead">0</strong></div>
+        <div class="leader-mini"><span>تم التنفيذ</span><strong id="ahlamDone">0</strong></div>
+      </div>
+    </div>
+
+    <div class="leader-summary">
+      <h4>خلود الكعبي <span class="leader-role">المديرة المساعدة</span></h4>
+      <div class="leader-mini-grid">
+        <div class="leader-mini"><span>إجمالي التكليفات</span><strong id="kholoudTotal">0</strong></div>
+        <div class="leader-mini"><span>غير مقروءة</span><strong id="kholoudUnread">0</strong></div>
+        <div class="leader-mini"><span>مقروءة</span><strong id="kholoudRead">0</strong></div>
+        <div class="leader-mini"><span>تم التنفيذ</span><strong id="kholoudDone">0</strong></div>
+      </div>
+    </div>
+
+    <div class="leader-summary">
+      <h4>زينب عبدالسلام <span class="leader-role">المديرة المساعدة</span></h4>
+      <div class="leader-mini-grid">
+        <div class="leader-mini"><span>إجمالي التكليفات</span><strong id="zainabTotal">0</strong></div>
+        <div class="leader-mini"><span>غير مقروءة</span><strong id="zainabUnread">0</strong></div>
+        <div class="leader-mini"><span>مقروءة</span><strong id="zainabRead">0</strong></div>
+        <div class="leader-mini"><span>تم التنفيذ</span><strong id="zainabDone">0</strong></div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="notes-filter">
+
+    <input
+      id="filterSearch"
+      type="search"
+      placeholder="بحث في عنوان أو نص الملاحظة"
+    >
+
+
+    <select id="filterSender">
+
+      <option value="">كل القيادة العليا</option>
+      <option value="أحلام السويدي">أحلام السويدي</option>
+      <option value="خلود الكعبي">خلود الكعبي</option>
+      <option value="زينب عبدالسلام">زينب عبدالسلام</option>
+
+    </select>
+
+
+    <select id="filterTeacher">
+
+      <option value="">
+        كل المعلمات
+      </option>
+
+    </select>
+
+
+    <select id="filterStatus">
+
+      <option value="">
+        كل الحالات
+      </option>
+
+      <option value="unread">
+        غير مقروءة
+      </option>
+
+      <option value="read">
+        مقروءة
+      </option>
+
+      <option value="done">
+        تم التنفيذ
+      </option>
+
+      <option value="late">
+        متأخرة
+      </option>
+
+    </select>
+
+
+    <button
+      id="refreshBtn"
+      class="btn btn-soft"
+      type="button"
+    >
+      تحديث
+    </button>
+
+  </div>
+
+
+  <div id="sentNotesList"></div>
+
+
+</section>
+
+
+</div>
+
+
+</main>
+
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="../../js/config.js?v=20260816-notes4"></script>
+<script src="../../js/graph.js?v=20260816-notes4"></script>
+<script src="../../js/common.js?v=20260816-notes4"></script>
+
+
+<script>
+
+"use strict";
+
+
+let sb =
+  null;
+
+let currentUser =
+  null;
+
+let currentProfile =
+  null;
+
+let teachers =
+  [];
+
+let notesView =
+  [];
+
+let senderProfiles =
+  new Map();
+
+
+const $id =
+  id =>
+    document.getElementById(
+      id
+    );
+
+
+/* =========================================================
+   Escape
+   ========================================================= */
+
+function escapeHtml(
+  value
+){
+
+  return String(
+    value ?? ""
+  )
+
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+
+}
+
+
+/* =========================================================
+   الأولوية
+   ========================================================= */
+
+function priorityLabel(
+  value
+){
+
+  return (
+    {
+      normal:
+        "عادية",
+
+      important:
+        "مهمة",
+
+      urgent:
+        "عاجلة"
+    }
+  )[value] ||
+  value ||
+  "عادية";
+
+}
+
+
+/* =========================================================
+   التاريخ والوقت
+   ========================================================= */
+
+function formatDateTime(
+  value
+){
+
+  if(!value){
+
+    return "—";
+
+  }
+
+
+  const date =
+    new Date(
+      value
+    );
+
+
+  if(
+    Number.isNaN(
+      date.getTime()
+    )
+  ){
+
+    return "—";
+
+  }
+
+
+  return date.toLocaleString(
+    "ar-BH",
+    {
+      year:
+        "numeric",
+
+      month:
+        "short",
+
+      day:
+        "numeric",
+
+      hour:
+        "2-digit",
+
+      minute:
+        "2-digit"
+    }
+  );
+
+}
+
+
+function formatDate(
+  value
+){
+
+  if(!value){
+
+    return "—";
+
+  }
+
+
+  const date =
+    new Date(
+      value +
+      "T00:00:00"
+    );
+
+
+  if(
+    Number.isNaN(
+      date.getTime()
+    )
+  ){
+
+    return value;
+
+  }
+
+
+  return date.toLocaleDateString(
+    "ar-BH",
+    {
+      year:
+        "numeric",
+
+      month:
+        "short",
+
+      day:
+        "numeric"
+    }
+  );
+
+}
+
+
+/* =========================================================
+   الصفة الإدارية
+
+   نعتمد الاسم لأن profiles
+   يحتوي الاسم والـrole فقط حاليًا.
+   ========================================================= */
+
+function senderTitleFromName(
+  name
+){
+
+  const normalized =
+    String(
+      name ||
+      ""
+    ).trim();
+
+
+  if(
+    normalized ===
+    "أحلام السويدي"
+  ){
+
+    return "مديرة المدرسة";
+
+  }
+
+
+  if(
+    normalized ===
+    "خلود الكعبي"
+  ){
+
+    return "المديرة المساعدة";
+
+  }
+
+
+  if(
+    normalized ===
+    "زينب عبدالسلام"
+  ){
+
+    return "المديرة المساعدة";
+
+  }
+
+
+  return "القيادة العليا";
+
+}
+
+
+/* =========================================================
+   تشغيل الصفحة
+   ========================================================= */
+
+async function init(){
+
+  try{
+
+
+    if(
+      !window.WR_CONFIG?.supabaseUrl ||
+      !window.WR_CONFIG?.supabaseKey
+    ){
+
+      throw new Error(
+        "إعدادات Supabase غير مكتملة"
+      );
+
+    }
+
+
+    sb =
+      window.supabase.createClient(
+        window.WR_CONFIG.supabaseUrl,
+        window.WR_CONFIG.supabaseKey
+      );
+
+
+    currentUser =
+      await WRGraph.getAccount();
+
+
+    if(!currentUser){
+
+      alert(
+        "يجب تسجيل الدخول أولًا."
+      );
+
+      location.href =
+        "../../index.html";
+
+      return;
+
+    }
+
+
+    /* ============================================
+       الصفحة للقيادة العليا فقط
+       ============================================ */
+
+    const allowed =
+      await WRAccess.requireAdmin({
+        showDenied:false
+      });
+
+
+    if(!allowed){
+
+      alert(
+        "هذه الصفحة مخصصة للقيادة العليا فقط."
+      );
+
+      location.href =
+        "../../index.html";
+
+      return;
+
+    }
+
+
+    currentProfile =
+      await WRAccess.getProfile(
+        true
+      );
+
+
+    if(
+      !currentProfile ||
+      currentProfile.role !==
+      "admin"
+    ){
+
+      alert(
+        "تعذر التحقق من صلاحية القيادة العليا."
+      );
+
+      location.href =
+        "../../index.html";
+
+      return;
+
+    }
+
+
+    /* اسم المرسل الحالي */
+
+    $id(
+      "currentSenderName"
+    ).textContent =
+      currentProfile.full_name ||
+      currentUser.email ||
+      "القيادة العليا";
+
+
+    $id(
+      "currentSenderTitle"
+    ).textContent =
+      senderTitleFromName(
+        currentProfile.full_name
+      );
+
+
+    await loadTeachers();
+
+    await loadSentNotes();
+
+
+  }catch(error){
+
+
+    console.error(
+      error
+    );
+
+
+    $id(
+      "teacherList"
+    ).innerHTML =
+      '<div class="empty">تعذر تحميل البيانات.</div>';
+
+
+    $id(
+      "sentNotesList"
+    ).innerHTML =
+      '<div class="empty">تعذر تحميل الملاحظات.</div>';
+
+  }
+
+}
+
+
+/* =========================================================
+   تحميل المعلمات
+   ========================================================= */
+
+async function loadTeachers(){
+
+  const {
+    data,
+    error
+  } =
+    await sb
+      .from(
+        "profiles"
+      )
+      .select(
+        "id, full_name, role"
+      )
+      .eq(
+        "role",
+        "teacher"
+      )
+      .order(
+        "full_name",
+        {
+          ascending:true
+        }
+      );
+
+
+  if(error){
+
+    throw error;
+
+  }
+
+
+  teachers =
+    Array.isArray(
+      data
+    )
+      ? data
+      : [];
+
+
+  renderTeacherSelectors();
+
+}
+
+
+/* =========================================================
+   قوائم المعلمات
+   ========================================================= */
+
+function renderTeacherSelectors(){
+
+  const list =
+    $id(
+      "teacherList"
+    );
+
+
+  const filter =
+    $id(
+      "filterTeacher"
+    );
+
+
+  if(
+    !teachers.length
+  ){
+
+    list.innerHTML =
+      '<div class="empty">لا توجد حسابات معلمات حتى الآن.</div>';
+
+    return;
+
+  }
+
+
+  list.innerHTML =
+    teachers
+      .map(
+        teacher => `
+
+          <label class="teacher-option">
+
+            <input
+              class="teacher-check"
+              type="checkbox"
+              value="${escapeHtml(
+                teacher.id
+              )}"
+            >
+
+            <span>
+
+              <span class="teacher-name">
+
+                ${escapeHtml(
+                  teacher.full_name ||
+                  "معلمة"
+                )}
+
+              </span>
+
+            </span>
+
+          </label>
+
+        `
+      )
+      .join(
+        ""
+      );
+
+
+  filter.innerHTML =
+    '<option value="">كل المعلمات</option>' +
+
+    teachers
+      .map(
+        teacher => `
+
+          <option
+            value="${escapeHtml(
+              teacher.id
+            )}"
+          >
+
+            ${escapeHtml(
+              teacher.full_name ||
+              "معلمة"
+            )}
+
+          </option>
+
+        `
+      )
+      .join(
+        ""
+      );
+
+}
+
+
+/* =========================================================
+   المختارات
+   ========================================================= */
+
+function selectedTeacherIds(){
+
+  return [
+    ...document.querySelectorAll(
+      ".teacher-check:checked"
+    )
+  ].map(
+    element =>
+      element.value
+  );
+
+}
+
+
+/* =========================================================
+   إرسال الملاحظة
+   ========================================================= */
+
+async function sendNote(){
+
+  const title =
+    $id(
+      "noteTitle"
+    ).value.trim();
+
+
+  const message =
+    $id(
+      "noteMessage"
+    ).value.trim();
+
+
+  const priority =
+    $id(
+      "notePriority"
+    ).value;
+
+
+  const dueDate =
+    $id(
+      "noteDueDate"
+    ).value ||
+    null;
+
+
+  const recipients =
+    selectedTeacherIds();
+
+
+  $id(
+    "sendState"
+  ).textContent =
+    "";
+
+
+  $id(
+    "sendState"
+  ).className =
+    "send-state";
+
+
+  if(
+    !title ||
+    !message
+  ){
+
+    showSendError(
+      "اكتبي عنوان الملاحظة ونصها."
+    );
+
+    return;
+
+  }
+
+
+  if(
+    !recipients.length
+  ){
+
+    showSendError(
+      "اختاري معلمة واحدة على الأقل."
+    );
+
+    return;
+
+  }
+
+
+  const button =
+    $id(
+      "sendNoteBtn"
+    );
+
+
+  button.disabled =
+    true;
+
+
+  button.textContent =
+    "جاري الإرسال...";
+
+
+  try{
+
+
+    /*
+      created_by هو المفتاح الأساسي
+      لمعرفة صاحب الملاحظة.
+    */
+
+    const {
+      data:note,
+      error:noteError
+    } =
+      await sb
+        .from(
+          "notes"
+        )
+        .insert({
+
+          title,
+
+          message,
+
+          priority,
+
+          due_date:
+            dueDate,
+
+          created_by:
+            currentUser.id
+
+        })
+        .select(
+          "id"
+        )
+        .single();
+
+
+    if(noteError){
+
+      throw noteError;
+
+    }
+
+
+    const {
+      error:recipientError
+    } =
+      await sb
+        .from(
+          "note_recipients"
+        )
+        .insert(
+
+          recipients.map(
+            teacherId => ({
+
+              note_id:
+                note.id,
+
+              teacher_id:
+                teacherId
+
+            })
+          )
+
+        );
+
+
+    if(recipientError){
+
+      await sb
+        .from(
+          "notes"
+        )
+        .delete()
+        .eq(
+          "id",
+          note.id
+        );
+
+
+      throw recipientError;
+
+    }
+
+
+    $id(
+      "sendState"
+    ).textContent =
+      `✓ تم إرسال الملاحظة إلى ${recipients.length} معلمة باسم ${currentProfile.full_name}.`;
+
+
+    $id(
+      "sendState"
+    ).className =
+      "send-state ok";
+
+
+    clearForm();
+
+
+    await loadSentNotes();
+
+
+  }catch(error){
+
+
+    console.error(
+      error
+    );
+
+
+    showSendError(
+      "تعذر إرسال الملاحظة. راجعي الصلاحيات أو اتصال قاعدة البيانات."
+    );
+
+
+  }finally{
+
+
+    button.disabled =
+      false;
+
+
+    button.textContent =
+      "📨 إرسال الملاحظة";
+
+  }
+
+}
+
+
+/* =========================================================
+   رسالة خطأ
+   ========================================================= */
+
+function showSendError(
+  text
+){
+
+  $id(
+    "sendState"
+  ).textContent =
+    text;
+
+
+  $id(
+    "sendState"
+  ).className =
+    "send-state error";
+
+}
+
+
+/* =========================================================
+   تنظيف النموذج
+   ========================================================= */
+
+function clearForm(){
+
+  $id(
+    "noteTitle"
+  ).value =
+    "";
+
+
+  $id(
+    "noteMessage"
+  ).value =
+    "";
+
+
+  $id(
+    "notePriority"
+  ).value =
+    "normal";
+
+
+  $id(
+    "noteDueDate"
+  ).value =
+    "";
+
+
+  document
+    .querySelectorAll(
+      ".teacher-check"
+    )
+    .forEach(
+      element => {
+
+        element.checked =
+          false;
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   تحميل أسماء مرسلي الملاحظات
+   ========================================================= */
+
+async function loadSenderProfiles(
+  notes
+){
+
+  const senderIds =
+    [
+      ...new Set(
+
+        (
+          notes ||
+          []
+        )
+          .map(
+            note =>
+              note.created_by
+          )
+          .filter(
+            Boolean
+          )
+
+      )
+    ];
+
+
+  senderProfiles =
+    new Map();
+
+
+  if(
+    !senderIds.length
+  ){
+
+    return;
+
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await sb
+      .from(
+        "profiles"
+      )
+      .select(
+        "id, full_name, role"
+      )
+      .in(
+        "id",
+        senderIds
+      );
+
+
+  if(error){
+
+    console.warn(
+      "تعذر تحميل أسماء المرسلين:",
+      error
+    );
+
+    return;
+
+  }
+
+
+  (
+    data ||
+    []
+  )
+    .forEach(
+      profile => {
+
+        senderProfiles.set(
+          String(
+            profile.id
+          ),
+          profile
+        );
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   تحميل الملاحظات المرسلة
+   ========================================================= */
+
+async function loadSentNotes(){
+
+  $id(
+    "sentNotesList"
+  ).innerHTML =
+    '<div class="empty">جاري تحميل الملاحظات...</div>';
+
+
+  const {
+    data:notes,
+    error:notesError
+  } =
+    await sb
+      .from(
+        "notes"
+      )
+      .select(
+        `
+        id,
+        title,
+        message,
+        priority,
+        due_date,
+        created_at,
+        created_by,
+        note_recipients(
+          id,
+          teacher_id,
+          is_read,
+          read_at,
+          is_completed,
+          completed_at,
+          teacher_reply
+        )
+        `
+      )
+      .order(
+        "created_at",
+        {
+          ascending:false
+        }
+      );
+
+
+  if(notesError){
+
+    throw notesError;
+
+  }
+
+
+  await loadSenderProfiles(
+    notes ||
+    []
+  );
+
+
+  notesView =
+    (
+      notes ||
+      []
+    )
+      .map(
+        note => {
+
+
+          const sender =
+            senderProfiles.get(
+              String(
+                note.created_by ||
+                ""
+              )
+            ) ||
+            null;
+
+
+          return {
+
+            ...note,
+
+            sender,
+
+            recipients:
+              (
+                note.note_recipients ||
+                []
+              )
+                .map(
+                  recipient => ({
+
+                    ...recipient,
+
+                    teacher:
+                      teachers.find(
+                        teacher =>
+                          String(
+                            teacher.id
+                          ) ===
+                          String(
+                            recipient.teacher_id
+                          )
+                      ) ||
+                      null
+
+                  })
+                )
+
+          };
+
+        }
+      );
+
+
+  updateStats();
+
+  renderSentNotes();
+
+}
+
+
+/* =========================================================
+   حالة المعلمة
+   ========================================================= */
+
+function statusForRecipient(
+  note,
+  recipient
+){
+
+  if(
+    recipient.is_completed
+  ){
+
+    return "done";
+
+  }
+
+
+  if(
+    note.due_date &&
+    new Date(
+      note.due_date +
+      "T23:59:59"
+    ).getTime() <
+    Date.now()
+  ){
+
+    return "late";
+
+  }
+
+
+  if(
+    recipient.is_read
+  ){
+
+    return "read";
+
+  }
+
+
+  return "unread";
+
+}
+
+
+/* =========================================================
+   الإحصائيات
+   ========================================================= */
+
+function updateStats(){
+
+  const allAssignments =
+    notesView.flatMap(
+      note =>
+        (
+          note.recipients ||
+          []
+        ).map(
+          recipient => ({
+            note,
+            recipient,
+            senderName:
+              String(
+                note.sender?.full_name ||
+                ""
+              ).trim(),
+            status:
+              statusForRecipient(
+                note,
+                recipient
+              )
+          })
+        )
+    );
+
+
+  function countsForSender(senderName = null){
+
+    const rows =
+      senderName
+        ? allAssignments.filter(
+            item =>
+              item.senderName ===
+              senderName
+          )
+        : allAssignments.filter(
+            item =>
+              [
+                "أحلام السويدي",
+                "خلود الكعبي",
+                "زينب عبدالسلام"
+              ].includes(
+                item.senderName
+              )
+          );
+
+
+    return {
+      total:
+        rows.length,
+
+      unread:
+        rows.filter(
+          item =>
+            item.status ===
+            "unread"
+        ).length,
+
+      read:
+        rows.filter(
+          item =>
+            item.status ===
+            "read"
+        ).length,
+
+      done:
+        rows.filter(
+          item =>
+            item.status ===
+            "done"
+        ).length
+    };
+
+  }
+
+
+  function put(prefix, counts){
+
+    $id(prefix + "Total").textContent =
+      counts.total;
+
+    $id(prefix + "Unread").textContent =
+      counts.unread;
+
+    $id(prefix + "Read").textContent =
+      counts.read;
+
+    $id(prefix + "Done").textContent =
+      counts.done;
+
+  }
+
+
+  put(
+    "all",
+    countsForSender()
+  );
+
+  put(
+    "ahlam",
+    countsForSender(
+      "أحلام السويدي"
+    )
+  );
+
+  put(
+    "kholoud",
+    countsForSender(
+      "خلود الكعبي"
+    )
+  );
+
+  put(
+    "zainab",
+    countsForSender(
+      "زينب عبدالسلام"
+    )
+  );
+
+}
+
+
+/* =========================================================
+   عرض الملاحظات
+   ========================================================= */
+
+function renderSentNotes(){
+
+  const search =
+    $id(
+      "filterSearch"
+    )
+      .value
+      .trim()
+      .toLowerCase();
+
+
+  const senderNameFilter =
+    $id(
+      "filterSender"
+    ).value;
+
+
+  const teacherId =
+    $id(
+      "filterTeacher"
+    ).value;
+
+
+  const status =
+    $id(
+      "filterStatus"
+    ).value;
+
+
+  const filtered =
+    notesView
+
+      .map(
+        note => ({
+
+          ...note,
+
+          recipients:
+            (
+              note.recipients ||
+              []
+            )
+              .filter(
+                recipient => {
+
+
+                  const recipientStatus =
+                    statusForRecipient(
+                      note,
+                      recipient
+                    );
+
+
+                  if(
+                    teacherId &&
+                    String(
+                      recipient.teacher_id
+                    ) !==
+                    String(
+                      teacherId
+                    )
+                  ){
+
+                    return false;
+
+                  }
+
+
+                  if(
+                    status &&
+                    recipientStatus !==
+                    status
+                  ){
+
+                    return false;
+
+                  }
+
+
+                  return true;
+
+                }
+              )
+
+        })
+      )
+
+      .filter(
+        note => {
+
+
+          if(
+            !note.recipients.length
+          ){
+
+            return false;
+
+          }
+
+
+          if(
+            senderNameFilter &&
+            String(
+              note.sender?.full_name ||
+              ""
+            ).trim() !==
+            senderNameFilter
+          ){
+
+            return false;
+
+          }
+
+
+          if(
+            !search
+          ){
+
+            return true;
+
+          }
+
+
+          const senderName =
+            note.sender?.full_name ||
+            "";
+
+
+          return (
+            String(
+              note.title ||
+              ""
+            )
+              .toLowerCase()
+              .includes(
+                search
+              )
+            ||
+            String(
+              note.message ||
+              ""
+            )
+              .toLowerCase()
+              .includes(
+                search
+              )
+            ||
+            String(
+              senderName
+            )
+              .toLowerCase()
+              .includes(
+                search
+              )
+          );
+
+        }
+      );
+
+
+  if(
+    !filtered.length
+  ){
+
+    $id(
+      "sentNotesList"
+    ).innerHTML =
+      '<div class="empty">لا توجد ملاحظات مطابقة للفلتر الحالي.</div>';
+
+    return;
+
+  }
+
+
+  $id(
+    "sentNotesList"
+  ).innerHTML =
+
+    filtered
+      .map(
+        note => {
+
+
+          const senderName =
+            note.sender?.full_name ||
+            "القيادة العليا";
+
+
+          const senderTitle =
+            senderTitleFromName(
+              senderName
+            );
+
+
+          return `
+
+            <article class="note-card">
+
+
+              <div class="note-card-head">
+
+
+                <div>
+
+
+                  <div class="note-title">
+
+                    ${escapeHtml(
+                      note.title
+                    )}
+
+                  </div>
+
+
+                  <div class="note-meta">
+
+                    أُرسلت:
+                    ${formatDateTime(
+                      note.created_at
+                    )}
+
+                    ${
+                      note.due_date
+                        ? `
+                          — موعد التنفيذ:
+                          ${formatDate(
+                            note.due_date
+                          )}
+                        `
+                        : ""
+                    }
+
+                  </div>
+
+
+                  <div class="note-sender">
+
+                    👤 المرسل:
+                    ${escapeHtml(
+                      senderName
+                    )}
+
+                    —
+                    ${escapeHtml(
+                      senderTitle
+                    )}
+
+                  </div>
+
+
+                </div>
+
+
+                <span
+                  class="priority ${escapeHtml(
+                    note.priority
+                  )}"
+                >
+
+                  ${escapeHtml(
+                    priorityLabel(
+                      note.priority
+                    )
+                  )}
+
+                </span>
+
+
+              </div>
+
+
+              <div
+                style="
+                  margin-top:12px;
+                  line-height:1.8;
+                  white-space:pre-wrap;
+                  color:#344b41
+                "
+              >
+
+                ${escapeHtml(
+                  note.message
+                )}
+
+              </div>
+
+
+              <div style="margin-top:12px">
+
+
+                ${
+                  note.recipients
+                    .map(
+                      recipient => {
+
+
+                        const recipientStatus =
+                          statusForRecipient(
+                            note,
+                            recipient
+                          );
+
+
+                        const teacherName =
+                          recipient.teacher
+                            ?.full_name ||
+                          "معلمة";
+
+
+                        return `
+
+                          <div class="recipient-row">
+
+
+                            <div class="recipient-head">
+
+
+                              <strong>
+
+                                ${escapeHtml(
+                                  teacherName
+                                )}
+
+                              </strong>
+
+
+                              <div class="status-chips">
+
+
+                                ${
+                                  recipientStatus ===
+                                  "unread"
+                                    ? `
+                                      <span class="chip unread">
+                                        غير مقروءة
+                                      </span>
+                                    `
+                                    : ""
+                                }
+
+
+                                ${
+                                  recipient.is_read
+                                    ? `
+                                      <span class="chip read">
+                                        مقروءة
+                                      </span>
+                                    `
+                                    : ""
+                                }
+
+
+                                ${
+                                  recipient.is_completed
+                                    ? `
+                                      <span class="chip done">
+                                        تم التنفيذ
+                                      </span>
+                                    `
+                                    : ""
+                                }
+
+
+                                ${
+                                  recipientStatus ===
+                                  "late"
+                                    ? `
+                                      <span class="chip late">
+                                        متأخرة
+                                      </span>
+                                    `
+                                    : ""
+                                }
+
+
+                              </div>
+
+
+                            </div>
+
+
+                            <div class="note-meta">
+
+
+                              ${
+                                recipient.read_at
+                                  ? `
+                                    وقت القراءة:
+                                    ${formatDateTime(
+                                      recipient.read_at
+                                    )}
+                                  `
+                                  : "لم تُقرأ بعد"
+                              }
+
+
+                              ${
+                                recipient.completed_at
+                                  ? `
+                                    — وقت التنفيذ:
+                                    ${formatDateTime(
+                                      recipient.completed_at
+                                    )}
+                                  `
+                                  : ""
+                              }
+
+
+                            </div>
+
+
+                            ${
+                              recipient.teacher_reply
+                                ? `
+
+                                  <div class="reply">
+
+                                    <strong>
+                                      رد المعلمة:
+                                    </strong>
+
+                                    ${escapeHtml(
+                                      recipient.teacher_reply
+                                    )}
+
+                                  </div>
+
+                                `
+                                : ""
+                            }
+
+
+                          </div>
+
+                        `;
+
+                      }
+                    )
+                    .join(
+                      ""
+                    )
+                }
+
+
+              </div>
+
+
+            </article>
+
+          `;
+
+        }
+      )
+      .join(
+        ""
+      );
+
+}
+
+
+/* =========================================================
+   Events
+   ========================================================= */
+
+$id(
+  "sendNoteBtn"
+).addEventListener(
+  "click",
+  sendNote
+);
+
+
+$id(
+  "clearFormBtn"
+).addEventListener(
+  "click",
+  () => {
+
+    clearForm();
+
+    $id(
+      "sendState"
+    ).textContent =
+      "";
+
+  }
+);
+
+
+$id(
+  "selectAllTeachers"
+).addEventListener(
+  "click",
+  () => {
+
+    document
+      .querySelectorAll(
+        ".teacher-check"
+      )
+      .forEach(
+        element => {
+
+          element.checked =
+            true;
+
+        }
+      );
+
+  }
+);
+
+
+$id(
+  "clearTeachers"
+).addEventListener(
+  "click",
+  () => {
+
+    document
+      .querySelectorAll(
+        ".teacher-check"
+      )
+      .forEach(
+        element => {
+
+          element.checked =
+            false;
+
+        }
+      );
+
+  }
+);
+
+
+$id(
+  "filterSearch"
+).addEventListener(
+  "input",
+  renderSentNotes
+);
+
+
+$id(
+  "filterSender"
+).addEventListener(
+  "change",
+  renderSentNotes
+);
+
+
+$id(
+  "filterTeacher"
+).addEventListener(
+  "change",
+  renderSentNotes
+);
+
+
+$id(
+  "filterStatus"
+).addEventListener(
+  "change",
+  renderSentNotes
+);
+
+
+$id(
+  "refreshBtn"
+).addEventListener(
+  "click",
+  loadSentNotes
+);
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  init
+);
+
+</script>
+
+
+</body>
+
+</html>

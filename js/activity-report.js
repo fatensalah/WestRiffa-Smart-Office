@@ -7,6 +7,8 @@ const FIELD_IDS = [
   "startTime",
   "endTime",
   "place",
+  "activityApproved",
+  "projectLinks",
   "target",
   "count",
   "goal",
@@ -24,6 +26,10 @@ let existingImageRefs = [];
 let remoteImagePaths = [];
 let currentUser = null;
 let currentProfile = null;
+
+/* الجديد: العام الدراسي النشط */
+let currentSchoolYear = "";
+
 let loadedRecordOwnerId = null;
 let loadedRecordOwnerEmail = "";
 
@@ -66,10 +72,10 @@ async function loadCurrentProfile() {
     const sb = getActivitySupabase();
 
     const { data, error } = await sb
-      .from("profiles")
-      .select("id, full_name, role")
-      .eq("id", currentUser.id)
-      .single();
+      .from("user_profiles")
+      .select("user_id, full_name, role, department_id")
+      .eq("user_id", currentUser.id)
+      .maybeSingle();
 
     if (error) {
       console.error("Profile error:", error);
@@ -83,12 +89,52 @@ async function loadCurrentProfile() {
       $("executor").value =
         currentProfile.full_name;
 
-      if (currentProfile.role === "teacher") {
+      if (
+        currentProfile.role === "teacher" ||
+        currentProfile.role === "coordinator"
+      ) {
 
         $("executor").readOnly = true;
 
         $("executor").title =
           "يتم تحديد اسم المنفذ تلقائيًا من الحساب المسجل";
+      }
+    }
+
+    if (
+      currentProfile?.department_id &&
+      !$("department").value.trim()
+    ) {
+
+      try {
+
+        const {
+          data: departmentRow,
+          error: departmentError
+        } = await sb
+          .from("departments")
+          .select("name")
+          .eq("id", currentProfile.department_id)
+          .maybeSingle();
+
+        if (departmentError) {
+          console.warn(
+            "Department error:",
+            departmentError
+          );
+        }
+
+        if (departmentRow?.name) {
+          $("department").value =
+            departmentRow.name;
+        }
+
+      } catch (departmentError) {
+
+        console.warn(
+          "تعذر تحميل اسم القسم:",
+          departmentError
+        );
       }
     }
 
@@ -109,6 +155,92 @@ async function loadCurrentProfile() {
 
 
 /* =========================================================
+   مؤشرات الفعالية متعددة الاختيار
+   ========================================================= */
+
+function getCheckedValues(selector) {
+
+  return [
+    ...document.querySelectorAll(
+      selector + ":checked"
+    )
+  ].map(
+    input => input.value
+  );
+}
+
+
+function setCheckedValues(
+  selector,
+  values
+) {
+
+  const wanted =
+    new Set(
+      Array.isArray(values)
+        ? values
+        : String(values || "")
+            .split("،")
+            .map(
+              value =>
+                value.trim()
+            )
+            .filter(Boolean)
+    );
+
+
+  document
+    .querySelectorAll(selector)
+    .forEach(
+      input => {
+
+        input.checked =
+          wanted.has(
+            input.value
+          );
+
+      }
+    );
+}
+
+
+function syncActivityIndicators() {
+
+  const projects =
+    getCheckedValues(
+      ".wr-project-check"
+    );
+
+  const targets =
+    getCheckedValues(
+      ".wr-target-check"
+    );
+
+
+  if ($("projectLinks")) {
+
+    $("projectLinks").value =
+      projects.join("، ");
+
+  }
+
+
+  if ($("target")) {
+
+    $("target").value =
+      targets.join("، ");
+
+  }
+
+
+  return {
+    projects,
+    targets
+  };
+}
+
+
+/* =========================================================
    قراءة قيم النموذج
    ========================================================= */
 
@@ -117,7 +249,12 @@ function values() {
   const data = {};
 
   FIELD_IDS.forEach(id => {
-    data[id] = $(id).value;
+
+    if ($(id)) {
+      data[id] =
+        $(id).value;
+    }
+
   });
 
   return data;
@@ -134,12 +271,53 @@ function applyValues(data = {}) {
 
     if (
       data[id] !== undefined &&
-      data[id] !== null
+      data[id] !== null &&
+      $(id)
     ) {
-      $(id).value = data[id];
+
+      $(id).value =
+        data[id];
+
     }
 
   });
+
+
+  const projectValues =
+    Array.isArray(
+      data.projects
+    )
+      ? data.projects
+      : (
+          data.projectLinks ||
+          ""
+        );
+
+
+  const targetValues =
+    Array.isArray(
+      data.targetGroups
+    )
+      ? data.targetGroups
+      : (
+          data.target ||
+          ""
+        );
+
+
+  setCheckedValues(
+    ".wr-project-check",
+    projectValues
+  );
+
+
+  setCheckedValues(
+    ".wr-target-check",
+    targetValues
+  );
+
+
+  syncActivityIndicators();
 
   updatePreview();
 }
@@ -153,7 +331,12 @@ function recordData() {
 
   return {
 
-    type: "activity",
+    type:
+      "activity",
+
+    /* الجديد: يُحفظ تلقائيًا مع التقرير */
+    school_year:
+      currentSchoolYear || "",
 
     title:
       $("name").value.trim() ||
@@ -179,6 +362,26 @@ function recordData() {
 
     place:
       $("place").value.trim(),
+
+    activityApproved:
+      $("activityApproved")?.value ||
+      "",
+
+    projects:
+      getCheckedValues(
+        ".wr-project-check"
+      ),
+
+    projectLinks:
+      $("projectLinks")
+        ?.value
+        .trim() ||
+      "",
+
+    targetGroups:
+      getCheckedValues(
+        ".wr-target-check"
+      ),
 
     target:
       $("target").value.trim(),
@@ -218,10 +421,18 @@ function recordData() {
       (
         (
           !loadedRecordOwnerId ||
-          String(loadedRecordOwnerId) ===
-          String(currentUser?.id || "")
+          String(
+            loadedRecordOwnerId
+          ) ===
+          String(
+            currentUser?.id ||
+            ""
+          )
         )
-          ? (currentUser?.email || "")
+          ? (
+              currentUser?.email ||
+              ""
+            )
           : ""
       ),
 
@@ -237,55 +448,126 @@ function recordData() {
 
 function updatePreview() {
 
-  const data = recordData();
+  const data =
+    recordData();
+
 
   $("pName").textContent =
     data.title;
 
+
   $("pType").textContent =
-    data.activityType || "—";
+    data.activityType ||
+    "—";
+
 
   $("pExecutor").textContent =
-    data.executor || "—";
+    data.executor ||
+    "—";
+
 
   $("pDepartment").textContent =
-    data.department || "—";
+    data.department ||
+    "—";
+
 
   $("pDate").textContent =
-    wrFormatDate(data.date);
+    wrFormatDate(
+      data.date
+    );
+
 
   $("pTime").textContent =
     [
-      wrFormatTime(data.startTime),
-      wrFormatTime(data.endTime)
+      wrFormatTime(
+        data.startTime
+      ),
+      wrFormatTime(
+        data.endTime
+      )
     ]
-      .filter(x => x !== "—")
+      .filter(
+        x =>
+          x !== "—"
+      )
       .join(" – ") ||
     "—";
 
+
   $("pPlace").textContent =
-    data.place || "—";
+    data.place ||
+    "—";
+
+
+  if (
+    $("pApproval")
+  ) {
+
+    $("pApproval").textContent =
+      data.activityApproved ===
+      "yes"
+        ? "نعم"
+        : data.activityApproved ===
+          "no"
+          ? "لا"
+          : "—";
+
+  }
+
+
+  if (
+    $("pProjects")
+  ) {
+
+    $("pProjects").textContent =
+      data.projectLinks ||
+      (
+        Array.isArray(
+          data.projects
+        )
+          ? data.projects.join(
+              "، "
+            )
+          : ""
+      ) ||
+      "—";
+
+  }
+
 
   $("pTarget").textContent =
-    data.target || "—";
+    data.target ||
+    "—";
+
 
   $("pCount").textContent =
-    data.count || "—";
+    data.count ||
+    "—";
+
 
   $("pGoal").textContent =
-    data.goal || "—";
+    data.goal ||
+    "—";
+
 
   $("pImplementation").textContent =
-    data.implementation || "—";
+    data.implementation ||
+    "—";
+
 
   $("pResults").textContent =
-    data.results || "—";
+    data.results ||
+    "—";
+
 
   $("pRecommendations").textContent =
-    data.recommendations || "—";
+    data.recommendations ||
+    "—";
+
 
   $("pNotes").textContent =
-    data.notes || "—";
+    data.notes ||
+    "—";
 }
 
 
@@ -299,43 +581,138 @@ function saveDraft() {
     return;
   }
 
+
+  syncActivityIndicators();
+
+
   localStorage.setItem(
     DRAFT_KEY,
     JSON.stringify({
       ...values(),
+
+      projects:
+        getCheckedValues(
+          ".wr-project-check"
+        ),
+
+      targetGroups:
+        getCheckedValues(
+          ".wr-target-check"
+        ),
+
       savedAt:
-        new Date().toISOString()
+        new Date()
+          .toISOString()
     })
   );
 
+
   $("draftState").textContent =
     "تم حفظ المسودة تلقائيًا: " +
-    new Date().toLocaleTimeString("ar-BH");
+    new Date()
+      .toLocaleTimeString(
+        "ar-BH"
+      );
 }
 
 
 let draftTimer;
 
 
+/* =========================================================
+   مراقبة الحقول
+   ========================================================= */
+
 FIELD_IDS.forEach(id => {
 
-  $(id).addEventListener(
+  const field =
+    $(id);
+
+
+  if (!field) {
+    return;
+  }
+
+
+  field.addEventListener(
     "input",
     () => {
 
+      syncActivityIndicators();
+
       updatePreview();
 
-      clearTimeout(draftTimer);
+      clearTimeout(
+        draftTimer
+      );
+
 
       draftTimer =
         setTimeout(
           saveDraft,
           450
         );
+
+    }
+  );
+
+
+  field.addEventListener(
+    "change",
+    () => {
+
+      syncActivityIndicators();
+
+      updatePreview();
+
+      clearTimeout(
+        draftTimer
+      );
+
+
+      draftTimer =
+        setTimeout(
+          saveDraft,
+          450
+        );
+
     }
   );
 
 });
+
+
+document
+  .querySelectorAll(
+    ".wr-project-check, .wr-target-check"
+  )
+  .forEach(
+    input => {
+
+      input.addEventListener(
+        "change",
+        () => {
+
+          syncActivityIndicators();
+
+          updatePreview();
+
+          clearTimeout(
+            draftTimer
+          );
+
+
+          draftTimer =
+            setTimeout(
+              saveDraft,
+              450
+            );
+
+        }
+      );
+
+    }
+  );
 
 
 /* =========================================================
@@ -344,29 +721,46 @@ FIELD_IDS.forEach(id => {
 
 async function renderImages() {
 
-  const box = $("pImages");
-
-  box.innerHTML = "";
-
-  const sources = [];
+  const box =
+    $("pImages");
 
 
-  for (const ref of existingImageRefs) {
+  box.innerHTML =
+    "";
+
+
+  const sources =
+    [];
+
+
+  for (
+    const ref of
+    existingImageRefs
+  ) {
 
     try {
 
       const file =
-        await wrGetFile(ref);
+        await wrGetFile(
+          ref
+        );
+
 
       if (file) {
 
         sources.push({
-          name: file.name,
+
+          name:
+            file.name,
+
           url:
             URL.createObjectURL(
               file.blob
             ),
-          revoke: true
+
+          revoke:
+            true
+
         });
 
       }
@@ -379,23 +773,38 @@ async function renderImages() {
       );
 
     }
+
   }
 
 
-  for (const path of remoteImagePaths) {
+  for (
+    const path of
+    remoteImagePaths
+  ) {
 
     try {
 
       const url =
-        await WRGraph.getFileUrl(path);
+        await WRGraph
+          .getFileUrl(
+            path
+          );
+
 
       if (url) {
 
         sources.push({
+
           name:
-            path.split("/").pop(),
+            path
+              .split("/")
+              .pop(),
+
           url,
-          revoke: false
+
+          revoke:
+            false
+
         });
 
       }
@@ -408,65 +817,102 @@ async function renderImages() {
       );
 
     }
+
   }
 
 
-  for (const file of selectedFiles) {
+  for (
+    const file of
+    selectedFiles
+  ) {
 
     sources.push({
-      name: file.name,
+
+      name:
+        file.name,
+
       url:
-        URL.createObjectURL(file),
-      revoke: true
+        URL.createObjectURL(
+          file
+        ),
+
+      revoke:
+        true
+
     });
 
   }
 
 
   sources
-    .slice(0, 10)
-    .forEach(source => {
+    .slice(
+      0,
+      10
+    )
+    .forEach(
+      source => {
 
-      const figure =
-        document.createElement(
-          "figure"
-        );
-
-      figure.className =
-        "report-photo";
-
-      const image =
-        new Image();
-
-      image.src =
-        source.url;
-
-      image.alt =
-        source.name ||
-        "صورة الفعالية";
-
-      image.onload =
-        () => {
-
-          if (source.revoke) {
-
-            setTimeout(
-              () => {
-                URL.revokeObjectURL(
-                  source.url
-                );
-              },
-              5000
+        const figure =
+          document
+            .createElement(
+              "figure"
             );
 
-          }
-        };
 
-      figure.appendChild(image);
+        figure.className =
+          "report-photo";
 
-      box.appendChild(figure);
 
-    });
+        const image =
+          new Image();
+
+
+        image.src =
+          source.url;
+
+
+        image.alt =
+          source.name ||
+          "صورة الفعالية";
+
+
+        image.onload =
+          () => {
+
+            if (
+              source.revoke
+            ) {
+
+              setTimeout(
+                () => {
+
+                  URL
+                    .revokeObjectURL(
+                      source.url
+                    );
+
+                },
+                5000
+              );
+
+            }
+
+          };
+
+
+        figure
+          .appendChild(
+            image
+          );
+
+
+        box
+          .appendChild(
+            figure
+          );
+
+      }
+    );
 
 
   $("noImages")
@@ -482,39 +928,58 @@ async function renderImages() {
    اختيار الصور
    ========================================================= */
 
-$("images").addEventListener(
-  "change",
-  () => {
+$("images")
+  .addEventListener(
+    "change",
+    () => {
 
-    selectedFiles =
-      [...$("images").files]
-        .slice(0, 10);
+      selectedFiles =
+        [
+          ...$("images").files
+        ]
+          .slice(
+            0,
+            10
+          );
 
-    $("imageHint").textContent =
-      `تم اختيار ${selectedFiles.length} صورة`;
 
-    renderImages();
-  }
-);
+      $("imageHint")
+        .textContent =
+        `تم اختيار ${selectedFiles.length} صورة`;
+
+
+      renderImages();
+
+    }
+  );
 
 
 /* =========================================================
    تحميل تقرير محفوظ
    ========================================================= */
 
-async function loadRecord(id) {
+async function loadRecord(
+  id
+) {
 
   try {
 
     const records =
-      await WRGraph.fetchRecords();
+      await WRGraph
+        .fetchRecords();
+
 
     const row =
       records.find(
         record =>
-          String(record.id) ===
-          String(id)
+          String(
+            record.id
+          ) ===
+          String(
+            id
+          )
       );
+
 
     if (!row) {
 
@@ -532,19 +997,24 @@ async function loadRecord(id) {
 
     loadedRecordOwnerId =
       row.created_by ||
-      row.payload?.owner_id ||
+      row.payload
+        ?.owner_id ||
       null;
 
 
     loadedRecordOwnerEmail =
-      row.payload?.owner_email ||
-      row.payload?.ownerEmail ||
+      row.payload
+        ?.owner_email ||
+      row.payload
+        ?.ownerEmail ||
       (
         String(
-          loadedRecordOwnerId || ""
+          loadedRecordOwnerId ||
+          ""
         ) ===
         String(
-          currentUser?.id || ""
+          currentUser?.id ||
+          ""
         )
           ? (
               currentUser?.email ||
@@ -555,54 +1025,74 @@ async function loadRecord(id) {
 
 
     const payload = {
-      ...(row.payload || {})
+      ...(
+        row.payload ||
+        {}
+      )
     };
 
 
-    if (!payload.name) {
+    if (
+      !payload.name
+    ) {
 
       payload.name =
         payload.title ||
         row.title ||
         "";
+
     }
 
 
-    if (!payload.date) {
+    if (
+      !payload.date
+    ) {
 
       payload.date =
         row.record_date ||
         "";
+
     }
 
 
-    if (!payload.executor) {
+    if (
+      !payload.executor
+    ) {
 
       payload.executor =
         payload.owner_name ||
         "";
+
     }
 
 
     remoteImagePaths =
-      Array.isArray(row.image_paths)
+      Array.isArray(
+        row.image_paths
+      )
         ? row.image_paths
         : Array.isArray(
-            payload.image_paths
+            payload
+              .image_paths
           )
-          ? payload.image_paths
+          ? payload
+              .image_paths
           : [];
 
 
     existingImageRefs =
       Array.isArray(
-        payload.imageRefs
+        payload
+          .imageRefs
       )
-        ? payload.imageRefs
+        ? payload
+            .imageRefs
         : [];
 
 
-    applyValues(payload);
+    applyValues(
+      payload
+    );
 
 
     $("executor").value =
@@ -612,34 +1102,46 @@ async function loadRecord(id) {
 
 
     if (
-      currentProfile?.role ===
-      "teacher"
+      currentProfile
+        ?.role ===
+        "teacher" ||
+      currentProfile
+        ?.role ===
+        "coordinator"
     ) {
 
-      $("executor").readOnly =
+      $("executor")
+        .readOnly =
         true;
 
     } else {
 
-      $("executor").readOnly =
+      $("executor")
+        .readOnly =
         false;
+
     }
 
 
-    $("pageTitle").textContent =
+    $("pageTitle")
+      .textContent =
       "تعديل تقرير فعالية";
 
 
-    $("draftState").textContent =
+    $("draftState")
+      .textContent =
       "تم تحميل التقرير المحفوظ من الأرشيف السحابي.";
 
 
     $("deleteBtn")
       .classList
-      .remove("hidden");
+      .remove(
+        "hidden"
+      );
 
 
     updatePreview();
+
 
     await renderImages();
 
@@ -659,6 +1161,7 @@ async function loadRecord(id) {
       error
     );
 
+
     wrToast(
       "تعذر تحميل التقرير: " +
       (
@@ -667,7 +1170,9 @@ async function loadRecord(id) {
       )
     );
 
+
     return false;
+
   }
 }
 
@@ -684,7 +1189,10 @@ function createActivityId() {
     "_" +
     Math.random()
       .toString(36)
-      .slice(2, 8)
+      .slice(
+        2,
+        8
+      )
   );
 }
 
@@ -695,10 +1203,18 @@ function createActivityId() {
 
 async function save() {
 
+  syncActivityIndicators();
+
+
   if (
-    !$("name").value.trim() ||
-    !$("executor").value.trim() ||
-    !$("date").value
+    !$("name")
+      .value
+      .trim() ||
+    !$("executor")
+      .value
+      .trim() ||
+    !$("date")
+      .value
   ) {
 
     wrToast(
@@ -709,7 +1225,8 @@ async function save() {
   }
 
 
-  $("saveBtn").disabled =
+  $("saveBtn")
+    .disabled =
     true;
 
 
@@ -717,14 +1234,19 @@ async function save() {
 
     if (
       !currentId ||
-      String(currentId) ===
+      String(
+        currentId
+      ) ===
         "undefined" ||
-      String(currentId) ===
+      String(
+        currentId
+      ) ===
         "null"
     ) {
 
       currentId =
         createActivityId();
+
     }
 
 
@@ -742,17 +1264,19 @@ async function save() {
 
     if (
       selectedFiles.length &&
-      typeof WRGraph.uploadFiles ===
+      typeof WRGraph
+        .uploadFiles ===
         "function"
     ) {
 
       try {
 
         const uploaded =
-          await WRGraph.uploadFiles(
-            currentId,
-            selectedFiles
-          );
+          await WRGraph
+            .uploadFiles(
+              currentId,
+              selectedFiles
+            );
 
 
         remoteImagePaths = [
@@ -760,13 +1284,24 @@ async function save() {
           ...uploaded
         ]
           .filter(
-            (value, index, array) =>
-              array.indexOf(value) ===
+            (
+              value,
+              index,
+              array
+            ) =>
+              array.indexOf(
+                value
+              ) ===
               index
           )
-          .slice(0, 10);
+          .slice(
+            0,
+            10
+          );
 
-      } catch (uploadError) {
+      } catch (
+        uploadError
+      ) {
 
         console.warn(
           "تعذر رفع الصور إلى Supabase:",
@@ -774,6 +1309,7 @@ async function save() {
         );
 
       }
+
     }
 
 
@@ -786,10 +1322,12 @@ async function save() {
 
       image_paths:
         remoteImagePaths
+
     };
 
 
-    let rec = null;
+    let rec =
+      null;
 
 
     try {
@@ -800,25 +1338,33 @@ async function save() {
           selectedFiles
         );
 
-    } catch (localSaveError) {
+    } catch (
+      localSaveError
+    ) {
 
       console.warn(
         "تعذر الحفظ المحلي:",
         localSaveError
       );
+
     }
 
 
     if (
       rec?.id &&
-      String(rec.id) !==
+      String(
+        rec.id
+      ) !==
         "undefined" &&
-      String(rec.id) !==
+      String(
+        rec.id
+      ) !==
         "null"
     ) {
 
       currentId =
         rec.id;
+
     }
 
 
@@ -829,65 +1375,85 @@ async function save() {
 
 
     if (
-      typeof WRGraph.uploadJson ===
-      "function"
+      typeof WRGraph
+        .uploadJson ===
+        "function"
     ) {
 
-      await WRGraph.uploadJson({
+      await WRGraph
+        .uploadJson({
 
-        ...recordData(),
+          ...recordData(),
 
-        id:
-          currentId,
+          id:
+            currentId,
 
-        image_paths:
-          remoteImagePaths
+          image_paths:
+            remoteImagePaths
 
-      });
+        });
+
     }
 
 
-    selectedFiles = [];
+    selectedFiles =
+      [];
 
-    $("images").value = "";
 
-    localStorage.removeItem(
-      DRAFT_KEY
-    );
+    $("images").value =
+      "";
+
+
+    localStorage
+      .removeItem(
+        DRAFT_KEY
+      );
 
 
     $("deleteBtn")
       .classList
-      .remove("hidden");
+      .remove(
+        "hidden"
+      );
 
 
     const cleanUrl =
       new URL(
-        window.location.href
+        window.location
+          .href
       );
 
 
-    cleanUrl.search = "";
-
-    cleanUrl.searchParams.set(
-      "id",
-      currentId
-    );
+    cleanUrl.search =
+      "";
 
 
-    history.replaceState(
-      null,
-      "",
-      cleanUrl.pathname +
-      cleanUrl.search
-    );
+    cleanUrl
+      .searchParams
+      .set(
+        "id",
+        currentId
+      );
 
 
-    $("pageTitle").textContent =
+    history
+      .replaceState(
+        null,
+        "",
+        cleanUrl
+          .pathname +
+        cleanUrl
+          .search
+      );
+
+
+    $("pageTitle")
+      .textContent =
       "تعديل تقرير فعالية";
 
 
-    $("draftState").textContent =
+    $("draftState")
+      .textContent =
       "تم حفظ التقرير بنجاح.";
 
 
@@ -923,10 +1489,127 @@ async function save() {
 
   } finally {
 
-    $("saveBtn").disabled =
+    $("saveBtn")
+      .disabled =
       false;
+
   }
 }
+/* =========================================================
+   تحويل Blob إلى Data URL
+   ========================================================= */
+
+function wrBlobToDataURL(
+  blob
+) {
+
+  return new Promise(
+    (
+      resolve,
+      reject
+    ) => {
+
+      const reader =
+        new FileReader();
+
+
+      reader.onload =
+        () =>
+          resolve(
+            reader.result
+          );
+
+
+      reader.onerror =
+        reject;
+
+
+      reader
+        .readAsDataURL(
+          blob
+        );
+
+    }
+  );
+}
+
+
+/* =========================================================
+   تنزيل ملف
+   ========================================================= */
+
+function wrDownloadBlob(
+  blob,
+  fileName
+) {
+
+  const url =
+    URL.createObjectURL(
+      blob
+    );
+
+
+  const link =
+    document
+      .createElement(
+        "a"
+      );
+
+
+  link.href =
+    url;
+
+
+  link.download =
+    fileName;
+
+
+  document.body
+    .appendChild(
+      link
+    );
+
+
+  link.click();
+
+
+  link.remove();
+
+
+  setTimeout(
+    () => {
+
+      URL
+        .revokeObjectURL(
+          url
+        );
+
+    },
+    1000
+  );
+}
+
+
+/* =========================================================
+   اسم آمن للملف
+   ========================================================= */
+
+function wrSafeName(
+  value
+) {
+
+  return String(
+    value ||
+    "تقرير فعالية"
+  )
+    .replace(
+      /[\\/:*?"<>|]/g,
+      "-"
+    )
+    .trim();
+}
+
+
 /* =========================================================
    إنشاء HTML
    ========================================================= */
@@ -935,25 +1618,35 @@ function reportHtml() {
 
   const clone =
     $("reportSheet")
-      .cloneNode(true);
+      .cloneNode(
+        true
+      );
 
 
   clone
-    .querySelectorAll("img")
-    .forEach(img => {
+    .querySelectorAll(
+      "img"
+    )
+    .forEach(
+      img => {
 
-      if (
-        img.src.startsWith("blob:")
-      ) {
+        if (
+          img.src
+            .startsWith(
+              "blob:"
+            )
+        ) {
 
-        img.setAttribute(
-          "data-needs-inline",
-          "1"
-        );
+          img
+            .setAttribute(
+              "data-needs-inline",
+              "1"
+            );
+
+        }
 
       }
-
-    });
+    );
 
 
   return `
@@ -1087,24 +1780,31 @@ async function downloadHtml() {
 
   const clone =
     $("reportSheet")
-      .cloneNode(true);
+      .cloneNode(
+        true
+      );
 
 
   const originalImages = [
     ...$("reportSheet")
-      .querySelectorAll("img")
+      .querySelectorAll(
+        "img"
+      )
   ];
 
 
   const clonedImages = [
     ...clone
-      .querySelectorAll("img")
+      .querySelectorAll(
+        "img"
+      )
   ];
 
 
   for (
     let i = 0;
-    i < originalImages.length;
+    i <
+      originalImages.length;
     i++
   ) {
 
@@ -1112,15 +1812,18 @@ async function downloadHtml() {
 
       const response =
         await fetch(
-          originalImages[i].src
+          originalImages[i]
+            .src
         );
 
 
       const blob =
-        await response.blob();
+        await response
+          .blob();
 
 
-      clonedImages[i].src =
+      clonedImages[i]
+        .src =
         await wrBlobToDataURL(
           blob
         );
@@ -1290,7 +1993,6 @@ ${clone.outerHTML}
   wrToast(
     "تم تنزيل نسخة التقرير كاملة بالصور"
   );
-
 }
 
 
@@ -1300,14 +2002,15 @@ ${clone.outerHTML}
 
 async function deleteCurrentReport() {
 
-  if (!currentId) {
+  if (
+    !currentId
+  ) {
 
     wrToast(
       "لا يوجد تقرير محفوظ لحذفه"
     );
 
     return;
-
   }
 
 
@@ -1322,23 +2025,27 @@ async function deleteCurrentReport() {
   }
 
 
-  $("deleteBtn").disabled =
+  $("deleteBtn")
+    .disabled =
     true;
 
 
   try {
 
     if (
-      remoteImagePaths.length &&
-      typeof WRGraph.deleteFiles ===
+      remoteImagePaths
+        .length &&
+      typeof WRGraph
+        .deleteFiles ===
         "function"
     ) {
 
       try {
 
-        await WRGraph.deleteFiles(
-          remoteImagePaths
-        );
+        await WRGraph
+          .deleteFiles(
+            remoteImagePaths
+          );
 
       } catch (error) {
 
@@ -1352,16 +2059,17 @@ async function deleteCurrentReport() {
     }
 
 
-    await WRGraph.deleteRecord(
-      currentId
-    );
+    await WRGraph
+      .deleteRecord(
+        currentId
+      );
 
 
     try {
 
       if (
         typeof wrDeleteRecord ===
-        "function"
+          "function"
       ) {
 
         await wrDeleteRecord(
@@ -1413,16 +2121,16 @@ async function deleteCurrentReport() {
     );
 
 
-    $("deleteBtn").disabled =
+    $("deleteBtn")
+      .disabled =
       false;
 
   }
-
 }
 
 
 /* =========================================================
-   الحصول على بريد صاحبة التقرير
+   بريد صاحبة التقرير
    ========================================================= */
 
 function getReportOwnerEmail() {
@@ -1442,7 +2150,8 @@ function getReportOwnerEmail() {
       loadedRecordOwnerId
     ) ===
     String(
-      currentUser?.id || ""
+      currentUser?.id ||
+      ""
     )
   ) {
 
@@ -1455,24 +2164,28 @@ function getReportOwnerEmail() {
 
 
   return "";
-
 }
 
 
 /* =========================================================
-   رابط التقرير الحالي
+   رابط التقرير
    ========================================================= */
 
 function getCurrentReportLink() {
 
   if (
     !currentId ||
-    String(currentId) === "undefined" ||
-    String(currentId) === "null"
+    String(
+      currentId
+    ) ===
+      "undefined" ||
+    String(
+      currentId
+    ) ===
+      "null"
   ) {
 
     return "";
-
   }
 
 
@@ -1482,35 +2195,39 @@ function getCurrentReportLink() {
     );
 
 
-  url.search = "";
+  url.search =
+    "";
 
 
-  url.searchParams.set(
-    "id",
-    currentId
-  );
+  url
+    .searchParams
+    .set(
+      "id",
+      currentId
+    );
 
 
-  return url.toString();
-
+  return url
+    .toString();
 }
 
 
 /* =========================================================
    إرسال التقرير بالبريد
-   حفظ PDF أولًا ثم فتح Outlook
    ========================================================= */
 
 async function sendReportByEmail() {
 
-  /* -----------------------------------------
-     التأكد أن التقرير محفوظ
-     ----------------------------------------- */
-
   if (
     !currentId ||
-    String(currentId) === "undefined" ||
-    String(currentId) === "null"
+    String(
+      currentId
+    ) ===
+      "undefined" ||
+    String(
+      currentId
+    ) ===
+      "null"
   ) {
 
     wrToast(
@@ -1518,40 +2235,36 @@ async function sendReportByEmail() {
     );
 
     return;
-
   }
 
-
-  /* -----------------------------------------
-     الحصول على بريد صاحبة التقرير
-     ----------------------------------------- */
 
   const recipient =
     getReportOwnerEmail();
 
 
-  if (!recipient) {
+  if (
+    !recipient
+  ) {
 
     wrToast(
       "لا يوجد بريد إلكتروني محفوظ لصاحبة التقرير"
     );
 
     return;
-
   }
 
 
-  /* -----------------------------------------
-     بيانات التقرير
-     ----------------------------------------- */
-
   const activityName =
-    $("name").value.trim() ||
+    $("name")
+      .value
+      .trim() ||
     "تقرير فعالية";
 
 
   const executorName =
-    $("executor").value.trim() ||
+    $("executor")
+      .value
+      .trim() ||
     "المعلمة";
 
 
@@ -1567,10 +2280,6 @@ async function sendReportByEmail() {
     getCurrentReportLink();
 
 
-  /* -----------------------------------------
-     اسم ملف PDF
-     ----------------------------------------- */
-
   const pdfFileName =
     `تقرير - ${wrSafeName(
       activityName
@@ -1579,17 +2288,9 @@ async function sendReportByEmail() {
     )}.pdf`;
 
 
-  /* -----------------------------------------
-     عنوان البريد
-     ----------------------------------------- */
-
   const subject =
     `تقرير فعالية - ${activityName}`;
 
-
-  /* -----------------------------------------
-     نص البريد
-     ----------------------------------------- */
 
   const body = [
 
@@ -1627,12 +2328,10 @@ async function sendReportByEmail() {
 
     "مع تحيات منصة التوثيق الذكي — الرفاع الغربي"
 
-  ].join("\n");
+  ].join(
+    "\n"
+  );
 
-
-  /* -----------------------------------------
-     رابط Outlook Web
-     ----------------------------------------- */
 
   const outlookUrl =
     "https://outlook.office.com/mail/deeplink/compose" +
@@ -1650,11 +2349,6 @@ async function sendReportByEmail() {
     );
 
 
-  /* -----------------------------------------
-     فتح تبويب Outlook مبكرًا
-     حتى لا يمنعه المتصفح
-     ----------------------------------------- */
-
   const outlookWindow =
     window.open(
       "about:blank",
@@ -1662,17 +2356,9 @@ async function sendReportByEmail() {
     );
 
 
-  /* -----------------------------------------
-     حفظ اسم الصفحة الحالي
-     ----------------------------------------- */
-
   const oldTitle =
     document.title;
 
-
-  /* -----------------------------------------
-     جعل اسم ملف PDF مرتبًا
-     ----------------------------------------- */
 
   document.title =
     pdfFileName.replace(
@@ -1681,37 +2367,25 @@ async function sendReportByEmail() {
     );
 
 
-  /* -----------------------------------------
-     تنبيه للمستخدمة
-     ----------------------------------------- */
-
   wrToast(
     "احفظي التقرير PDF، وبعدها ستفتح رسالة Outlook جاهزة."
   );
 
 
-  /* -----------------------------------------
-     فتح نافذة الطباعة
-     ----------------------------------------- */
-
   window.print();
 
-
-  /* -----------------------------------------
-     إعادة اسم الصفحة
-     ----------------------------------------- */
 
   document.title =
     oldTitle;
 
 
-  /* -----------------------------------------
-     فتح Outlook بالرسالة الجاهزة
-     ----------------------------------------- */
+  if (
+    outlookWindow
+  ) {
 
-  if (outlookWindow) {
-
-    outlookWindow.location.href =
+    outlookWindow
+      .location
+      .href =
       outlookUrl;
 
   } else {
@@ -1722,7 +2396,6 @@ async function sendReportByEmail() {
     );
 
   }
-
 }
 
 
@@ -1771,17 +2444,18 @@ $("newBtn").onclick =
 
     if (
       confirm(
-        "بدء تقرير جديد؟"
+        "بدء تقرير جديد؟ سيتم مسح المسودة الحالية وفتح نموذج فارغ."
       )
     ) {
 
-      localStorage.removeItem(
-        DRAFT_KEY
-      );
+      localStorage
+        .removeItem(
+          DRAFT_KEY
+        );
 
 
       location.href =
-        "report.html";
+        "report.html?new=1";
 
     }
 
@@ -1797,38 +2471,90 @@ $("newBtn").onclick =
   await loadCurrentProfile();
 
 
-  const id =
-    new URLSearchParams(
-      location.search
-    ).get("id");
+  /* الجديد: قراءة العام الدراسي النشط */
+  try {
 
+    if (
+      window.WRGraph &&
+      typeof WRGraph.getActiveSchoolYear ===
+        "function"
+    ) {
 
-  /* -----------------------------------------
-     تجاهل id غير الصحيح
-     ----------------------------------------- */
+      currentSchoolYear =
+        await WRGraph.getActiveSchoolYear();
 
-  const validId =
-    id &&
-    id !== "undefined" &&
-    id !== "null";
+    }
 
+  } catch (error) {
 
-  /* -----------------------------------------
-     فتح تقرير محفوظ
-     ----------------------------------------- */
+    console.warn(
+      "تعذر تحميل العام الدراسي:",
+      error
+    );
 
-  if (validId) {
-
-    await loadRecord(id);
-
-    return;
+    currentSchoolYear =
+      "";
 
   }
 
 
-  /* -----------------------------------------
-     تقرير جديد
-     ----------------------------------------- */
+  const params =
+    new URLSearchParams(
+      location.search
+    );
+
+
+  const id =
+    params.get(
+      "id"
+    );
+
+
+  const forceNew =
+    params.get(
+      "new"
+    ) ===
+    "1";
+
+
+  if (
+    forceNew
+  ) {
+
+    localStorage
+      .removeItem(
+        DRAFT_KEY
+      );
+
+
+    history.replaceState(
+      null,
+      "",
+      location.pathname
+    );
+
+  }
+
+
+  const validId =
+    id &&
+    id !==
+      "undefined" &&
+    id !==
+      "null";
+
+
+  if (
+    validId
+  ) {
+
+    await loadRecord(
+      id
+    );
+
+    return;
+  }
+
 
   loadedRecordOwnerId =
     currentUser?.id ||
@@ -1840,47 +2566,57 @@ $("newBtn").onclick =
     "";
 
 
-  /* -----------------------------------------
-     استرجاع المسودة
-     ----------------------------------------- */
-
-  let draft = null;
+  let draft =
+    null;
 
 
-  try {
+  if (
+    !forceNew
+  ) {
 
-    draft =
-      JSON.parse(
-        localStorage.getItem(
-          DRAFT_KEY
-        ) ||
-        "null"
+    try {
+
+      draft =
+        JSON.parse(
+          localStorage
+            .getItem(
+              DRAFT_KEY
+            ) ||
+          "null"
+        );
+
+
+    } catch (error) {
+
+      console.warn(
+        "تعذر قراءة المسودة:",
+        error
       );
 
-  } catch (error) {
 
-    console.warn(
-      "تعذر قراءة المسودة:",
-      error
-    );
+      localStorage
+        .removeItem(
+          DRAFT_KEY
+        );
 
-
-    localStorage.removeItem(
-      DRAFT_KEY
-    );
+    }
 
   }
 
 
-  if (draft) {
+  if (
+    draft
+  ) {
 
     applyValues(
       draft
     );
 
 
-    $("draftState").textContent =
+    $("draftState")
+      .textContent =
       "تم استرجاع المسودة المحفوظة تلقائيًا.";
+
 
   } else {
 
@@ -1892,33 +2628,47 @@ $("newBtn").onclick =
           10
         );
 
+
+    if (
+      forceNew
+    ) {
+
+      $("draftState")
+        .textContent =
+        "نموذج جديد — تم مسح المسودة السابقة.";
+
+    }
+
   }
 
 
-  /* -----------------------------------------
-     اسم المنفذ من الحساب
-     ----------------------------------------- */
-
   if (
-    currentProfile?.full_name
+    currentProfile
+      ?.full_name
   ) {
 
     $("executor").value =
-      currentProfile.full_name;
+      currentProfile
+        .full_name;
 
 
     if (
       currentProfile.role ===
-      "teacher"
+        "teacher" ||
+      currentProfile.role ===
+        "coordinator"
     ) {
 
-      $("executor").readOnly =
+      $("executor")
+        .readOnly =
         true;
 
     }
 
   }
 
+
+  syncActivityIndicators();
 
   updatePreview();
 

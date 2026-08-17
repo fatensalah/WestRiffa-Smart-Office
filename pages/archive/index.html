@@ -2,79 +2,303 @@
 <html lang="ar" dir="rtl">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>الأرشيف الذكي | WestRiffa Smart Office</title>
+<meta charset="UTF-8">
 
-  <link rel="stylesheet" href="../../css/app.css">
-  <link rel="manifest" href="../../manifest.webmanifest">
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1"
+>
 
-  <meta name="theme-color" content="#075c40">
+<title>
+الأرشيف الذكي | WestRiffa Smart Office
+</title>
 
-  <style>
-    .archive-tools {
-      display: grid;
-      grid-template-columns: 1fr 220px;
-      gap: 12px;
-      margin: 20px 0;
-    }
+<link
+  rel="stylesheet"
+  href="../../css/app.css?v=20260816-archive4"
+>
 
-    .archive-tools input,
-    .archive-tools select {
-      width: 100%;
-      padding: 13px 15px;
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      font-family: inherit;
-      font-size: 15px;
-      background: #fff;
-    }
+<style>
 
-    #recordsList {
-      display: grid;
-      gap: 14px;
-      margin-top: 20px;
-    }
+*{
+  box-sizing:border-box;
+}
 
-    .record-card {
-      background: #fff;
-      border: 1px solid #e6e6e6;
-      border-radius: 16px;
-      padding: 18px;
-      box-shadow: 0 4px 14px rgba(0,0,0,.05);
-    }
+body{
+  margin:0;
+  font-family:Tahoma,Arial,sans-serif;
+  background:#f4f7f6;
+  color:#173c34;
+}
 
-    .record-card h3 {
-      margin: 0 0 8px;
-      color: #075c40;
-    }
+.archive-page{
+  width:min(1250px,94%);
+  margin:28px auto 60px;
+}
 
-    .record-meta {
-      color: #666;
-      font-size: 14px;
-      margin-bottom: 12px;
-    }
+.archive-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  flex-wrap:wrap;
+  margin-bottom:22px;
+}
 
-    .record-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 12px;
-    }
+.archive-head h1{
+  margin:0 0 6px;
+  color:#075c40;
+}
 
-    .empty-state {
-      padding: 35px;
-      text-align: center;
-      background: #fff;
-      border: 1px dashed #ccc;
-      border-radius: 16px;
-      color: #777;
-    }
-  </style>
+.archive-head p{
+  margin:0;
+  color:#6b7a72;
+}
+
+.year-filter-box{
+  min-width:230px;
+  padding:12px 14px;
+  border:1px solid #dce8e3;
+  border-radius:14px;
+  background:#fff;
+  box-shadow:0 5px 16px rgba(0,0,0,.035);
+}
+
+.year-filter-box label{
+  display:block;
+  margin-bottom:7px;
+  color:#45645a;
+  font-size:12px;
+  font-weight:700;
+}
+
+.year-filter-box select{
+  width:100%;
+  padding:10px 11px;
+  border:1px solid #d4ded9;
+  border-radius:10px;
+  background:#fff;
+  color:#075c40;
+  font-family:inherit;
+  font-weight:700;
+}
+
+.year-filter-box small{
+  display:block;
+  margin-top:6px;
+  color:#7a8982;
+  font-size:11px;
+}
+
+.scope-box{
+  margin:0 0 18px;
+  padding:13px 15px;
+  border:1px solid #dce8e3;
+  border-radius:12px;
+  background:#fff;
+  color:#45645a;
+  font-size:13px;
+  line-height:1.8;
+}
+
+.folder-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:16px;
+  margin-bottom:26px;
+}
+
+.folder-card{
+  border:1px solid #e1e9e5;
+  border-radius:18px;
+  background:#fff;
+  padding:22px;
+  cursor:pointer;
+  box-shadow:0 7px 22px rgba(0,0,0,.045);
+  transition:.2s ease;
+  min-height:150px;
+  text-align:right;
+  font-family:inherit;
+}
+
+.folder-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 12px 28px rgba(15,81,63,.10);
+}
+
+.folder-icon{
+  font-size:34px;
+  margin-bottom:12px;
+}
+
+.folder-card h3{
+  margin:0 0 8px;
+  color:#075c40;
+}
+
+.folder-count{
+  color:#6b7a72;
+  font-size:13px;
+}
+
+.folder-count strong{
+  color:#075c40;
+  font-size:22px;
+  margin-left:5px;
+}
+
+.records-area{
+  display:none;
+  background:#fff;
+  border:1px solid #e1e9e5;
+  border-radius:18px;
+  padding:22px;
+  box-shadow:0 7px 22px rgba(0,0,0,.04);
+}
+
+.records-area.open{
+  display:block;
+}
+
+.records-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:16px;
+}
+
+.records-head h2{
+  margin:0;
+  color:#075c40;
+}
+
+.back-folders{
+  border:0;
+  background:#eef4f2;
+  color:#075c40;
+  border-radius:10px;
+  padding:10px 14px;
+  font-family:inherit;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.archive-tools{
+  display:grid;
+  grid-template-columns:1fr 170px 170px;
+  gap:10px;
+  margin-bottom:18px;
+}
+
+.archive-tools input{
+  width:100%;
+  padding:11px 12px;
+  border:1px solid #d4ded9;
+  border-radius:10px;
+  font-family:inherit;
+  background:#fff;
+}
+
+.records-list{
+  display:grid;
+  gap:12px;
+}
+
+.record-card{
+  background:#fafcfb;
+  border:1px solid #e5ece8;
+  border-radius:14px;
+  padding:16px;
+}
+
+.record-card h3{
+  margin:0 0 8px;
+  color:#075c40;
+}
+
+.record-meta{
+  color:#6b7a72;
+  font-size:13px;
+  line-height:1.8;
+}
+
+.record-actions{
+  margin-top:12px;
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.btn-open{
+  display:inline-block;
+  text-decoration:none;
+  background:#075c40;
+  color:#fff;
+  border-radius:9px;
+  padding:9px 13px;
+  font-size:13px;
+  font-weight:700;
+}
+
+.empty{
+  padding:32px;
+  text-align:center;
+  color:#6b7a72;
+  border:1px dashed #d4ded9;
+  border-radius:14px;
+  background:#fafcfb;
+}
+
+.access-loader{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#f4f7f6;
+  color:#075c40;
+  font-weight:700;
+}
+
+@media(max-width:900px){
+
+  .folder-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .archive-tools{
+    grid-template-columns:1fr;
+  }
+
+}
+
+@media(max-width:600px){
+
+  .folder-grid{
+    grid-template-columns:1fr;
+  }
+
+}
+
+</style>
+
 </head>
 
+
 <body>
+
+
+<div
+  id="accessLoader"
+  class="access-loader"
+>
+  جاري تحميل صلاحيات الأرشيف...
+</div>
+
 
 <header class="topbar">
 
@@ -86,11 +310,19 @@
     >
 
     <div>
-      <h1>الأرشيف الذكي</h1>
-      <p>عرض وتعديل واسترجاع السجلات</p>
+
+      <h1>
+        الأرشيف الذكي
+      </h1>
+
+      <p>
+        أرشيف منظم حسب نوع السجل
+      </p>
+
     </div>
 
   </div>
+
 
   <div class="header-actions">
 
@@ -101,355 +333,2180 @@
       🏠 الرئيسية
     </a>
 
-    <a
-      class="btn"
-      href="../activities/report.html"
-    >
-      ➕ تقرير فعالية
-    </a>
-
   </div>
 
 </header>
 
 
-<div class="shell">
-
-  <aside class="sidebar">
-
-    <h3 class="sidebar-title">
-      القائمة الرئيسية
-    </h3>
-
-    <a
-      class="nav-link"
-      href="../meetings/index.html"
-    >
-      📅 الاجتماعات
-    </a>
-
-    <a
-      class="nav-link"
-      href="../activities/index.html"
-    >
-      🎯 الفعاليات
-    </a>
-
-    <a
-      class="nav-link"
-      href="../certificates/index.html"
-    >
-      🏅 الشهادات
-    </a>
-
-    <a
-      class="nav-link active"
-      href="./index.html"
-    >
-      📁 الأرشيف الذكي
-    </a>
-
-    <a
-      class="nav-link"
-      href="../settings/index.html"
-    >
-      ⚙️ الإعدادات
-    </a>
-
-  </aside>
+<main class="archive-page">
 
 
-  <main class="content">
+<div class="archive-head">
 
-    <div class="page-head">
+  <div>
 
-      <div>
+    <h1>
+      📁 مجلدات الأرشيف
+    </h1>
 
-        <h2>
-          الأرشيف الذكي
-        </h2>
+    <p>
+      اختاري المجلد المطلوب للوصول إلى السجلات المحفوظة.
+    </p>
 
-        <p>
-          ابحثي عن أي سجل محفوظ في قاعدة البيانات.
-        </p>
-
-      </div>
-
-    </div>
+  </div>
 
 
-    <div class="archive-tools">
+  <div class="year-filter-box">
 
-      <input
-        id="search"
-        type="search"
-        placeholder="بحث بالعنوان أو النوع أو البيانات..."
-      >
+    <label for="schoolYearFilter">
+      العام الدراسي
+    </label>
 
-      <select id="type">
+    <select id="schoolYearFilter">
 
-        <option value="">
-          كل الأنواع
-        </option>
+      <option value="">
+        جاري تحميل الأعوام...
+      </option>
 
-        <option value="activity">
-          الفعاليات
-        </option>
+    </select>
 
-        <option value="meeting">
-          محاضر الاجتماعات
-        </option>
+    <small id="schoolYearHint">
+      يُعرض العام الدراسي النشط تلقائيًا.
+    </small>
 
-        <option value="invitation">
-          دعوات الاجتماعات
-        </option>
-
-        <option value="attendance">
-          سجلات الحضور
-        </option>
-
-        <option value="recommendation">
-          متابعة التوصيات
-        </option>
-
-        <option value="certificate">
-          الشهادات
-        </option>
-
-      </select>
-
-    </div>
-
-
-    <div
-      id="status"
-      class="empty-state"
-    >
-      جارٍ تحميل السجلات...
-    </div>
-
-
-    <div id="recordsList"></div>
-
-  </main>
+  </div>
 
 </div>
 
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<div
+  id="scopeBox"
+  class="scope-box"
+>
+  جارٍ التحقق من صلاحية الحساب...
+</div>
 
-<script src="../../js/config.js"></script>
-<script src="../../js/graph.js"></script>
-<script src="../../js/common.js"></script>
+
+<section
+  id="foldersView"
+  class="folder-grid"
+>
+
+
+<button
+  class="folder-card"
+  data-folder="activities"
+>
+
+  <div class="folder-icon">
+    🎯
+  </div>
+
+  <h3>
+    الفعاليات
+  </h3>
+
+  <div class="folder-count">
+
+    <strong id="countActivities">
+      0
+    </strong>
+
+    سجل
+
+  </div>
+
+</button>
+
+
+<button
+  class="folder-card"
+  data-folder="meetings"
+>
+
+  <div class="folder-icon">
+    📅
+  </div>
+
+  <h3>
+    الاجتماعات
+  </h3>
+
+  <div class="folder-count">
+
+    <strong id="countMeetings">
+      0
+    </strong>
+
+    سجل
+
+  </div>
+
+</button>
+
+
+<button
+  class="folder-card"
+  data-folder="certificates"
+>
+
+  <div class="folder-icon">
+    🏅
+  </div>
+
+  <h3>
+    الشهادات
+  </h3>
+
+  <div class="folder-count">
+
+    <strong id="countCertificates">
+      0
+    </strong>
+
+    سجل
+
+  </div>
+
+</button>
+
+
+<button
+  class="folder-card"
+  data-folder="exchange"
+>
+
+  <div class="folder-icon">
+    🤝
+  </div>
+
+  <h3>
+    الزيارات التبادلية
+  </h3>
+
+  <div class="folder-count">
+
+    <strong id="countExchange">
+      0
+    </strong>
+
+    سجل
+
+  </div>
+
+</button>
+
+
+<button
+  class="folder-card"
+  data-folder="classroom"
+>
+
+  <div class="folder-icon">
+    👁
+  </div>
+
+  <h3>
+    الزيارات الصفية
+  </h3>
+
+  <div class="folder-count">
+
+    <strong id="countClassroom">
+      0
+    </strong>
+
+    سجل
+
+  </div>
+
+</button>
+
+
+<button
+  class="folder-card"
+  data-folder="permissions"
+>
+
+  <div class="folder-icon">
+    🕒
+  </div>
+
+  <h3>
+    طلبات الاستئذان
+  </h3>
+
+  <div class="folder-count">
+
+    <strong id="countPermissions">
+      0
+    </strong>
+
+    سجل
+
+  </div>
+
+</button>
+
+
+<button
+  class="folder-card"
+  data-folder="lessonPlans"
+>
+
+  <div class="folder-icon">
+    📚
+  </div>
+
+  <h3>
+    دفتر التحضير الإلكتروني
+  </h3>
+
+  <div class="folder-count">
+
+    <strong id="countLessonPlans">
+      0
+    </strong>
+
+    سجل
+
+  </div>
+
+</button>
+
+
+<button
+  class="folder-card"
+  data-folder="grades"
+>
+
+  <div class="folder-icon">
+    📊
+  </div>
+
+  <h3>
+    الدرجات والاختبارات
+  </h3>
+
+  <div class="folder-count">
+
+    <strong id="countGrades">
+      0
+    </strong>
+
+    سجل
+
+  </div>
+
+</button>
+
+
+</section>
+
+
+<section
+  id="recordsArea"
+  class="records-area"
+>
+
+
+<div class="records-head">
+
+  <h2 id="folderTitle">
+    السجلات
+  </h2>
+
+  <button
+    id="backFoldersBtn"
+    class="back-folders"
+    type="button"
+  >
+    ← الرجوع للمجلدات
+  </button>
+
+</div>
+
+
+<div class="archive-tools">
+
+  <input
+    id="searchInput"
+    type="search"
+    placeholder="بحث داخل هذا المجلد..."
+  >
+
+  <input
+    id="dateFrom"
+    type="date"
+    title="من تاريخ"
+  >
+
+  <input
+    id="dateTo"
+    type="date"
+    title="إلى تاريخ"
+  >
+
+</div>
+
+
+<div
+  id="recordsList"
+  class="records-list"
+></div>
+
+
+</section>
+
+
+</main>
+
+
+<script
+  src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+<script src="../../js/config.js?v=20260816-archive4"></script>
+<script src="../../js/graph.js?v=20260816-archive4"></script>
+<script src="../../js/common.js?v=20260816-archive4"></script>
 
 
 <script>
 
-const searchInput =
-  document.getElementById("search");
+"use strict";
 
-const typeSelect =
-  document.getElementById("type");
+
+const sb =
+  window.supabase.createClient(
+    window.WR_CONFIG.supabaseUrl,
+    window.WR_CONFIG.supabaseKey
+  );
+
+
+let allRecords =
+  [];
+
+let currentFolder =
+  null;
+
+let currentUser =
+  null;
+
+let currentProfile =
+  null;
+
+let currentRole =
+  "teacher";
+
+let coordinatorDepartmentIds =
+  [];
+
+let coordinatorVisibleUserIds =
+  [];
+
+let activeSchoolYear =
+  "";
+
+let selectedSchoolYear =
+  "";
+
+
+const foldersView =
+  document.getElementById(
+    "foldersView"
+  );
+
+
+const recordsArea =
+  document.getElementById(
+    "recordsArea"
+  );
+
+
+const folderTitle =
+  document.getElementById(
+    "folderTitle"
+  );
+
 
 const recordsList =
-  document.getElementById("recordsList");
-
-const statusBox =
-  document.getElementById("status");
-
-let allRecords = [];
+  document.getElementById(
+    "recordsList"
+  );
 
 
-/* ==============================
-   تحديد صفحة فتح كل نوع
-   ============================== */
+const searchInput =
+  document.getElementById(
+    "searchInput"
+  );
 
-function getRecordUrl(record) {
 
-  if (record.type === "activity") {
+const dateFrom =
+  document.getElementById(
+    "dateFrom"
+  );
+
+
+const dateTo =
+  document.getElementById(
+    "dateTo"
+  );
+
+
+const schoolYearFilter =
+  document.getElementById(
+    "schoolYearFilter"
+  );
+
+
+const schoolYearHint =
+  document.getElementById(
+    "schoolYearHint"
+  );
+
+
+const backFoldersBtn =
+  document.getElementById(
+    "backFoldersBtn"
+  );
+
+
+const accessLoader =
+  document.getElementById(
+    "accessLoader"
+  );
+
+
+/* =========================================================
+   العام الدراسي
+   ========================================================= */
+
+function schoolYearFromDate(value){
+
+  const raw =
+    String(
+      value ||
+      ""
+    ).trim();
+
+
+  if(!raw){
+
+    return "";
+
+  }
+
+
+  const match =
+    raw.match(
+      /^(\d{4})-(\d{2})-(\d{2})/
+    );
+
+
+  let year;
+  let month;
+
+
+  if(match){
+
+    year =
+      Number(
+        match[1]
+      );
+
+    month =
+      Number(
+        match[2]
+      );
+
+  }else{
+
+    const date =
+      new Date(
+        raw
+      );
+
+
+    if(
+      Number.isNaN(
+        date.getTime()
+      )
+    ){
+
+      return "";
+
+    }
+
+
+    year =
+      date.getFullYear();
+
+    month =
+      date.getMonth() + 1;
+
+  }
+
+
+  if(
+    month >= 8
+  ){
+
+    return (
+      `${year}/${year + 1}`
+    );
+
+  }
+
+
+  return (
+    `${year - 1}/${year}`
+  );
+
+}
+
+
+function recordSchoolYear(record){
+
+  const explicit =
+    String(
+      record?.school_year ||
+      record?.payload?.school_year ||
+      record?.payload?.schoolYear ||
+      ""
+    ).trim();
+
+
+  if(explicit){
+
+    return explicit;
+
+  }
+
+
+  return schoolYearFromDate(
+    record?.record_date ||
+    record?.created_at ||
+    record?.payload?.date ||
+    record?.payload?.visit_date ||
+    record?.payload?.request_date ||
+    record?.payload?.lesson_date ||
+    record?.payload?.exam_date ||
+    ""
+  );
+
+}
+
+
+function schoolYearStart(value){
+
+  const match =
+    String(
+      value ||
+      ""
+    ).match(
+      /^(\d{4})/
+    );
+
+
+  return match
+    ? Number(
+        match[1]
+      )
+    : 0;
+
+}
+
+
+async function loadActiveSchoolYear(){
+
+  try{
+
+    if(
+      window.WRGraph &&
+      typeof WRGraph.getActiveSchoolYear ===
+        "function"
+    ){
+
+      activeSchoolYear =
+        String(
+          await WRGraph.getActiveSchoolYear(
+            true
+          ) ||
+          ""
+        ).trim();
+
+    }
+
+  }catch(error){
+
+    console.warn(
+      "تعذر قراءة العام الدراسي النشط:",
+      error
+    );
+
+  }
+
+
+  if(!activeSchoolYear){
+
+    activeSchoolYear =
+      schoolYearFromDate(
+        new Date()
+          .toISOString()
+      );
+
+  }
+
+
+  selectedSchoolYear =
+    activeSchoolYear;
+
+}
+
+
+function setupSchoolYearFilter(){
+
+  if(
+    !schoolYearFilter
+  ){
+
+    return;
+
+  }
+
+
+  const years =
+    new Set();
+
+
+  if(activeSchoolYear){
+
+    years.add(
+      activeSchoolYear
+    );
+
+  }
+
+
+  (
+    allRecords ||
+    []
+  )
+    .forEach(
+      record => {
+
+        const year =
+          recordSchoolYear(
+            record
+          );
+
+
+        if(year){
+
+          years.add(
+            year
+          );
+
+        }
+
+      }
+    );
+
+
+  const sortedYears =
+    [
+      ...years
+    ]
+      .sort(
+        (
+          a,
+          b
+        ) =>
+          schoolYearStart(b) -
+          schoolYearStart(a)
+      );
+
+
+  schoolYearFilter.innerHTML =
+    [
+      '<option value="all">كل الأعوام الدراسية</option>',
+
+      ...sortedYears.map(
+        year =>
+          `<option value="${esc(year)}">${esc(year)}${year === activeSchoolYear ? " — الحالي" : ""}</option>`
+      )
+    ]
+      .join(
+        ""
+      );
+
+
+  if(
+    activeSchoolYear &&
+    sortedYears.includes(
+      activeSchoolYear
+    )
+  ){
+
+    schoolYearFilter.value =
+      activeSchoolYear;
+
+    selectedSchoolYear =
+      activeSchoolYear;
+
+  }else{
+
+    schoolYearFilter.value =
+      "all";
+
+    selectedSchoolYear =
+      "all";
+
+  }
+
+
+  updateSchoolYearHint();
+
+}
+
+
+function updateSchoolYearHint(){
+
+  if(
+    !schoolYearHint
+  ){
+
+    return;
+
+  }
+
+
+  if(
+    selectedSchoolYear ===
+    "all"
+  ){
+
+    schoolYearHint.textContent =
+      "يتم عرض جميع الأعوام الدراسية.";
+
+    return;
+
+  }
+
+
+  if(
+    selectedSchoolYear ===
+    activeSchoolYear
+  ){
+
+    schoolYearHint.textContent =
+      `العام الدراسي النشط: ${activeSchoolYear}`;
+
+    return;
+
+  }
+
+
+  schoolYearHint.textContent =
+    `أرشيف العام الدراسي: ${selectedSchoolYear}`;
+
+}
+
+
+function recordMatchesSelectedSchoolYear(
+  record
+){
+
+  if(
+    !selectedSchoolYear ||
+    selectedSchoolYear ===
+    "all"
+  ){
+
+    return true;
+
+  }
+
+
+  return (
+    recordSchoolYear(
+      record
+    ) ===
+    selectedSchoolYear
+  );
+
+}
+
+
+/* =========================================================
+   أنواع الأرشيف
+   ========================================================= */
+
+const folderConfig = {
+
+  activities:{
+    title:"🎯 الفعاليات",
+    types:[
+      "activity"
+    ]
+  },
+
+  meetings:{
+    title:"📅 الاجتماعات",
+    types:[
+      "meeting",
+      "invitation"
+    ]
+  },
+
+  certificates:{
+    title:"🏅 الشهادات",
+    types:[
+      "certificate"
+    ]
+  },
+
+  exchange:{
+    title:"🤝 الزيارات التبادلية",
+    types:[
+      "exchange_visit"
+    ]
+  },
+
+  classroom:{
+    title:"👁 الزيارات الصفية",
+    types:[
+      "classroom_visit"
+    ]
+  },
+
+  permissions:{
+    title:"🕒 طلبات الاستئذان",
+    types:[
+      "permission_request"
+    ]
+  },
+
+  lessonPlans:{
+    title:"📚 دفتر التحضير الإلكتروني",
+    types:[
+      "lesson_plan"
+    ]
+  },
+
+  grades:{
+    title:"📊 الدرجات والاختبارات",
+    types:[
+      "grade_sheet"
+    ]
+  }
+
+};
+
+
+/* =========================================================
+   Escape
+   ========================================================= */
+
+function esc(value){
+
+  return String(
+    value ??
+    ""
+  )
+
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+
+}
+
+
+/* =========================================================
+   صلاحيات الأرشيف
+   ========================================================= */
+
+async function loadArchiveAccess(){
+
+  currentUser =
+    await WRGraph.getAccount();
+
+
+  if(!currentUser){
+
+    location.replace(
+      "../../index.html"
+    );
+
+    return false;
+
+  }
+
+
+  currentProfile =
+    await WRAccess.getProfile(
+      true
+    );
+
+
+  if(!currentProfile){
+
+    throw new Error(
+      "تعذر قراءة صلاحيات المستخدم"
+    );
+
+  }
+
+
+  currentRole =
+    String(
+      currentProfile.role ||
+      "teacher"
+    )
+      .trim()
+      .toLowerCase();
+
+
+  if(
+    currentRole ===
+    "coordinator"
+  ){
+
+    await loadCoordinatorArchiveScope();
+
+  }
+
+
+  const scopeBox =
+    document.getElementById(
+      "scopeBox"
+    );
+
+
+  if(
+    currentRole ===
+    "admin"
+  ){
+
+    scopeBox.textContent =
+      "صلاحية القيادة العليا — يعرض الأرشيف جميع سجلات المنصة.";
+
+  }
+
+
+  else if(
+    currentRole ===
+    "coordinator"
+  ){
+
+    const departmentText =
+
+      Array.isArray(
+        currentProfile.department_names
+      ) &&
+      currentProfile.department_names.length
+
+        ? currentProfile
+            .department_names
+            .join("، ")
+
+        : currentProfile.department_name ||
+          "الأقسام المرتبطة بحسابك";
+
+
+    scopeBox.textContent =
+
+      "صلاحية المنسقة — يظهر أرشيفكِ وسجلات معلمات أقسامك فقط: " +
+
+      departmentText +
+
+      ".";
+
+  }
+
+
+  else{
+
+    scopeBox.textContent =
+      "أرشيفكِ الشخصي — تظهر سجلات حسابك فقط.";
+
+  }
+
+
+  return true;
+
+}
+
+
+/* =========================================================
+   أقسام ومعلمات المنسقة
+   ========================================================= */
+
+async function loadCoordinatorArchiveScope(){
+
+  coordinatorDepartmentIds =
+    [];
+
+
+  coordinatorVisibleUserIds = [
+    String(
+      currentUser.id
+    )
+  ];
+
+
+  let scope =
+    null;
+
+
+  if(
+    window.WRAccess &&
+    typeof WRAccess.getScope ===
+      "function"
+  ){
+
+    try{
+
+      scope =
+        await WRAccess.getScope();
+
+    }catch(error){
+
+      console.warn(
+        "تعذر قراءة نطاق المنسقة:",
+        error
+      );
+
+    }
+
+  }
+
+
+  if(
+    Array.isArray(
+      scope?.department_ids
+    )
+  ){
+
+    coordinatorDepartmentIds =
+      scope
+        .department_ids
+        .filter(Boolean)
+        .map(String);
+
+  }
+
+
+  if(
+    !coordinatorDepartmentIds.length &&
+    Array.isArray(
+      currentProfile?.department_ids
+    )
+  ){
+
+    coordinatorDepartmentIds =
+      currentProfile
+        .department_ids
+        .filter(Boolean)
+        .map(String);
+
+  }
+
+
+  if(
+    !coordinatorDepartmentIds.length &&
+    currentProfile?.department_id
+  ){
+
+    coordinatorDepartmentIds = [
+      String(
+        currentProfile.department_id
+      )
+    ];
+
+  }
+
+
+  if(
+    !coordinatorDepartmentIds.length
+  ){
+
+    return;
+
+  }
+
+
+  const visibleIds =
+    new Set(
+      coordinatorVisibleUserIds
+    );
+
+
+  const {
+    data:assignments,
+    error:assignmentsError
+  } =
+    await sb
+
+      .from(
+        "profile_departments"
+      )
+
+      .select(
+        `
+        profile_id,
+        department_id,
+        assignment_type
+        `
+      )
+
+      .in(
+        "department_id",
+        coordinatorDepartmentIds
+      );
+
+
+  if(assignmentsError){
+
+    console.warn(
+      "profile_departments:",
+      assignmentsError
+    );
+
+  }else{
+
+
+    (
+      assignments ||
+      []
+    )
+      .forEach(
+        row => {
+
+
+          const assignmentType =
+            String(
+              row.assignment_type ||
+              ""
+            )
+              .trim()
+              .toLowerCase();
+
+
+          if(
+            row.profile_id &&
+            (
+              !assignmentType ||
+              assignmentType ===
+                "teacher"
+            )
+          ){
+
+            visibleIds.add(
+              String(
+                row.profile_id
+              )
+            );
+
+          }
+
+        }
+      );
+
+  }
+
+
+  const {
+    data:legacyTeachers,
+    error:legacyError
+  } =
+    await sb
+
+      .from(
+        "user_profiles"
+      )
+
+      .select(
+        `
+        user_id,
+        role,
+        department_id
+        `
+      )
+
+      .eq(
+        "role",
+        "teacher"
+      )
+
+      .in(
+        "department_id",
+        coordinatorDepartmentIds
+      );
+
+
+  if(legacyError){
+
+    console.warn(
+      "Legacy departments:",
+      legacyError
+    );
+
+  }else{
+
+
+    (
+      legacyTeachers ||
+      []
+    )
+      .forEach(
+        row => {
+
+
+          if(
+            row.user_id
+          ){
+
+            visibleIds.add(
+              String(
+                row.user_id
+              )
+            );
+
+          }
+
+        }
+      );
+
+  }
+
+
+  coordinatorVisibleUserIds =
+    [
+      ...visibleIds
+    ];
+
+}
+
+
+/* =========================================================
+   معرفة صاحبة السجل
+   ========================================================= */
+
+function recordOwnerId(record){
+
+  return (
+
+    record?.visitor_id ||
+
+    record?.teacher_id ||
+
+    record?.user_id ||
+
+    record?.created_by ||
+
+    record?.owner_id ||
+
+    record?.payload?.visitor_id ||
+
+    record?.payload?.teacher_id ||
+
+    record?.payload?.user_id ||
+
+    record?.payload?.created_by ||
+
+    record?.payload?.owner_id ||
+
+    null
+
+  );
+
+}
+
+
+/* =========================================================
+   فلترة السجلات حسب الحساب
+   ========================================================= */
+
+function applyClientScope(records){
+
+  if(
+    currentRole ===
+    "admin"
+  ){
+
+    return records;
+
+  }
+
+
+  const visibleIds =
+
+    currentRole ===
+    "coordinator"
+
+      ? new Set(
+          coordinatorVisibleUserIds
+            .map(String)
+        )
+
+      : new Set([
+          String(
+            currentUser.id
+          )
+        ]);
+
+
+  return records
+    .filter(
+      record => {
+
+
+        const ownerId =
+          recordOwnerId(
+            record
+          );
+
+
+        if(!ownerId){
+
+          return false;
+
+        }
+
+
+        return visibleIds.has(
+          String(
+            ownerId
+          )
+        );
+
+      }
+    );
+
+}
+/* =========================================================
+   رابط فتح السجل
+   ========================================================= */
+
+function getRecordUrl(record){
+
+  if(
+    record.type ===
+    "activity"
+  ){
 
     return (
       "../activities/report.html?id=" +
-      encodeURIComponent(record.id)
+      encodeURIComponent(
+        record.id
+      )
     );
 
   }
 
 
-  if (record.type === "invitation") {
-
-    return (
-      "../meetings/invitation.html?id=" +
-      encodeURIComponent(record.id)
-    );
-
-  }
-
-
-  if (record.type === "meeting") {
+  if(
+    record.type ===
+    "meeting"
+  ){
 
     return (
       "../meetings/minutes.html?id=" +
-      encodeURIComponent(record.id)
+      encodeURIComponent(
+        record.id
+      )
     );
 
   }
 
 
-  if (record.type === "attendance") {
+  if(
+    record.type ===
+    "invitation"
+  ){
 
     return (
-      "../meetings/attendance.html?id=" +
-      encodeURIComponent(record.id)
+      "../meetings/invitation.html?id=" +
+      encodeURIComponent(
+        record.id
+      )
     );
 
   }
 
 
-  if (record.type === "recommendation") {
-
-    return (
-      "../meetings/recommendations.html?id=" +
-      encodeURIComponent(record.id)
-    );
-
-  }
-
-
-  if (record.type === "certificate") {
+  if(
+    record.type ===
+    "certificate"
+  ){
 
     return (
       "../certificates/create.html?id=" +
-      encodeURIComponent(record.id)
+      encodeURIComponent(
+        record.id
+      )
     );
+
+  }
+
+
+  if(
+    record.type ===
+    "exchange_visit"
+  ){
+
+    /*
+      صفحة الزيارات الحالية نفسها
+      تعرض السجل حسب الصلاحية.
+    */
+
+    return "../exchange-visits/index.html";
+
+  }
+
+
+  if(
+    record.type ===
+    "classroom_visit"
+  ){
+
+    return "../classroom-visits/index.html";
+
+  }
+
+
+  if(
+    record.type ===
+    "permission_request"
+  ){
+
+    return "../permissions/index.html";
+
+  }
+
+
+  if(
+    record.type ===
+    "lesson_plan"
+  ){
+
+    return (
+      "../lesson-plans/index.html?id=" +
+      encodeURIComponent(
+        record.id
+      )
+    );
+
+  }
+
+
+  if(
+    record.type ===
+    "grade_sheet"
+  ){
+
+    return "../grades/index.html";
 
   }
 
 
   return "#";
-}
-
-
-/* ==============================
-   أسماء الأنواع بالعربي
-   ============================== */
-
-function getTypeName(type) {
-
-  if (type === "activity") {
-    return "فعالية";
-  }
-
-  if (type === "meeting") {
-    return "محضر اجتماع";
-  }
-
-  if (type === "invitation") {
-    return "دعوة اجتماع";
-  }
-
-  if (type === "attendance") {
-    return "سجل حضور";
-  }
-
-  if (type === "recommendation") {
-    return "متابعة توصيات";
-  }
-
-  if (type === "certificate") {
-    return "شهادة";
-  }
-
-  return type || "سجل";
-}
-
-
-/* ==============================
-   حماية النصوص
-   ============================== */
-
-function escapeHtml(value) {
-
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
 
 }
 
 
-/* ==============================
-   عرض السجلات
-   ============================== */
+/* =========================================================
+   اسم النوع
+   ========================================================= */
 
-function render() {
+function getTypeLabel(type){
 
-  const searchValue =
-    searchInput.value
-      .toLowerCase()
-      .trim();
+  return ({
 
+    activity:
+      "فعالية",
 
-  const selectedType =
-    typeSelect.value;
+    meeting:
+      "محضر اجتماع",
 
+    invitation:
+      "دعوة اجتماع",
 
-  const filteredRecords =
-    allRecords.filter(record => {
+    certificate:
+      "شهادة",
 
-      const payloadText =
-        JSON.stringify(
-          record.payload || {}
-        ).toLowerCase();
+    exchange_visit:
+      "زيارة تبادلية",
 
+    classroom_visit:
+      "زيارة صفية",
 
-      const title =
-        String(
-          record.title || ""
-        ).toLowerCase();
+    permission_request:
+      "طلب استئذان",
 
+    lesson_plan:
+      "تحضير درس",
 
-      const type =
-        String(
-          record.type || ""
-        ).toLowerCase();
+    grade_sheet:
+      "سجل درجات"
 
+  })[type] ||
+  type;
 
-      const matchesSearch =
-        !searchValue ||
-        title.includes(searchValue) ||
-        type.includes(searchValue) ||
-        payloadText.includes(searchValue);
+}
 
 
-      const matchesType =
-        !selectedType ||
-        record.type === selectedType;
+/* =========================================================
+   سجلات المجلد
+   ========================================================= */
+
+function getFolderRecords(folder){
+
+  const types =
+    folderConfig[
+      folder
+    ]?.types ||
+    [];
 
 
-      return (
-        matchesSearch &&
-        matchesType
+  return allRecords
+    .filter(
+      record =>
+        types.includes(
+          record.type
+        ) &&
+        recordMatchesSelectedSchoolYear(
+          record
+        )
+    );
+
+}
+
+
+/* =========================================================
+   تحديث أعداد المجلدات
+   ========================================================= */
+
+function updateCounts(){
+
+  document.getElementById(
+    "countActivities"
+  ).textContent =
+    getFolderRecords(
+      "activities"
+    ).length;
+
+
+  document.getElementById(
+    "countMeetings"
+  ).textContent =
+    getFolderRecords(
+      "meetings"
+    ).length;
+
+
+  document.getElementById(
+    "countCertificates"
+  ).textContent =
+    getFolderRecords(
+      "certificates"
+    ).length;
+
+
+  document.getElementById(
+    "countExchange"
+  ).textContent =
+    getFolderRecords(
+      "exchange"
+    ).length;
+
+
+  document.getElementById(
+    "countClassroom"
+  ).textContent =
+    getFolderRecords(
+      "classroom"
+    ).length;
+
+
+  document.getElementById(
+    "countPermissions"
+  ).textContent =
+    getFolderRecords(
+      "permissions"
+    ).length;
+
+
+  document.getElementById(
+    "countLessonPlans"
+  ).textContent =
+    getFolderRecords(
+      "lessonPlans"
+    ).length;
+
+
+  document.getElementById(
+    "countGrades"
+  ).textContent =
+    getFolderRecords(
+      "grades"
+    ).length;
+
+}
+
+
+/* =========================================================
+   فتح مجلد
+   ========================================================= */
+
+function openFolder(folder){
+
+  currentFolder =
+    folder;
+
+
+  searchInput.value =
+    "";
+
+
+  dateFrom.value =
+    "";
+
+
+  dateTo.value =
+    "";
+
+
+  foldersView.style.display =
+    "none";
+
+
+  recordsArea
+    .classList
+    .add(
+      "open"
+    );
+
+
+  folderTitle.textContent =
+    folderConfig[
+      folder
+    ]?.title ||
+    "السجلات";
+
+
+  renderCurrentFolder();
+
+}
+
+
+/* =========================================================
+   الرجوع إلى المجلدات
+   ========================================================= */
+
+function showFolders(){
+
+  currentFolder =
+    null;
+
+
+  recordsArea
+    .classList
+    .remove(
+      "open"
+    );
+
+
+  foldersView.style.display =
+    "grid";
+
+}
+/* =========================================================
+   تنسيق التاريخ
+   ========================================================= */
+
+function formatArchiveDate(value){
+
+  if(!value){
+
+    return "—";
+
+  }
+
+
+  try{
+
+    const date =
+      new Date(
+        value
       );
 
-    });
+
+    if(
+      Number.isNaN(
+        date.getTime()
+      )
+    ){
+
+      return String(
+        value
+      );
+
+    }
 
 
-  recordsList.innerHTML = "";
+    return date
+      .toLocaleDateString(
+        "ar-BH",
+        {
+          year:"numeric",
+          month:"long",
+          day:"numeric"
+        }
+      );
+
+  }catch(error){
+
+    return String(
+      value
+    );
+
+  }
+
+}
 
 
-  if (!filteredRecords.length) {
+/* =========================================================
+   تاريخ السجل
+   ========================================================= */
 
-    statusBox.style.display =
-      "block";
+function getRecordDate(record){
+
+  return (
+
+    record?.record_date ||
+
+    record?.visit_date ||
+
+    record?.request_date ||
+
+    record?.lesson_date ||
+
+    record?.exam_date ||
+
+    record?.created_at ||
+
+    record?.payload?.date ||
+
+    record?.payload?.visit_date ||
+
+    record?.payload?.request_date ||
+
+    record?.payload?.lesson_date ||
+
+    record?.payload?.exam_date ||
+
+    record?.payload?.created_at ||
+
+    ""
+
+  );
+
+}
 
 
-    statusBox.textContent =
-      allRecords.length
-        ? "لا توجد سجلات مطابقة للبحث."
-        : "لا توجد سجلات محفوظة.";
+/* =========================================================
+   عنوان السجل
+   ========================================================= */
+
+function getRecordTitle(record){
+
+  const payload =
+    record?.payload ||
+    {};
+
+
+  return (
+
+    record?.title ||
+
+    payload?.title ||
+
+    payload?.name ||
+
+    payload?.activity_name ||
+
+    payload?.meeting_title ||
+
+    payload?.subject ||
+
+    payload?.lesson_title ||
+
+    payload?.exam_name ||
+
+    payload?.student_name ||
+
+    getTypeLabel(
+      record?.type
+    )
+
+  );
+
+}
+
+
+/* =========================================================
+   اسم صاحبة / منفذة السجل
+   ========================================================= */
+
+function getRecordPerson(record){
+
+  const payload =
+    record?.payload ||
+    {};
+
+
+  return (
+
+    payload?.executor ||
+
+    payload?.owner_name ||
+
+    payload?.teacher_name ||
+
+    payload?.visitor_name ||
+
+    payload?.created_by_name ||
+
+    record?.teacher_name ||
+
+    record?.visitor_name ||
+
+    record?.user_name ||
+
+    ""
+
+  );
+
+}
+
+
+/* =========================================================
+   القسم
+   ========================================================= */
+
+function getRecordDepartment(record){
+
+  const payload =
+    record?.payload ||
+    {};
+
+
+  return (
+
+    payload?.department ||
+
+    payload?.department_name ||
+
+    record?.department_name ||
+
+    ""
+
+  );
+
+}
+
+
+/* =========================================================
+   نص البحث في السجل
+   ========================================================= */
+
+function getRecordSearchText(record){
+
+  const payload =
+    record?.payload ||
+    {};
+
+
+  let payloadText =
+    "";
+
+
+  try{
+
+    payloadText =
+      JSON.stringify(
+        payload
+      );
+
+  }catch(error){
+
+    payloadText =
+      "";
+
+  }
+
+
+  return [
+
+    getRecordTitle(
+      record
+    ),
+
+    getTypeLabel(
+      record?.type
+    ),
+
+    getRecordPerson(
+      record
+    ),
+
+    getRecordDepartment(
+      record
+    ),
+
+    getRecordDate(
+      record
+    ),
+
+    recordSchoolYear(
+      record
+    ),
+
+    payloadText
+
+  ]
+    .join(
+      " "
+    )
+    .toLowerCase();
+
+}
+
+
+/* =========================================================
+   فلترة البحث والتاريخ
+   ========================================================= */
+
+function filterFolderRecords(records){
+
+  const search =
+    String(
+      searchInput.value ||
+      ""
+    )
+      .trim()
+      .toLowerCase();
+
+
+  const from =
+    String(
+      dateFrom.value ||
+      ""
+    );
+
+
+  const to =
+    String(
+      dateTo.value ||
+      ""
+    );
+
+
+  return records.filter(
+    record => {
+
+      if(search){
+
+        const text =
+          getRecordSearchText(
+            record
+          );
+
+
+        if(
+          !text.includes(
+            search
+          )
+        ){
+
+          return false;
+
+        }
+
+      }
+
+
+      const recordDate =
+        String(
+          getRecordDate(
+            record
+          ) ||
+          ""
+        )
+          .slice(
+            0,
+            10
+          );
+
+
+      if(
+        from &&
+        (
+          !recordDate ||
+          recordDate < from
+        )
+      ){
+
+        return false;
+
+      }
+
+
+      if(
+        to &&
+        (
+          !recordDate ||
+          recordDate > to
+        )
+      ){
+
+        return false;
+
+      }
+
+
+      return true;
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   ترتيب السجلات من الأحدث
+   ========================================================= */
+
+function sortArchiveRecords(records){
+
+  return [
+    ...records
+  ]
+    .sort(
+      (
+        a,
+        b
+      ) => {
+
+        const aDate =
+          new Date(
+            getRecordDate(
+              a
+            ) ||
+            0
+          )
+            .getTime();
+
+
+        const bDate =
+          new Date(
+            getRecordDate(
+              b
+            ) ||
+            0
+          )
+            .getTime();
+
+
+        return (
+          bDate -
+          aDate
+        );
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   رسم سجلات المجلد
+   ========================================================= */
+
+function renderCurrentFolder(){
+
+  if(
+    !currentFolder
+  ){
+
+    return;
+
+  }
+
+
+  let records =
+    getFolderRecords(
+      currentFolder
+    );
+
+
+  records =
+    filterFolderRecords(
+      records
+    );
+
+
+  records =
+    sortArchiveRecords(
+      records
+    );
+
+
+  if(
+    !records.length
+  ){
+
+    recordsList.innerHTML = `
+
+      <div class="empty">
+
+        لا توجد سجلات في هذا المجلد
+
+        ${
+          selectedSchoolYear &&
+          selectedSchoolYear !== "all"
+
+            ? ` للعام الدراسي <strong>${esc(selectedSchoolYear)}</strong>`
+
+            : ""
+        }.
+
+      </div>
+
+    `;
 
 
     return;
@@ -457,189 +2514,1140 @@ function render() {
   }
 
 
-  statusBox.style.display =
-    "none";
+  recordsList.innerHTML =
+    records
+      .map(
+        record => {
 
 
-  filteredRecords.forEach(record => {
-
-    const card =
-      document.createElement("div");
-
-
-    card.className =
-      "record-card";
+          const title =
+            getRecordTitle(
+              record
+            );
 
 
-    const title =
-      record.title ||
-      "بدون عنوان";
+          const typeLabel =
+            getTypeLabel(
+              record.type
+            );
 
 
-    const typeName =
-      getTypeName(
-        record.type
-      );
+          const date =
+            getRecordDate(
+              record
+            );
 
 
-    const date =
-      record.record_date ||
-      record.created_at ||
-      "";
+          const person =
+            getRecordPerson(
+              record
+            );
 
 
-    const url =
-      getRecordUrl(
-        record
-      );
+          const department =
+            getRecordDepartment(
+              record
+            );
 
 
-    card.innerHTML = `
+          const year =
+            recordSchoolYear(
+              record
+            );
 
-      <h3>
-        ${escapeHtml(title)}
-      </h3>
+
+          const url =
+            getRecordUrl(
+              record
+            );
 
 
-      <div class="record-meta">
+          return `
 
-        ${escapeHtml(typeName)}
+            <article class="record-card">
 
-        ${
-          date
-            ? " • " +
-              escapeHtml(date)
-            : ""
+              <h3>
+                ${esc(title)}
+              </h3>
+
+
+              <div class="record-meta">
+
+                <div>
+                  <strong>النوع:</strong>
+                  ${esc(typeLabel)}
+                </div>
+
+
+                <div>
+                  <strong>التاريخ:</strong>
+                  ${esc(
+                    formatArchiveDate(
+                      date
+                    )
+                  )}
+                </div>
+
+
+                ${
+                  year
+
+                    ? `
+
+                      <div>
+                        <strong>العام الدراسي:</strong>
+                        ${esc(year)}
+                      </div>
+
+                    `
+
+                    : ""
+                }
+
+
+                ${
+                  person
+
+                    ? `
+
+                      <div>
+                        <strong>الاسم:</strong>
+                        ${esc(person)}
+                      </div>
+
+                    `
+
+                    : ""
+                }
+
+
+                ${
+                  department
+
+                    ? `
+
+                      <div>
+                        <strong>القسم:</strong>
+                        ${esc(department)}
+                      </div>
+
+                    `
+
+                    : ""
+                }
+
+              </div>
+
+
+              <div class="record-actions">
+
+                ${
+                  url !== "#"
+
+                    ? `
+
+                      <a
+                        class="btn-open"
+                        href="${esc(url)}"
+                      >
+                        فتح السجل
+                      </a>
+
+                    `
+
+                    : ""
+                }
+
+              </div>
+
+            </article>
+
+          `;
+
         }
-
-      </div>
-
-
-      <div class="record-actions">
-
-        ${
-          url !== "#"
-            ? `
-              <a
-                class="btn btn-soft"
-                href="${url}"
-              >
-                فتح / تعديل
-              </a>
-            `
-            : ""
-        }
-
-      </div>
-
-    `;
-
-
-    recordsList.appendChild(
-      card
-    );
-
-  });
+      )
+      .join(
+        ""
+      );
 
 }
 
 
-/* ==============================
-   تحميل البيانات من Supabase
-   ============================== */
+/* =========================================================
+   تحويل سجلات records العامة
+   ========================================================= */
 
-async function loadRecords() {
+function normalizeMainRecord(row){
 
-  try {
+  const payload =
+    row?.payload &&
+    typeof row.payload ===
+      "object"
 
-    statusBox.style.display =
-      "block";
+      ? row.payload
+
+      : {};
 
 
-    statusBox.textContent =
-      "جارٍ تحميل السجلات...";
+  return {
+
+    ...row,
+
+    payload,
+
+    type:
+      row?.type ||
+      payload?.type ||
+      "record",
+
+    title:
+      row?.title ||
+      payload?.title ||
+      payload?.name ||
+      "",
+
+    record_date:
+      row?.record_date ||
+      payload?.date ||
+      row?.created_at ||
+      "",
+
+    school_year:
+      row?.school_year ||
+      payload?.school_year ||
+      payload?.schoolYear ||
+      "",
+
+    created_by:
+      row?.created_by ||
+      payload?.created_by ||
+      payload?.owner_id ||
+      null
+
+  };
+
+}
 
 
-    if (
-      !window.WRGraph ||
-      typeof WRGraph.fetchRecords !==
-        "function"
-    ) {
+/* =========================================================
+   تحميل records
+   ========================================================= */
 
-      throw new Error(
-        "دالة جلب السجلات غير متاحة"
-      );
+async function loadMainRecords(){
 
-    }
-
+  try{
 
     const records =
       await WRGraph.fetchRecords();
 
 
-    allRecords =
-      Array.isArray(records)
-        ? records
-        : [];
+    return (
+      records ||
+      []
+    )
+      .map(
+        normalizeMainRecord
+      );
 
-
-    console.log(
-      "Archive records:",
-      allRecords
-    );
-
-
-    render();
-
-
-  } catch (error) {
+  }catch(error){
 
     console.error(
-      "Archive loading error:",
+      "تعذر تحميل records:",
       error
     );
 
 
-    statusBox.style.display =
-      "block";
-
-
-    statusBox.textContent =
-      "تعذر تحميل الأرشيف: " +
-      (
-        error.message ||
-        error
-      );
+    return [];
 
   }
 
 }
 
 
-/* ==============================
-   البحث والفلترة
-   ============================== */
+/* =========================================================
+   تحميل الزيارات التبادلية
+   ========================================================= */
 
-searchInput.addEventListener(
-  "input",
-  render
-);
+async function loadExchangeVisits(){
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await sb
+        .from(
+          "exchange_visits"
+        )
+        .select("*")
+        .order(
+          "created_at",
+          {
+            ascending:false
+          }
+        );
 
 
-typeSelect.addEventListener(
-  "change",
-  render
-);
+    if(error){
+
+      throw error;
+
+    }
 
 
-/* ==============================
+    return (
+      data ||
+      []
+    )
+      .map(
+        row => ({
+
+          ...row,
+
+          type:
+            "exchange_visit",
+
+          title:
+            row.title ||
+            row.visit_title ||
+            row.subject ||
+            "زيارة تبادلية",
+
+          record_date:
+            row.visit_date ||
+            row.record_date ||
+            row.created_at ||
+            "",
+
+          created_by:
+            row.created_by ||
+            row.teacher_id ||
+            row.user_id ||
+            null,
+
+          payload:{
+            ...row
+          }
+
+        })
+      );
+
+  }catch(error){
+
+    console.warn(
+      "تعذر تحميل الزيارات التبادلية:",
+      error
+    );
+
+
+    return [];
+
+  }
+
+}
+
+
+/* =========================================================
+   تحميل الزيارات الصفية
+   ========================================================= */
+
+async function loadClassroomVisits(){
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await sb
+        .from(
+          "classroom_visits"
+        )
+        .select("*")
+        .order(
+          "created_at",
+          {
+            ascending:false
+          }
+        );
+
+
+    if(error){
+
+      throw error;
+
+    }
+
+
+    return (
+      data ||
+      []
+    )
+      .map(
+        row => ({
+
+          ...row,
+
+          type:
+            "classroom_visit",
+
+          title:
+            row.title ||
+            row.lesson_title ||
+            row.subject ||
+            "زيارة صفية",
+
+          record_date:
+            row.visit_date ||
+            row.record_date ||
+            row.created_at ||
+            "",
+
+          created_by:
+            row.created_by ||
+            row.visitor_id ||
+            row.user_id ||
+            null,
+
+          payload:{
+            ...row
+          }
+
+        })
+      );
+
+  }catch(error){
+
+    console.warn(
+      "تعذر تحميل الزيارات الصفية:",
+      error
+    );
+
+
+    return [];
+
+  }
+
+}
+
+
+/* =========================================================
+   تحميل طلبات الاستئذان
+   ========================================================= */
+
+async function loadPermissionRequests(){
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await sb
+        .from(
+          "permission_requests"
+        )
+        .select("*")
+        .order(
+          "created_at",
+          {
+            ascending:false
+          }
+        );
+
+
+    if(error){
+
+      throw error;
+
+    }
+
+
+    return (
+      data ||
+      []
+    )
+      .map(
+        row => ({
+
+          ...row,
+
+          type:
+            "permission_request",
+
+          title:
+            row.title ||
+            row.reason ||
+            "طلب استئذان",
+
+          record_date:
+            row.request_date ||
+            row.record_date ||
+            row.created_at ||
+            "",
+
+          created_by:
+            row.created_by ||
+            row.user_id ||
+            row.teacher_id ||
+            null,
+
+          payload:{
+            ...row
+          }
+
+        })
+      );
+
+  }catch(error){
+
+    console.warn(
+      "تعذر تحميل طلبات الاستئذان:",
+      error
+    );
+
+
+    return [];
+
+  }
+
+}
+
+
+/* =========================================================
+   تحميل دفتر التحضير
+   ========================================================= */
+
+async function loadLessonPlans(){
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await sb
+        .from(
+          "lesson_plans"
+        )
+        .select("*")
+        .order(
+          "created_at",
+          {
+            ascending:false
+          }
+        );
+
+
+    if(error){
+
+      throw error;
+
+    }
+
+
+    return (
+      data ||
+      []
+    )
+      .map(
+        row => ({
+
+          ...row,
+
+          type:
+            "lesson_plan",
+
+          title:
+            row.title ||
+            row.lesson_title ||
+            row.subject ||
+            "تحضير درس",
+
+          record_date:
+            row.lesson_date ||
+            row.record_date ||
+            row.created_at ||
+            "",
+
+          created_by:
+            row.created_by ||
+            row.teacher_id ||
+            row.user_id ||
+            null,
+
+          payload:{
+            ...row
+          }
+
+        })
+      );
+
+  }catch(error){
+
+    console.warn(
+      "تعذر تحميل دفتر التحضير:",
+      error
+    );
+
+
+    return [];
+
+  }
+
+}
+
+
+/* =========================================================
+   تحميل الدرجات والاختبارات
+   ========================================================= */
+
+async function loadGrades(){
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await sb
+        .from(
+          "student_grades"
+        )
+        .select("*")
+        .order(
+          "created_at",
+          {
+            ascending:false
+          }
+        );
+
+
+    if(error){
+
+      throw error;
+
+    }
+
+
+    return (
+      data ||
+      []
+    )
+      .map(
+        row => ({
+
+          ...row,
+
+          type:
+            "grade_sheet",
+
+          title:
+            row.title ||
+            row.exam_name ||
+            row.subject ||
+            "سجل درجات",
+
+          record_date:
+            row.exam_date ||
+            row.record_date ||
+            row.created_at ||
+            "",
+
+          created_by:
+            row.created_by ||
+            row.teacher_id ||
+            row.user_id ||
+            null,
+
+          payload:{
+            ...row
+          }
+
+        })
+      );
+
+  }catch(error){
+
+    console.warn(
+      "تعذر تحميل الدرجات والاختبارات:",
+      error
+    );
+
+
+    return [];
+
+  }
+
+}
+/* =========================================================
+   تحميل الدرجات والاختبارات
+   النسخة الصحيحة المعتمدة في المنصة
+   ========================================================= */
+
+async function loadGrades(){
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await sb
+        .from(
+          "grade_sheets"
+        )
+        .select("*")
+        .order(
+          "exam_date",
+          {
+            ascending:false
+          }
+        );
+
+
+    if(error){
+
+      throw error;
+
+    }
+
+
+    return (
+      data ||
+      []
+    )
+      .map(
+        row => ({
+
+          ...row,
+
+          type:
+            "grade_sheet",
+
+          title:
+            "درجات: " +
+            (
+              row.subject ||
+              "مادة"
+            ) +
+            " — " +
+            (
+              row.exam_type ||
+              "اختبار"
+            ) +
+            " — " +
+            (
+              row.teacher_name ||
+              "معلمة"
+            ),
+
+          record_date:
+            row.exam_date ||
+            row.record_date ||
+            row.created_at ||
+            "",
+
+          teacher_id:
+            row.teacher_id ||
+            null,
+
+          created_by:
+            row.created_by ||
+            row.teacher_id ||
+            row.user_id ||
+            null,
+
+          payload:{
+            ...row
+          }
+
+        })
+      );
+
+  }catch(error){
+
+    console.warn(
+      "تعذر تحميل الدرجات والاختبارات:",
+      error
+    );
+
+
+    return [];
+
+  }
+
+}
+
+
+/* =========================================================
+   تحميل جميع سجلات الأرشيف
+   ========================================================= */
+
+async function loadAllRecords(){
+
+  try{
+
+
+    const results =
+      await Promise.all([
+
+        loadMainRecords(),
+
+        loadExchangeVisits(),
+
+        loadClassroomVisits(),
+
+        loadPermissionRequests(),
+
+        loadLessonPlans(),
+
+        loadGrades()
+
+      ]);
+
+
+    const [
+      mainRecords,
+      exchangeVisits,
+      classroomVisits,
+      permissionRequests,
+      lessonPlans,
+      grades
+    ] =
+      results;
+
+
+    /*
+      حذف الأنواع التي ألغيناها
+      من المنصة.
+    */
+
+    const cleanedMainRecords =
+      (
+        mainRecords ||
+        []
+      )
+        .filter(
+          record =>
+            ![
+              "attendance",
+              "recommendation"
+            ].includes(
+              record.type
+            )
+        );
+
+
+    /*
+      دمج كل مصادر البيانات.
+    */
+
+    const merged =
+      [
+
+        ...cleanedMainRecords,
+
+        ...exchangeVisits,
+
+        ...classroomVisits,
+
+        ...permissionRequests,
+
+        ...lessonPlans,
+
+        ...grades
+
+      ];
+
+
+    /*
+      تطبيق صلاحيات الحساب:
+      admin = الكل
+      coordinator = أقسامها
+      teacher = سجلاتها
+    */
+
+    allRecords =
+      applyClientScope(
+        merged
+      );
+
+
+    /*
+      ترتيب عام من الأحدث.
+    */
+
+    allRecords =
+      sortArchiveRecords(
+        allRecords
+      );
+
+
+    /*
+      بناء قائمة الأعوام الدراسية
+      من البيانات الموجودة.
+    */
+
+    setupSchoolYearFilter();
+
+
+    /*
+      تحديث أعداد المجلدات
+      حسب العام المختار.
+    */
+
+    updateCounts();
+
+
+    /*
+      لو المستخدم داخل مجلد بالفعل،
+      نعيد رسمه.
+    */
+
+    if(
+      currentFolder
+    ){
+
+      renderCurrentFolder();
+
+    }
+
+
+    console.log(
+      "Archive loaded:",
+      {
+        records:
+          allRecords.length,
+
+        activeSchoolYear,
+
+        selectedSchoolYear
+      }
+    );
+
+
+  }catch(error){
+
+
+    console.error(
+      "Archive load error:",
+      error
+    );
+
+
+    alert(
+      "تعذر تحميل بعض بيانات الأرشيف: " +
+      (
+        error.message ||
+        error
+      )
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   تغيير العام الدراسي
+   ========================================================= */
+
+if(
+  schoolYearFilter
+){
+
+  schoolYearFilter
+    .addEventListener(
+      "change",
+      () => {
+
+
+        selectedSchoolYear =
+          schoolYearFilter.value ||
+          "all";
+
+
+        updateSchoolYearHint();
+
+
+        /*
+          الأعداد الموجودة على المجلدات
+          تتغير تلقائيًا حسب السنة.
+        */
+
+        updateCounts();
+
+
+        /*
+          إذا كان المستخدم داخل مجلد
+          نعرض سجلات السنة الجديدة فورًا.
+        */
+
+        if(
+          currentFolder
+        ){
+
+          renderCurrentFolder();
+
+        }
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   فتح المجلدات
+   ========================================================= */
+
+document
+  .querySelectorAll(
+    ".folder-card"
+  )
+  .forEach(
+    card => {
+
+      card.addEventListener(
+        "click",
+        () => {
+
+          openFolder(
+            card.dataset.folder
+          );
+
+        }
+      );
+
+    }
+  );
+
+
+/* =========================================================
+   الرجوع للمجلدات
+   ========================================================= */
+
+backFoldersBtn
+  .addEventListener(
+    "click",
+    showFolders
+  );
+
+
+/* =========================================================
+   البحث
+   ========================================================= */
+
+searchInput
+  .addEventListener(
+    "input",
+    renderCurrentFolder
+  );
+
+
+/* =========================================================
+   من تاريخ
+   ========================================================= */
+
+dateFrom
+  .addEventListener(
+    "change",
+    renderCurrentFolder
+  );
+
+
+/* =========================================================
+   إلى تاريخ
+   ========================================================= */
+
+dateTo
+  .addEventListener(
+    "change",
+    renderCurrentFolder
+  );
+
+
+/* =========================================================
    تشغيل الأرشيف
-   ============================== */
+   ========================================================= */
 
-loadRecords();
+document
+  .addEventListener(
+    "DOMContentLoaded",
+    async () => {
+
+      try{
+
+
+        /*
+          أولًا:
+          التحقق من المستخدم والصلاحيات.
+        */
+
+        const allowed =
+          await loadArchiveAccess();
+
+
+        if(
+          !allowed
+        ){
+
+          return;
+
+        }
+
+
+        /*
+          ثانيًا:
+          قراءة العام الدراسي النشط
+          من app_settings.
+        */
+
+        await loadActiveSchoolYear();
+
+
+        /*
+          ثالثًا:
+          تحميل كل بيانات الأرشيف.
+        */
+
+        await loadAllRecords();
+
+
+      }catch(error){
+
+
+        console.error(
+          "Archive access error:",
+          error
+        );
+
+
+        alert(
+          "تعذر التحقق من صلاحية الأرشيف: " +
+          (
+            error.message ||
+            error
+          )
+        );
+
+
+      }finally{
+
+
+        accessLoader.style.display =
+          "none";
+
+      }
+
+    }
+  );
 
 </script>
 
 
 </body>
+
 </html>

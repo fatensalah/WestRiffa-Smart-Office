@@ -1,482 +1,1157 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
- 
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>إعدادات الربط | WestRiffa Smart Office</title>
- 
-  <link rel="stylesheet" href="../../css/style.css">
- 
-  <style>
-    .login-box{
-      display:grid;
-      gap:12px;
-      margin-top:18px;
-    }
- 
-    .login-box input{
-      width:100%;
-      box-sizing:border-box;
-      padding:12px 14px;
-      border:1px solid #d7ddd9;
-      border-radius:10px;
-      font-family:inherit;
-      font-size:15px;
-    }
- 
-    .status-line{
-      margin:14px 0;
-      font-weight:700;
-    }
- 
-    .actions-row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:15px;
-    }
-  </style>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<meta name="theme-color" content="#075c40">
+
+<title>
+  الإعدادات | WestRiffa Smart Office
+</title>
+
+<link
+  rel="stylesheet"
+  href="../../css/app.css?v=20260816-settings2"
+>
+
+<style>
+
+.settings-wrap{
+  max-width:1100px;
+  margin:auto;
+}
+
+.settings-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:18px;
+}
+
+.settings-panel{
+  background:#fff;
+  border:1px solid #e1e9e5;
+  border-radius:18px;
+  padding:22px;
+  box-shadow:0 8px 24px rgba(0,0,0,.05);
+}
+
+.settings-panel h3{
+  margin:0 0 8px;
+  color:#075c40;
+}
+
+.settings-panel p{
+  color:#6b7a72;
+  line-height:1.8;
+}
+
+.account-box{
+  margin-top:18px;
+  padding:16px;
+  background:#f5f9f7;
+  border:1px solid #dce7e1;
+  border-right:4px solid #075c40;
+  border-radius:13px;
+}
+
+.account-label{
+  display:block;
+  color:#718078;
+  font-size:12px;
+  margin-bottom:4px;
+}
+
+.account-name{
+  display:block;
+  color:#075c40;
+  font-size:18px;
+  font-weight:700;
+}
+
+.account-role{
+  display:block;
+  margin-top:4px;
+  color:#9a6b19;
+  font-size:12px;
+  font-weight:700;
+}
+
+.account-email{
+  display:block;
+  margin-top:8px;
+  color:#607168;
+  font-size:12px;
+  direction:ltr;
+  text-align:right;
+}
+
+.sync-strip{
+  margin-bottom:18px;
+}
+
+.sync-state{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  background:#fff;
+  border:1px solid #e1e9e5;
+  border-radius:13px;
+  padding:13px 15px;
+}
+
+.dot{
+  width:11px;
+  height:11px;
+  border-radius:50%;
+  background:#c6cec9;
+  flex:none;
+}
+
+.dot.ok{
+  background:#087451;
+  box-shadow:0 0 0 4px rgba(8,116,81,.12);
+}
+
+.dot.bad{
+  background:#b42318;
+  box-shadow:0 0 0 4px rgba(180,35,24,.1);
+}
+
+.status-line{
+  margin:12px 0 0;
+  font-weight:700;
+  color:#52685f;
+}
+
+.actions-row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:17px;
+}
+
+.info-list{
+  display:grid;
+  gap:10px;
+  margin-top:17px;
+}
+
+.info-row{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  align-items:center;
+  padding:11px 12px;
+  background:#f8faf9;
+  border:1px solid #edf1ef;
+  border-radius:10px;
+}
+
+.info-row span{
+  color:#607168;
+}
+
+.info-row strong{
+  color:#075c40;
+}
+
+.loading-access{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  background:#f5f7f6;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:17px;
+  color:#075c40;
+  font-weight:700;
+}
+
+@media(max-width:850px){
+
+  .settings-grid{
+    grid-template-columns:1fr;
+  }
+
+}
+
+</style>
+
 </head>
- 
+
+
 <body>
- 
-<header class="topbar">
-  <div class="brand">
-    <img src="../../assets/school-header.jpg" alt="شعار المدرسة">
-  </div>
-</header>
- 
-<div class="shell">
- 
-  <aside class="sidebar">
- 
-    <h3 class="sidebar-title">القائمة الرئيسية</h3>
- 
-    <a href="../../index.html">🏠 لوحة التحكم</a>
-    <a href="../meetings/index.html">📅 الاجتماعات</a>
-    <a href="../activities/index.html">🎯 الفعاليات</a>
-    <a href="../certificates/index.html">🏅 الشهادات</a>
-    <a href="../archive/index.html">📁 الأرشيف الذكي</a>
-    <a href="./index.html">⚙️ الإعدادات</a>
- 
-  </aside>
- 
-  <main class="content">
- 
-    <div class="page-head">
-      <div>
-        <h2>إعدادات الربط</h2>
-        <p>إدارة الاتصال والمزامنة مع Supabase.</p>
-      </div>
-    </div>
- 
-    <div class="sync-strip">
-      <div class="sync-state">
-        <span id="dot" class="dot"></span>
-        <span id="stateText">جاري فحص النظام...</span>
-      </div>
-    </div>
- 
-    <div class="config-grid">
- 
-      <article class="panel">
- 
-        <h3>تسجيل الدخول</h3>
- 
-        <p>
-          سجلي الدخول بحساب الإدارة الذي أنشأناه في Supabase
-          لتفعيل المزامنة السحابية.
-        </p>
- 
-        <div class="login-box">
- 
-          <input
-            id="email"
-            type="email"
-            placeholder="البريد الإلكتروني"
-            autocomplete="username"
-          >
- 
-          <input
-            id="password"
-            type="password"
-            placeholder="كلمة مرور المنصة"
-            autocomplete="current-password"
-          >
- 
-        </div>
- 
-        <div class="actions-row">
- 
-          <button
-            class="btn"
-            id="loginBtn"
-            type="button"
-          >
-            تسجيل الدخول
-          </button>
- 
-          <button
-            class="btn"
-            id="testBtn"
-            type="button"
-          >
-            اختبار الاتصال
-          </button>
- 
-        </div>
- 
-        <p
-          id="loginState"
-          class="status-line"
-        >
-          لم يتم تسجيل الدخول بعد.
-        </p>
- 
-      </article>
- 
- 
-      <article class="panel">
- 
-        <h3>المزامنة السحابية</h3>
- 
-        <p>
-          بعد نجاح تسجيل الدخول يمكن رفع السجلات المحفوظة محليًا
-          إلى قاعدة بيانات Supabase.
-        </p>
- 
-        <p id="queueState">
-          جاري قراءة السجلات المعلقة...
-        </p>
- 
-        <div class="actions-row">
- 
-          <button
-            class="btn btn-gold"
-            id="syncBtn"
-            type="button"
-            disabled
-          >
-            مزامنة الآن
-          </button>
- 
-        </div>
- 
-      </article>
- 
-    </div>
- 
-  </main>
- 
+
+
+<div
+  id="accessLoader"
+  class="loading-access"
+>
+  جاري التحقق من صلاحية الحساب...
 </div>
- 
- 
-<script src="../../js/config.js"></script>
- 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
- 
-<script src="../../js/graph.js"></script>
-<script src="../../js/common.js"></script>
- 
- 
+
+
+<header class="topbar">
+
+  <div class="brand">
+
+    <img
+      src="../../assets/school-header.jpg"
+      alt="شعار المدرسة"
+    >
+
+    <div>
+
+      <h1>
+        الإعدادات
+      </h1>
+
+      <p>
+        إعدادات النظام والمزامنة السحابية
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <div class="header-actions">
+
+    <a
+      class="btn btn-soft"
+      href="../../index.html"
+    >
+      🏠 الرئيسية
+    </a>
+
+  </div>
+
+</header>
+
+
+<div class="shell">
+
+
+<aside class="sidebar">
+
+  <h3 class="sidebar-title">
+    القائمة الرئيسية
+  </h3>
+
+
+  <a
+    class="nav-link"
+    href="../../index.html"
+  >
+    🏠 لوحة التحكم
+  </a>
+
+
+  <a
+    class="nav-link"
+    href="../meetings/index.html"
+  >
+    📅 الاجتماعات
+  </a>
+
+
+  <a
+    class="nav-link"
+    href="../activities/index.html"
+  >
+    🎯 الفعاليات
+  </a>
+
+
+  <a
+    class="nav-link"
+    href="../certificates/index.html"
+  >
+    🏅 الشهادات
+  </a>
+
+
+  <a
+    class="nav-link"
+    href="../archive/index.html"
+  >
+    📂 الأرشيف الذكي
+  </a>
+
+
+  <a
+    class="nav-link active"
+    href="./index.html"
+  >
+    ⚙️ الإعدادات
+  </a>
+
+</aside>
+
+
+<main class="content">
+
+
+<div class="settings-wrap">
+
+
+  <div class="page-head">
+
+    <div>
+
+      <h2>
+        ⚙️ إعدادات المنصة
+      </h2>
+
+      <p>
+        هذه الصفحة متاحة للقيادة العليا فقط.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <div class="sync-strip">
+
+    <div class="sync-state">
+
+      <span
+        id="dot"
+        class="dot"
+      ></span>
+
+      <span id="stateText">
+        جاري فحص النظام...
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <div class="settings-grid">
+
+
+    <!-- الحساب الحالي -->
+
+    <section class="settings-panel">
+
+      <h3>
+        👤 حساب القيادة العليا
+      </h3>
+
+      <p>
+        الحساب الإداري المسجل حاليًا في المنصة.
+      </p>
+
+
+      <div class="account-box">
+
+        <span class="account-label">
+          المستخدم الحالي
+        </span>
+
+        <strong
+          id="accountName"
+          class="account-name"
+        >
+          جاري التحميل...
+        </strong>
+
+        <span
+          id="accountRole"
+          class="account-role"
+        >
+          القيادة العليا
+        </span>
+
+        <span
+          id="accountEmail"
+          class="account-email"
+        >
+          —
+        </span>
+
+      </div>
+
+
+      <div class="info-list">
+
+        <div class="info-row">
+
+          <span>
+            مستوى الصلاحية
+          </span>
+
+          <strong>
+            وصول إداري كامل
+          </strong>
+
+        </div>
+
+
+        <div class="info-row">
+
+          <span>
+            نطاق الأقسام
+          </span>
+
+          <strong>
+            جميع الأقسام
+          </strong>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- Supabase -->
+
+    <section class="settings-panel">
+
+      <h3>
+        ☁️ الاتصال السحابي
+      </h3>
+
+      <p>
+        اختبار اتصال المنصة بقاعدة بيانات Supabase.
+      </p>
+
+
+      <p
+        id="connectionState"
+        class="status-line"
+      >
+        جاري فحص الاتصال...
+      </p>
+
+
+      <div class="actions-row">
+
+        <button
+          class="btn btn-soft"
+          id="testBtn"
+          type="button"
+        >
+          اختبار الاتصال
+        </button>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- المزامنة -->
+
+    <section class="settings-panel">
+
+      <h3>
+        🔄 المزامنة
+      </h3>
+
+      <p>
+        رفع السجلات المعلقة المحفوظة محليًا إلى قاعدة البيانات السحابية.
+      </p>
+
+
+      <div class="info-list">
+
+        <div class="info-row">
+
+          <span>
+            السجلات المعلقة
+          </span>
+
+          <strong id="pendingCount">
+            0
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <p
+        id="queueState"
+        class="status-line"
+      ></p>
+
+
+      <div class="actions-row">
+
+        <button
+          class="btn btn-primary"
+          id="syncBtn"
+          type="button"
+        >
+          مزامنة الآن
+        </button>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- حالة النظام -->
+
+    <section class="settings-panel">
+
+      <h3>
+        🛡️ حالة النظام
+      </h3>
+
+      <p>
+        ملخص إعدادات الحماية الحالية.
+      </p>
+
+
+      <div class="info-list">
+
+
+        <div class="info-row">
+
+          <span>
+            تسجيل الدخول
+          </span>
+
+          <strong>
+            مفعل
+          </strong>
+
+        </div>
+
+
+        <div class="info-row">
+
+          <span>
+            حماية صفحة الإعدادات
+          </span>
+
+          <strong>
+            قيادة عليا فقط
+          </strong>
+
+        </div>
+
+
+        <div class="info-row">
+
+          <span>
+            قاعدة البيانات
+          </span>
+
+          <strong id="databaseStatus">
+            جاري الفحص
+          </strong>
+
+        </div>
+
+
+      </div>
+
+    </section>
+
+
+  </div>
+
+
+</div>
+
+
+</main>
+
+
+</div>
+
+
+
+<script
+  src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+<script
+  src="../../js/config.js?v=20260816-settings2"
+></script>
+
+<script
+  src="../../js/graph.js?v=20260816-settings2"
+></script>
+
+<script
+  src="../../js/common.js?v=20260816-settings2"
+></script>
+
+
+
 <script>
- 
-  const loginBtn =
-    document.getElementById("loginBtn");
- 
-  const testBtn =
-    document.getElementById("testBtn");
- 
-  const syncBtn =
-    document.getElementById("syncBtn");
- 
-  const loginState =
-    document.getElementById("loginState");
- 
-  const queueState =
-    document.getElementById("queueState");
- 
-  const stateText =
-    document.getElementById("stateText");
- 
-  const dot =
-    document.getElementById("dot");
- 
- 
-  function getPendingCount(){
- 
-    try{
- 
-      if(typeof wrGetQueue !== "function"){
-        return 0;
-      }
- 
-      const q = wrGetQueue();
- 
-      return Array.isArray(q)
-        ? q.length
-        : 0;
- 
-    }catch(e){
- 
+
+"use strict";
+
+
+let currentUser =
+  null;
+
+let currentProfile =
+  null;
+
+
+const byId =
+  id =>
+    document.getElementById(
+      id
+    );
+
+
+/* =========================================================
+   عدد السجلات المعلقة
+   ========================================================= */
+
+function getPendingCount(){
+
+  try{
+
+    if(
+      typeof wrGetQueue !==
+      "function"
+    ){
+
       return 0;
- 
+
     }
- 
+
+
+    const queue =
+      wrGetQueue();
+
+
+    return Array.isArray(
+      queue
+    )
+      ? queue.length
+      : 0;
+
+
+  }catch(error){
+
+    console.warn(
+      "Queue error:",
+      error
+    );
+
+    return 0;
+
   }
- 
- 
-  function updateQueue(){
- 
-    const count =
-      getPendingCount();
- 
-    queueState.textContent =
-      "السجلات المعلقة للمزامنة: " + count;
- 
+
+}
+
+
+/* =========================================================
+   تحديث المزامنة
+   ========================================================= */
+
+function updateQueue(){
+
+  const count =
+    getPendingCount();
+
+
+  byId(
+    "pendingCount"
+  ).textContent =
+    count;
+
+
+  byId(
+    "queueState"
+  ).textContent =
+    count
+      ? `يوجد ${count} سجل في انتظار المزامنة.`
+      : "لا توجد سجلات معلقة للمزامنة.";
+
+}
+
+
+/* =========================================================
+   حالة الاتصال
+   ========================================================= */
+
+function showConnected(){
+
+  byId(
+    "stateText"
+  ).textContent =
+    "متصل بـ Supabase";
+
+
+  byId(
+    "connectionState"
+  ).textContent =
+    "✓ الاتصال بقاعدة البيانات يعمل بنجاح.";
+
+
+  byId(
+    "databaseStatus"
+  ).textContent =
+    "متصل";
+
+
+  byId(
+    "dot"
+  ).classList
+    .remove(
+      "bad"
+    );
+
+
+  byId(
+    "dot"
+  ).classList
+    .add(
+      "ok"
+    );
+
+}
+
+
+function showDisconnected(
+  message =
+    "تعذر الاتصال بقاعدة البيانات."
+){
+
+  byId(
+    "stateText"
+  ).textContent =
+    "مشكلة في الاتصال";
+
+
+  byId(
+    "connectionState"
+  ).textContent =
+    message;
+
+
+  byId(
+    "databaseStatus"
+  ).textContent =
+    "غير متصل";
+
+
+  byId(
+    "dot"
+  ).classList
+    .remove(
+      "ok"
+    );
+
+
+  byId(
+    "dot"
+  ).classList
+    .add(
+      "bad"
+    );
+
+}
+
+
+/* =========================================================
+   عرض الحساب الحالي
+   ========================================================= */
+
+function renderAccount(){
+
+  byId(
+    "accountName"
+  ).textContent =
+    currentProfile?.full_name ||
+    currentUser?.email ||
+    "القيادة العليا";
+
+
+  byId(
+    "accountEmail"
+  ).textContent =
+    currentUser?.email ||
+    "—";
+
+
+  byId(
+    "accountRole"
+  ).textContent =
+    currentProfile?.role_label ||
+    "القيادة العليا";
+
+}
+
+
+/* =========================================================
+   اختبار الاتصال
+   ========================================================= */
+
+async function testConnection(){
+
+  const button =
+    byId(
+      "testBtn"
+    );
+
+
+  button.disabled =
+    true;
+
+
+  button.textContent =
+    "جاري الاختبار...";
+
+
+  try{
+
+    const result =
+      await WRGraph.test();
+
+
+    if(
+      result?.ok
+    ){
+
+      showConnected();
+
+
+      alert(
+        "تم الاتصال بـ Supabase بنجاح ✅"
+      );
+
+
+    }else{
+
+
+      showDisconnected(
+        result?.message ||
+        "الاتصال غير مكتمل."
+      );
+
+
+      alert(
+        result?.message ||
+        "تعذر الاتصال."
+      );
+
+    }
+
+
+  }catch(error){
+
+
+    console.error(
+      error
+    );
+
+
+    showDisconnected(
+      error.message ||
+      "تعذر الاتصال."
+    );
+
+
+    alert(
+      "فشل اختبار الاتصال: " +
+      (
+        error.message ||
+        error
+      )
+    );
+
+
+  }finally{
+
+
+    button.disabled =
+      false;
+
+
+    button.textContent =
+      "اختبار الاتصال";
+
   }
- 
- 
-  function setConnectedUI(user){
- 
-    stateText.textContent =
-      "متصل بـ Supabase";
- 
-    loginState.textContent =
-      user?.email
-        ? "تم تسجيل الدخول: " + user.email
-        : "تم تسجيل الدخول بنجاح";
- 
-    syncBtn.disabled = false;
- 
-    if(dot){
-      dot.classList.add("ok");
+
+}
+
+
+/* =========================================================
+   المزامنة
+   ========================================================= */
+
+async function syncNow(){
+
+  const button =
+    byId(
+      "syncBtn"
+    );
+
+
+  button.disabled =
+    true;
+
+
+  button.textContent =
+    "جاري المزامنة...";
+
+
+  try{
+
+    if(
+      typeof wrSyncPending !==
+      "function"
+    ){
+
+      throw new Error(
+        "وظيفة المزامنة غير متاحة"
+      );
+
     }
- 
+
+
+    const result =
+      await wrSyncPending();
+
+
+    updateQueue();
+
+
+    alert(
+      "تمت المزامنة ✅\n" +
+      "تم رفع: " +
+      (
+        result?.synced ??
+        0
+      ) +
+      "\nالمتبقي: " +
+      (
+        result?.pending ??
+        0
+      )
+    );
+
+
+  }catch(error){
+
+
+    console.error(
+      error
+    );
+
+
+    alert(
+      "تعذر إتمام المزامنة: " +
+      (
+        error.message ||
+        error
+      )
+    );
+
+
+  }finally{
+
+
+    button.disabled =
+      false;
+
+
+    button.textContent =
+      "مزامنة الآن";
+
   }
- 
- 
-  function setDisconnectedUI(){
- 
-    stateText.textContent =
-      "جاهز لتسجيل الدخول";
- 
-    loginState.textContent =
-      "لم يتم تسجيل الدخول بعد.";
- 
-    syncBtn.disabled = true;
- 
+
+}
+
+
+/* =========================================================
+   تشغيل الصفحة
+   ========================================================= */
+
+async function init(){
+
+  try{
+
+
+    /*
+      أولًا: المستخدم لازم يكون مسجل.
+    */
+
+    currentUser =
+      await WRGraph.getAccount();
+
+
+    if(
+      !currentUser
+    ){
+
+      location.replace(
+        "../../index.html"
+      );
+
+      return;
+
+    }
+
+
+    /*
+      ثانيًا:
+      الإعدادات للقيادة العليا فقط.
+    */
+
+    const allowed =
+      await WRAccess.requireAdmin({
+        showDenied:false
+      });
+
+
+    if(
+      !allowed
+    ){
+
+      alert(
+        "صفحة الإعدادات متاحة للقيادة العليا فقط."
+      );
+
+
+      location.replace(
+        "../../index.html"
+      );
+
+
+      return;
+
+    }
+
+
+    currentProfile =
+      await WRAccess.getProfile(
+        true
+      );
+
+
+    if(
+      !currentProfile ||
+      currentProfile.role !==
+        "admin"
+    ){
+
+      alert(
+        "تعذر التحقق من صلاحية الحساب."
+      );
+
+
+      location.replace(
+        "../../index.html"
+      );
+
+
+      return;
+
+    }
+
+
+    /*
+      تم التأكد من الصلاحية.
+    */
+
+    renderAccount();
+
+    updateQueue();
+
+
+    byId(
+      "accessLoader"
+    ).style.display =
+      "none";
+
+
+    /*
+      فحص الاتصال بعد فتح الصفحة.
+    */
+
+    const result =
+      await WRGraph.test();
+
+
+    if(
+      result?.ok
+    ){
+
+      showConnected();
+
+    }else{
+
+      showDisconnected(
+        result?.message ||
+        "تعذر الاتصال بقاعدة البيانات."
+      );
+
+    }
+
+
+  }catch(error){
+
+
+    console.error(
+      "Settings init error:",
+      error
+    );
+
+
+    alert(
+      "تعذر فتح صفحة الإعدادات."
+    );
+
+
+    location.replace(
+      "../../index.html"
+    );
+
   }
- 
- 
-  async function checkCurrentLogin(){
- 
-    try{
- 
-      if(
-        !window.WRGraph ||
-        !WRGraph.configured()
-      ){
- 
-        stateText.textContent =
-          "إعدادات Supabase غير مكتملة";
- 
-        return;
- 
-      }
- 
-      const user =
-        await WRGraph.getAccount();
- 
-      if(user){
- 
-        setConnectedUI(user);
- 
-      }else{
- 
-        setDisconnectedUI();
- 
-      }
- 
-    }catch(error){
- 
-      console.error(error);
- 
-      setDisconnectedUI();
- 
-    }
- 
-  }
- 
- 
-  loginBtn.addEventListener(
-    "click",
-    async function(){
- 
-      const email =
-        document
-          .getElementById("email")
-          .value
-          .trim();
- 
-      const password =
-        document
-          .getElementById("password")
-          .value;
- 
-      if(!email || !password){
- 
-        alert(
-          "أدخلي البريد الإلكتروني وكلمة المرور."
-        );
- 
-        return;
- 
-      }
- 
-      loginBtn.disabled = true;
- 
-      loginState.textContent =
-        "جاري تسجيل الدخول...";
- 
-      try{
- 
-        await WRGraph.login(
-          email,
-          password
-        );
- 
-        const user =
-          await WRGraph.getAccount();
- 
-        setConnectedUI(user);
- 
-        document
-          .getElementById("password")
-          .value = "";
- 
-        alert(
-          "تم تسجيل الدخول بنجاح ✅"
-        );
- 
-      }catch(error){
- 
-        console.error(error);
- 
-        loginState.textContent =
-          "فشل تسجيل الدخول.";
- 
-        alert(
-          "تعذر تسجيل الدخول: " +
-          (error.message || error)
-        );
- 
-      }finally{
- 
-        loginBtn.disabled = false;
- 
-      }
- 
-    }
-  );
- 
- 
-  testBtn.addEventListener(
-    "click",
-    async function(){
- 
-      try{
- 
-        const result =
-          await WRGraph.test();
- 
-        if(result.ok){
- 
-          alert(
-            "تم الاتصال بـ Supabase بنجاح ✅"
-          );
- 
-          const user =
-            await WRGraph.getAccount();
- 
-          setConnectedUI(user);
- 
-        }else{
- 
-          alert(
-            result.message ||
-            "الاتصال غير مكتمل."
-          );
- 
-        }
- 
-      }catch(error){
- 
-        console.error(error);
- 
-        alert(
-          "فشل اختبار الاتصال: " +
-          (error.message || error)
-        );
- 
-      }
- 
-    }
-  );
- 
- 
-  syncBtn.addEventListener(
-    "click",
-    async function(){
- 
-      syncBtn.disabled = true;
- 
-      syncBtn.textContent =
-        "جاري المزامنة...";
- 
-      try{
- 
-        const result =
-          await wrSyncPending();
- 
-        updateQueue();
- 
-        alert(
-          "تمت المزامنة ✅\n" +
-          "تم رفع: " +
-          (result?.synced ?? 0) +
-          "\nالمتبقي: " +
-          (result?.pending ?? 0)
-        );
- 
-      }catch(error){
- 
-        console.error(error);
- 
-        alert(
-          "تعذر إتمام المزامنة: " +
-          (error.message || error)
-        );
- 
-      }finally{
- 
-        syncBtn.disabled = false;
- 
-        syncBtn.textContent =
-          "مزامنة الآن";
- 
-      }
- 
-    }
-  );
- 
- 
-  updateQueue();
- 
-  checkCurrentLogin();
- 
+
+}
+
+
+/* =========================================================
+   Events
+   ========================================================= */
+
+byId(
+  "testBtn"
+).addEventListener(
+  "click",
+  testConnection
+);
+
+
+byId(
+  "syncBtn"
+).addEventListener(
+  "click",
+  syncNow
+);
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  init
+);
+
 </script>
- 
+
+
 </body>
+
 </html>

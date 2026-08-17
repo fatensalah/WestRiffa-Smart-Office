@@ -19,7 +19,6 @@
     تقرير فعالية | منصة التوثيق الذكي
   </title>
 
-  <!-- أحدث نسخة من التنسيق -->
   <link
     rel="stylesheet"
     href="../../css/app.css?v=20260810-2"
@@ -31,750 +30,1037 @@
 <body>
 
 
-  <!-- =====================================================
-       رأس الصفحة
-       ===================================================== -->
+<header class="topbar">
 
-  <header class="topbar">
+  <div class="brand">
 
-    <div class="brand">
+    <img
+      src="../../assets/school-header.jpg"
+      alt="شعار المدرسة"
+    >
 
-      <img
-        src="../../assets/school-header.jpg"
-        alt="شعار المدرسة"
-      >
+    <div>
 
-      <div>
+      <h1>
+        تقرير فعالية
+      </h1>
 
-        <h1>
-          تقرير فعالية
-        </h1>
+      <p>
+        تقرير متكامل بالصور وحفظ ذكي
+      </p>
 
-        <p>
-          تقرير متكامل بالصور وحفظ ذكي
-        </p>
+    </div>
 
-      </div>
+  </div>
+
+
+  <div class="top-actions">
+
+    <a
+      class="btn btn-soft"
+      href="../../index.html"
+    >
+      🏠 الرئيسية
+    </a>
+
+    <a
+      class="btn btn-soft"
+      href="../../pages/archive/index.html"
+    >
+      📂 الأرشيف
+    </a>
+
+  </div>
+
+</header>
+
+
+<main class="app-shell">
+
+
+<aside class="sidebar">
+
+  <h3 class="sidebar-title">
+    القائمة الرئيسية
+  </h3>
+
+  <a
+    class="nav-link"
+    href="../../index.html"
+  >
+    🏠 لوحة التحكم
+  </a>
+
+  <a
+    class="nav-link"
+    href="../../pages/meetings/index.html"
+  >
+    📅 الاجتماعات
+  </a>
+
+  <a
+    class="nav-link active"
+    href="../../pages/activities/index.html"
+  >
+    🎯 الفعاليات
+  </a>
+
+  <a
+    class="nav-link"
+    href="../../pages/certificates/index.html"
+  >
+    🏅 الشهادات
+  </a>
+
+  <a
+    class="nav-link"
+    href="../../pages/archive/index.html"
+  >
+    📂 الأرشيف الذكي
+  </a>
+
+  <a
+    id="settingsNavLink"
+    class="nav-link"
+    href="../../pages/settings/index.html"
+    style="display:none"
+  >
+    ⚙️ الإعدادات
+  </a>
+
+</aside>
+
+
+<section class="content">
+
+
+  <div class="page-head">
+
+    <div>
+
+      <h2 id="pageTitle">
+        إنشاء تقرير فعالية
+      </h2>
+
+      <p id="draftState">
+        يُحفظ العمل تلقائيًا كمسودة على هذا الجهاز.
+      </p>
 
     </div>
 
 
-    <div class="top-actions">
+    <div class="page-actions">
 
-      <a
+      <button
+        id="newBtn"
         class="btn btn-soft"
-        href="../../index.html"
+        type="button"
       >
-        🏠 الرئيسية
-      </a>
-
-      <a
-        class="btn btn-soft"
-        href="../../pages/archive/index.html"
-      >
-        📂 الأرشيف
-      </a>
+        نموذج جديد
+      </button>
 
     </div>
 
-  </header>
+  </div>
 
 
-
-  <!-- =====================================================
-       الهيكل الرئيسي
-       ===================================================== -->
-
-  <main class="app-shell">
+  <div class="tool-layout">
 
 
-    <!-- ===================================================
-         القائمة الجانبية
-         =================================================== -->
+    <section class="panel form-panel">
 
-    <aside class="sidebar">
-
-      <h3 class="sidebar-title">
-        القائمة الرئيسية
+      <h3>
+        بيانات الفعالية
       </h3>
 
 
-      <a
-        class="nav-link"
-        href="../../index.html"
+      <label>
+        اسم الفعالية *
+      </label>
+
+      <input
+        id="name"
+        required
       >
-        🏠 لوحة التحكم
-      </a>
 
 
-      <a
-        class="nav-link"
-        href="../../pages/meetings/index.html"
+      <label>
+        نوع الفعالية
+      </label>
+
+      <select id="activityType">
+
+        <option>فعالية</option>
+        <option>برنامج</option>
+        <option>مبادرة</option>
+        <option>ورشة عمل</option>
+        <option>احتفال</option>
+        <option>مسابقة</option>
+        <option>زيارة</option>
+        <option>اجتماع</option>
+        <option>تفعيل حصة احتياط</option>
+        <option>أخرى</option>
+
+      </select>
+
+
+      <label>
+        اسم المنفذ *
+      </label>
+
+      <input
+        id="executor"
+        required
       >
-        📅 الاجتماعات
-      </a>
 
 
-      <a
-        class="nav-link active"
-        href="../../pages/activities/index.html"
+      <label>
+        القسم
+      </label>
+
+      <input id="department">
+
+
+      <label>
+        التاريخ *
+      </label>
+
+      <input
+        id="date"
+        type="date"
+        required
       >
-        🎯 الفعاليات
-      </a>
 
 
-      <a
-        class="nav-link"
-        href="../../pages/certificates/index.html"
+      <!--
+        تم إلغاء وقت البداية والنهاية من واجهة التقرير.
+        نحتفظ بالعنصرين مخفيين حتى يظل activity-report.js
+        متوافقًا مع التقارير القديمة.
+      -->
+
+      <input
+        id="startTime"
+        type="hidden"
+        value=""
       >
-        🏅 الشهادات
-      </a>
 
-
-      <a
-        class="nav-link"
-        href="../../pages/archive/index.html"
+      <input
+        id="endTime"
+        type="hidden"
+        value=""
       >
-        📂 الأرشيف الذكي
-      </a>
 
 
-      <a
-        class="nav-link"
-        href="../../pages/settings/index.html"
+      <label>
+        المكان
+      </label>
+
+      <input id="place">
+
+
+      <div
+        style="
+          margin-top:20px;
+          padding:16px;
+          border:1px solid #d7dfda;
+          border-right:4px solid #087451;
+          border-radius:12px;
+          background:#f8faf9;
+        "
       >
-        ⚙️ الإعدادات
-      </a>
 
-    </aside>
-
-
-
-    <!-- ===================================================
-         محتوى الصفحة
-         =================================================== -->
-
-    <section class="content">
+        <h3 style="margin-top:0">
+          مؤشرات الفعالية
+        </h3>
 
 
-      <!-- =================================================
-           رأس النموذج
-           ================================================= -->
+        <label>
+          هل الفعالية مدرجة ومعتمدة ضمن برنامج الفعاليات المدرسي؟
+        </label>
 
-      <div class="page-head">
+        <select id="activityApproved">
+          <option value="">— اختاري —</option>
+          <option value="yes">نعم</option>
+          <option value="no">لا</option>
+        </select>
 
-        <div>
 
-          <h2 id="pageTitle">
-            إنشاء تقرير فعالية
-          </h2>
+        <label style="margin-top:16px">
+          المشاريع / المبادرات المرتبطة
+        </label>
 
-          <p id="draftState">
-            يُحفظ العمل تلقائيًا كمسودة على هذا الجهاز.
+        <div
+          id="projectsGroup"
+          style="
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+            gap:10px;
+            padding:12px;
+            border:1px solid #e1e8e4;
+            border-radius:10px;
+            background:#fff;
+          "
+        >
+
+          <label>
+            <input class="wr-project-check" type="checkbox" value="التعليم الأخضر">
+            التعليم الأخضر
+          </label>
+
+          <label>
+            <input class="wr-project-check" type="checkbox" value="اليونسكو">
+            اليونسكو
+          </label>
+
+          <label>
+            <input class="wr-project-check" type="checkbox" value="الصحة والسلامة">
+            الصحة والسلامة
+          </label>
+
+          <label>
+            <input class="wr-project-check" type="checkbox" value="PIRLS">
+            PIRLS
+          </label>
+
+          <label>
+            <input class="wr-project-check" type="checkbox" value="تحدي القراءة">
+            تحدي القراءة
+          </label>
+
+          <label>
+            <input class="wr-project-check" type="checkbox" value="TIMSS">
+            TIMSS
+          </label>
+
+          <label>
+            <input class="wr-project-check" type="checkbox" value="أخرى">
+            أخرى
+          </label>
+
+          <label>
+            <input
+              class="wr-project-check"
+              type="checkbox"
+              value="غير مرتبطة بمشروع أو مبادرة"
+            >
+            غير مرتبطة بمشروع أو مبادرة
+          </label>
+
+        </div>
+
+        <input
+          id="projectLinks"
+          type="hidden"
+        >
+
+
+        <label style="margin-top:16px">
+          الفئات المستهدفة من الطلبة
+        </label>
+
+        <div
+          id="targetGroups"
+          style="
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+            gap:10px;
+            padding:12px;
+            border:1px solid #e1e8e4;
+            border-radius:10px;
+            background:#fff;
+          "
+        >
+
+          <label>
+            <input class="wr-target-check" type="checkbox" value="الموهوبون">
+            الموهوبون
+          </label>
+
+          <label>
+            <input class="wr-target-check" type="checkbox" value="المتفوقون">
+            المتفوقون
+          </label>
+
+          <label>
+            <input class="wr-target-check" type="checkbox" value="ضعاف التحصيل">
+            ضعاف التحصيل
+          </label>
+
+          <label>
+            <input class="wr-target-check" type="checkbox" value="متوسطو التحصيل">
+            متوسطو التحصيل
+          </label>
+
+          <label>
+            <input class="wr-target-check" type="checkbox" value="الناطقون بغير العربية">
+            الناطقون بغير العربية
+          </label>
+
+          <label>
+            <input class="wr-target-check" type="checkbox" value="ذوو الاحتياجات الخاصة">
+            ذوو الاحتياجات الخاصة
+          </label>
+
+          <label>
+            <input class="wr-target-check" type="checkbox" value="طلبة التوحد">
+            طلبة التوحد
+          </label>
+
+          <label>
+            <input class="wr-target-check" type="checkbox" value="صعوبات التعلم">
+            صعوبات التعلم
+          </label>
+
+          <label>
+            <input class="wr-target-check" type="checkbox" value="جميع الفئات">
+            جميع الفئات
+          </label>
+
+        </div>
+
+        <input
+          id="target"
+          type="hidden"
+        >
+
+        <div
+          class="small"
+          style="margin-top:9px"
+        >
+          يمكن اختيار أكثر من مشروع وأكثر من فئة مستهدفة.
+        </div>
+
+      </div>
+
+
+      <label>
+        عدد المستفيدين
+      </label>
+
+      <input
+        id="count"
+        type="number"
+        min="0"
+      >
+
+
+      <label>
+        الهدف
+      </label>
+
+      <textarea id="goal"></textarea>
+
+
+      <label>
+        وصف التنفيذ
+      </label>
+
+      <textarea id="implementation"></textarea>
+
+
+      <label>
+        النتائج والأثر
+      </label>
+
+      <textarea id="results"></textarea>
+
+
+      <label>
+        التوصيات
+      </label>
+
+      <textarea id="recommendations"></textarea>
+
+
+      <label>
+        الملاحظات
+      </label>
+
+      <textarea id="notes"></textarea>
+
+<label>
+        الصور (حتى 10 صور)
+      </label>
+
+      <input
+        id="images"
+        type="file"
+        accept="image/png,image/jpeg,image/webp"
+        multiple
+      >
+
+
+      <div
+        id="imageHint"
+        class="small"
+      >
+        الصور تُحفظ داخل الأرشيف على الجهاز بعد الضغط على «حفظ ذكي».
+      </div>
+
+
+      <div class="form-actions">
+
+        <button
+          id="saveBtn"
+          class="btn btn-primary"
+          type="button"
+        >
+          💾 حفظ ذكي
+        </button>
+
+        <button
+          id="htmlBtn"
+          class="btn btn-soft"
+          type="button"
+        >
+          ⬇ تنزيل التقرير HTML
+        </button>
+
+        <button
+          id="printBtn"
+          class="btn btn-gold"
+          type="button"
+        >
+          🖨 طباعة / حفظ PDF
+        </button>
+
+        <button
+          id="emailBtn"
+          class="btn btn-primary"
+          type="button"
+        >
+          📧 إرسال التقرير بالبريد
+        </button>
+
+        <button
+          id="deleteBtn"
+          class="btn btn-danger hidden"
+          type="button"
+        >
+          حذف التقرير
+        </button>
+
+      </div>
+
+    </section>
+        <!-- ===============================================
+         معاينة التقرير
+         =============================================== -->
+
+    <section class="panel preview">
+
+
+      <div
+        id="reportSheet"
+        class="sheet"
+      >
+
+
+        <img
+          class="school-header"
+          src="../../assets/school-header.jpg"
+          alt="شعار المدرسة"
+        >
+
+
+        <div class="doc-title">
+
+          <h1 id="pName">
+            تقرير فعالية
+          </h1>
+
+          <p>
+            مدرسة الرفاع الغربي الابتدائية للبنين
           </p>
 
         </div>
 
 
-        <div class="page-actions">
+        <!-- ===========================================
+             البيانات الأساسية
+             =========================================== -->
 
-          <button
-            id="newBtn"
-            class="btn btn-soft"
-            type="button"
+        <div class="summary">
+
+
+          <div class="summary-item">
+
+            <strong>
+              نوع الفعالية:
+            </strong>
+
+            <span id="pType">
+              —
+            </span>
+
+          </div>
+
+
+          <div class="summary-item">
+
+            <strong>
+              المنفذ:
+            </strong>
+
+            <span id="pExecutor">
+              —
+            </span>
+
+          </div>
+
+
+          <div class="summary-item">
+
+            <strong>
+              القسم:
+            </strong>
+
+            <span id="pDepartment">
+              —
+            </span>
+
+          </div>
+
+
+          <div class="summary-item">
+
+            <strong>
+              التاريخ:
+            </strong>
+
+            <span id="pDate">
+              —
+            </span>
+
+          </div>
+
+
+          <!--
+            الوقت مخفي من التقرير،
+            لكن pTime يظل موجودًا حتى يبقى
+            activity-report.js متوافقًا.
+          -->
+
+          <div
+            class="summary-item"
+            style="display:none"
           >
-            نموذج جديد
-          </button>
+
+            <strong>
+              الوقت:
+            </strong>
+
+            <span id="pTime">
+              —
+            </span>
+
+          </div>
+
+
+          <div class="summary-item">
+
+            <strong>
+              المكان:
+            </strong>
+
+            <span id="pPlace">
+              —
+            </span>
+
+          </div>
+
+
+          <div class="summary-item">
+
+            <strong>
+              اعتماد الفعالية:
+            </strong>
+
+            <span id="pApproval">
+              —
+            </span>
+
+          </div>
+
+
+          <div class="summary-item">
+
+            <strong>
+              المشاريع / المبادرات:
+            </strong>
+
+            <span id="pProjects">
+              —
+            </span>
+
+          </div>
+
+
+          <div class="summary-item">
+
+            <strong>
+              الفئات المستهدفة:
+            </strong>
+
+            <span id="pTarget">
+              —
+            </span>
+
+          </div>
+
+
+          <div class="summary-item">
+
+            <strong>
+              العدد:
+            </strong>
+
+            <span id="pCount">
+              —
+            </span>
+
+          </div>
+
 
         </div>
 
-      </div>
 
+        <!-- ===========================================
+             الهدف
+             =========================================== -->
 
-
-      <!-- =================================================
-           النموذج + المعاينة
-           ================================================= -->
-
-      <div class="tool-layout">
-
-
-        <!-- ===============================================
-             نموذج إدخال البيانات
-             =============================================== -->
-
-        <section class="panel form-panel">
+        <div class="doc-section">
 
           <h3>
-            بيانات الفعالية
+            الهدف
+          </h3>
+
+          <p id="pGoal">
+            —
+          </p>
+
+        </div>
+
+
+        <!-- ===========================================
+             وصف التنفيذ
+             =========================================== -->
+
+        <div class="doc-section">
+
+          <h3>
+            وصف التنفيذ
+          </h3>
+
+          <p id="pImplementation">
+            —
+          </p>
+
+        </div>
+
+
+        <!-- ===========================================
+             النتائج والأثر
+             =========================================== -->
+
+        <div class="doc-section">
+
+          <h3>
+            النتائج والأثر
+          </h3>
+
+          <p id="pResults">
+            —
+          </p>
+
+        </div>
+
+
+        <!-- ===========================================
+             التوصيات
+             =========================================== -->
+
+        <div class="doc-section">
+
+          <h3>
+            التوصيات
+          </h3>
+
+          <p id="pRecommendations">
+            —
+          </p>
+
+        </div>
+
+
+        <!-- ===========================================
+             الملاحظات
+             =========================================== -->
+
+        <div class="doc-section">
+
+          <h3>
+            الملاحظات
+          </h3>
+
+          <p id="pNotes">
+            —
+          </p>
+
+        </div>
+
+
+        <!-- ===========================================
+             معرض الصور
+             =========================================== -->
+
+        <div class="doc-section">
+
+          <h3>
+            معرض الصور
           </h3>
 
 
-          <label>
-            اسم الفعالية *
-          </label>
-
-          <input
-            id="name"
-            required
-          >
-
-
-          <label>
-            نوع الفعالية
-          </label>
-
-          <select id="activityType">
-
-            <option>
-              فعالية
-            </option>
-
-            <option>
-              برنامج
-            </option>
-
-            <option>
-              مبادرة
-            </option>
-
-            <option>
-              ورشة عمل
-            </option>
-
-            <option>
-              احتفال
-            </option>
-
-            <option>
-              مسابقة
-            </option>
-
-            <option>
-              زيارة
-            </option>
-
-            <option>
-              اجتماع
-            </option>
-
-            <option>
-              تفعيل حصة احتياط
-            </option>
-
-            <option>
-              أخرى
-            </option>
-
-          </select>
-
-
-          <label>
-            اسم المنفذ *
-          </label>
-
-          <input
-            id="executor"
-            required
-          >
-
-
-          <label>
-            القسم
-          </label>
-
-          <input id="department">
-
-
-          <label>
-            التاريخ *
-          </label>
-
-          <input
-            id="date"
-            type="date"
-            required
-          >
-
-
-          <label>
-            وقت البداية
-          </label>
-
-          <input
-            id="startTime"
-            type="time"
-          >
-
-
-          <label>
-            وقت النهاية
-          </label>
-
-          <input
-            id="endTime"
-            type="time"
-          >
-
-
-          <label>
-            المكان
-          </label>
-
-          <input id="place">
-
-
-          <label>
-            الفئة المستهدفة
-          </label>
-
-          <input id="target">
-
-
-          <label>
-            عدد المستفيدين
-          </label>
-
-          <input
-            id="count"
-            type="number"
-            min="0"
-          >
-
-
-          <label>
-            الهدف
-          </label>
-
-          <textarea id="goal"></textarea>
-
-
-          <label>
-            وصف التنفيذ
-          </label>
-
-          <textarea id="implementation"></textarea>
-
-
-          <label>
-            النتائج والأثر
-          </label>
-
-          <textarea id="results"></textarea>
-
-
-          <label>
-            التوصيات
-          </label>
-
-          <textarea id="recommendations"></textarea>
-
-
-          <label>
-            الملاحظات
-          </label>
-
-          <textarea id="notes"></textarea>
-
-
-          <label>
-            الصور (حتى 10 صور)
-          </label>
-
-          <input
-            id="images"
-            type="file"
-            accept="image/png,image/jpeg,image/webp"
-            multiple
-          >
+          <div
+            id="pImages"
+            class="images-grid"
+          ></div>
 
 
           <div
-            id="imageHint"
-            class="small"
+            id="noImages"
+            class="empty"
           >
-            الصور تُحفظ داخل الأرشيف على الجهاز بعد الضغط على «حفظ ذكي».
+            لم تُضف صور بعد.
           </div>
 
+        </div>
 
 
-          <!-- =============================================
-               أزرار التقرير
-               ============================================= -->
+        <!-- ===========================================
+             نهاية التقرير
+             =========================================== -->
 
-          <div class="form-actions">
-
-
-            <button
-              id="saveBtn"
-              class="btn btn-primary"
-              type="button"
-            >
-              💾 حفظ ذكي
-            </button>
-
-
-            <button
-              id="htmlBtn"
-              class="btn btn-soft"
-              type="button"
-            >
-              ⬇ تنزيل التقرير HTML
-            </button>
-
-
-            <button
-              id="printBtn"
-              class="btn btn-gold"
-              type="button"
-            >
-              🖨 طباعة / حفظ PDF
-            </button>
-
-
-            <button
-              id="emailBtn"
-              class="btn btn-primary"
-              type="button"
-            >
-              📧 إرسال التقرير بالبريد
-            </button>
-
-
-            <button
-              id="deleteBtn"
-              class="btn btn-danger hidden"
-              type="button"
-            >
-              حذف التقرير
-            </button>
-
-
-          </div>
-
-        </section>
-
-
-
-        <!-- ===============================================
-             معاينة التقرير
-             =============================================== -->
-
-        <section class="panel preview">
-
-
-          <div
-            id="reportSheet"
-            class="sheet"
-          >
-
-
-            <img
-              class="school-header"
-              src="../../assets/school-header.jpg"
-              alt="شعار المدرسة"
-            >
-
-
-
-            <div class="doc-title">
-
-              <h1 id="pName">
-                تقرير فعالية
-              </h1>
-
-              <p>
-                مدرسة الرفاع الغربي الابتدائية للبنين
-              </p>
-
-            </div>
-
-
-
-            <!-- ===========================================
-                 البيانات الأساسية
-                 =========================================== -->
-
-            <div class="summary">
-
-
-              <div class="summary-item">
-
-                <strong>
-                  نوع الفعالية:
-                </strong>
-
-                <span id="pType">
-                  —
-                </span>
-
-              </div>
-
-
-              <div class="summary-item">
-
-                <strong>
-                  المنفذ:
-                </strong>
-
-                <span id="pExecutor">
-                  —
-                </span>
-
-              </div>
-
-
-              <div class="summary-item">
-
-                <strong>
-                  القسم:
-                </strong>
-
-                <span id="pDepartment">
-                  —
-                </span>
-
-              </div>
-
-
-              <div class="summary-item">
-
-                <strong>
-                  التاريخ:
-                </strong>
-
-                <span id="pDate">
-                  —
-                </span>
-
-              </div>
-
-
-              <div class="summary-item">
-
-                <strong>
-                  الوقت:
-                </strong>
-
-                <span id="pTime">
-                  —
-                </span>
-
-              </div>
-
-
-              <div class="summary-item">
-
-                <strong>
-                  المكان:
-                </strong>
-
-                <span id="pPlace">
-                  —
-                </span>
-
-              </div>
-
-
-              <div class="summary-item">
-
-                <strong>
-                  الفئة:
-                </strong>
-
-                <span id="pTarget">
-                  —
-                </span>
-
-              </div>
-
-
-              <div class="summary-item">
-
-                <strong>
-                  العدد:
-                </strong>
-
-                <span id="pCount">
-                  —
-                </span>
-
-              </div>
-
-
-            </div>
-
-
-
-            <!-- ===========================================
-                 الهدف
-                 =========================================== -->
-
-            <div class="doc-section">
-
-              <h3>
-                الهدف
-              </h3>
-
-              <p id="pGoal">
-                —
-              </p>
-
-            </div>
-
-
-
-            <!-- ===========================================
-                 وصف التنفيذ
-                 =========================================== -->
-
-            <div class="doc-section">
-
-              <h3>
-                وصف التنفيذ
-              </h3>
-
-              <p id="pImplementation">
-                —
-              </p>
-
-            </div>
-
-
-
-            <!-- ===========================================
-                 النتائج والأثر
-                 =========================================== -->
-
-            <div class="doc-section">
-
-              <h3>
-                النتائج والأثر
-              </h3>
-
-              <p id="pResults">
-                —
-              </p>
-
-            </div>
-
-
-
-            <!-- ===========================================
-                 التوصيات
-                 =========================================== -->
-
-            <div class="doc-section">
-
-              <h3>
-                التوصيات
-              </h3>
-
-              <p id="pRecommendations">
-                —
-              </p>
-
-            </div>
-
-
-
-            <!-- ===========================================
-                 الملاحظات
-                 =========================================== -->
-
-            <div class="doc-section">
-
-              <h3>
-                الملاحظات
-              </h3>
-
-              <p id="pNotes">
-                —
-              </p>
-
-            </div>
-
-
-
-            <!-- ===========================================
-                 معرض الصور
-                 =========================================== -->
-
-            <div class="doc-section">
-
-              <h3>
-                معرض الصور
-              </h3>
-
-
-              <div
-                id="pImages"
-                class="images-grid"
-              ></div>
-
-
-              <div
-                id="noImages"
-                class="empty"
-              >
-                لم تُضف صور بعد.
-              </div>
-
-            </div>
-
-
-
-            <!-- ===========================================
-                 نهاية التقرير
-                 =========================================== -->
-
-            <div class="report-footer">
-              تم إنشاء التقرير بواسطة منصة التوثيق الذكي — الرفاع الغربي
-            </div>
-
-
-          </div>
-
-        </section>
+        <div class="report-footer">
+          تم إنشاء التقرير بواسطة منصة التوثيق الذكي — الرفاع الغربي
+        </div>
 
 
       </div>
 
     </section>
 
-  </main>
+
+  </div>
+
+</section>
+
+</main>
 
 
+<!-- =====================================================
+     Supabase
+     ===================================================== -->
 
-  <!-- =====================================================
-       Supabase
-       ===================================================== -->
-
-  <script
-    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-  ></script>
-
+<script
+  src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
 
 
-  <!-- =====================================================
-       ملفات JavaScript
-       ===================================================== -->
+<!-- =====================================================
+     ملفات JavaScript
+     ===================================================== -->
 
-  <script
-    src="../../js/config.js?v=20260810-2"
-  ></script>
+<script
+  src="../../js/config.js?v=20260810-2"
+></script>
 
-  <script
-    src="../../js/graph.js?v=20260810-2"
-  ></script>
+<script
+  src="../../js/graph.js?v=20260810-2"
+></script>
 
-  <script
-    src="../../js/common.js?v=20260810-2"
-  ></script>
+<script
+  src="../../js/common.js?v=20260810-2"
+></script>
 
-  <script
-    src="../../js/activity-report.js?v=20260810-2"
-  ></script>
+<script
+  src="../../js/activity-report.js?v=20260815-1"
+></script>
+
+<script>
+
+"use strict";
+
+
+async function configureActivityReportRole(){
+
+  try{
+
+
+    if(
+      !window.WRGraph ||
+      typeof WRGraph.getAccount !==
+        "function"
+    ){
+      return;
+    }
+
+
+    const user =
+      await WRGraph
+        .getAccount();
+
+
+    if(!user){
+
+      location.href =
+        "../../index.html";
+
+      return;
+
+    }
+
+
+    let profile =
+      null;
+
+
+    try{
+
+      if(
+        typeof WRGraph.getUserProfile ===
+          "function"
+      ){
+
+        profile =
+          await WRGraph
+            .getUserProfile();
+
+      }
+
+    }catch(error){
+
+      console.warn(
+        "Activity report profile lookup:",
+        error
+      );
+
+    }
+
+
+    /*
+      دعم احتياطي للحسابات القديمة.
+      لا نغير أي شيء في منطق التقرير نفسه.
+    */
+
+    if(!profile?.role){
+
+      try{
+
+        const sbRole =
+          window.supabase
+            .createClient(
+              window.WR_CONFIG.supabaseUrl,
+              window.WR_CONFIG.supabaseKey
+            );
+
+
+        const {
+          data:legacyProfile
+        } =
+          await sbRole
+
+            .from(
+              "profiles"
+            )
+
+            .select(
+              "id, full_name, role"
+            )
+
+            .eq(
+              "id",
+              user.id
+            )
+
+            .maybeSingle();
+
+
+        if(legacyProfile){
+
+          profile = {
+
+            ...profile,
+
+            full_name:
+              profile?.full_name ||
+              legacyProfile.full_name ||
+              user.email,
+
+            role:
+              legacyProfile.role ||
+              "teacher"
+
+          };
+
+        }
+
+
+      }catch(error){
+
+        console.warn(
+          "Activity report legacy role lookup:",
+          error
+        );
+
+      }
+
+    }
+
+
+    const role =
+      String(
+        profile?.role ||
+        "teacher"
+      )
+        .trim()
+        .toLowerCase();
+
+
+    const settingsNavLink =
+      document.getElementById(
+        "settingsNavLink"
+      );
+
+
+    if(settingsNavLink){
+
+      settingsNavLink.style.display =
+        role === "admin"
+          ? ""
+          : "none";
+
+    }
+
+
+  }catch(error){
+
+    console.error(
+      "Activity report role setup:",
+      error
+    );
+
+  }
+
+}
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  configureActivityReportRole
+);
+
+</script>
 
 
 </body>

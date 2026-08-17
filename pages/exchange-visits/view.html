@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>تفاصيل الزيارة التبادلية | WestRiffa Smart Office</title>
+
+  <link rel="stylesheet" href="../../css/app.css">
+
+  <style>
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:Tahoma,Arial,sans-serif;
+      background:#f4f7f6;
+      color:#173c34;
+    }
+
+    .page-header{
+      background:linear-gradient(135deg,#0f513f,#18705a);
+      color:#fff;
+      padding:28px 24px;
+    }
+
+    .page-header-inner{
+      width:min(1050px,94%);
+      margin:auto;
+    }
+
+    .page-header h1{
+      margin:0 0 7px;
+    }
+
+    .page-header p{
+      margin:0;
+      opacity:.9;
+    }
+
+    .container{
+      width:min(1050px,94%);
+      margin:26px auto 50px;
+    }
+
+    .top-actions{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+
+    .btn-link{
+      text-decoration:none;
+      background:#fff;
+      color:#075c40;
+      border:1px solid #dfe8e3;
+      border-radius:10px;
+      padding:10px 15px;
+      font-weight:700;
+    }
+
+    .visit-card{
+      background:#fff;
+      border:1px solid #e1e9e5;
+      border-radius:18px;
+      padding:25px;
+      box-shadow:0 8px 25px rgba(0,0,0,.05);
+    }
+
+    .visit-title{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:flex-start;
+      margin-bottom:22px;
+    }
+
+    .visit-title h2{
+      margin:0 0 7px;
+      color:#075c40;
+    }
+
+    .chip{
+      display:inline-block;
+      border-radius:999px;
+      padding:7px 12px;
+      font-size:12px;
+      font-weight:700;
+      background:#eaf3ef;
+      color:#075c40;
+    }
+
+    .details-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:14px;
+      margin-bottom:18px;
+    }
+
+    .detail{
+      background:#f8faf9;
+      border:1px solid #e8eeeb;
+      border-radius:12px;
+      padding:14px;
+    }
+
+    .detail strong{
+      display:block;
+      color:#075c40;
+      font-size:12px;
+      margin-bottom:6px;
+    }
+
+    .detail div{
+      color:#52665d;
+      line-height:1.8;
+    }
+
+    .wide{
+      grid-column:1/-1;
+    }
+
+    .loading{
+      text-align:center;
+      padding:45px;
+      color:#6b7a72;
+    }
+
+    @media(max-width:700px){
+      .details-grid{grid-template-columns:1fr}
+      .wide{grid-column:auto}
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="page-header">
+  <div class="page-header-inner">
+    <h1>🤝 تفاصيل الزيارة التبادلية</h1>
+    <p>عرض كامل لبيانات الزيارة المحفوظة.</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <div class="top-actions">
+    <a class="btn-link" href="../archive/index.html">← العودة إلى الأرشيف</a>
+    <a class="btn-link" href="index.html">الزيارات التبادلية</a>
+  </div>
+
+  <section id="visitCard" class="visit-card">
+    <div class="loading">جارٍ تحميل الزيارة...</div>
+  </section>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../../js/config.js"></script>
+<script src="../../js/graph.js"></script>
+<script src="../../js/common.js"></script>
+
+<script>
+"use strict";
+
+const sb = window.supabase.createClient(
+  window.WR_CONFIG.supabaseUrl,
+  window.WR_CONFIG.supabaseKey
+);
+
+const visitCard = document.getElementById("visitCard");
+
+function esc(value){
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function formatDate(value){
+  if(!value) return "—";
+
+  const date = new Date(value + "T00:00:00");
+
+  if(Number.isNaN(date.getTime())){
+    return value;
+  }
+
+  return date.toLocaleDateString(
+    "ar-BH",
+    {
+      year:"numeric",
+      month:"long",
+      day:"numeric"
+    }
+  );
+}
+
+async function loadVisit(){
+
+  try{
+
+    const user = await WRGraph.getAccount();
+
+    if(!user){
+      location.href = "../../index.html";
+      return;
+    }
+
+    const params = new URLSearchParams(location.search);
+    const id = params.get("id");
+
+    if(!id){
+      throw new Error("معرّف الزيارة غير موجود");
+    }
+
+    const {
+      data:visit,
+      error
+    } =
+      await sb
+        .from("exchange_visits")
+        .select("*")
+        .eq("id",id)
+        .single();
+
+    if(error) throw error;
+
+    visitCard.innerHTML = `
+      <div class="visit-title">
+
+        <div>
+          <h2>
+            ${esc(visit.visitor_name || "معلمة")}
+            ←
+            ${esc(visit.visited_teacher || "معلمة")}
+          </h2>
+
+          <div>
+            ${esc(formatDate(visit.visit_date))}
+          </div>
+        </div>
+
+        <span class="chip">
+          زيارة ${esc(visit.visit_type)}
+        </span>
+
+      </div>
+
+      <div class="details-grid">
+
+        <div class="detail">
+          <strong>المعلمة الزائرة</strong>
+          <div>${esc(visit.visitor_name || "—")}</div>
+        </div>
+
+        <div class="detail">
+          <strong>المعلمة المُزارة</strong>
+          <div>${esc(visit.visited_teacher || "—")}</div>
+        </div>
+
+        <div class="detail">
+          <strong>نوع الزيارة</strong>
+          <div>${esc(visit.visit_type || "—")}</div>
+        </div>
+
+        <div class="detail">
+          <strong>المادة</strong>
+          <div>${esc(visit.subject || "—")}</div>
+        </div>
+
+        <div class="detail">
+          <strong>الصف</strong>
+          <div>${esc(visit.grade || "—")}</div>
+        </div>
+
+        <div class="detail">
+          <strong>التاريخ</strong>
+          <div>${esc(formatDate(visit.visit_date))}</div>
+        </div>
+
+        <div class="detail">
+          <strong>اليوم</strong>
+          <div>${esc(visit.visit_day || "—")}</div>
+        </div>
+
+        <div class="detail">
+          <strong>المكان</strong>
+          <div>${esc(visit.place || "—")}</div>
+        </div>
+
+        ${
+          visit.school_name
+          ? `
+            <div class="detail wide">
+              <strong>المدرسة المستضيفة</strong>
+              <div>${esc(visit.school_name)}</div>
+            </div>
+          `
+          : ""
+        }
+
+        <div class="detail wide">
+          <strong>✨ الجوانب الإيجابية</strong>
+          <div>${esc(visit.positive_aspects || "—")}</div>
+        </div>
+
+        <div class="detail wide">
+          <strong>💡 المقترحات والتوصيات</strong>
+          <div>${esc(visit.suggestions || "لا توجد مقترحات")}</div>
+        </div>
+
+      </div>
+    `;
+
+  }catch(error){
+
+    console.error("Load exchange visit:",error);
+
+    visitCard.innerHTML =
+      '<div class="loading">تعذر تحميل بيانات الزيارة.</div>';
+  }
+}
+
+document.addEventListener("DOMContentLoaded",loadVisit);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1525 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>
+  رفع خطة القسم | WestRiffa Smart Office
+</title>
+
+<link
+  rel="stylesheet"
+  href="../../css/app.css?v=20260816-plans-upload2"
+>
+
+<!-- مكتبة قراءة Excel -->
+<script
+  src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"
+></script>
+
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Tahoma,Arial,sans-serif;
+  background:#f4f7f6;
+  color:#173c34;
+}
+
+.page-header{
+  background:linear-gradient(
+    135deg,
+    #0f513f,
+    #18705a
+  );
+  color:#fff;
+  padding:28px 24px;
+}
+
+.page-header-inner{
+  width:min(1200px,94%);
+  margin:auto;
+}
+
+.page-header h1{
+  margin:0 0 8px;
+  font-size:28px;
+}
+
+.page-header p{
+  margin:0;
+  opacity:.9;
+  line-height:1.8;
+}
+
+.container{
+  width:min(1200px,94%);
+  margin:28px auto 50px;
+}
+
+.top-actions{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:20px;
+}
+
+.btn-link{
+  display:inline-block;
+  text-decoration:none;
+  padding:11px 18px;
+  border-radius:12px;
+  background:#fff;
+  color:#0f513f;
+  border:1px solid #dce9e5;
+  font-weight:bold;
+}
+
+.user-access{
+  background:#eaf8ef;
+  border:1px solid #c7e8d1;
+  color:#166534;
+  border-radius:12px;
+  padding:12px 16px;
+  margin-bottom:20px;
+  font-weight:bold;
+  display:none;
+  line-height:1.8;
+}
+
+.card{
+  background:#fff;
+  border-radius:18px;
+  padding:24px;
+  border:1px solid #e3ece9;
+  box-shadow:0 8px 24px rgba(15,81,63,.05);
+  margin-bottom:22px;
+}
+
+.card h2{
+  margin-top:0;
+  color:#0f513f;
+}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:18px;
+}
+
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.field label{
+  font-weight:bold;
+  color:#234f44;
+}
+
+.field input,
+.field select{
+  min-height:46px;
+  border-radius:11px;
+  border:1px solid #ccdcd7;
+  padding:0 12px;
+  font-size:15px;
+  background:#fff;
+}
+
+.field input:focus,
+.field select:focus{
+  outline:2px solid #b9ded2;
+  border-color:#4a9d83;
+}
+
+.field select.locked{
+  background:#eef4f2;
+  color:#173c34;
+  opacity:1;
+  cursor:not-allowed;
+}
+
+.plan-rule{
+  margin-top:14px;
+  padding:13px 15px;
+  border-radius:12px;
+  background:#f7faf9;
+  border:1px solid #dfe9e5;
+  color:#52685f;
+  line-height:1.8;
+  font-size:13px;
+}
+
+.plan-rule strong{
+  color:#075c40;
+}
+
+.upload-zone{
+  border:2px dashed #a8cfc2;
+  background:#f8fcfa;
+  border-radius:16px;
+  padding:34px 20px;
+  text-align:center;
+  margin-top:18px;
+}
+
+.upload-zone strong{
+  display:block;
+  font-size:18px;
+  margin-bottom:8px;
+}
+
+.upload-zone p{
+  color:#677e77;
+  margin:6px 0 16px;
+}
+
+#planFile{
+  max-width:100%;
+}
+
+.action-row{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:20px;
+}
+
+button{
+  border:0;
+  border-radius:12px;
+  padding:12px 20px;
+  font-weight:bold;
+  cursor:pointer;
+  font-size:15px;
+  font-family:inherit;
+}
+
+.btn-primary{
+  background:#0f654f;
+  color:#fff;
+}
+
+.btn-primary:disabled{
+  background:#a9b9b4;
+  cursor:not-allowed;
+}
+
+.btn-secondary{
+  background:#eef4f2;
+  color:#194b3f;
+  border:1px solid #d7e4e0;
+}
+
+.status{
+  display:none;
+  margin-top:18px;
+  border-radius:12px;
+  padding:14px 16px;
+  line-height:1.7;
+}
+
+.status.info{
+  display:block;
+  background:#eef7ff;
+  color:#214f72;
+  border:1px solid #cfdef0;
+}
+
+.status.success{
+  display:block;
+  background:#eaf8ef;
+  color:#166534;
+  border:1px solid #c7e8d1;
+}
+
+.status.error{
+  display:block;
+  background:#fff0f0;
+  color:#9b1c1c;
+  border:1px solid #f1caca;
+}
+
+.summary-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  margin-bottom:20px;
+}
+
+.summary-box{
+  background:#f7faf9;
+  border:1px solid #e4eeeb;
+  border-radius:14px;
+  padding:17px;
+  text-align:center;
+}
+
+.summary-box strong{
+  display:block;
+  font-size:25px;
+  color:#0f654f;
+  margin-bottom:5px;
+}
+
+.summary-box span{
+  font-size:13px;
+  color:#71847e;
+}
+
+.preview-wrapper{
+  overflow-x:auto;
+  border:1px solid #e2ebe8;
+  border-radius:14px;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:1000px;
+  background:#fff;
+}
+
+th,
+td{
+  border-bottom:1px solid #e6eeeb;
+  padding:10px;
+  text-align:right;
+  vertical-align:top;
+  font-size:13px;
+}
+
+th{
+  background:#eef5f2;
+  color:#214c41;
+  white-space:nowrap;
+}
+
+.error-row{
+  background:#fff4f4;
+}
+
+.hidden{
+  display:none !important;
+}
+
+.warning-list{
+  margin:15px 0 0;
+  padding-right:20px;
+  color:#8d2b2b;
+  line-height:1.8;
+}
+
+.access-loader{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#f4f7f6;
+  color:#075c40;
+  font-weight:bold;
+}
+
+@media(max-width:800px){
+
+  .form-grid,
+  .summary-grid{
+    grid-template-columns:1fr;
+  }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div
+  id="accessLoader"
+  class="access-loader"
+>
+  جاري التحقق من صلاحية الحساب...
+</div>
+
+
+<header class="page-header">
+
+  <div class="page-header-inner">
+
+    <h1>
+      📤 رفع خطة القسم السنوية
+    </h1>
+
+    <p>
+      ارفعي الخطة كاملة مرة واحدة، وسيتم فحص الإجراءات وشهور التنفيذ قبل الاعتماد.
+    </p>
+
+  </div>
+
+</header>
+
+
+<main class="container">
+
+
+<div class="top-actions">
+
+  <a
+    class="btn-link"
+    href="index.html"
+  >
+    ← العودة إلى الخطة التدفقية
+  </a>
+
+  <a
+    class="btn-link"
+    href="../../index.html"
+  >
+    لوحة التحكم
+  </a>
+
+</div>
+
+
+<div
+  id="userAccess"
+  class="user-access"
+></div>
+
+
+<section class="card">
+
+  <h2>
+    بيانات الخطة
+  </h2>
+
+
+  <div class="form-grid">
+
+
+    <div class="field">
+
+      <label for="departmentSelect">
+        القسم
+      </label>
+
+      <select id="departmentSelect">
+
+        <option value="">
+          جاري تحميل الأقسام...
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <div class="field">
+
+      <label for="schoolYear">
+        السنة الدراسية
+      </label>
+
+      <select id="schoolYear">
+
+        <option value="2026-2027">
+          2026 / 2027
+        </option>
+
+        <option value="2027-2028">
+          2027 / 2028
+        </option>
+
+      </select>
+
+    </div>
+
+
+  </div>
+
+
+  <div class="plan-rule">
+
+    <strong>
+      قاعدة الخطط:
+    </strong>
+
+    الحاسوب والفن والتصميم والتقانة تتبع
+    <strong>خطة واحدة باسم «المواد الإثرائية»</strong>
+    ولا يتم رفع خطة مستقلة لكل مادة.
+
+  </div>
+
+
+  <div class="upload-zone">
+
+    <strong>
+      اختاري ملف الخطة السنوية
+    </strong>
+
+    <p>
+      يجب استخدام قالب الخطة المعتمد بصيغة Excel.
+    </p>
+
+    <input
+      type="file"
+      id="planFile"
+      accept=".xlsx,.xls"
+    >
+
+  </div>
+
+
+  <div class="action-row">
+
+    <button
+      type="button"
+      id="analyzeBtn"
+      class="btn-primary"
+    >
+      فحص الخطة
+    </button>
+
+    <button
+      type="button"
+      id="resetBtn"
+      class="btn-secondary"
+    >
+      مسح الاختيار
+    </button>
+
+  </div>
+
+
+  <div
+    id="uploadStatus"
+    class="status"
+  ></div>
+
+</section>
+
+
+
+<section
+  id="previewSection"
+  class="card hidden"
+>
+
+  <h2>
+    معاينة الخطة قبل الاعتماد
+  </h2>
+
+
+  <div class="summary-grid">
+
+
+    <div class="summary-box">
+
+      <strong id="totalRows">
+        0
+      </strong>
+
+      <span>
+        إجمالي الإجراءات
+      </span>
+
+    </div>
+
+
+    <div class="summary-box">
+
+      <strong id="validRows">
+        0
+      </strong>
+
+      <span>
+        إجراءات سليمة
+      </span>
+
+    </div>
+
+
+    <div class="summary-box">
+
+      <strong id="invalidRows">
+        0
+      </strong>
+
+      <span>
+        تحتاج مراجعة
+      </span>
+
+    </div>
+
+
+    <div class="summary-box">
+
+      <strong id="domainsCount">
+        0
+      </strong>
+
+      <span>
+        المجالات المستخدمة
+      </span>
+
+    </div>
+
+
+  </div>
+
+
+  <div id="validationWarnings"></div>
+
+
+  <div class="preview-wrapper">
+
+    <table>
+
+      <thead>
+
+        <tr>
+
+          <th>
+            #
+          </th>
+
+          <th>
+            المجال
+          </th>
+
+          <th>
+            البرنامج / المشروع
+          </th>
+
+          <th>
+            الإجراء
+          </th>
+
+          <th>
+            الفئة المستهدفة
+          </th>
+
+          <th>
+            المنفذون
+          </th>
+
+          <th>
+            متابع التنفيذ
+          </th>
+
+          <th>
+            شهور التنفيذ
+          </th>
+
+          <th>
+            الحالة
+          </th>
+
+        </tr>
+
+      </thead>
+
+
+      <tbody id="previewBody"></tbody>
+
+    </table>
+
+  </div>
+
+
+  <div class="action-row">
+
+    <button
+      type="button"
+      id="savePlanBtn"
+      class="btn-primary"
+      disabled
+    >
+      اعتماد وحفظ الخطة
+    </button>
+
+  </div>
+
+</section>
+
+
+</main>
+
+
+<script
+  src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+<script
+  src="../../js/config.js?v=20260816-plans-upload2"
+></script>
+
+<script
+  src="../../js/graph.js?v=20260816-plans-upload2"
+></script>
+
+<script
+  src="../../js/common.js?v=20260816-plans-upload2"
+></script>
+
+<!-- نفس منطق قراءة وحفظ Excel الحالي -->
+<script
+  src="../../js/plans.js?v=20260816-plans-upload2"
+></script>
+
+
+<script>
+
+"use strict";
+
+
+let pageSupabase =
+  null;
+
+let currentUser =
+  null;
+
+let currentProfile =
+  null;
+
+let allPlanDepartments =
+  [];
+
+
+/*
+  المواد التي تُجمع في خطة المواد الإثرائية.
+*/
+
+const ENRICHMENT_SUBJECTS =
+  new Set([
+    "الحاسوب",
+    "الفن",
+    "التصميم والتقانة"
+  ]);
+
+
+const ENRICHMENT_PLAN_NAME =
+  "المواد الإثرائية";
+
+
+const byId =
+  id =>
+    document.getElementById(
+      id
+    );
+
+
+/* =========================================================
+   مساعدات
+   ========================================================= */
+
+function normalizeText(
+  value
+){
+
+  return String(
+    value ||
+    ""
+  )
+    .trim()
+    .replace(
+      /\s+/g,
+      " "
+    );
+
+}
+
+
+function showAccessMessage(
+  message,
+  type =
+    "success"
+){
+
+  const box =
+    byId(
+      "userAccess"
+    );
+
+
+  box.style.display =
+    "block";
+
+
+  box.textContent =
+    message;
+
+
+  if(
+    type ===
+    "error"
+  ){
+
+    box.style.background =
+      "#fff0f0";
+
+    box.style.borderColor =
+      "#f1caca";
+
+    box.style.color =
+      "#9b1c1c";
+
+
+  }else{
+
+
+    box.style.background =
+      "#eaf8ef";
+
+    box.style.borderColor =
+      "#c7e8d1";
+
+    box.style.color =
+      "#166534";
+
+  }
+
+}
+
+
+function disableUpload(
+  message
+){
+
+  showAccessMessage(
+    message,
+    "error"
+  );
+
+
+  byId(
+    "departmentSelect"
+  ).disabled =
+    true;
+
+
+  byId(
+    "planFile"
+  ).disabled =
+    true;
+
+
+  byId(
+    "analyzeBtn"
+  ).disabled =
+    true;
+
+
+  byId(
+    "savePlanBtn"
+  ).disabled =
+    true;
+
+}
+
+
+/* =========================================================
+   تحميل الأقسام مباشرة من قاعدة البيانات
+   ========================================================= */
+
+async function loadPlanDepartments(){
+
+  const {
+    data,
+    error
+  } =
+    await pageSupabase
+      .from(
+        "departments"
+      )
+      .select(
+        "id, name"
+      )
+      .order(
+        "name",
+        {
+          ascending:true
+        }
+      );
+
+
+  if(
+    error
+  ){
+
+    throw error;
+
+  }
+
+
+  allPlanDepartments =
+    data ||
+    [];
+
+
+  return allPlanDepartments;
+
+}
+
+
+/* =========================================================
+   هل الحساب مروة منسقة المواد الإثرائية؟
+   ========================================================= */
+
+function isEnrichmentCoordinator(){
+
+  const email =
+    normalizeText(
+      currentUser?.email
+    )
+      .toLowerCase();
+
+
+  if(
+    email ===
+    "marwa.i.khalifa@moe.bh"
+  ){
+
+    return true;
+
+  }
+
+
+  /*
+    حماية إضافية:
+    حتى لو تغير البريد مستقبلًا،
+    لو المنسقة مرتبطة بالمواد الثلاث
+    نعتبرها منسقة المواد الإثرائية.
+  */
+
+  const names =
+    new Set(
+      (
+        currentProfile
+          ?.department_names ||
+        []
+      )
+        .map(
+          normalizeText
+        )
+    );
+
+
+  return (
+    names.has(
+      "الحاسوب"
+    ) &&
+    names.has(
+      "الفن"
+    ) &&
+    names.has(
+      "التصميم والتقانة"
+    )
+  );
+
+}
+
+
+/* =========================================================
+   قسم خطة المواد الإثرائية
+   ========================================================= */
+
+function getEnrichmentPlanDepartment(){
+
+  return allPlanDepartments
+    .find(
+      department =>
+        normalizeText(
+          department.name
+        ) ===
+        ENRICHMENT_PLAN_NAME
+    ) ||
+    null;
+
+}
+
+
+/* =========================================================
+   أقسام الخطط التي تظهر للإدارة
+   ========================================================= */
+
+function getAdminPlanDepartments(){
+
+  return allPlanDepartments
+    .filter(
+      department => {
+
+        const name =
+          normalizeText(
+            department.name
+          );
+
+
+        /*
+          لا نسمح برفع خطط منفصلة
+          للحاسوب أو الفن أو التقانة.
+        */
+
+        return !ENRICHMENT_SUBJECTS
+          .has(
+            name
+          );
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   أقسام الخطط التي تظهر للمنسقة
+   ========================================================= */
+
+function getCoordinatorPlanDepartments(){
+
+  /*
+    مروة:
+    خطة المواد الإثرائية فقط.
+  */
+
+  if(
+    isEnrichmentCoordinator()
+  ){
+
+    const enrichment =
+      getEnrichmentPlanDepartment();
+
+
+    return enrichment
+      ? [
+          enrichment
+        ]
+      : [];
+
+  }
+
+
+  const allowedIds =
+    new Set(
+      (
+        currentProfile
+          ?.department_ids ||
+        []
+      )
+        .map(
+          value =>
+            String(
+              value
+            )
+        )
+    );
+
+
+  const allowedNames =
+    new Set(
+      (
+        currentProfile
+          ?.department_names ||
+        []
+      )
+        .map(
+          normalizeText
+        )
+    );
+
+
+  return allPlanDepartments
+    .filter(
+      department => {
+
+        const name =
+          normalizeText(
+            department.name
+          );
+
+
+        /*
+          حتى لأي منسقة أخرى،
+          لا تظهر المواد الثلاث كخطط مستقلة.
+        */
+
+        if(
+          ENRICHMENT_SUBJECTS
+            .has(
+              name
+            )
+        ){
+
+          return false;
+
+        }
+
+
+        if(
+          allowedIds.has(
+            String(
+              department.id
+            )
+          )
+        ){
+
+          return true;
+
+        }
+
+
+        if(
+          allowedNames.has(
+            name
+          )
+        ){
+
+          return true;
+
+        }
+
+
+        return false;
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   بناء قائمة الأقسام
+   ========================================================= */
+
+function renderDepartmentOptions(
+  departments,
+  lock =
+    false
+){
+
+  const select =
+    byId(
+      "departmentSelect"
+    );
+
+
+  select.innerHTML =
+    "";
+
+
+  if(
+    !departments.length
+  ){
+
+    select.innerHTML =
+      `
+        <option value="">
+          لا توجد خطة قسم مرتبطة بالحساب
+        </option>
+      `;
+
+
+    select.disabled =
+      true;
+
+
+    return;
+
+  }
+
+
+  if(
+    !lock
+  ){
+
+    select.insertAdjacentHTML(
+      "beforeend",
+      `
+        <option value="">
+          اختاري القسم
+        </option>
+      `
+    );
+
+  }
+
+
+  departments
+    .forEach(
+      department => {
+
+
+        const option =
+          document
+            .createElement(
+              "option"
+            );
+
+
+        option.value =
+          department.id;
+
+
+        option.textContent =
+          department.name;
+
+
+        select
+          .appendChild(
+            option
+          );
+
+      }
+    );
+
+
+  if(
+    lock
+  ){
+
+    select.value =
+      departments[0].id;
+
+
+    /*
+      لا نستخدم disabled لأن plans.js
+      يحتاج قراءة القيمة عند الحفظ.
+    */
+
+    select.classList
+      .add(
+        "locked"
+      );
+
+
+    select.style.pointerEvents =
+      "none";
+
+
+    select.setAttribute(
+      "aria-disabled",
+      "true"
+    );
+
+
+  }else{
+
+
+    select.classList
+      .remove(
+        "locked"
+      );
+
+
+    select.style.pointerEvents =
+      "";
+
+
+    select.removeAttribute(
+      "aria-disabled"
+    );
+
+
+    select.disabled =
+      false;
+
+  }
+
+}
+
+
+/* =========================================================
+   تشغيل صلاحيات الصفحة
+   ========================================================= */
+
+async function initPlanAccess(){
+
+  try{
+
+
+    if(
+      !window.WR_CONFIG
+        ?.supabaseUrl ||
+      !window.WR_CONFIG
+        ?.supabaseKey
+    ){
+
+      throw new Error(
+        "إعدادات Supabase غير مكتملة"
+      );
+
+    }
+
+
+    pageSupabase =
+      window.supabase
+        .createClient(
+          window.WR_CONFIG
+            .supabaseUrl,
+          window.WR_CONFIG
+            .supabaseKey
+        );
+
+
+    currentUser =
+      await WRGraph
+        .getAccount();
+
+
+    if(
+      !currentUser
+    ){
+
+      location.replace(
+        "../../index.html"
+      );
+
+      return;
+
+    }
+
+
+    currentProfile =
+      await WRAccess
+        .getProfile(
+          true
+        );
+
+
+    if(
+      !currentProfile ||
+      !currentProfile.role
+    ){
+
+      disableUpload(
+        "هذا الحساب لا يمتلك صلاحية محددة في النظام."
+      );
+
+
+      return;
+
+    }
+
+
+    const role =
+      String(
+        currentProfile.role
+      )
+        .trim()
+        .toLowerCase();
+
+
+    /*
+      صفحة رفع الخطط للإدارة والمنسقات فقط.
+    */
+
+    if(
+      ![
+        "admin",
+        "coordinator"
+      ].includes(
+        role
+      )
+    ){
+
+      alert(
+        "صفحة رفع الخطط متاحة للقيادة العليا ومنسقات الأقسام فقط."
+      );
+
+
+      location.replace(
+        "index.html"
+      );
+
+
+      return;
+
+    }
+
+
+    await loadPlanDepartments();
+
+
+    /*
+      لازم يوجد قسم المواد الإثرائية الحقيقي
+      حتى يتم حفظ plan.department_id بصورة صحيحة.
+    */
+
+    const enrichment =
+      getEnrichmentPlanDepartment();
+
+
+    if(
+      !enrichment
+    ){
+
+      disableUpload(
+        "لم يتم العثور على قسم «المواد الإثرائية» في قاعدة البيانات. شغلي كود SQL الخاص بإضافته أولًا."
+      );
+
+
+      return;
+
+    }
+
+
+    /* =========================================
+       الإدارة
+       ========================================= */
+
+    if(
+      role ===
+      "admin"
+    ){
+
+      const departments =
+        getAdminPlanDepartments();
+
+
+      renderDepartmentOptions(
+        departments,
+        false
+      );
+
+
+      showAccessMessage(
+        "صلاحية القيادة العليا — يمكنكِ رفع ومراجعة خطط جميع الأقسام. الحاسوب والفن والتصميم والتقانة تظهر كخطة موحدة باسم «المواد الإثرائية»."
+      );
+
+
+      return;
+
+    }
+
+
+    /* =========================================
+       المنسقة
+       ========================================= */
+
+    const coordinatorPlans =
+      getCoordinatorPlanDepartments();
+
+
+    if(
+      !coordinatorPlans.length
+    ){
+
+      disableUpload(
+        "لم يتم العثور على خطة قسم مرتبطة بهذا الحساب."
+      );
+
+
+      return;
+
+    }
+
+
+    /*
+      المنسقة ترفع فقط خطتها/خططها المسموحة.
+      حاليًا كل منسقة لها خطة واحدة،
+      ومروة لها «المواد الإثرائية» الواحدة.
+    */
+
+    renderDepartmentOptions(
+      coordinatorPlans,
+      coordinatorPlans.length ===
+        1
+    );
+
+
+    if(
+      isEnrichmentCoordinator()
+    ){
+
+      showAccessMessage(
+        "منسقة المواد الإثرائية — الحاسوب والفن والتصميم والتقانة لها خطة قسم واحدة موحدة باسم «المواد الإثرائية»."
+      );
+
+
+    }else{
+
+
+      showAccessMessage(
+        "صلاحية المنسقة — يمكنكِ رفع ومتابعة خطة القسم المرتبط بحسابك فقط."
+      );
+
+    }
+
+
+  }catch(error){
+
+
+    console.error(
+      "Plan access error:",
+      error
+    );
+
+
+    disableUpload(
+      "تعذر تحميل صلاحيات صفحة الخطط: " +
+      (
+        error.message ||
+        "خطأ غير معروف"
+      )
+    );
+
+
+  }finally{
+
+
+    byId(
+      "accessLoader"
+    ).style.display =
+      "none";
+
+  }
+
+}
+
+
+/* =========================================================
+   لأن plans.js يحمل الأقسام أيضًا عند DOMContentLoaded،
+   ننتظر لحظة قصيرة ثم نفرض القائمة الصحيحة مرة أخرى.
+   ========================================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  async () => {
+
+
+    await new Promise(
+      resolve =>
+        setTimeout(
+          resolve,
+          250
+        )
+    );
+
+
+    await initPlanAccess();
+
+  }
+);
+
+</script>
+
+
+</body>
+
+</html>

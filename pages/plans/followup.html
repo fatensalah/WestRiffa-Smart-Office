@@ -1,0 +1,2266 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>
+  المتابعة الشهرية | WestRiffa Smart Office
+</title>
+
+<link
+  rel="stylesheet"
+  href="../../css/app.css?v=20260816-followup2"
+>
+
+<script
+  src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Tahoma,Arial,sans-serif;
+  background:#f4f7f6;
+  color:#173c34;
+}
+
+.page-header{
+  background:linear-gradient(
+    135deg,
+    #0f513f,
+    #18705a
+  );
+  color:#fff;
+  padding:28px 24px;
+}
+
+.page-header-inner{
+  width:min(1450px,95%);
+  margin:auto;
+}
+
+.page-header h1{
+  margin:0 0 8px;
+  font-size:30px;
+}
+
+.page-header p{
+  margin:0;
+  opacity:.92;
+  line-height:1.8;
+}
+
+.container{
+  width:min(1450px,95%);
+  margin:26px auto 60px;
+}
+
+.top-actions{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:20px;
+}
+
+.btn-link{
+  display:inline-block;
+  text-decoration:none;
+  padding:11px 18px;
+  border-radius:12px;
+  background:#fff;
+  color:#0f513f;
+  border:1px solid #dce9e5;
+  font-weight:bold;
+}
+
+.access-box{
+  display:none;
+  padding:13px 16px;
+  border-radius:12px;
+  margin-bottom:18px;
+  background:#eaf8ef;
+  border:1px solid #c7e8d1;
+  color:#166534;
+  font-weight:700;
+  line-height:1.8;
+}
+
+.card{
+  background:#fff;
+  border-radius:18px;
+  padding:24px;
+  border:1px solid #e3ece9;
+  box-shadow:0 8px 24px rgba(15,81,63,.05);
+  margin-bottom:22px;
+}
+
+.card h2{
+  margin-top:0;
+  color:#0f513f;
+}
+
+.filters{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.field label{
+  font-weight:bold;
+  color:#234f44;
+}
+
+.field select{
+  min-height:48px;
+  border-radius:11px;
+  border:1px solid #ccdcd7;
+  padding:0 12px;
+  font-size:16px;
+  background:#fff;
+}
+
+.summary-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  margin-top:22px;
+}
+
+.summary-box{
+  background:#f7faf9;
+  border:1px solid #e4eeeb;
+  border-radius:14px;
+  padding:18px;
+  text-align:center;
+}
+
+.summary-box strong{
+  display:block;
+  font-size:27px;
+  color:#0f654f;
+  margin-bottom:5px;
+}
+
+.summary-box span{
+  font-size:13px;
+  color:#71847e;
+}
+
+.status{
+  display:none;
+  margin-bottom:18px;
+  border-radius:12px;
+  padding:14px 16px;
+  line-height:1.7;
+}
+
+.status.info{
+  display:block;
+  background:#eef7ff;
+  color:#214f72;
+  border:1px solid #cfdef0;
+}
+
+.status.success{
+  display:block;
+  background:#eaf8ef;
+  color:#166534;
+  border:1px solid #c7e8d1;
+}
+
+.status.error{
+  display:block;
+  background:#fff0f0;
+  color:#9b1c1c;
+  border:1px solid #f1caca;
+}
+
+.table-wrapper{
+  overflow-x:auto;
+  border:1px solid #e2ebe8;
+  border-radius:14px;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:1750px;
+  background:#fff;
+}
+
+th,
+td{
+  padding:12px 10px;
+  border-bottom:1px solid #e6eeeb;
+  text-align:right;
+  vertical-align:middle;
+  font-size:14px;
+}
+
+th{
+  background:#eef5f2;
+  color:#214c41;
+  white-space:nowrap;
+}
+
+.control{
+  width:100%;
+  min-height:40px;
+  border-radius:9px;
+  border:1px solid #cadbd5;
+  padding:8px 10px;
+  background:#fff;
+  font-family:inherit;
+  font-size:13px;
+}
+
+select.control{
+  min-width:145px;
+}
+
+textarea.control{
+  min-width:200px;
+  min-height:65px;
+  resize:vertical;
+}
+
+.reason-input{
+  min-width:220px;
+}
+
+.save-btn{
+  border:0;
+  border-radius:10px;
+  padding:10px 17px;
+  background:#0f654f;
+  color:#fff;
+  font-weight:bold;
+  cursor:pointer;
+  white-space:nowrap;
+}
+
+.save-btn:disabled{
+  opacity:.55;
+  cursor:wait;
+}
+
+.empty-state{
+  text-align:center;
+  padding:45px 20px;
+  color:#71847e;
+}
+
+.access-loader{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  background:#f4f7f6;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#075c40;
+  font-weight:700;
+}
+
+@media(max-width:850px){
+
+  .filters,
+  .summary-grid{
+    grid-template-columns:1fr;
+  }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div
+  id="accessLoader"
+  class="access-loader"
+>
+  جاري التحقق من صلاحية الحساب...
+</div>
+
+
+<header class="page-header">
+
+  <div class="page-header-inner">
+
+    <h1>
+      📅 المتابعة الشهرية للخطة التدفقية
+    </h1>
+
+    <p>
+      متابعة الإجراءات المستحقة شهريًا وتسجيل حالة التنفيذ والملاحظات.
+    </p>
+
+  </div>
+
+</header>
+
+
+<main class="container">
+
+
+<div class="top-actions">
+
+  <a
+    class="btn-link"
+    href="index.html"
+  >
+    ← العودة إلى الخطة التدفقية
+  </a>
+
+  <a
+    class="btn-link"
+    href="../../index.html"
+  >
+    لوحة التحكم
+  </a>
+
+</div>
+
+
+<div
+  id="accessBox"
+  class="access-box"
+></div>
+
+
+<section class="card">
+
+  <h2>
+    اختيار فترة المتابعة
+  </h2>
+
+  <div class="filters">
+
+    <div class="field">
+
+      <label for="monthSelect">
+        الشهر
+      </label>
+
+      <select id="monthSelect">
+
+        <option value="9">
+          سبتمبر
+        </option>
+
+        <option value="10">
+          أكتوبر
+        </option>
+
+        <option value="11">
+          نوفمبر
+        </option>
+
+        <option value="12">
+          ديسمبر
+        </option>
+
+        <option value="1">
+          يناير
+        </option>
+
+        <option value="2">
+          فبراير
+        </option>
+
+        <option value="3">
+          مارس
+        </option>
+
+        <option value="4">
+          أبريل
+        </option>
+
+        <option value="5">
+          مايو
+        </option>
+
+        <option value="6">
+          يونيو
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <div class="field">
+
+      <label for="schoolYear">
+        السنة الدراسية
+      </label>
+
+      <select id="schoolYear">
+
+        <option value="2026-2027">
+          2026 / 2027
+        </option>
+
+        <option value="2027-2028">
+          2027 / 2028
+        </option>
+
+      </select>
+
+    </div>
+
+  </div>
+
+
+  <div class="summary-grid">
+
+    <div class="summary-box">
+
+      <strong id="totalCount">
+        0
+      </strong>
+
+      <span>
+        إجراءات الشهر
+      </span>
+
+    </div>
+
+
+    <div class="summary-box">
+
+      <strong id="completedCount">
+        0
+      </strong>
+
+      <span>
+        نفذ
+      </span>
+
+    </div>
+
+
+    <div class="summary-box">
+
+      <strong id="progressCount">
+        0
+      </strong>
+
+      <span>
+        جاري التنفيذ
+      </span>
+
+    </div>
+
+
+    <div class="summary-box">
+
+      <strong id="notCompletedCount">
+        0
+      </strong>
+
+      <span>
+        لم ينفذ
+      </span>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<div
+  id="pageStatus"
+  class="status"
+></div>
+
+
+<section class="card">
+
+  <h2 id="tableTitle">
+    إجراءات الشهر
+  </h2>
+
+  <div class="table-wrapper">
+
+    <table>
+
+      <thead>
+
+        <tr>
+
+          <th>#</th>
+
+          <th>القسم</th>
+
+          <th>المجال</th>
+
+          <th>البرنامج / المشروع</th>
+
+          <th>الإجراء</th>
+
+          <th>الفئة المستهدفة</th>
+
+          <th>المنفذون</th>
+
+          <th>متابع التنفيذ</th>
+
+          <th>الحالة</th>
+
+          <th>سبب عدم التنفيذ</th>
+
+          <th>ملاحظات المتابعة</th>
+
+          <th>حفظ</th>
+
+        </tr>
+
+      </thead>
+
+
+      <tbody id="followupBody"></tbody>
+
+    </table>
+
+  </div>
+
+
+  <div
+    id="emptyState"
+    class="empty-state"
+    style="display:none;"
+  >
+    لا توجد إجراءات مجدولة لهذا الشهر.
+  </div>
+
+</section>
+
+
+</main>
+
+
+<script src="../../js/config.js?v=20260816-followup2"></script>
+<script src="../../js/graph.js?v=20260816-followup2"></script>
+<script src="../../js/common.js?v=20260816-followup2"></script>
+
+
+<script>
+
+"use strict";
+
+
+const followupSupabase =
+  window.supabase.createClient(
+    window.WR_CONFIG.supabaseUrl,
+    window.WR_CONFIG.supabaseKey
+  );
+
+
+const monthSelect =
+  document.getElementById(
+    "monthSelect"
+  );
+
+
+const schoolYear =
+  document.getElementById(
+    "schoolYear"
+  );
+
+
+const followupBody =
+  document.getElementById(
+    "followupBody"
+  );
+
+
+const pageStatus =
+  document.getElementById(
+    "pageStatus"
+  );
+
+
+const emptyState =
+  document.getElementById(
+    "emptyState"
+  );
+
+
+const tableTitle =
+  document.getElementById(
+    "tableTitle"
+  );
+
+
+const totalCount =
+  document.getElementById(
+    "totalCount"
+  );
+
+
+const completedCount =
+  document.getElementById(
+    "completedCount"
+  );
+
+
+const progressCount =
+  document.getElementById(
+    "progressCount"
+  );
+
+
+const notCompletedCount =
+  document.getElementById(
+    "notCompletedCount"
+  );
+
+
+const accessBox =
+  document.getElementById(
+    "accessBox"
+  );
+
+
+const accessLoader =
+  document.getElementById(
+    "accessLoader"
+  );
+
+
+const MONTH_NAMES = {
+
+  1:
+    "يناير",
+
+  2:
+    "فبراير",
+
+  3:
+    "مارس",
+
+  4:
+    "أبريل",
+
+  5:
+    "مايو",
+
+  6:
+    "يونيو",
+
+  9:
+    "سبتمبر",
+
+  10:
+    "أكتوبر",
+
+  11:
+    "نوفمبر",
+
+  12:
+    "ديسمبر"
+
+};
+
+
+const ENRICHMENT_SUBJECTS =
+  new Set([
+    "الحاسوب",
+    "الفن",
+    "التصميم والتقانة"
+  ]);
+
+
+const ENRICHMENT_PLAN_NAME =
+  "المواد الإثرائية";
+
+
+let currentAccount =
+  null;
+
+
+let currentUserProfile =
+  null;
+
+
+let allowedPlanDepartmentIds =
+  [];
+
+
+/* =========================================================
+   Helpers
+   ========================================================= */
+
+function normalizeText(
+  value
+){
+
+  return String(
+    value ||
+    ""
+  )
+    .trim()
+    .replace(
+      /\s+/g,
+      " "
+    );
+
+}
+
+
+/* =========================================================
+   هل منسقة المواد الإثرائية؟
+   ========================================================= */
+
+function isEnrichmentCoordinator(){
+
+  const email =
+    normalizeText(
+      currentAccount?.email
+    )
+      .toLowerCase();
+
+
+  if(
+    email ===
+    "marwa.i.khalifa@moe.bh"
+  ){
+
+    return true;
+
+  }
+
+
+  const names =
+    new Set(
+      (
+        currentUserProfile
+          ?.department_names ||
+        []
+      )
+        .map(
+          normalizeText
+        )
+    );
+
+
+  return (
+    names.has(
+      "الحاسوب"
+    ) &&
+    names.has(
+      "الفن"
+    ) &&
+    names.has(
+      "التصميم والتقانة"
+    )
+  );
+
+}
+
+
+/* =========================================================
+   تحميل صلاحيات الخطة
+   ========================================================= */
+
+async function loadPlanAccess(){
+
+  const role =
+    String(
+      currentUserProfile
+        ?.role ||
+      ""
+    )
+      .trim()
+      .toLowerCase();
+
+
+  /*
+    الصفحة للإدارة والمنسقات فقط.
+  */
+
+  if(
+    ![
+      "admin",
+      "coordinator"
+    ].includes(
+      role
+    )
+  ){
+
+    alert(
+      "المتابعة الشهرية متاحة للقيادة العليا ومنسقات الأقسام فقط."
+    );
+
+
+    location.replace(
+      "index.html"
+    );
+
+
+    return false;
+
+  }
+
+
+  /*
+    الإدارة:
+    جميع الخطط.
+  */
+
+  if(
+    role ===
+    "admin"
+  ){
+
+    allowedPlanDepartmentIds =
+      [];
+
+
+    accessBox.style.display =
+      "block";
+
+
+    accessBox.textContent =
+      "صلاحية القيادة العليا — يتم عرض ومتابعة خطط جميع الأقسام.";
+
+
+    return true;
+
+  }
+
+
+  /*
+    منسقة المواد الإثرائية:
+    تتحول إلى قسم «المواد الإثرائية» الموحد.
+  */
+
+  if(
+    isEnrichmentCoordinator()
+  ){
+
+    const {
+      data: enrichment,
+      error
+    } =
+      await followupSupabase
+
+        .from(
+          "departments"
+        )
+
+        .select(
+          "id, name"
+        )
+
+        .eq(
+          "name",
+          ENRICHMENT_PLAN_NAME
+        )
+
+        .maybeSingle();
+
+
+    if(
+      error
+    ){
+
+      throw error;
+
+    }
+
+
+    if(
+      !enrichment
+    ){
+
+      showStatus(
+        "لم يتم العثور على قسم «المواد الإثرائية» في قاعدة البيانات.",
+        "error"
+      );
+
+
+      return false;
+
+    }
+
+
+    allowedPlanDepartmentIds = [
+      enrichment.id
+    ];
+
+
+    accessBox.style.display =
+      "block";
+
+
+    accessBox.textContent =
+      "منسقة المواد الإثرائية — يتم عرض خطة «المواد الإثرائية» الموحدة للحاسوب والفن والتصميم والتقانة.";
+
+
+    return true;
+
+  }
+
+
+  /*
+    باقي المنسقات:
+    كل الأقسام المرتبطة بالحساب.
+  */
+
+  const scope =
+    typeof WRAccess
+      ?.getScope ===
+      "function"
+
+      ? await WRAccess
+          .getScope()
+
+      : null;
+
+
+  allowedPlanDepartmentIds =
+
+    Array.isArray(
+      scope?.department_ids
+    )
+
+      ? scope
+          .department_ids
+          .filter(
+            Boolean
+          )
+
+      : Array.isArray(
+          currentUserProfile
+            ?.department_ids
+        )
+
+        ? currentUserProfile
+            .department_ids
+            .filter(
+              Boolean
+            )
+
+        : currentUserProfile
+            ?.department_id
+
+          ? [
+              currentUserProfile
+                .department_id
+            ]
+
+          : [];
+
+
+  if(
+    !allowedPlanDepartmentIds
+      .length
+  ){
+
+    showStatus(
+      "لم يتم ربط هذا الحساب بخطة قسم.",
+      "error"
+    );
+
+
+    return false;
+
+  }
+
+
+  accessBox.style.display =
+    "block";
+
+
+  accessBox.textContent =
+    "صلاحية المنسقة — يتم عرض ومتابعة خطة القسم أو الأقسام المرتبطة بحسابك فقط.";
+
+
+  return true;
+
+}
+
+
+/* =========================================================
+   تشغيل الصفحة
+   ========================================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  initializeFollowupPage
+);
+
+
+async function initializeFollowupPage(){
+
+  try{
+
+
+    await WRGraph.init();
+
+
+    currentAccount =
+      await WRGraph
+        .getAccount();
+
+
+    if(
+      !currentAccount
+    ){
+
+      window.location.href =
+        "../../index.html";
+
+
+      return;
+
+    }
+
+
+    currentUserProfile =
+      await WRAccess
+        .getProfile(
+          true
+        );
+
+
+    if(
+      !currentUserProfile ||
+      !currentUserProfile.role
+    ){
+
+      showStatus(
+        "هذا الحساب لا يمتلك صلاحية محددة.",
+        "error"
+      );
+
+
+      return;
+
+    }
+
+
+    const accessOk =
+      await loadPlanAccess();
+
+
+    if(
+      !accessOk
+    ){
+
+      return;
+
+    }
+
+
+    await loadMonthlyFollowups();
+
+
+  }catch(error){
+
+
+    console.error(
+      error
+    );
+
+
+    showStatus(
+      "تعذر تحميل صلاحيات الحساب.",
+      "error"
+    );
+
+
+  }finally{
+
+
+    accessLoader.style.display =
+      "none";
+
+  }
+
+}
+
+
+/* =========================================================
+   Events
+   ========================================================= */
+
+monthSelect.addEventListener(
+  "change",
+  loadMonthlyFollowups
+);
+
+
+schoolYear.addEventListener(
+  "change",
+  loadMonthlyFollowups
+);
+
+
+/* =========================================================
+   تحميل المتابعة الشهرية
+   ========================================================= */
+
+async function loadMonthlyFollowups(){
+
+  const monthNo =
+    Number(
+      monthSelect.value
+    );
+
+
+  const selectedYear =
+    schoolYear.value;
+
+
+  followupBody.innerHTML =
+    "";
+
+
+  emptyState.style.display =
+    "none";
+
+
+  resetSummary();
+
+
+  tableTitle.textContent =
+    `إجراءات شهر ${MONTH_NAMES[monthNo]}`;
+
+
+  showStatus(
+    "جاري تحميل إجراءات المتابعة...",
+    "info"
+  );
+
+
+  try{
+
+
+    const {
+      data: followups,
+      error: followupsError
+    } =
+      await followupSupabase
+
+        .from(
+          "plan_monthly_followups"
+        )
+
+        .select(
+          `
+          id,
+          plan_id,
+          procedure_id,
+          month_no,
+          execution_status,
+          non_completion_reason,
+          followup_notes,
+          updated_at
+          `
+        )
+
+        .eq(
+          "month_no",
+          monthNo
+        );
+
+
+    if(
+      followupsError
+    ){
+
+      throw followupsError;
+
+    }
+
+
+    if(
+      !followups ||
+      !followups.length
+    ){
+
+      hideStatus();
+
+
+      emptyState.style.display =
+        "block";
+
+
+      return;
+
+    }
+
+
+    const planIds = [
+      ...new Set(
+        followups.map(
+          item =>
+            item.plan_id
+        )
+      )
+    ];
+
+
+    const {
+      data: rawPlans,
+      error: plansError
+    } =
+      await followupSupabase
+
+        .from(
+          "plans"
+        )
+
+        .select(
+          `
+          id,
+          department_id,
+          school_year,
+          plan_title,
+          status
+          `
+        )
+
+        .in(
+          "id",
+          planIds
+        )
+
+        .eq(
+          "school_year",
+          selectedYear
+        );
+
+
+    if(
+      plansError
+    ){
+
+      throw plansError;
+
+    }
+
+
+    let plans =
+      rawPlans ||
+      [];
+
+
+    if(
+      !plans.length
+    ){
+
+      hideStatus();
+
+
+      emptyState.style.display =
+        "block";
+
+
+      return;
+
+    }
+
+
+    /*
+      تطبيق صلاحية المنسقة.
+      admin = جميع الخطط.
+    */
+
+    if(
+      currentUserProfile
+        .role ===
+      "coordinator"
+    ){
+
+      const allowedIds =
+        new Set(
+          allowedPlanDepartmentIds
+            .map(
+              value =>
+                String(
+                  value
+                )
+            )
+        );
+
+
+      plans =
+        plans.filter(
+          plan =>
+            allowedIds.has(
+              String(
+                plan.department_id
+              )
+            )
+        );
+
+    }
+
+
+    if(
+      !plans.length
+    ){
+
+      hideStatus();
+
+
+      emptyState.style.display =
+        "block";
+
+
+      return;
+
+    }
+
+
+    const allowedPlanIds =
+      new Set(
+        plans.map(
+          item =>
+            item.id
+        )
+      );
+
+
+    const validFollowups =
+      followups.filter(
+        item =>
+          allowedPlanIds.has(
+            item.plan_id
+          )
+      );
+
+
+    if(
+      !validFollowups.length
+    ){
+
+      hideStatus();
+
+
+      emptyState.style.display =
+        "block";
+
+
+      return;
+
+    }
+
+
+    const procedureIds = [
+      ...new Set(
+        validFollowups.map(
+          item =>
+            item.procedure_id
+        )
+      )
+    ];
+
+
+    const {
+      data: procedures,
+      error: proceduresError
+    } =
+      await followupSupabase
+
+        .from(
+          "plan_procedures"
+        )
+
+        .select(
+          `
+          id,
+          plan_id,
+          sequence_no,
+          path_code,
+          general_goal,
+          specific_goal,
+          success_criterion,
+          program_name,
+          procedure_text,
+          target_group,
+          implementers,
+          execution_follower
+          `
+        )
+
+        .in(
+          "id",
+          procedureIds
+        );
+
+
+    if(
+      proceduresError
+    ){
+
+      throw proceduresError;
+
+    }
+
+
+    const departmentIds = [
+      ...new Set(
+        plans
+          .map(
+            item =>
+              item.department_id
+          )
+          .filter(
+            Boolean
+          )
+      )
+    ];
+
+
+    let departments =
+      [];
+
+
+    if(
+      departmentIds.length
+    ){
+
+      const {
+        data,
+        error
+      } =
+        await followupSupabase
+
+          .from(
+            "departments"
+          )
+
+          .select(
+            "id, name"
+          )
+
+          .in(
+            "id",
+            departmentIds
+          );
+
+
+      if(
+        error
+      ){
+
+        throw error;
+
+      }
+
+
+      departments =
+        data ||
+        [];
+
+    }
+
+
+    const departmentMap =
+      new Map(
+        departments.map(
+          item => [
+            item.id,
+            item.name
+          ]
+        )
+      );
+
+
+    const planMap =
+      new Map(
+        plans.map(
+          item => [
+            item.id,
+            item
+          ]
+        )
+      );
+
+
+    const procedureMap =
+      new Map(
+        (
+          procedures ||
+          []
+        ).map(
+          item => [
+            item.id,
+            item
+          ]
+        )
+      );
+
+
+    const rows =
+      validFollowups
+
+        .map(
+          item => ({
+
+            ...item,
+
+            procedure:
+              procedureMap.get(
+                item.procedure_id
+              ),
+
+            plan:
+              planMap.get(
+                item.plan_id
+              )
+
+          })
+        )
+
+        .filter(
+          item =>
+            item.procedure &&
+            item.plan
+        );
+
+
+    rows.sort(
+      (
+        a,
+        b
+      ) =>
+        (
+          a.procedure
+            .sequence_no ||
+          0
+        )
+        -
+        (
+          b.procedure
+            .sequence_no ||
+          0
+        )
+    );
+
+
+    renderRows(
+      rows,
+      departmentMap
+    );
+
+
+    updateSummary(
+      rows
+    );
+
+
+    showStatus(
+      `تم تحميل ${rows.length} إجراء لشهر ${MONTH_NAMES[monthNo]}.`,
+      "success"
+    );
+
+
+  }catch(error){
+
+
+    console.error(
+      "Monthly followups load error:",
+      error
+    );
+
+
+    showStatus(
+      `تعذر تحميل المتابعة الشهرية: ${
+        error.message ||
+        "حدث خطأ غير متوقع."
+      }`,
+      "error"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   عرض الصفوف
+   ========================================================= */
+
+function renderRows(
+  rows,
+  departmentMap
+){
+
+  followupBody.innerHTML =
+    "";
+
+
+  rows.forEach(
+    (
+      item,
+      index
+    ) => {
+
+
+      const procedure =
+        item.procedure;
+
+
+      const departmentName =
+        departmentMap.get(
+          item.plan.department_id
+        ) ||
+        "—";
+
+
+      const domainName =
+        getDomainName(
+          procedure
+        );
+
+
+      const reasonDisabled =
+        item.execution_status ===
+        "not_completed"
+
+          ? ""
+
+          : "disabled";
+
+
+      const tr =
+        document.createElement(
+          "tr"
+        );
+
+
+      tr.innerHTML = `
+
+        <td>
+          ${index + 1}
+        </td>
+
+
+        <td>
+          ${escapeHtml(
+            departmentName
+          )}
+        </td>
+
+
+        <td>
+          ${escapeHtml(
+            domainName
+          )}
+        </td>
+
+
+        <td>
+          ${escapeHtml(
+            procedure.program_name ||
+            "—"
+          )}
+        </td>
+
+
+        <td>
+          ${escapeHtml(
+            procedure.procedure_text ||
+            "—"
+          )}
+        </td>
+
+
+        <td>
+          ${escapeHtml(
+            procedure.target_group ||
+            "—"
+          )}
+        </td>
+
+
+        <td>
+          ${escapeHtml(
+            procedure.implementers ||
+            "—"
+          )}
+        </td>
+
+
+        <td>
+          ${escapeHtml(
+            procedure.execution_follower ||
+            "—"
+          )}
+        </td>
+
+
+        <td>
+
+          <select
+            class="control"
+            id="status-${item.id}"
+            onchange="
+              handleLocalStatusChange(
+                '${item.id}'
+              )
+            "
+          >
+
+            <option
+              value="pending"
+              ${
+                item.execution_status ===
+                "pending"
+                  ? "selected"
+                  : ""
+              }
+            >
+              لم يتم التحديث
+            </option>
+
+
+            <option
+              value="completed"
+              ${
+                item.execution_status ===
+                "completed"
+                  ? "selected"
+                  : ""
+              }
+            >
+              نفذ
+            </option>
+
+
+            <option
+              value="in_progress"
+              ${
+                item.execution_status ===
+                "in_progress"
+                  ? "selected"
+                  : ""
+              }
+            >
+              جاري التنفيذ
+            </option>
+
+
+            <option
+              value="not_completed"
+              ${
+                item.execution_status ===
+                "not_completed"
+                  ? "selected"
+                  : ""
+              }
+            >
+              لم ينفذ
+            </option>
+
+          </select>
+
+        </td>
+
+
+        <td>
+
+          <textarea
+            class="control reason-input"
+            id="reason-${item.id}"
+            placeholder="يُكتب السبب عند اختيار لم ينفذ"
+            ${reasonDisabled}
+          >${escapeHtml(
+            item.non_completion_reason ||
+            ""
+          )}</textarea>
+
+        </td>
+
+
+        <td>
+
+          <textarea
+            class="control"
+            id="notes-${item.id}"
+            placeholder="ملاحظات المتابعة"
+          >${escapeHtml(
+            item.followup_notes ||
+            ""
+          )}</textarea>
+
+        </td>
+
+
+        <td>
+
+          <button
+            type="button"
+            class="save-btn"
+            id="save-${item.id}"
+            onclick="
+              saveFollowup(
+                '${item.id}'
+              )
+            "
+          >
+            حفظ
+          </button>
+
+        </td>
+
+      `;
+
+
+      followupBody
+        .appendChild(
+          tr
+        );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   تغيير الحالة محليًا
+   ========================================================= */
+
+function handleLocalStatusChange(
+  followupId
+){
+
+  const status =
+    document.getElementById(
+      `status-${followupId}`
+    ).value;
+
+
+  const reason =
+    document.getElementById(
+      `reason-${followupId}`
+    );
+
+
+  if(
+    status ===
+    "not_completed"
+  ){
+
+    reason.disabled =
+      false;
+
+
+    reason.focus();
+
+
+  }else{
+
+
+    reason.disabled =
+      true;
+
+
+    reason.value =
+      "";
+
+  }
+
+}
+
+
+/* =========================================================
+   حفظ متابعة
+   ========================================================= */
+
+async function saveFollowup(
+  followupId
+){
+
+  const statusElement =
+    document.getElementById(
+      `status-${followupId}`
+    );
+
+
+  const reasonElement =
+    document.getElementById(
+      `reason-${followupId}`
+    );
+
+
+  const notesElement =
+    document.getElementById(
+      `notes-${followupId}`
+    );
+
+
+  const saveButton =
+    document.getElementById(
+      `save-${followupId}`
+    );
+
+
+  const executionStatus =
+    statusElement.value;
+
+
+  const reason =
+    reasonElement
+      .value
+      .trim();
+
+
+  const followupNotes =
+    notesElement
+      .value
+      .trim();
+
+
+  if(
+    executionStatus ===
+    "not_completed" &&
+    !reason
+  ){
+
+    showStatus(
+      "يجب كتابة سبب عدم التنفيذ.",
+      "error"
+    );
+
+
+    reasonElement.focus();
+
+
+    return;
+
+  }
+
+
+  saveButton.disabled =
+    true;
+
+
+  saveButton.textContent =
+    "جاري الحفظ...";
+
+
+  showStatus(
+    "جاري حفظ المتابعة...",
+    "info"
+  );
+
+
+  try{
+
+
+    const {
+      error
+    } =
+      await followupSupabase
+
+        .from(
+          "plan_monthly_followups"
+        )
+
+        .update({
+
+          execution_status:
+            executionStatus,
+
+          non_completion_reason:
+            executionStatus ===
+            "not_completed"
+
+              ? reason
+
+              : null,
+
+          followup_notes:
+            followupNotes ||
+            null,
+
+          updated_at:
+            new Date()
+              .toISOString()
+
+        })
+
+        .eq(
+          "id",
+          followupId
+        );
+
+
+    if(
+      error
+    ){
+
+      throw error;
+
+    }
+
+
+    showStatus(
+      "تم حفظ المتابعة بنجاح.",
+      "success"
+    );
+
+
+    await loadMonthlyFollowups();
+
+
+  }catch(error){
+
+
+    console.error(
+      "Followup save error:",
+      error
+    );
+
+
+    showStatus(
+      `تعذر حفظ المتابعة: ${
+        error.message ||
+        "حدث خطأ غير متوقع."
+      }`,
+      "error"
+    );
+
+
+    saveButton.disabled =
+      false;
+
+
+    saveButton.textContent =
+      "حفظ";
+
+  }
+
+}
+
+
+/* =========================================================
+   اسم المجال
+   ========================================================= */
+
+function getDomainName(
+  procedure
+){
+
+  const program =
+    String(
+      procedure.program_name ||
+      ""
+    ).trim();
+
+
+  if(
+    program.includes(
+      "آفاق"
+    )
+  ){
+
+    return "مجال الإنجاز الأكاديمي";
+
+  }
+
+
+  if(
+    program.includes(
+      "رايات"
+    )
+  ){
+
+    return "مجال التطور الشخصي للطلبة ورعايتهم";
+
+  }
+
+
+  if(
+    program.includes(
+      "مداد"
+    )
+  ){
+
+    return "مجال التعليم والتعلم والتقويم";
+
+  }
+
+
+  if(
+    program.includes(
+      "خطى"
+    )
+  ){
+
+    return "مجال القيادة والإدارة";
+
+  }
+
+
+  return "—";
+
+}
+
+
+/* =========================================================
+   المؤشرات
+   ========================================================= */
+
+function updateSummary(
+  rows
+){
+
+  totalCount.textContent =
+    rows.length;
+
+
+  completedCount.textContent =
+    rows.filter(
+      item =>
+        item.execution_status ===
+        "completed"
+    ).length;
+
+
+  progressCount.textContent =
+    rows.filter(
+      item =>
+        item.execution_status ===
+        "in_progress"
+    ).length;
+
+
+  notCompletedCount.textContent =
+    rows.filter(
+      item =>
+        item.execution_status ===
+        "not_completed"
+    ).length;
+
+}
+
+
+/* =========================================================
+   تصفير المؤشرات
+   ========================================================= */
+
+function resetSummary(){
+
+  totalCount.textContent =
+    "0";
+
+
+  completedCount.textContent =
+    "0";
+
+
+  progressCount.textContent =
+    "0";
+
+
+  notCompletedCount.textContent =
+    "0";
+
+}
+
+
+/* =========================================================
+   Status
+   ========================================================= */
+
+function showStatus(
+  message,
+  type =
+    "info"
+){
+
+  pageStatus.className =
+    `status ${type}`;
+
+
+  pageStatus.textContent =
+    message;
+
+}
+
+
+function hideStatus(){
+
+  pageStatus.className =
+    "status";
+
+
+  pageStatus.textContent =
+    "";
+
+}
+
+
+/* =========================================================
+   Escape
+   ========================================================= */
+
+function escapeHtml(
+  text
+){
+
+  return String(
+    text ?? ""
+  )
+
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+
+}
+
+</script>
+
+
+</body>
+
+</html>

@@ -231,6 +231,50 @@
     }
 
 
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #eef5f2;
+      color: #075c40;
+      border: 1px solid #d7e4e0;
+    }
+
+    .coordinator-section {
+      display: none;
+      margin-top: 24px;
+      margin-bottom: 26px;
+    }
+
+    .coordinator-section.visible {
+      display: block;
+    }
+
+    .coordinator-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .coordinator-head h3 {
+      margin: 0;
+      color: #075c40;
+    }
+
+    .coordinator-head p {
+      margin: 5px 0 0;
+      color: #6b7a72;
+      font-size: 13px;
+    }
+
+
     /* =====================================================
        المؤشرات الإدارية الجديدة
        ===================================================== */
@@ -741,6 +785,13 @@
     ></span>
 
 
+    <span
+      id="currentUserRole"
+      class="role-badge"
+      style="display:none"
+    ></span>
+
+
     <a
       class="btn btn-soft"
       href="index.html"
@@ -797,6 +848,42 @@
 
 
   <a
+    id="notesNavLink"
+    class="nav-link"
+    href="pages/notes/my-notes.html"
+    style="display:none"
+  >
+    🔔 ملاحظاتي <span id="notesUnreadBadge"></span>
+  </a>
+
+
+  <a
+    id="classroomVisitsNavLink"
+    class="nav-link"
+    href="pages/classroom-visits/index.html"
+    style="display:none"
+  >
+    👁 الزيارات الصفية
+  </a>
+
+
+  <a
+    class="nav-link"
+    href="pages/exchange-visits/index.html"
+  >
+    🤝 الزيارات التبادلية
+  </a>
+
+
+  <a
+    class="nav-link"
+    href="pages/permissions/index.html"
+  >
+    🕒 طلبات الاستئذان
+  </a>
+
+
+  <a
     class="nav-link"
     href="pages/meetings/index.html"
   >
@@ -813,10 +900,35 @@
 
 
   <a
+    id="plansNavLink"
+    class="nav-link"
+    href="pages/plans/index.html"
+  >
+    📊 الخطة التدفقية
+  </a>
+
+
+  <a
     class="nav-link"
     href="pages/certificates/index.html"
   >
     🏅 الشهادات
+  </a>
+
+
+  <a
+    class="nav-link"
+    href="pages/lesson-plans/index.html"
+  >
+    📚 دفتر التحضير الإلكتروني
+  </a>
+
+
+  <a
+    class="nav-link"
+    href="pages/grades/index.html"
+  >
+    📊 منظومة التحصيل والدرجات
   </a>
 
 
@@ -829,6 +941,7 @@
 
 
   <a
+    id="settingsNavLink"
     class="nav-link"
     href="pages/settings/index.html"
   >
@@ -1303,6 +1416,98 @@
 
 
 
+
+  <!-- ===================================================
+       متابعة القسم - Coordinator فقط
+       =================================================== -->
+
+  <section
+    id="coordinatorSection"
+    class="coordinator-section"
+  >
+
+    <div class="coordinator-head">
+
+      <div>
+        <h3>🧭 متابعة القسم</h3>
+        <p>
+          تظهر للمنسقة فقط، وتفتح القراءات الخاصة بمعلمات القسم/الأقسام التابعة لها.
+        </p>
+      </div>
+
+      <span class="admin-badge">
+        صلاحية منسقة
+      </span>
+
+    </div>
+
+    <div class="cards">
+
+      <a
+        class="feature-card"
+        href="pages/lesson-plans/index.html"
+      >
+        📚
+
+        <b>
+          متابعة تحاضير القسم
+        </b>
+
+        <span>
+          قراءة التحاضير ومؤشرات الممارسات التعليمية
+        </span>
+      </a>
+
+      <a
+        class="feature-card"
+        href="pages/grades/index.html"
+      >
+        📈
+
+        <b>
+          متابعة تحصيل القسم
+        </b>
+
+        <span>
+          قراءة سجلات الدرجات ومؤشرات التحصيل
+        </span>
+      </a>
+
+      <a
+        class="feature-card"
+        href="pages/classroom-visits/index.html"
+      >
+        👁
+
+        <b>
+          الزيارات الصفية
+        </b>
+
+        <span>
+          متابعة الزيارات الصفية المرتبطة بدور المنسقة
+        </span>
+      </a>
+
+      <a
+        class="feature-card"
+        href="pages/plans/index.html"
+      >
+        📊
+
+        <b>
+          متابعة الخطة التدفقية
+        </b>
+
+        <span>
+          متابعة إجراءات القسم ونسب التنفيذ
+        </span>
+      </a>
+
+    </div>
+
+  </section>
+
+
   <!-- ===================================================
        الوصول السريع
        =================================================== -->
@@ -1334,6 +1539,7 @@
 
 
     <a
+      id="meetingInvitationCard"
       class="feature-card"
       href="pages/meetings/invitation.html"
     >
@@ -1352,6 +1558,7 @@
 
 
     <a
+      id="meetingMinutesCard"
       class="feature-card"
       href="pages/meetings/minutes.html"
     >
@@ -1367,45 +1574,8 @@
 
     </a>
 
-
-
-    <a
-      class="feature-card"
-      href="pages/meetings/attendance.html"
-    >
-      ✅
-
-      <b>
-        سجل حضور
-      </b>
-
-      <span>
-        حضور وغياب
-      </span>
-
-    </a>
-
-
-
-    <a
-      class="feature-card"
-      href="pages/meetings/recommendations.html"
-    >
-      📌
-
-      <b>
-        متابعة توصيات
-      </b>
-
-      <span>
-        الحالة والمسؤول
-      </span>
-
-    </a>
-
-
-
-    <a
+<a
+      id="certificateCreateCard"
       class="feature-card"
       href="pages/certificates/create.html"
     >
@@ -1417,6 +1587,74 @@
 
       <span>
         جاهزة للطباعة
+      </span>
+
+    </a>
+
+
+    <a
+      class="feature-card"
+      href="pages/exchange-visits/index.html"
+    >
+      🤝
+
+      <b>
+        الزيارات التبادلية
+      </b>
+
+      <span>
+        داخلية وخارجية وحصر الزيارات
+      </span>
+
+    </a>
+
+
+    <a
+      class="feature-card"
+      href="pages/lesson-plans/index.html"
+    >
+      📚
+
+      <b>
+        دفتر التحضير الإلكتروني
+      </b>
+
+      <span>
+        إعداد التحضير وحفظه وتنزيله PDF
+      </span>
+
+    </a>
+
+
+    <a
+      class="feature-card"
+      href="pages/grades/index.html"
+    >
+      📊
+
+      <b>
+        منظومة التحصيل والدرجات
+      </b>
+
+      <span>
+        إدخال الدرجات وقراءة مؤشرات التحصيل
+      </span>
+
+    </a>
+
+
+    <a
+      class="feature-card"
+      href="pages/permissions/index.html"
+    >
+      🕒
+
+      <b>
+        طلبات الاستئذان
+      </b>
+
+      <span>
+        تقديم الطلب ومتابعة الموافقة أو الرفض
       </span>
 
     </a>
@@ -1524,9 +1762,62 @@ const currentUserEmail =
   );
 
 
+const currentUserRole =
+  document.getElementById(
+    "currentUserRole"
+  );
+
+const settingsNavLink =
+  document.getElementById(
+    "settingsNavLink"
+  );
+
+const plansNavLink =
+  document.getElementById(
+    "plansNavLink"
+  );
+
+const coordinatorSection =
+  document.getElementById(
+    "coordinatorSection"
+  );
+
+const meetingInvitationCard =
+  document.getElementById(
+    "meetingInvitationCard"
+  );
+
+const meetingMinutesCard =
+  document.getElementById(
+    "meetingMinutesCard"
+  );
+
+const certificateCreateCard =
+  document.getElementById(
+    "certificateCreateCard"
+  );
+
+
 const syncNowBtn =
   document.getElementById(
     "syncNowBtn"
+  );
+
+
+const notesNavLink =
+  document.getElementById(
+    "notesNavLink"
+  );
+
+
+const notesUnreadBadge =
+  document.getElementById(
+    "notesUnreadBadge"
+  );
+
+const classroomVisitsNavLink =
+  document.getElementById(
+    "classroomVisitsNavLink"
   );
 
 
@@ -1552,11 +1843,356 @@ function showLogin() {
 
 
 
+
+
 /* =====================================================
+   قراءة الدور الفعلي من user_profiles
+   مع دعم الحسابات القديمة من profiles
+   ===================================================== */
+
+async function getEffectiveProfile(user) {
+
+  if (!user) return null;
+
+  try {
+
+    if (
+      window.WRGraph &&
+      typeof WRGraph.getUserProfile === "function"
+    ) {
+
+      const profile =
+        await WRGraph.getUserProfile();
+
+      if (profile?.role) {
+        return profile;
+      }
+    }
+
+  } catch (error) {
+
+    console.warn(
+      "user_profiles lookup:",
+      error
+    );
+  }
+
+  try {
+
+    const sbFallback =
+      window.supabase.createClient(
+        window.WR_CONFIG.supabaseUrl,
+        window.WR_CONFIG.supabaseKey
+      );
+
+    const { data } =
+      await sbFallback
+        .from("profiles")
+        .select("id, full_name, role")
+        .eq("id", user.id)
+        .maybeSingle();
+
+    if (data) {
+      return {
+        user_id: user.id,
+        email: user.email,
+        full_name:
+          data.full_name ||
+          user.email ||
+          "",
+        role:
+          data.role ||
+          "teacher"
+      };
+    }
+
+  } catch (error) {
+
+    console.warn(
+      "legacy profiles lookup:",
+      error
+    );
+  }
+
+  return {
+    user_id: user.id,
+    email: user.email,
+    full_name:
+      user.email ||
+      "",
+    role: "teacher"
+  };
+}
+
+
+/* =====================================================
+   تشكيل الصفحة الرئيسية حسب الدور
+   ===================================================== */
+
+async function configureRoleUI(user) {
+
+  const profile =
+    await getEffectiveProfile(user);
+
+  const role =
+    String(profile?.role || "teacher")
+      .trim()
+      .toLowerCase();
+
+  const isAdmin =
+    role === "admin";
+
+  const isCoordinator =
+    role === "coordinator";
+
+  const roleText =
+    isAdmin
+      ? "إدارة"
+      : (
+          isCoordinator
+            ? "منسقة"
+            : "معلمة"
+        );
+
+  if (currentUserRole) {
+    currentUserRole.textContent =
+      roleText;
+    currentUserRole.style.display =
+      "";
+  }
+
+  /*
+    الإعدادات: للإدارة فقط
+  */
+  if (settingsNavLink) {
+    settingsNavLink.style.display =
+      isAdmin
+        ? ""
+        : "none";
+  }
+
+  /*
+    الخطة التدفقية:
+    الإدارة والمنسقة فقط.
+  */
+  if (plansNavLink) {
+    plansNavLink.style.display =
+      (
+        isAdmin ||
+        isCoordinator
+      )
+        ? ""
+        : "none";
+  }
+
+  /*
+    متابعة القسم:
+    تظهر للمنسقة فقط.
+  */
+  if (coordinatorSection) {
+    coordinatorSection.classList.toggle(
+      "visible",
+      isCoordinator
+    );
+  }
+
+  /*
+    أدوات الاجتماعات:
+    دعوة الاجتماع ومحضر الاجتماع للإدارة والمنسقة فقط.
+  */
+  [
+    meetingInvitationCard,
+    meetingMinutesCard
+  ].forEach(element => {
+
+    if (!element) return;
+
+    element.style.display =
+      (
+        isAdmin ||
+        isCoordinator
+      )
+        ? ""
+        : "none";
+  });
+
+  /*
+    شهادة التقدير متاحة لكل مستخدم مسجل دخوله،
+    بما في ذلك المعلمات.
+  */
+  if (certificateCreateCard) {
+    certificateCreateCard.style.display = "";
+  }
+
+  return profile;
+}
+
+
+/* =====================================================
+   رابط الملاحظات حسب نوع الحساب
+   ===================================================== */
+
+async function configureNotesNavigation(user) {
+
+  if (!notesNavLink || !user) return;
+
+  try {
+
+    const profile =
+      await getEffectiveProfile(user);
+
+    const role =
+      String(profile?.role || "teacher")
+        .trim()
+        .toLowerCase();
+
+    const isAdmin =
+      role === "admin";
+
+    notesNavLink.style.display = "";
+
+    if (isAdmin) {
+
+      notesNavLink.href =
+        "pages/notes/index.html";
+
+      notesNavLink.innerHTML =
+        "📨 إرسال ومتابعة الملاحظات";
+
+      return;
+    }
+
+    notesNavLink.href =
+      "pages/notes/my-notes.html";
+
+    notesNavLink.innerHTML =
+      '🔔 ملاحظاتي <span id="notesUnreadBadge"></span>';
+
+    const badge =
+      document.getElementById(
+        "notesUnreadBadge"
+      );
+
+    const sbNotes =
+      window.supabase.createClient(
+        window.WR_CONFIG.supabaseUrl,
+        window.WR_CONFIG.supabaseKey
+      );
+
+    const { count, error: countError } =
+      await sbNotes
+        .from("note_recipients")
+        .select(
+          "id",
+          {
+            count: "exact",
+            head: true
+          }
+        )
+        .eq(
+          "teacher_id",
+          user.id
+        )
+        .eq(
+          "is_read",
+          false
+        );
+
+    if (countError) {
+      console.warn(
+        "Unread notes count:",
+        countError
+      );
+      return;
+    }
+
+    if (
+      badge &&
+      count > 0
+    ) {
+
+      badge.textContent =
+        ` (${count})`;
+
+      badge.style.fontWeight =
+        "700";
+
+      badge.style.color =
+        "#f3c65f";
+    }
+
+  } catch (error) {
+
+    console.error(
+      "Notes navigation error:",
+      error
+    );
+  }
+}
+
+
+
+/* =====================================================
+   رابط الزيارات الصفية/* =====================================================
+   رابط الزيارات الصفية حسب نوع الحساب
+   ===================================================== */
+
+async function configureClassroomVisitsNavigation(user) {
+
+  if (
+    !classroomVisitsNavLink ||
+    !user
+  ) return;
+
+  try {
+
+    const profile =
+      await getEffectiveProfile(user);
+
+    const role =
+      String(profile?.role || "teacher")
+        .trim()
+        .toLowerCase();
+
+    if (
+      role === "admin" ||
+      role === "coordinator"
+    ) {
+
+      classroomVisitsNavLink.style.display =
+        "";
+
+      classroomVisitsNavLink.href =
+        "pages/classroom-visits/index.html";
+
+      classroomVisitsNavLink.textContent =
+        "👁 الزيارات الصفية";
+
+    } else {
+
+      classroomVisitsNavLink.style.display =
+        "none";
+    }
+
+  } catch (error) {
+
+    console.error(
+      "Classroom visits role error:",
+      error
+    );
+
+    classroomVisitsNavLink.style.display =
+      "none";
+  }
+}
+
+
+/* =====================================================
+   إظهار المنصة/* =====================================================
    إظهار المنصة
    ===================================================== */
 
-function showApp(user) {
+async function showApp(user) {
 
 
   authOverlay.classList.add(
@@ -1572,6 +2208,19 @@ function showApp(user) {
   currentUserEmail.textContent =
     user?.email ||
     "";
+
+
+  await configureRoleUI(
+    user
+  );
+
+  await configureNotesNavigation(
+    user
+  );
+
+  await configureClassroomVisitsNavigation(
+    user
+  );
 
 
   if (
@@ -1629,7 +2278,7 @@ async function checkAuth() {
     if (user) {
 
 
-      showApp(
+      await showApp(
         user
       );
 
@@ -1741,7 +2390,7 @@ async function doLogin() {
 
 
 
-    showApp(
+    await showApp(
       user
     );
 

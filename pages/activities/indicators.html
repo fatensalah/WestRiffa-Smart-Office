@@ -1,0 +1,3472 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1"
+>
+
+<title>
+  مؤشرات الفعاليات
+</title>
+
+<link
+  rel="stylesheet"
+  href="../../css/app.css"
+>
+
+
+<style>
+
+.indicators-wrap{
+  display:grid;
+  gap:18px;
+}
+
+
+/* =========================================
+   الفلاتر
+   ========================================= */
+
+.filters-box{
+
+  background:#fff;
+
+  border:
+    1px solid
+    #dde5e1;
+
+  border-radius:
+    16px;
+
+  padding:
+    16px;
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(
+        180px,
+        1fr
+      )
+    );
+
+  gap:
+    12px;
+
+  align-items:
+    end;
+
+}
+
+
+.filters-box label{
+
+  display:block;
+
+  font-weight:
+    700;
+
+  margin-bottom:
+    6px;
+
+}
+
+
+.filters-box select,
+.filters-box input{
+
+  width:
+    100%;
+
+  box-sizing:
+    border-box;
+
+}
+
+
+
+/* =========================================
+   بطاقات المؤشرات
+   ========================================= */
+
+.kpi-grid{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(
+        180px,
+        1fr
+      )
+    );
+
+  gap:
+    14px;
+
+}
+
+
+.kpi-card{
+
+  background:
+    #fff;
+
+  border:
+    1px solid
+    #dde5e1;
+
+  border-radius:
+    16px;
+
+  padding:
+    18px;
+
+  text-align:
+    center;
+
+  box-shadow:
+    0 4px 14px
+    rgba(
+      0,
+      0,
+      0,
+      .04
+    );
+
+}
+
+
+.kpi-card strong{
+
+  display:block;
+
+  font-size:
+    29px;
+
+  color:
+    #075c40;
+
+  margin-bottom:
+    7px;
+
+  overflow-wrap:
+    anywhere;
+
+}
+
+
+.kpi-card span{
+
+  color:
+    #637069;
+
+  font-size:
+    14px;
+
+}
+
+
+
+/* =========================================
+   التحليلات
+   ========================================= */
+
+.analytics-grid{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(
+        320px,
+        1fr
+      )
+    );
+
+  gap:
+    18px;
+
+}
+
+
+.analytics-card{
+
+  background:
+    #fff;
+
+  border:
+    1px solid
+    #dde5e1;
+
+  border-radius:
+    16px;
+
+  padding:
+    18px;
+
+}
+
+
+.analytics-card h3{
+
+  margin-top:
+    0;
+
+  color:
+    #075c40;
+
+  border-bottom:
+    2px solid
+    #d7b769;
+
+  padding-bottom:
+    10px;
+
+}
+
+
+.metric-row{
+
+  display:grid;
+
+  grid-template-columns:
+    minmax(
+      130px,
+      1fr
+    )
+    3fr
+    auto;
+
+  gap:
+    10px;
+
+  align-items:
+    center;
+
+  margin:
+    12px 0;
+
+}
+
+
+.metric-name{
+
+  font-size:
+    14px;
+
+}
+
+
+.metric-track{
+
+  height:
+    10px;
+
+  background:
+    #edf1ef;
+
+  border-radius:
+    999px;
+
+  overflow:
+    hidden;
+
+}
+
+
+.metric-fill{
+
+  height:
+    100%;
+
+  background:
+    #087451;
+
+  border-radius:
+    999px;
+
+}
+
+
+.metric-number{
+
+  min-width:
+    34px;
+
+  text-align:
+    left;
+
+  font-weight:
+    700;
+
+  color:
+    #075c40;
+
+}
+
+
+
+/* =========================================
+   جدول التفاصيل
+   ========================================= */
+
+.table-wrap{
+
+  background:
+    #fff;
+
+  border:
+    1px solid
+    #dde5e1;
+
+  border-radius:
+    16px;
+
+  padding:
+    18px;
+
+  overflow:
+    auto;
+
+}
+
+
+.activities-table{
+
+  width:
+    100%;
+
+  border-collapse:
+    collapse;
+
+  min-width:
+    900px;
+
+}
+
+
+.activities-table th,
+.activities-table td{
+
+  padding:
+    11px;
+
+  border-bottom:
+    1px solid
+    #e6ebe8;
+
+  text-align:
+    right;
+
+  vertical-align:
+    top;
+
+}
+
+
+.activities-table th{
+
+  background:
+    #f3f7f5;
+
+  color:
+    #075c40;
+
+}
+
+
+
+/* =========================================
+   الحالات
+   ========================================= */
+
+.badge{
+
+  display:
+    inline-block;
+
+  padding:
+    4px 9px;
+
+  border-radius:
+    999px;
+
+  font-size:
+    12px;
+
+  font-weight:
+    700;
+
+}
+
+
+.badge-approved{
+
+  background:
+    #e3f4ec;
+
+  color:
+    #087451;
+
+}
+
+
+.badge-not-approved{
+
+  background:
+    #fbeaea;
+
+  color:
+    #9c3333;
+
+}
+
+
+.badge-unknown{
+
+  background:
+    #f0f1f1;
+
+  color:
+    #6f7672;
+
+}
+
+
+.empty-state{
+
+  padding:
+    30px;
+
+  text-align:
+    center;
+
+  color:
+    #6f7b75;
+
+}
+
+
+.status-line{
+
+  font-size:
+    13px;
+
+  color:
+    #65736b;
+
+  margin-top:
+    5px;
+
+}
+
+
+.status-success{
+
+  color:
+    #087451;
+
+}
+
+
+.status-error{
+
+  color:
+    #a13232;
+
+}
+
+
+.hidden{
+
+  display:
+    none !important;
+
+}
+
+
+
+/* =========================================
+   الموبايل
+   ========================================= */
+
+@media(
+  max-width:700px
+){
+
+  .analytics-grid{
+
+    grid-template-columns:
+      1fr;
+
+  }
+
+
+  .metric-row{
+
+    grid-template-columns:
+      1fr;
+
+  }
+
+}
+
+</style>
+
+</head>
+
+
+
+<body>
+
+
+<!-- =========================================
+     رأس الصفحة
+     ========================================= -->
+
+<header class="topbar">
+
+
+  <div class="brand">
+
+
+    <img
+      src="../../assets/school-header.jpg"
+      alt="شعار المدرسة"
+    >
+
+
+    <div>
+
+      <h1>
+        مؤشرات الفعاليات
+      </h1>
+
+      <p>
+        لوحة الإدارة والتحليل
+      </p>
+
+    </div>
+
+
+  </div>
+
+
+
+  <div class="header-actions">
+
+
+    <a
+      class="btn btn-soft"
+      href="index.html"
+    >
+      🎯 الفعاليات
+    </a>
+
+
+    <a
+      class="btn btn-soft"
+      href="../../index.html"
+    >
+      🏠 الرئيسية
+    </a>
+
+
+  </div>
+
+
+</header>
+
+
+
+
+<div class="shell">
+
+
+
+<!-- =========================================
+     القائمة الجانبية
+     ========================================= -->
+
+<aside class="sidebar">
+
+
+  <h3 class="sidebar-title">
+
+    القائمة الرئيسية
+
+  </h3>
+
+
+
+  <a
+    class="nav-link"
+    href="../../index.html"
+  >
+
+    🏠 لوحة التحكم
+
+  </a>
+
+
+
+  <a
+    class="nav-link"
+    href="../../pages/meetings/index.html"
+  >
+
+    📅 الاجتماعات
+
+  </a>
+
+
+
+  <a
+    class="nav-link active"
+    href="../../pages/activities/index.html"
+  >
+
+    🎯 الفعاليات
+
+  </a>
+
+
+
+  <a
+    class="nav-link"
+    href="../../pages/certificates/index.html"
+  >
+
+    🏅 الشهادات
+
+  </a>
+
+
+
+  <a
+    class="nav-link"
+    href="../../pages/archive/index.html"
+  >
+
+    📂 الأرشيف الذكي
+
+  </a>
+
+
+
+  <a
+    class="nav-link"
+    href="../../pages/settings/index.html"
+  >
+
+    ⚙️ الإعدادات
+
+  </a>
+
+
+</aside>
+
+
+
+
+<!-- =========================================
+     المحتوى
+     ========================================= -->
+
+<main class="content">
+
+
+
+<div class="page-head">
+
+
+  <div>
+
+
+    <h2>
+
+      لوحة مؤشرات الفعاليات
+
+    </h2>
+
+
+    <p>
+
+      قراءة لحظية لبيانات تقارير الفعاليات المحفوظة.
+
+    </p>
+
+
+    <div
+      id="activitiesIndicatorsStatus"
+      class="status-line"
+    >
+
+      جاري تحميل البيانات...
+
+    </div>
+
+
+  </div>
+
+
+
+  <div class="page-actions">
+
+
+    <button
+      id="activitiesRefreshBtn"
+      class="btn btn-primary"
+      type="button"
+    >
+
+      🔄 تحديث
+
+    </button>
+
+
+  </div>
+
+
+</div>
+
+
+
+
+<div class="indicators-wrap">
+
+
+
+<!-- =========================================
+     الفلاتر
+     ========================================= -->
+
+<section class="filters-box">
+
+
+  <div>
+
+
+    <label>
+
+      القسم
+
+    </label>
+
+
+    <select
+      id="activitiesDepartmentFilter"
+    >
+
+      <option value="">
+
+        جميع الأقسام
+
+      </option>
+
+    </select>
+
+
+  </div>
+
+
+
+  <div>
+
+
+    <label>
+
+      من تاريخ
+
+    </label>
+
+
+    <input
+      id="activitiesDateFrom"
+      type="date"
+    >
+
+
+  </div>
+
+
+
+  <div>
+
+
+    <label>
+
+      إلى تاريخ
+
+    </label>
+
+
+    <input
+      id="activitiesDateTo"
+      type="date"
+    >
+
+
+  </div>
+
+
+
+  <div>
+
+
+    <label>
+
+      حالة الاعتماد
+
+    </label>
+
+
+    <select
+      id="activitiesApprovalFilter"
+    >
+
+
+      <option value="">
+
+        الكل
+
+      </option>
+
+
+      <option value="yes">
+
+        معتمدة
+
+      </option>
+
+
+      <option value="no">
+
+        غير معتمدة
+
+      </option>
+
+
+    </select>
+
+
+  </div>
+
+
+
+  <div>
+
+
+    <button
+      id="activitiesResetFiltersBtn"
+      class="btn btn-soft"
+      type="button"
+      style="width:100%"
+    >
+
+      مسح الفلاتر
+
+    </button>
+
+
+  </div>
+
+
+</section>
+
+
+
+
+<!-- =========================================
+     المؤشرات الرئيسية
+     ========================================= -->
+
+<section class="kpi-grid">
+
+
+
+  <div class="kpi-card">
+
+
+    <strong
+      id="activitiesKpiTotal"
+    >
+
+      0
+
+    </strong>
+
+
+    <span>
+
+      إجمالي الفعاليات
+
+    </span>
+
+
+  </div>
+
+
+
+
+  <div class="kpi-card">
+
+
+    <strong
+      id="activitiesKpiApproved"
+    >
+
+      0
+
+    </strong>
+
+
+    <span>
+
+      الفعاليات المعتمدة
+
+    </span>
+
+
+  </div>
+
+
+
+
+  <div class="kpi-card">
+
+
+    <strong
+      id="activitiesKpiNotApproved"
+    >
+
+      0
+
+    </strong>
+
+
+    <span>
+
+      غير المعتمدة
+
+    </span>
+
+
+  </div>
+
+
+
+
+  <div class="kpi-card">
+
+
+    <strong
+      id="activitiesKpiApprovalRate"
+    >
+
+      0%
+
+    </strong>
+
+
+    <span>
+
+      نسبة الاعتماد
+
+    </span>
+
+
+  </div>
+
+
+
+
+  <div class="kpi-card">
+
+
+    <strong
+      id="activitiesKpiBeneficiaries"
+    >
+
+      0
+
+    </strong>
+
+
+    <span>
+
+      إجمالي المستفيدين
+
+    </span>
+
+
+  </div>
+
+
+
+
+  <div class="kpi-card">
+
+
+    <strong
+      id="activitiesKpiProjects"
+    >
+
+      0
+
+    </strong>
+
+
+    <span>
+
+      فعاليات مرتبطة بالمشاريع
+
+    </span>
+
+
+  </div>
+
+
+
+
+  <div class="kpi-card">
+
+
+    <strong
+      id="activitiesKpiTopProject"
+    >
+
+      —
+
+    </strong>
+
+
+    <span>
+
+      أكثر مشروع تفعيلًا
+
+    </span>
+
+
+  </div>
+
+
+
+
+  <div class="kpi-card">
+
+
+    <strong
+      id="activitiesKpiTopTarget"
+    >
+
+      —
+
+    </strong>
+
+
+    <span>
+
+      أكثر فئة استهدافًا
+
+    </span>
+
+
+  </div>
+
+
+
+
+  <div class="kpi-card">
+
+
+    <strong
+      id="activitiesKpiNoProject"
+    >
+
+      0
+
+    </strong>
+
+
+    <span>
+
+      فعاليات غير مرتبطة بمشروع
+
+    </span>
+
+
+  </div>
+
+
+</section>
+
+
+
+
+<!-- =========================================
+     التحليلات
+     ========================================= -->
+
+<section class="analytics-grid">
+
+
+
+  <div class="analytics-card">
+
+
+    <h3>
+
+      المشاريع والمبادرات
+
+    </h3>
+
+
+    <div
+      id="activitiesProjectsChart"
+    >
+
+
+      <div class="empty-state">
+
+        لا توجد بيانات بعد.
+
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+
+
+  <div class="analytics-card">
+
+
+    <h3>
+
+      الفئات المستهدفة
+
+    </h3>
+
+
+    <div
+      id="activitiesTargetsChart"
+    >
+
+
+      <div class="empty-state">
+
+        لا توجد بيانات بعد.
+
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+
+
+  <div class="analytics-card">
+
+
+    <h3>
+
+      توزيع الفعاليات حسب الأقسام
+
+    </h3>
+
+
+    <div
+      id="activitiesDepartmentsChart"
+    >
+
+
+      <div class="empty-state">
+
+        لا توجد بيانات بعد.
+
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+
+
+  <div class="analytics-card">
+
+
+    <h3>
+
+      حالة الاعتماد
+
+    </h3>
+
+
+    <div
+      id="activitiesApprovalChart"
+    >
+
+
+      <div class="empty-state">
+
+        لا توجد بيانات بعد.
+
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+</section>
+
+
+
+
+<!-- =========================================
+     تفاصيل الفعاليات
+     ========================================= -->
+
+<section class="table-wrap">
+
+
+  <h3>
+
+    تفاصيل الفعاليات
+
+  </h3>
+
+
+
+  <table class="activities-table">
+
+
+    <thead>
+
+
+      <tr>
+
+
+        <th>
+
+          الفعالية
+
+        </th>
+
+
+        <th>
+
+          التاريخ
+
+        </th>
+
+
+        <th>
+
+          المنفذ
+
+        </th>
+
+
+        <th>
+
+          القسم
+
+        </th>
+
+
+        <th>
+
+          الاعتماد
+
+        </th>
+
+
+        <th>
+
+          المستفيدون
+
+        </th>
+
+
+        <th>
+
+          المشاريع
+
+        </th>
+
+
+        <th>
+
+          الفئات
+
+        </th>
+
+
+      </tr>
+
+
+    </thead>
+
+
+
+    <tbody
+      id="activitiesIndicatorsBody"
+    >
+    </tbody>
+
+
+  </table>
+
+
+
+  <div
+    id="activitiesTableEmpty"
+    class="empty-state hidden"
+  >
+
+    لا توجد فعاليات مطابقة للفلاتر.
+
+  </div>
+
+
+</section>
+
+
+
+</div>
+
+
+</main>
+
+
+</div>
+
+
+
+<!-- =========================================
+     المكتبات
+     ========================================= -->
+
+<script
+  src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+
+<script
+  src="../../js/config.js"
+></script>
+
+
+<script
+  src="../../js/graph.js"
+></script>
+
+
+<script
+  src="../../js/common.js"
+></script>
+
+
+
+
+<script>
+
+(function(){
+
+"use strict";
+
+
+
+/* =========================================================
+   عناصر الصفحة
+   ========================================================= */
+
+function activityEl(
+  id
+){
+
+  return document.getElementById(
+    id
+  );
+
+}
+
+
+
+let activityIndicatorRows =
+  [];
+
+
+
+/* =========================================================
+   Supabase
+   ========================================================= */
+
+function getIndicatorsClient(){
+
+
+  if(
+    window.WRGraph &&
+    typeof WRGraph.getClient ===
+      "function"
+  ){
+
+    const graphClient =
+      WRGraph.getClient();
+
+
+    if(
+      graphClient
+    ){
+
+      return graphClient;
+
+    }
+
+  }
+
+
+
+  if(
+    !window.supabase ||
+    !window.WR_CONFIG
+  ){
+
+    throw new Error(
+      "إعدادات Supabase غير متاحة"
+    );
+
+  }
+
+
+
+  return window.supabase
+    .createClient(
+
+      window.WR_CONFIG
+        .supabaseUrl,
+
+      window.WR_CONFIG
+        .supabaseKey
+
+    );
+
+}
+
+
+
+/* =========================================================
+   قراءة Payload
+   ========================================================= */
+
+function activitySafePayload(
+  row
+){
+
+  const payload =
+    row?.payload;
+
+
+
+  if(
+    payload &&
+    typeof payload ===
+      "object" &&
+    !Array.isArray(
+      payload
+    )
+  ){
+
+    return payload;
+
+  }
+
+
+
+  if(
+    typeof payload ===
+      "string"
+  ){
+
+    try{
+
+      return JSON.parse(
+        payload
+      );
+
+    }catch(
+      error
+    ){
+
+      console.warn(
+        "تعذر قراءة payload:",
+        error
+      );
+
+
+      return {};
+
+    }
+
+  }
+
+
+
+  return {};
+
+}
+
+
+
+/* =========================================================
+   تحويل قيمة إلى Array
+   ========================================================= */
+
+function activityArray(
+  value
+){
+
+
+  if(
+    Array.isArray(
+      value
+    )
+  ){
+
+    return value
+
+      .map(
+        item =>
+          String(
+            item ||
+            ""
+          )
+            .trim()
+      )
+
+      .filter(
+        Boolean
+      );
+
+  }
+
+
+
+  return String(
+    value ||
+    ""
+  )
+
+    .split(
+      /،|,/
+    )
+
+    .map(
+      item =>
+        item.trim()
+    )
+
+    .filter(
+      Boolean
+    );
+
+}
+
+
+
+/* =========================================================
+   توحيد اسم القسم
+   ========================================================= */
+
+function normalizeDepartmentName(
+  value
+){
+
+
+  const name =
+    String(
+      value ||
+      ""
+    )
+      .trim();
+
+
+
+  const compact =
+    name
+      .replace(
+        /\s+/g,
+        " "
+      )
+      .replace(
+        /^ال/,
+        ""
+      );
+
+
+
+  /* مصادر التعلم */
+
+  if(
+    compact ===
+      "مصادر" ||
+
+    compact ===
+      "مصادر التعلم"
+  ){
+
+    return "مصادر التعلم";
+
+  }
+
+
+
+  /* اللغة العربية */
+
+  if(
+    compact ===
+      "لغة العربية" ||
+
+    compact ===
+      "عربية"
+  ){
+
+    return "اللغة العربية";
+
+  }
+
+
+
+  /* اللغة الإنجليزية */
+
+  if(
+    compact ===
+      "لغة الإنجليزية" ||
+
+    compact ===
+      "لغة الانجليزية" ||
+
+    compact ===
+      "انجليزية" ||
+
+    compact ===
+      "إنجليزية" ||
+
+    compact ===
+      "انجليزي" ||
+
+    compact ===
+      "إنجليزي"
+  ){
+
+    return "اللغة الإنجليزية";
+
+  }
+
+
+
+  /* الرياضيات */
+
+  if(
+    compact ===
+      "رياضيات"
+  ){
+
+    return "الرياضيات";
+
+  }
+
+
+
+  /* العلوم */
+
+  if(
+    compact ===
+      "علوم"
+  ){
+
+    return "العلوم";
+
+  }
+
+
+
+  return (
+    name ||
+    "غير محدد"
+  );
+
+}
+
+
+
+/* =========================================================
+   توحيد سجل الفعالية
+   ========================================================= */
+
+function normalizeActivityIndicator(
+  row
+){
+
+
+  const payload =
+    activitySafePayload(
+      row
+    );
+
+
+
+  const projects =
+    activityArray(
+
+      payload.projects &&
+      payload.projects.length
+
+        ? payload.projects
+
+        : payload.projectLinks
+
+    );
+
+
+
+  const targets =
+    activityArray(
+
+      payload.targetGroups &&
+      payload.targetGroups.length
+
+        ? payload.targetGroups
+
+        : payload.target
+
+    );
+
+
+
+  return {
+
+
+    id:
+      row.id,
+
+
+    title:
+      payload.title ||
+      payload.name ||
+      row.title ||
+      "فعالية",
+
+
+    date:
+      payload.date ||
+      row.record_date ||
+      "",
+
+
+    executor:
+      payload.executor ||
+      payload.owner_name ||
+      "",
+
+
+    department:
+      normalizeDepartmentName(
+        payload.department
+      ),
+
+
+    approval:
+      String(
+        payload.activityApproved ||
+        ""
+      )
+        .trim()
+        .toLowerCase(),
+
+
+    count:
+      Number(
+        payload.count ||
+        0
+      ) ||
+      0,
+
+
+    projects,
+
+
+    targets
+
+
+  };
+
+}
+
+
+
+/* =========================================================
+   التحقق من صلاحية الإدارة
+   ========================================================= */
+
+async function verifyActivitiesAdmin(){
+
+
+  if(
+    !window.WRGraph ||
+    typeof WRGraph.getAccount !==
+      "function"
+  ){
+
+    throw new Error(
+      "نظام تسجيل الدخول غير متاح"
+    );
+
+  }
+
+
+
+  const user =
+    await WRGraph
+      .getAccount();
+
+
+
+  if(
+    !user
+  ){
+
+    location.href =
+      "../../index.html";
+
+
+    return false;
+
+  }
+
+
+
+  const sb =
+    getIndicatorsClient();
+
+
+
+  const {
+    data:
+      profile,
+
+    error
+  } =
+    await sb
+
+      .from(
+        "user_profiles"
+      )
+
+      .select(
+        "user_id, role"
+      )
+
+      .eq(
+        "user_id",
+        user.id
+      )
+
+      .maybeSingle();
+
+
+
+  if(
+    error
+  ){
+
+    throw error;
+
+  }
+
+
+
+  const role =
+    String(
+      profile?.role ||
+      ""
+    )
+      .trim()
+      .toLowerCase();
+
+
+
+  if(
+    role !==
+      "admin"
+  ){
+
+    alert(
+      "هذه الصفحة متاحة للإدارة فقط."
+    );
+
+
+    location.href =
+      "index.html";
+
+
+    return false;
+
+  }
+
+
+
+  return true;
+
+}
+
+
+
+/* =========================================================
+   تحميل الفعاليات من جدول records
+   ========================================================= */
+
+async function loadActivityIndicators(){
+
+
+  const status =
+    activityEl(
+      "activitiesIndicatorsStatus"
+    );
+
+
+
+  status.className =
+    "status-line";
+
+
+  status.textContent =
+    "جاري تحميل بيانات الفعاليات...";
+
+
+
+  try{
+
+
+    const sb =
+      getIndicatorsClient();
+
+
+
+    const {
+      data,
+      error
+    } =
+      await sb
+
+        .from(
+          "records"
+        )
+
+        .select(
+          `
+          id,
+          type,
+          title,
+          record_date,
+          payload,
+          created_at
+          `
+        )
+
+        .eq(
+          "type",
+          "activity"
+        )
+
+        .order(
+          "record_date",
+          {
+            ascending:
+              false
+          }
+        );
+
+
+
+    if(
+      error
+    ){
+
+      throw error;
+
+    }
+
+
+
+    const records =
+      Array.isArray(
+        data
+      )
+        ? data
+        : [];
+
+
+
+    activityIndicatorRows =
+      records.map(
+        normalizeActivityIndicator
+      );
+
+
+
+    fillActivityDepartments();
+
+
+    applyActivityFilters();
+
+
+
+    status.className =
+      "status-line status-success";
+
+
+    status.textContent =
+      `تم تحديث المؤشرات بنجاح — ${activityIndicatorRows.length} فعالية محفوظة.`;
+
+
+
+  }catch(
+    error
+  ){
+
+
+    console.error(
+      "Activities indicators load error:",
+      error
+    );
+
+
+
+    status.className =
+      "status-line status-error";
+
+
+    status.textContent =
+      "تعذر تحميل بيانات الفعاليات: " +
+      (
+        error?.message ||
+        error
+      );
+
+  }
+
+}
+
+
+
+/* =========================================================
+   قائمة الأقسام
+   ========================================================= */
+
+function fillActivityDepartments(){
+
+
+  const select =
+    activityEl(
+      "activitiesDepartmentFilter"
+    );
+
+
+
+  const oldValue =
+    select.value;
+
+
+
+  const departments =
+    [
+      ...new Set(
+
+        activityIndicatorRows
+
+          .map(
+            item =>
+              item.department
+          )
+
+          .filter(
+            item =>
+              item &&
+              item !==
+                "غير محدد"
+          )
+
+      )
+    ]
+
+      .sort(
+        (
+          a,
+          b
+        ) =>
+          a.localeCompare(
+            b,
+            "ar"
+          )
+      );
+
+
+
+  select.innerHTML =
+    '<option value="">جميع الأقسام</option>';
+
+
+
+  departments.forEach(
+    department => {
+
+
+      const option =
+        document.createElement(
+          "option"
+        );
+
+
+      option.value =
+        department;
+
+
+      option.textContent =
+        department;
+
+
+      select.appendChild(
+        option
+      );
+
+
+    }
+  );
+
+
+
+  if(
+    departments.includes(
+      oldValue
+    )
+  ){
+
+    select.value =
+      oldValue;
+
+  }
+
+}
+
+
+
+/* =========================================================
+   تطبيق شروط الفلترة
+   ========================================================= */
+
+function getActivityFilteredRows(){
+
+
+  const department =
+    activityEl(
+      "activitiesDepartmentFilter"
+    )
+      .value;
+
+
+
+  const from =
+    activityEl(
+      "activitiesDateFrom"
+    )
+      .value;
+
+
+
+  const to =
+    activityEl(
+      "activitiesDateTo"
+    )
+      .value;
+
+
+
+  const approval =
+    activityEl(
+      "activitiesApprovalFilter"
+    )
+      .value;
+
+
+
+  return activityIndicatorRows
+    .filter(
+      item => {
+
+
+        if(
+          department &&
+          item.department !==
+            department
+        ){
+
+          return false;
+
+        }
+
+
+
+        if(
+          approval &&
+          item.approval !==
+            approval
+        ){
+
+          return false;
+
+        }
+
+
+
+        if(
+          from &&
+          (
+            !item.date ||
+            item.date <
+              from
+          )
+        ){
+
+          return false;
+
+        }
+
+
+
+        if(
+          to &&
+          (
+            !item.date ||
+            item.date >
+              to
+          )
+        ){
+
+          return false;
+
+        }
+
+
+
+        return true;
+
+
+      }
+    );
+
+}
+
+
+
+/* =========================================================
+   عد القيم المتعددة
+   ========================================================= */
+
+function countActivityArrays(
+  rows,
+  field
+){
+
+
+  const counts =
+    {};
+
+
+
+  rows.forEach(
+    item => {
+
+
+      const values =
+        Array.isArray(
+          item[field]
+        )
+          ? item[field]
+          : [];
+
+
+
+      values.forEach(
+        value => {
+
+
+          counts[value] =
+            (
+              counts[value] ||
+              0
+            ) +
+            1;
+
+
+        }
+      );
+
+
+    }
+  );
+
+
+
+  return counts;
+
+}
+
+
+
+/* =========================================================
+   عد قيمة واحدة
+   ========================================================= */
+
+function countActivitySimple(
+  rows,
+  getter
+){
+
+
+  const counts =
+    {};
+
+
+
+  rows.forEach(
+    item => {
+
+
+      const value =
+        getter(
+          item
+        ) ||
+        "غير محدد";
+
+
+
+      counts[value] =
+        (
+          counts[value] ||
+          0
+        ) +
+        1;
+
+
+    }
+  );
+
+
+
+  return counts;
+
+}
+
+
+
+/* =========================================================
+   حماية النصوص
+   ========================================================= */
+
+function activityEscape(
+  value
+){
+
+
+  return String(
+    value ||
+    ""
+  )
+
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+
+    .replace(
+      /</g,
+      "&lt;"
+    )
+
+    .replace(
+      />/g,
+      "&gt;"
+    )
+
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+
+/* =========================================================
+   رسم مؤشرات التوزيع
+   ========================================================= */
+
+function renderActivityMetric(
+  id,
+  values
+){
+
+
+  const box =
+    activityEl(
+      id
+    );
+
+
+
+  const entries =
+    Object
+      .entries(
+        values
+      )
+
+      .sort(
+        (
+          a,
+          b
+        ) =>
+          b[1] -
+          a[1]
+      );
+
+
+
+  if(
+    !entries.length
+  ){
+
+    box.innerHTML =
+      `
+      <div class="empty-state">
+        لا توجد بيانات.
+      </div>
+      `;
+
+
+    return;
+
+  }
+
+
+
+  const max =
+    Math.max(
+
+      ...entries.map(
+        entry =>
+          entry[1]
+      ),
+
+      1
+
+    );
+
+
+
+  box.innerHTML =
+    "";
+
+
+
+  entries.forEach(
+    (
+      [
+        name,
+        value
+      ]
+    ) => {
+
+
+      const percentage =
+        Math.round(
+          (
+            value /
+            max
+          ) *
+          100
+        );
+
+
+
+      const row =
+        document.createElement(
+          "div"
+        );
+
+
+
+      row.className =
+        "metric-row";
+
+
+
+      row.innerHTML =
+        `
+
+        <div class="metric-name">
+
+          ${activityEscape(name)}
+
+        </div>
+
+
+        <div class="metric-track">
+
+          <div
+            class="metric-fill"
+            style="width:${percentage}%"
+          >
+          </div>
+
+        </div>
+
+
+        <div class="metric-number">
+
+          ${value}
+
+        </div>
+
+        `;
+
+
+
+      box.appendChild(
+        row
+      );
+
+
+    }
+  );
+
+}
+
+
+
+/* =========================================================
+   شكل حالة الاعتماد
+   ========================================================= */
+
+function activityApprovalBadge(
+  value
+){
+
+
+  if(
+    value ===
+      "yes"
+  ){
+
+    return {
+
+      text:
+        "معتمدة",
+
+      className:
+        "badge-approved"
+
+    };
+
+  }
+
+
+
+  if(
+    value ===
+      "no"
+  ){
+
+    return {
+
+      text:
+        "غير معتمدة",
+
+      className:
+        "badge-not-approved"
+
+    };
+
+  }
+
+
+
+  return {
+
+    text:
+      "غير محدد",
+
+    className:
+      "badge-unknown"
+
+  };
+
+}
+
+
+
+/* =========================================================
+   جدول تفاصيل الفعاليات
+   ========================================================= */
+
+function renderActivityTable(
+  rows
+){
+
+
+  const tbody =
+    activityEl(
+      "activitiesIndicatorsBody"
+    );
+
+
+
+  const empty =
+    activityEl(
+      "activitiesTableEmpty"
+    );
+
+
+
+  tbody.innerHTML =
+    "";
+
+
+
+  empty.classList.toggle(
+    "hidden",
+    rows.length >
+      0
+  );
+
+
+
+  rows.forEach(
+    item => {
+
+
+      const approval =
+        activityApprovalBadge(
+          item.approval
+        );
+
+
+
+      const tr =
+        document.createElement(
+          "tr"
+        );
+
+
+
+      tr.innerHTML =
+        `
+
+
+        <td>
+
+          ${activityEscape(
+            item.title
+          )}
+
+        </td>
+
+
+
+        <td>
+
+          ${
+            item.date
+
+              ? activityEscape(
+                  item.date
+                )
+
+              : "—"
+          }
+
+        </td>
+
+
+
+        <td>
+
+          ${
+            item.executor
+
+              ? activityEscape(
+                  item.executor
+                )
+
+              : "—"
+          }
+
+        </td>
+
+
+
+        <td>
+
+          ${
+            item.department
+
+              ? activityEscape(
+                  item.department
+                )
+
+              : "—"
+          }
+
+        </td>
+
+
+
+        <td>
+
+          <span
+            class="
+              badge
+              ${approval.className}
+            "
+          >
+
+            ${approval.text}
+
+          </span>
+
+        </td>
+
+
+
+        <td>
+
+          ${item.count}
+
+        </td>
+
+
+
+        <td>
+
+          ${
+            item.projects.length
+
+              ? item.projects
+                  .map(
+                    activityEscape
+                  )
+                  .join(
+                    "، "
+                  )
+
+              : "—"
+          }
+
+        </td>
+
+
+
+        <td>
+
+          ${
+            item.targets.length
+
+              ? item.targets
+                  .map(
+                    activityEscape
+                  )
+                  .join(
+                    "، "
+                  )
+
+              : "—"
+          }
+
+        </td>
+
+
+        `;
+
+
+
+      tbody.appendChild(
+        tr
+      );
+
+
+    }
+  );
+
+}
+
+
+
+/* =========================================================
+   تحديث المؤشرات
+   ========================================================= */
+
+function renderActivityIndicators(
+  rows
+){
+
+
+  /* =====================================
+     إجمالي الفعاليات
+     ===================================== */
+
+  const total =
+    rows.length;
+
+
+
+  /* =====================================
+     الاعتماد
+     ===================================== */
+
+  const approved =
+    rows
+      .filter(
+        item =>
+          item.approval ===
+            "yes"
+      )
+      .length;
+
+
+
+  const notApproved =
+    rows
+      .filter(
+        item =>
+          item.approval ===
+            "no"
+      )
+      .length;
+
+
+
+  const classified =
+    approved +
+    notApproved;
+
+
+
+  const approvalRate =
+    classified
+
+      ? Math.round(
+          (
+            approved /
+            classified
+          ) *
+          100
+        )
+
+      : 0;
+
+
+
+  /* =====================================
+     المستفيدون
+     ===================================== */
+
+  const beneficiaries =
+    rows.reduce(
+      (
+        sum,
+        item
+      ) =>
+
+        sum +
+        (
+          Number(
+            item.count
+          ) ||
+          0
+        ),
+
+      0
+    );
+
+
+
+  /* =====================================
+     الفعاليات المرتبطة بالمشاريع
+     ===================================== */
+
+  const activitiesWithProjects =
+    rows
+      .filter(
+        item =>
+
+
+          Array.isArray(
+            item.projects
+          ) &&
+
+
+          item.projects.some(
+            project =>
+
+              project &&
+
+              project !==
+                "غير مرتبطة بمشروع أو مبادرة"
+
+          )
+
+
+      )
+      .length;
+
+
+
+  /* =====================================
+     غير مرتبطة بمشروع
+     ===================================== */
+
+  const activitiesWithoutProjects =
+    rows
+      .filter(
+        item => {
+
+
+          if(
+            !Array.isArray(
+              item.projects
+            ) ||
+            !item.projects.length
+          ){
+
+            return true;
+
+          }
+
+
+
+          return item.projects
+            .every(
+              project =>
+                project ===
+                  "غير مرتبطة بمشروع أو مبادرة"
+            );
+
+
+        }
+      )
+      .length;
+
+
+
+  /* =====================================
+     توزيع المشاريع
+     ===================================== */
+
+  const projectCounts =
+    countActivityArrays(
+      rows,
+      "projects"
+    );
+
+
+
+  delete projectCounts[
+    "غير مرتبطة بمشروع أو مبادرة"
+  ];
+
+
+
+  /* =====================================
+     توزيع الفئات
+     ===================================== */
+
+  const targetCounts =
+    countActivityArrays(
+      rows,
+      "targets"
+    );
+
+
+
+  /* =====================================
+     أكثر مشروع تفعيلًا
+     ===================================== */
+
+  const topProjectEntry =
+    Object
+      .entries(
+        projectCounts
+      )
+      .sort(
+        (
+          a,
+          b
+        ) =>
+          b[1] -
+          a[1]
+      )[0];
+
+
+
+  const topProject =
+    topProjectEntry
+
+      ? topProjectEntry[0]
+
+      : "—";
+
+
+
+  /* =====================================
+     أكثر فئة استهدافًا
+     ===================================== */
+
+  const topTargetEntry =
+    Object
+      .entries(
+        targetCounts
+      )
+      .sort(
+        (
+          a,
+          b
+        ) =>
+          b[1] -
+          a[1]
+      )[0];
+
+
+
+  const topTarget =
+    topTargetEntry
+
+      ? topTargetEntry[0]
+
+      : "—";
+
+
+
+  /* =====================================
+     تحديث الكروت
+     ===================================== */
+
+  activityEl(
+    "activitiesKpiTotal"
+  ).textContent =
+    total;
+
+
+
+  activityEl(
+    "activitiesKpiApproved"
+  ).textContent =
+    approved;
+
+
+
+  activityEl(
+    "activitiesKpiNotApproved"
+  ).textContent =
+    notApproved;
+
+
+
+  activityEl(
+    "activitiesKpiApprovalRate"
+  ).textContent =
+    approvalRate +
+    "%";
+
+
+
+  activityEl(
+    "activitiesKpiBeneficiaries"
+  ).textContent =
+    beneficiaries;
+
+
+
+  activityEl(
+    "activitiesKpiProjects"
+  ).textContent =
+    activitiesWithProjects;
+
+
+
+  activityEl(
+    "activitiesKpiTopProject"
+  ).textContent =
+    topProject;
+
+
+
+  activityEl(
+    "activitiesKpiTopTarget"
+  ).textContent =
+    topTarget;
+
+
+
+  activityEl(
+    "activitiesKpiNoProject"
+  ).textContent =
+    activitiesWithoutProjects;
+
+
+
+  /* =====================================
+     رسم المشاريع
+     ===================================== */
+
+  renderActivityMetric(
+
+    "activitiesProjectsChart",
+
+    projectCounts
+
+  );
+
+
+
+  /* =====================================
+     رسم الفئات
+     ===================================== */
+
+  renderActivityMetric(
+
+    "activitiesTargetsChart",
+
+    targetCounts
+
+  );
+
+
+
+  /* =====================================
+     رسم الأقسام
+     ===================================== */
+
+  renderActivityMetric(
+
+    "activitiesDepartmentsChart",
+
+    countActivitySimple(
+      rows,
+      item =>
+        item.department
+    )
+
+  );
+
+
+
+  /* =====================================
+     رسم حالة الاعتماد
+     ===================================== */
+
+  renderActivityMetric(
+
+    "activitiesApprovalChart",
+
+    countActivitySimple(
+      rows,
+      item => {
+
+
+        if(
+          item.approval ===
+            "yes"
+        ){
+
+          return "معتمدة";
+
+        }
+
+
+
+        if(
+          item.approval ===
+            "no"
+        ){
+
+          return "غير معتمدة";
+
+        }
+
+
+
+        return "غير محدد";
+
+
+      }
+    )
+
+  );
+
+
+
+  /* =====================================
+     الجدول
+     ===================================== */
+
+  renderActivityTable(
+    rows
+  );
+
+}
+
+
+
+/* =========================================================
+   تطبيق الفلاتر
+   ========================================================= */
+
+function applyActivityFilters(){
+
+
+  const rows =
+    getActivityFilteredRows();
+
+
+
+  renderActivityIndicators(
+    rows
+  );
+
+
+
+  const status =
+    activityEl(
+      "activitiesIndicatorsStatus"
+    );
+
+
+
+  status.className =
+    "status-line status-success";
+
+
+
+  status.textContent =
+    `عرض ${rows.length} من أصل ${activityIndicatorRows.length} فعالية.`;
+
+}
+
+
+
+/* =========================================================
+   أحداث الفلاتر
+   ========================================================= */
+
+[
+  "activitiesDepartmentFilter",
+  "activitiesDateFrom",
+  "activitiesDateTo",
+  "activitiesApprovalFilter"
+]
+.forEach(
+  id => {
+
+
+    activityEl(
+      id
+    )
+      .addEventListener(
+
+        "change",
+
+        applyActivityFilters
+
+      );
+
+
+  }
+);
+
+
+
+/* =========================================================
+   مسح الفلاتر
+   ========================================================= */
+
+activityEl(
+  "activitiesResetFiltersBtn"
+)
+.addEventListener(
+
+  "click",
+
+  () => {
+
+
+    activityEl(
+      "activitiesDepartmentFilter"
+    ).value =
+      "";
+
+
+
+    activityEl(
+      "activitiesDateFrom"
+    ).value =
+      "";
+
+
+
+    activityEl(
+      "activitiesDateTo"
+    ).value =
+      "";
+
+
+
+    activityEl(
+      "activitiesApprovalFilter"
+    ).value =
+      "";
+
+
+
+    applyActivityFilters();
+
+
+  }
+
+);
+
+
+
+/* =========================================================
+   تحديث البيانات
+   ========================================================= */
+
+activityEl(
+  "activitiesRefreshBtn"
+)
+.addEventListener(
+
+  "click",
+
+  loadActivityIndicators
+
+);
+
+
+
+/* =========================================================
+   تشغيل الصفحة
+   ========================================================= */
+
+async function startActivityIndicators(){
+
+
+  try{
+
+
+    const allowed =
+      await verifyActivitiesAdmin();
+
+
+
+    if(
+      !allowed
+    ){
+
+      return;
+
+    }
+
+
+
+    await loadActivityIndicators();
+
+
+
+  }catch(
+    error
+  ){
+
+
+    console.error(
+      "Activities indicators init error:",
+      error
+    );
+
+
+
+    const status =
+      activityEl(
+        "activitiesIndicatorsStatus"
+      );
+
+
+
+    status.className =
+      "status-line status-error";
+
+
+
+    status.textContent =
+      "تعذر تشغيل لوحة المؤشرات: " +
+      (
+        error?.message ||
+        error
+      );
+
+
+  }
+
+}
+
+
+
+startActivityIndicators();
+
+
+
+})();
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,1830 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>الزيارات التبادلية | WestRiffa Smart Office</title>
+
+  <link rel="stylesheet" href="../../css/app.css">
+
+  <style>
+    *{
+      box-sizing:border-box;
+    }
+
+    body{
+      margin:0;
+      font-family:Tahoma,Arial,sans-serif;
+      background:#f4f7f6;
+      color:#173c34;
+    }
+
+    .page-header{
+      background:linear-gradient(135deg,#0f513f,#18705a);
+      color:#fff;
+      padding:30px 24px;
+    }
+
+    .page-header-inner{
+      width:min(1250px,94%);
+      margin:auto;
+    }
+
+    .page-header h1{
+      margin:0 0 8px;
+      font-size:30px;
+    }
+
+    .page-header p{
+      margin:0;
+      opacity:.92;
+      line-height:1.8;
+    }
+
+    .container{
+      width:min(1250px,94%);
+      margin:26px auto 50px;
+    }
+
+    .top-actions{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:20px;
+    }
+
+    .btn-link{
+      display:inline-block;
+      text-decoration:none;
+      padding:11px 18px;
+      border-radius:12px;
+      background:#fff;
+      color:#0f513f;
+      border:1px solid #dce9e5;
+      font-weight:bold;
+    }
+
+    .card{
+      background:#fff;
+      border:1px solid #e1e9e5;
+      border-radius:18px;
+      padding:23px;
+      margin-bottom:22px;
+      box-shadow:0 8px 25px rgba(15,81,63,.05);
+    }
+
+    .card h2{
+      margin:0 0 6px;
+      color:#075c40;
+    }
+
+    .sub{
+      color:#6b7a72;
+      font-size:13px;
+      line-height:1.8;
+      margin-bottom:20px;
+    }
+
+    .form-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:16px;
+    }
+
+    .form-field{
+      margin-bottom:4px;
+    }
+
+    .form-field.full{
+      grid-column:1/-1;
+    }
+
+    .form-field label{
+      display:block;
+      margin-bottom:7px;
+      color:#334d42;
+      font-weight:700;
+    }
+
+    .form-field input,
+    .form-field select,
+    .form-field textarea{
+      width:100%;
+      padding:11px 12px;
+      border:1px solid #cfdad4;
+      border-radius:10px;
+      background:#fff;
+      font-family:inherit;
+      font-size:14px;
+    }
+
+    .form-field textarea{
+      min-height:105px;
+      resize:vertical;
+      line-height:1.8;
+    }
+
+    .auto-value{
+      background:#f5f8f6 !important;
+      color:#075c40;
+      font-weight:700;
+    }
+
+    .hidden{
+      display:none !important;
+    }
+
+    .btn{
+      border:0;
+      border-radius:11px;
+      padding:12px 19px;
+      cursor:pointer;
+      font-family:inherit;
+      font-weight:bold;
+      font-size:14px;
+    }
+
+    .btn-primary{
+      background:#0f654f;
+      color:#fff;
+    }
+
+    .btn-primary:hover{
+      background:#0b5744;
+    }
+
+    .btn-primary:disabled{
+      background:#9badA7;
+      cursor:not-allowed;
+    }
+
+    .btn-soft{
+      background:#eef4f2;
+      color:#194b3f;
+      border:1px solid #d7e4e0;
+    }
+
+    .btn-wide{
+      width:100%;
+      margin-top:18px;
+    }
+
+    .save-state{
+      min-height:24px;
+      margin-top:12px;
+      font-weight:bold;
+      font-size:13px;
+    }
+
+    .save-state.ok{
+      color:#087451;
+    }
+
+    .save-state.error{
+      color:#b42318;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:14px;
+      margin-bottom:22px;
+    }
+
+    .stat{
+      background:#fff;
+      border:1px solid #e1e9e5;
+      border-top:4px solid #087451;
+      border-radius:15px;
+      padding:18px;
+      text-align:center;
+    }
+
+    .stat span{
+      display:block;
+      color:#6b7a72;
+      font-size:13px;
+      margin-bottom:8px;
+    }
+
+    .stat strong{
+      display:block;
+      color:#075c40;
+      font-size:31px;
+    }
+
+    .filters{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr 1fr auto;
+      gap:9px;
+      margin:18px 0;
+    }
+
+    .filters input,
+    .filters select{
+      width:100%;
+      padding:10px;
+      border:1px solid #d4ded9;
+      border-radius:9px;
+      background:#fff;
+      font-family:inherit;
+    }
+
+    .visit-card{
+      border:1px solid #e1e9e5;
+      border-radius:15px;
+      padding:17px;
+      margin-bottom:12px;
+      background:#fff;
+    }
+
+    .visit-head{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+
+    .visit-name{
+      color:#075c40;
+      font-size:17px;
+      font-weight:bold;
+    }
+
+    .visit-meta{
+      color:#687a72;
+      font-size:13px;
+      line-height:1.9;
+      margin-top:5px;
+    }
+
+    .chip{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:bold;
+    }
+
+    .chip.internal{
+      background:#e9f5ef;
+      color:#087451;
+    }
+
+    .chip.external{
+      background:#fff4dc;
+      color:#8a6414;
+    }
+
+    .details-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .detail-box{
+      background:#f8faf9;
+      border-radius:11px;
+      padding:12px;
+      border:1px solid #edf1ef;
+    }
+
+    .detail-box strong{
+      display:block;
+      color:#075c40;
+      margin-bottom:5px;
+      font-size:12px;
+    }
+
+    .detail-box div{
+      line-height:1.8;
+      color:#52665d;
+      font-size:13px;
+      white-space:pre-wrap;
+    }
+
+    .empty{
+      text-align:center;
+      padding:35px;
+      color:#6b7a72;
+      border:1px dashed #d6e0db;
+      border-radius:14px;
+      background:#fafcfb;
+    }
+
+    .section-title{
+      color:#075c40;
+      margin:0 0 12px;
+    }
+
+    .scope{
+      padding:12px 15px;
+      background:#edf8f3;
+      color:#075c40;
+      border:1px solid #d3eadf;
+      border-radius:11px;
+      margin-bottom:18px;
+      line-height:1.7;
+      font-size:13px;
+    }
+
+    @media(max-width:850px){
+      .form-grid,
+      .stats,
+      .details-grid,
+      .filters{
+        grid-template-columns:1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="page-header">
+  <div class="page-header-inner">
+
+    <h1>🤝 الزيارات التبادلية</h1>
+
+    <p>
+      توثيق الزيارات التبادلية الداخلية والخارجية بين المعلمات
+      وحصر الجوانب الإيجابية والمقترحات.
+    </p>
+
+  </div>
+</header>
+
+
+<main class="container">
+
+  <div class="top-actions">
+
+    <a class="btn-link" href="../../index.html">
+      🏠 لوحة التحكم
+    </a>
+
+    <a class="btn-link" href="../archive/index.html">
+      📂 الأرشيف الذكي
+    </a>
+
+  </div>
+
+
+  <section class="card">
+
+    <h2>تسجيل زيارة تبادلية</h2>
+
+    <div class="sub">
+      تسجل المعلمة بيانات الزيارة بعد تنفيذها، ويتم حفظها في النظام
+      لعرض المؤشرات والرجوع إليها لاحقًا.
+    </div>
+
+    <div id="scopeText" class="scope">
+      جارٍ تحميل بيانات الحساب...
+    </div>
+
+
+    <div class="form-grid">
+
+
+      <div class="form-field">
+
+        <label>
+          اسم المعلمة الزائرة
+        </label>
+
+        <input
+          id="visitorName"
+          type="text"
+          class="auto-value"
+          readonly
+        >
+
+      </div>
+
+
+      <div class="form-field">
+
+        <label for="visitType">
+          نوع الزيارة *
+        </label>
+
+        <select id="visitType">
+
+          <option value="">
+            — اختاري نوع الزيارة —
+          </option>
+
+          <option value="داخلية">
+            زيارة داخلية
+          </option>
+
+          <option value="خارجية">
+            زيارة خارجية
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="form-field">
+
+        <label for="visitedTeacher">
+          اسم المعلمة المُزارة *
+        </label>
+
+        <input
+          id="visitedTeacher"
+          type="text"
+          placeholder="اسم المعلمة التي تمت زيارتها"
+        >
+
+      </div>
+
+
+      <div class="form-field">
+
+        <label for="subject">
+          المادة *
+        </label>
+
+        <input
+          id="subject"
+          type="text"
+          placeholder="مثال: اللغة العربية"
+        >
+
+      </div>
+
+
+      <div class="form-field">
+
+        <label for="grade">
+          الصف *
+        </label>
+
+        <input
+          id="grade"
+          type="text"
+          placeholder="مثال: الصف الثالث"
+        >
+
+      </div>
+
+
+      <div class="form-field">
+
+        <label for="visitDate">
+          التاريخ *
+        </label>
+
+        <input
+          id="visitDate"
+          type="date"
+        >
+
+      </div>
+
+
+      <div class="form-field">
+
+        <label>
+          اليوم
+        </label>
+
+        <input
+          id="visitDay"
+          type="text"
+          class="auto-value"
+          readonly
+        >
+
+      </div>
+
+
+      <div class="form-field">
+
+        <label for="place">
+          المكان *
+        </label>
+
+        <input
+          id="place"
+          type="text"
+          placeholder="مثال: الصف / مركز مصادر التعلم"
+        >
+
+      </div>
+
+
+      <div
+        id="schoolField"
+        class="form-field full hidden"
+      >
+
+        <label for="schoolName">
+          اسم المدرسة المستضيفة *
+        </label>
+
+        <input
+          id="schoolName"
+          type="text"
+          placeholder="اكتبي اسم المدرسة"
+        >
+
+      </div>
+
+
+      <div class="form-field full">
+
+        <label for="positiveAspects">
+          الجوانب الإيجابية *
+        </label>
+
+        <textarea
+          id="positiveAspects"
+          placeholder="اكتبي أبرز الجوانب الإيجابية والممارسات المتميزة التي تمت ملاحظتها..."
+        ></textarea>
+
+      </div>
+
+
+      <div class="form-field full">
+
+        <label for="suggestions">
+          المقترحات والتوصيات
+        </label>
+
+        <textarea
+          id="suggestions"
+          placeholder="اكتبي المقترحات أو الأفكار التي يمكن الاستفادة منها..."
+        ></textarea>
+
+      </div>
+
+    </div>
+
+
+    <button
+      id="saveVisitBtn"
+      class="btn btn-primary btn-wide"
+      type="button"
+    >
+      💾 حفظ الزيارة
+    </button>
+
+
+    <div
+      id="saveState"
+      class="save-state"
+    ></div>
+
+  </section>
+
+
+
+  <section class="card">
+
+    <h2 class="section-title">
+      📊 مؤشرات الزيارات التبادلية
+    </h2>
+
+    <div class="stats">
+
+      <div class="stat">
+
+        <span>
+          إجمالي الزيارات
+        </span>
+
+        <strong id="totalVisits">
+          0
+        </strong>
+
+      </div>
+
+
+      <div class="stat">
+
+        <span>
+          الزيارات الداخلية
+        </span>
+
+        <strong id="internalVisits">
+          0
+        </strong>
+
+      </div>
+
+
+      <div class="stat">
+
+        <span>
+          الزيارات الخارجية
+        </span>
+
+        <strong id="externalVisits">
+          0
+        </strong>
+
+      </div>
+
+    </div>
+
+
+
+    <div class="filters">
+
+      <select id="filterType">
+
+        <option value="">
+          جميع أنواع الزيارات
+        </option>
+
+        <option value="داخلية">
+          داخلية
+        </option>
+
+        <option value="خارجية">
+          خارجية
+        </option>
+
+      </select>
+
+
+      <input
+        id="filterTeacher"
+        type="text"
+        placeholder="بحث باسم المعلمة"
+      >
+
+
+      <input
+        id="filterFrom"
+        type="date"
+        title="من تاريخ"
+      >
+
+
+      <input
+        id="filterTo"
+        type="date"
+        title="إلى تاريخ"
+      >
+
+
+      <button
+        id="refreshBtn"
+        class="btn btn-soft"
+        type="button"
+      >
+        تحديث
+      </button>
+
+    </div>
+
+
+    <h3 class="section-title">
+      سجل الزيارات
+    </h3>
+
+
+    <div id="visitsList">
+
+      <div class="empty">
+        جاري تحميل الزيارات...
+      </div>
+
+    </div>
+
+  </section>
+
+</main>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="../../js/config.js"></script>
+<script src="../../js/graph.js"></script>
+<script src="../../js/common.js"></script>
+
+
+<script>
+
+"use strict";
+
+let sb = null;
+
+let currentUser = null;
+
+let currentProfile = null;
+
+let visits = [];
+
+let currentRole = "teacher";
+let coordinatorDepartmentIds = [];
+let coordinatorVisibleUserIds = [];
+
+
+
+function byId(id){
+  return document.getElementById(id);
+}
+
+
+
+function esc(value){
+
+  return String(value ?? "")
+
+    .replaceAll("&","&amp;")
+
+    .replaceAll("<","&lt;")
+
+    .replaceAll(">","&gt;")
+
+    .replaceAll('"',"&quot;")
+
+    .replaceAll("'","&#039;");
+}
+
+
+
+function formatDate(value){
+
+  if(!value){
+    return "—";
+  }
+
+  const parts =
+    String(value).split("-");
+
+  if(parts.length !== 3){
+    return value;
+  }
+
+  const date =
+    new Date(
+      Number(parts[0]),
+      Number(parts[1]) - 1,
+      Number(parts[2])
+    );
+
+  if(Number.isNaN(date.getTime())){
+    return value;
+  }
+
+  return date.toLocaleDateString(
+    "ar-BH",
+    {
+      year:"numeric",
+      month:"long",
+      day:"numeric"
+    }
+  );
+}
+
+
+
+function updateDay(){
+
+  const value =
+    byId("visitDate").value;
+
+  const dayField =
+    byId("visitDay");
+
+  if(!value){
+
+    dayField.value = "";
+
+    return;
+  }
+
+  const parts =
+    value.split("-");
+
+  if(parts.length !== 3){
+
+    dayField.value = "";
+
+    return;
+  }
+
+  const year =
+    Number(parts[0]);
+
+  const month =
+    Number(parts[1]);
+
+  const day =
+    Number(parts[2]);
+
+  const date =
+    new Date(
+      year,
+      month - 1,
+      day
+    );
+
+  const days = [
+    "الأحد",
+    "الاثنين",
+    "الثلاثاء",
+    "الأربعاء",
+    "الخميس",
+    "الجمعة",
+    "السبت"
+  ];
+
+  dayField.value =
+    days[
+      date.getDay()
+    ] || "";
+}
+
+
+
+function updateVisitType(){
+
+  const type =
+    byId("visitType").value;
+
+  const schoolField =
+    byId("schoolField");
+
+  if(type === "خارجية"){
+
+    schoolField.classList.remove(
+      "hidden"
+    );
+
+  }else{
+
+    schoolField.classList.add(
+      "hidden"
+    );
+
+    byId("schoolName").value = "";
+  }
+}
+
+
+
+function getLocalToday(){
+
+  const today =
+    new Date();
+
+  const year =
+    today.getFullYear();
+
+  const month =
+    String(
+      today.getMonth() + 1
+    ).padStart(
+      2,
+      "0"
+    );
+
+  const day =
+    String(
+      today.getDate()
+    ).padStart(
+      2,
+      "0"
+    );
+
+  return `${year}-${month}-${day}`;
+}
+
+
+
+async function init(){
+
+  try{
+
+    if(
+      !window.WR_CONFIG?.supabaseUrl ||
+      !window.WR_CONFIG?.supabaseKey
+    ){
+
+      throw new Error(
+        "إعدادات Supabase غير مكتملة"
+      );
+    }
+
+
+    sb =
+      window.supabase.createClient(
+        window.WR_CONFIG.supabaseUrl,
+        window.WR_CONFIG.supabaseKey
+      );
+
+
+    currentUser =
+      await WRGraph.getAccount();
+
+
+    if(!currentUser){
+
+      location.href =
+        "../../index.html";
+
+      return;
+    }
+
+
+    currentProfile =
+      window.WRAccess &&
+      typeof WRAccess.getProfile === "function"
+        ? await WRAccess.getProfile(true)
+        : await WRGraph.getUserProfile();
+
+
+    if(!currentProfile){
+
+      throw new Error(
+        "تعذر تحميل بيانات الحساب"
+      );
+    }
+
+
+    byId("visitorName").value =
+      currentProfile.full_name ||
+      currentUser.email ||
+      "معلمة";
+
+
+    currentRole =
+      String(
+        currentProfile.role ||
+        "teacher"
+      )
+        .trim()
+        .toLowerCase();
+
+
+    if(currentRole === "coordinator"){
+      await loadCoordinatorScope();
+    }
+
+
+    const role = currentRole;
+
+
+    if(role === "admin"){
+
+      byId("scopeText").textContent =
+        "صلاحية الإدارة: يمكنك الاطلاع على جميع الزيارات التبادلية المسجلة.";
+
+    }else if(role === "coordinator"){
+
+      byId("scopeText").textContent =
+        "صلاحية المنسقة: يمكنك تسجيل زياراتك والاطلاع على زيارات معلمات قسمك.";
+
+    }else{
+
+      byId("scopeText").textContent =
+        "سجلي زيارتك التبادلية وسيتم حفظها تلقائيًا ضمن سجل الزيارات.";
+    }
+
+
+    byId("visitDate").value =
+      getLocalToday();
+
+
+    updateDay();
+
+
+    await loadVisits();
+
+
+  }catch(error){
+
+    console.error(
+      "Exchange visits init:",
+      error
+    );
+
+    byId("scopeText").textContent =
+      "تعذر تحميل بيانات الحساب أو سجل الزيارات.";
+
+    alert(
+      "تعذر تحميل نظام الزيارات التبادلية."
+    );
+  }
+}
+
+
+
+async function saveVisit(){
+
+  const type =
+    byId("visitType").value;
+
+  const visitedTeacher =
+    byId("visitedTeacher")
+      .value
+      .trim();
+
+  const subject =
+    byId("subject")
+      .value
+      .trim();
+
+  const grade =
+    byId("grade")
+      .value
+      .trim();
+
+  const date =
+    byId("visitDate").value;
+
+  updateDay();
+
+  const day =
+    byId("visitDay").value;
+
+  const place =
+    byId("place")
+      .value
+      .trim();
+
+  const school =
+    byId("schoolName")
+      .value
+      .trim();
+
+  const positives =
+    byId("positiveAspects")
+      .value
+      .trim();
+
+  const suggestions =
+    byId("suggestions")
+      .value
+      .trim();
+
+
+  const state =
+    byId("saveState");
+
+
+  state.textContent = "";
+
+  state.className =
+    "save-state";
+
+
+  if(
+    !type ||
+    !visitedTeacher ||
+    !subject ||
+    !grade ||
+    !date ||
+    !day ||
+    !place ||
+    !positives
+  ){
+
+    state.textContent =
+      "أكملي جميع الحقول المطلوبة.";
+
+    state.className =
+      "save-state error";
+
+    return;
+  }
+
+
+  if(
+    type === "خارجية" &&
+    !school
+  ){
+
+    state.textContent =
+      "اكتبي اسم المدرسة للزيارة الخارجية.";
+
+    state.className =
+      "save-state error";
+
+    return;
+  }
+
+
+  const btn =
+    byId("saveVisitBtn");
+
+
+  btn.disabled = true;
+
+  btn.textContent =
+    "جاري الحفظ...";
+
+
+  try{
+
+
+    const {
+      error
+    } =
+      await sb
+        .from("exchange_visits")
+        .insert({
+
+          visitor_id:
+            currentUser.id,
+
+          visitor_name:
+            currentProfile.full_name ||
+            currentUser.email,
+
+          visit_type:
+            type,
+
+          visited_teacher:
+            visitedTeacher,
+
+          school_name:
+            type === "خارجية"
+              ? school
+              : null,
+
+          subject:
+            subject,
+
+          grade:
+            grade,
+
+          visit_date:
+            date,
+
+          visit_day:
+            day,
+
+          place:
+            place,
+
+          positive_aspects:
+            positives,
+
+          suggestions:
+            suggestions || null
+
+        });
+
+
+    if(error){
+      throw error;
+    }
+
+
+    state.textContent =
+      "✓ تم حفظ الزيارة التبادلية بنجاح.";
+
+    state.className =
+      "save-state ok";
+
+
+    clearForm();
+
+
+    await loadVisits();
+
+
+  }catch(error){
+
+    console.error(
+      "Save exchange visit:",
+      error
+    );
+
+    state.textContent =
+      "تعذر حفظ الزيارة. تأكدي من إنشاء جدول exchange_visits في Supabase.";
+
+    state.className =
+      "save-state error";
+
+  }finally{
+
+    btn.disabled = false;
+
+    btn.textContent =
+      "💾 حفظ الزيارة";
+  }
+}
+
+
+
+function clearForm(){
+
+  byId("visitType").value = "";
+
+  byId("visitedTeacher").value = "";
+
+  byId("subject").value = "";
+
+  byId("grade").value = "";
+
+  byId("place").value = "";
+
+  byId("schoolName").value = "";
+
+  byId("positiveAspects").value = "";
+
+  byId("suggestions").value = "";
+
+  byId("schoolField")
+    .classList.add("hidden");
+
+  byId("visitDate").value =
+    getLocalToday();
+
+  updateDay();
+}
+
+
+
+async function loadCoordinatorScope(){
+
+  coordinatorDepartmentIds = [];
+  coordinatorVisibleUserIds = [
+    String(currentUser.id)
+  ];
+
+  let scope = null;
+
+  if(
+    window.WRAccess &&
+    typeof WRAccess.getScope === "function"
+  ){
+    try{
+      scope = await WRAccess.getScope();
+    }catch(error){
+      console.warn(
+        "تعذر قراءة نطاق المنسقة:",
+        error
+      );
+    }
+  }
+
+  if(Array.isArray(scope?.department_ids)){
+    coordinatorDepartmentIds =
+      scope.department_ids
+        .filter(Boolean)
+        .map(String);
+  }
+
+  if(
+    !coordinatorDepartmentIds.length &&
+    Array.isArray(currentProfile?.department_ids)
+  ){
+    coordinatorDepartmentIds =
+      currentProfile.department_ids
+        .filter(Boolean)
+        .map(String);
+  }
+
+  if(
+    !coordinatorDepartmentIds.length &&
+    currentProfile?.department_id
+  ){
+    coordinatorDepartmentIds = [
+      String(currentProfile.department_id)
+    ];
+  }
+
+  if(!coordinatorDepartmentIds.length){
+    return;
+  }
+
+  const visibleIds =
+    new Set(coordinatorVisibleUserIds);
+
+  const {
+    data: assignments,
+    error: assignmentsError
+  } =
+    await sb
+      .from("profile_departments")
+      .select(
+        "profile_id, department_id, assignment_type"
+      )
+      .in(
+        "department_id",
+        coordinatorDepartmentIds
+      );
+
+  if(assignmentsError){
+    console.warn(
+      "profile_departments:",
+      assignmentsError
+    );
+  }else{
+    (assignments || []).forEach(row => {
+      const assignmentType =
+        String(row.assignment_type || "")
+          .trim()
+          .toLowerCase();
+
+      if(
+        row.profile_id &&
+        (
+          !assignmentType ||
+          assignmentType === "teacher"
+        )
+      ){
+        visibleIds.add(
+          String(row.profile_id)
+        );
+      }
+    });
+  }
+
+  const {
+    data: legacyTeachers,
+    error: legacyError
+  } =
+    await sb
+      .from("user_profiles")
+      .select(
+        "user_id, role, department_id"
+      )
+      .eq(
+        "role",
+        "teacher"
+      )
+      .in(
+        "department_id",
+        coordinatorDepartmentIds
+      );
+
+  if(legacyError){
+    console.warn(
+      "Legacy departments:",
+      legacyError
+    );
+  }else{
+    (legacyTeachers || []).forEach(row => {
+      if(row.user_id){
+        visibleIds.add(
+          String(row.user_id)
+        );
+      }
+    });
+  }
+
+  coordinatorVisibleUserIds = [
+    ...visibleIds
+  ];
+}
+
+
+function applyVisitScope(rows){
+
+  if(currentRole === "admin"){
+    return rows;
+  }
+
+  if(currentRole === "coordinator"){
+    const visibleIds =
+      new Set(
+        coordinatorVisibleUserIds.map(String)
+      );
+
+    return rows.filter(
+      visit =>
+        visit.visitor_id &&
+        visibleIds.has(
+          String(visit.visitor_id)
+        )
+    );
+  }
+
+  return rows.filter(
+    visit =>
+      String(visit.visitor_id || "") ===
+      String(currentUser.id)
+  );
+}
+
+
+
+async function loadVisits(){
+
+  let query =
+    sb
+      .from("exchange_visits")
+      .select("*")
+      .order(
+        "visit_date",
+        {
+          ascending:false
+        }
+      );
+
+
+  /*
+    صلاحيات العرض يحكمها Supabase RLS:
+    - المعلمة: زياراتها فقط.
+    - المنسقة: زياراتها + زيارات معلمات قسمها.
+    - الإدارة: جميع الزيارات.
+  */
+
+
+  const {
+    data,
+    error
+  } =
+    await query;
+
+
+  if(error){
+
+    throw error;
+  }
+
+
+  visits =
+    applyVisitScope(
+      data || []
+    );
+
+
+  renderDashboard();
+
+  renderVisits();
+}
+
+
+
+function filteredVisits(){
+
+  const type =
+    byId("filterType").value;
+
+  const teacher =
+    byId("filterTeacher")
+      .value
+      .trim()
+      .toLowerCase();
+
+  const from =
+    byId("filterFrom").value;
+
+  const to =
+    byId("filterTo").value;
+
+
+  return visits.filter(
+    visit => {
+
+
+      if(
+        type &&
+        visit.visit_type !== type
+      ){
+
+        return false;
+      }
+
+
+      if(teacher){
+
+        const text =
+          (
+            String(
+              visit.visitor_name || ""
+            ) +
+            " " +
+            String(
+              visit.visited_teacher || ""
+            )
+          )
+          .toLowerCase();
+
+
+        if(!text.includes(teacher)){
+
+          return false;
+        }
+      }
+
+
+      if(
+        from &&
+        visit.visit_date < from
+      ){
+
+        return false;
+      }
+
+
+      if(
+        to &&
+        visit.visit_date > to
+      ){
+
+        return false;
+      }
+
+
+      return true;
+
+    }
+  );
+}
+
+
+
+function renderDashboard(){
+
+  const rows =
+    filteredVisits();
+
+
+  byId("totalVisits").textContent =
+    rows.length;
+
+
+  byId("internalVisits").textContent =
+    rows.filter(
+      item =>
+        item.visit_type === "داخلية"
+    ).length;
+
+
+  byId("externalVisits").textContent =
+    rows.filter(
+      item =>
+        item.visit_type === "خارجية"
+    ).length;
+}
+
+
+
+function renderVisits(){
+
+  const rows =
+    filteredVisits();
+
+
+  const container =
+    byId("visitsList");
+
+
+  if(!rows.length){
+
+    container.innerHTML =
+      `
+        <div class="empty">
+          لا توجد زيارات تبادلية مطابقة.
+        </div>
+      `;
+
+    return;
+  }
+
+
+  container.innerHTML =
+    rows.map(
+      visit => {
+
+        const typeClass =
+          visit.visit_type === "خارجية"
+            ? "external"
+            : "internal";
+
+
+        return `
+          <article class="visit-card">
+
+            <div class="visit-head">
+
+              <div>
+
+                <div class="visit-name">
+
+                  ${esc(
+                    visit.visitor_name ||
+                    "معلمة"
+                  )}
+
+                  ←
+
+                  ${esc(
+                    visit.visited_teacher
+                  )}
+
+                </div>
+
+
+                <div class="visit-meta">
+
+                  المادة:
+                  ${esc(
+                    visit.subject ||
+                    "—"
+                  )}
+
+                  &nbsp; | &nbsp;
+
+                  الصف:
+                  ${esc(
+                    visit.grade ||
+                    "—"
+                  )}
+
+                  <br>
+
+                  التاريخ:
+                  ${esc(
+                    formatDate(
+                      visit.visit_date
+                    )
+                  )}
+
+                  &nbsp; | &nbsp;
+
+                  اليوم:
+                  ${esc(
+                    visit.visit_day ||
+                    "—"
+                  )}
+
+                  <br>
+
+                  المكان:
+                  ${esc(
+                    visit.place ||
+                    "—"
+                  )}
+
+                  ${
+                    visit.school_name
+                    ? `
+                      <br>
+                      المدرسة:
+                      ${esc(
+                        visit.school_name
+                      )}
+                    `
+                    : ""
+                  }
+
+                </div>
+
+              </div>
+
+
+              <div>
+
+                <span class="chip ${typeClass}">
+
+                  زيارة
+                  ${esc(
+                    visit.visit_type
+                  )}
+
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <div class="details-grid">
+
+
+              <div class="detail-box">
+
+                <strong>
+                  ✨ الجوانب الإيجابية
+                </strong>
+
+                <div>
+                  ${esc(
+                    visit.positive_aspects ||
+                    "—"
+                  )}
+                </div>
+
+              </div>
+
+
+              <div class="detail-box">
+
+                <strong>
+                  💡 المقترحات والتوصيات
+                </strong>
+
+                <div>
+                  ${esc(
+                    visit.suggestions ||
+                    "لا توجد مقترحات"
+                  )}
+                </div>
+
+              </div>
+
+
+            </div>
+
+          </article>
+        `;
+
+      }
+    ).join("");
+}
+
+
+
+function refreshView(){
+
+  renderDashboard();
+
+  renderVisits();
+}
+
+
+
+byId("visitType")
+  .addEventListener(
+    "change",
+    updateVisitType
+  );
+
+
+byId("visitDate")
+  .addEventListener(
+    "input",
+    updateDay
+  );
+
+
+byId("visitDate")
+  .addEventListener(
+    "change",
+    updateDay
+  );
+
+
+byId("saveVisitBtn")
+  .addEventListener(
+    "click",
+    saveVisit
+  );
+
+
+byId("filterType")
+  .addEventListener(
+    "change",
+    refreshView
+  );
+
+
+byId("filterTeacher")
+  .addEventListener(
+    "input",
+    refreshView
+  );
+
+
+byId("filterFrom")
+  .addEventListener(
+    "change",
+    refreshView
+  );
+
+
+byId("filterTo")
+  .addEventListener(
+    "change",
+    refreshView
+  );
+
+
+byId("refreshBtn")
+  .addEventListener(
+    "click",
+    loadVisits
+  );
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  init
+);
+
+</script>
+
+</body>
+</html>
