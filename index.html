@@ -636,6 +636,18 @@
 
     }
 
+
+    /* تغيير كلمة المرور */
+    .password-modal { position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .password-modal.hidden { display: none; }
+    .password-card { width: min(430px,100%); background:#fff; border-radius:20px; padding:26px; box-shadow:0 24px 70px rgba(0,0,0,.25); }
+    .password-card h3 { margin:0 0 8px; color:#075c40; }
+    .password-card p { margin:0 0 18px; color:#6b7a72; font-size:13px; line-height:1.7; }
+    .password-card label { display:block; margin:10px 0 6px; font-weight:700; color:#27493d; }
+    .password-card input { width:100%; box-sizing:border-box; padding:12px 13px; border:1px solid #d9e1dd; border-radius:10px; font-family:inherit; }
+    .password-actions { display:flex; gap:10px; margin-top:18px; flex-wrap:wrap; }
+    .password-message { min-height:22px; margin-top:12px; font-size:13px; }
+
   </style>
 
 </head>
@@ -806,6 +818,15 @@
     >
       📂 الأرشيف
     </a>
+
+
+    <button
+      id="changePasswordBtn"
+      class="btn btn-soft"
+      type="button"
+    >
+      🔐 تغيير كلمة المرور
+    </button>
 
 
     <button
@@ -1688,6 +1709,27 @@
 
 
 
+<!-- نافذة تغيير كلمة المرور -->
+<div id="passwordModal" class="password-modal hidden">
+  <div class="password-card">
+    <h3>🔐 تغيير كلمة المرور</h3>
+    <p>اكتبي كلمة مرور جديدة خاصة بك، ثم أعيدي كتابتها للتأكيد.</p>
+
+    <label for="newPassword">كلمة المرور الجديدة</label>
+    <input id="newPassword" type="password" autocomplete="new-password" placeholder="8 أحرف على الأقل">
+
+    <label for="confirmNewPassword">تأكيد كلمة المرور الجديدة</label>
+    <input id="confirmNewPassword" type="password" autocomplete="new-password" placeholder="أعيدي كتابة كلمة المرور">
+
+    <div class="password-actions">
+      <button id="savePasswordBtn" class="btn btn-primary" type="button">حفظ كلمة المرور</button>
+      <button id="cancelPasswordBtn" class="btn btn-soft" type="button">إلغاء</button>
+    </div>
+    <div id="passwordMessage" class="password-message"></div>
+  </div>
+</div>
+
+
 <!-- =====================================================
      المكتبات
      ===================================================== -->
@@ -1754,6 +1796,14 @@ const logoutBtn =
   document.getElementById(
     "logoutBtn"
   );
+
+const changePasswordBtn = document.getElementById("changePasswordBtn");
+const passwordModal = document.getElementById("passwordModal");
+const newPassword = document.getElementById("newPassword");
+const confirmNewPassword = document.getElementById("confirmNewPassword");
+const savePasswordBtn = document.getElementById("savePasswordBtn");
+const cancelPasswordBtn = document.getElementById("cancelPasswordBtn");
+const passwordMessage = document.getElementById("passwordMessage");
 
 
 const currentUserEmail =
@@ -2459,6 +2509,72 @@ loginPassword.addEventListener(
   }
 );
 
+
+
+/* =====================================================
+   تغيير كلمة المرور
+   ===================================================== */
+
+changePasswordBtn.addEventListener("click", () => {
+  newPassword.value = "";
+  confirmNewPassword.value = "";
+  passwordMessage.textContent = "";
+  passwordMessage.style.color = "#a22";
+  passwordModal.classList.remove("hidden");
+  setTimeout(() => newPassword.focus(), 50);
+});
+
+cancelPasswordBtn.addEventListener("click", () => {
+  passwordModal.classList.add("hidden");
+});
+
+passwordModal.addEventListener("click", (event) => {
+  if (event.target === passwordModal) passwordModal.classList.add("hidden");
+});
+
+savePasswordBtn.addEventListener("click", async () => {
+  const password = newPassword.value;
+  const confirmPassword = confirmNewPassword.value;
+
+  passwordMessage.style.color = "#a22";
+
+  if (!password || !confirmPassword) {
+    passwordMessage.textContent = "أدخلي كلمة المرور الجديدة وأكديها.";
+    return;
+  }
+  if (password.length < 8) {
+    passwordMessage.textContent = "كلمة المرور يجب أن تكون 8 أحرف على الأقل.";
+    return;
+  }
+  if (password !== confirmPassword) {
+    passwordMessage.textContent = "كلمتا المرور غير متطابقتين.";
+    return;
+  }
+
+  savePasswordBtn.disabled = true;
+  savePasswordBtn.textContent = "جاري الحفظ...";
+
+  try {
+    const sbPassword = window.supabase.createClient(
+      window.WR_CONFIG.supabaseUrl,
+      window.WR_CONFIG.supabaseKey
+    );
+    const { error } = await sbPassword.auth.updateUser({ password });
+    if (error) throw error;
+
+    passwordMessage.style.color = "#087451";
+    passwordMessage.textContent = "تم تغيير كلمة المرور بنجاح ✓";
+    newPassword.value = "";
+    confirmNewPassword.value = "";
+    setTimeout(() => passwordModal.classList.add("hidden"), 1400);
+  } catch (error) {
+    console.error("Password update error:", error);
+    passwordMessage.textContent = "تعذر تغيير كلمة المرور. حاولي مرة أخرى.";
+  } finally {
+    savePasswordBtn.disabled = false;
+    savePasswordBtn.textContent = "حفظ كلمة المرور";
+  }
+});
 
 
 /* =====================================================
