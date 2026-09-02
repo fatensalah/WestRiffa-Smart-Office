@@ -929,6 +929,17 @@
   </a>
 
 
+  <!-- جديد: يظهر للقيادة العليا فقط -->
+  <a
+    id="weeklyPlansNavLink"
+    class="nav-link"
+    href="pages/weekly-plans/index.html"
+    style="display:none"
+  >
+    📅 الخطة الأسبوعية للقيادة العليا
+  </a>
+
+
   <a
     class="nav-link"
     href="pages/certificates/index.html"
@@ -1175,44 +1186,33 @@
     <div class="admin-insights-grid">
 
 
-      <!-- إجمالي المستفيدين -->
-
       <article class="admin-insight-card">
-
 
         <div class="insight-label">
           👥 إجمالي المستفيدين
         </div>
 
-
         <strong id="statBeneficiaries">
           0
         </strong>
-
 
         <div class="insight-note">
           مجموع أعداد المستفيدين المسجلة في تقارير الفعاليات.
         </div>
 
-
       </article>
 
 
 
-      <!-- هذا الشهر -->
-
       <article class="admin-insight-card">
-
 
         <div class="insight-label">
           📅 فعاليات هذا الشهر
         </div>
 
-
         <strong id="statCurrentMonth">
           0
         </strong>
-
 
         <div
           id="currentMonthLabel"
@@ -1221,25 +1221,19 @@
           الشهر الحالي
         </div>
 
-
       </article>
 
 
 
-      <!-- الشهر السابق -->
-
       <article class="admin-insight-card">
-
 
         <div class="insight-label">
           🗓 فعاليات الشهر السابق
         </div>
 
-
         <strong id="statPreviousMonth">
           0
         </strong>
-
 
         <div
           id="previousMonthLabel"
@@ -1248,30 +1242,23 @@
           الشهر السابق
         </div>
 
-
       </article>
 
 
 
-      <!-- اتجاه النشاط -->
-
       <article class="admin-insight-card">
-
 
         <div class="insight-label">
           📊 اتجاه النشاط
         </div>
 
-
         <strong id="statMonthChange">
           —
         </strong>
 
-
         <div class="insight-note">
           مقارنة عدد الفعاليات بالشهر السابق.
         </div>
-
 
       </article>
 
@@ -1434,11 +1421,7 @@
 
 
   </section>
-
-
-
-
-  <!-- ===================================================
+    <!-- ===================================================
        متابعة القسم - Coordinator فقط
        =================================================== -->
 
@@ -1595,7 +1578,8 @@
 
     </a>
 
-<a
+
+    <a
       id="certificateCreateCard"
       class="feature-card"
       href="pages/certificates/create.html"
@@ -1676,6 +1660,26 @@
 
       <span>
         تقديم الطلب ومتابعة الموافقة أو الرفض
+      </span>
+
+    </a>
+
+
+    <!-- جديد: الخطة الأسبوعية للقيادة العليا -->
+    <a
+      id="weeklyPlansCard"
+      class="feature-card"
+      href="pages/weekly-plans/index.html"
+      style="display:none"
+    >
+      📅
+
+      <b>
+        الخطة الأسبوعية للقيادة العليا
+      </b>
+
+      <span>
+        إعداد الخطة الأسبوعية وحفظها وأرشفتها وطباعتها
       </span>
 
     </a>
@@ -1817,30 +1821,48 @@ const currentUserRole =
     "currentUserRole"
   );
 
+
 const settingsNavLink =
   document.getElementById(
     "settingsNavLink"
   );
+
 
 const plansNavLink =
   document.getElementById(
     "plansNavLink"
   );
 
+
+/* جديد: عناصر الخطة الأسبوعية */
+const weeklyPlansNavLink =
+  document.getElementById(
+    "weeklyPlansNavLink"
+  );
+
+const weeklyPlansCard =
+  document.getElementById(
+    "weeklyPlansCard"
+  );
+
+
 const coordinatorSection =
   document.getElementById(
     "coordinatorSection"
   );
+
 
 const meetingInvitationCard =
   document.getElementById(
     "meetingInvitationCard"
   );
 
+
 const meetingMinutesCard =
   document.getElementById(
     "meetingMinutesCard"
   );
+
 
 const certificateCreateCard =
   document.getElementById(
@@ -1864,6 +1886,7 @@ const notesUnreadBadge =
   document.getElementById(
     "notesUnreadBadge"
   );
+
 
 const classroomVisitsNavLink =
   document.getElementById(
@@ -2035,6 +2058,27 @@ async function configureRoleUI(user) {
         : "none";
   }
 
+
+  /*
+    جديد:
+    الخطة الأسبوعية للقيادة العليا
+    تظهر للإدارة فقط.
+  */
+  if (weeklyPlansNavLink) {
+    weeklyPlansNavLink.style.display =
+      isAdmin
+        ? ""
+        : "none";
+  }
+
+  if (weeklyPlansCard) {
+    weeklyPlansCard.style.display =
+      isAdmin
+        ? ""
+        : "none";
+  }
+
+
   /*
     متابعة القسم:
     تظهر للمنسقة فقط.
@@ -2183,7 +2227,6 @@ async function configureNotesNavigation(user) {
 
 
 /* =====================================================
-   رابط الزيارات الصفية/* =====================================================
    رابط الزيارات الصفية حسب نوع الحساب
    ===================================================== */
 
@@ -2238,7 +2281,6 @@ async function configureClassroomVisitsNavigation(user) {
 
 
 /* =====================================================
-   إظهار المنصة/* =====================================================
    إظهار المنصة
    ===================================================== */
 
@@ -2264,9 +2306,11 @@ async function showApp(user) {
     user
   );
 
+
   await configureNotesNavigation(
     user
   );
+
 
   await configureClassroomVisitsNavigation(
     user
@@ -2524,15 +2568,19 @@ changePasswordBtn.addEventListener("click", () => {
   setTimeout(() => newPassword.focus(), 50);
 });
 
+
 cancelPasswordBtn.addEventListener("click", () => {
   passwordModal.classList.add("hidden");
 });
+
 
 passwordModal.addEventListener("click", (event) => {
   if (event.target === passwordModal) passwordModal.classList.add("hidden");
 });
 
+
 savePasswordBtn.addEventListener("click", async () => {
+
   const password = newPassword.value;
   const confirmPassword = confirmNewPassword.value;
 
@@ -2542,38 +2590,74 @@ savePasswordBtn.addEventListener("click", async () => {
     passwordMessage.textContent = "أدخلي كلمة المرور الجديدة وأكديها.";
     return;
   }
+
   if (password.length < 8) {
     passwordMessage.textContent = "كلمة المرور يجب أن تكون 8 أحرف على الأقل.";
     return;
   }
+
   if (password !== confirmPassword) {
     passwordMessage.textContent = "كلمتا المرور غير متطابقتين.";
     return;
   }
 
+
   savePasswordBtn.disabled = true;
   savePasswordBtn.textContent = "جاري الحفظ...";
 
+
   try {
-    const sbPassword = window.supabase.createClient(
-      window.WR_CONFIG.supabaseUrl,
-      window.WR_CONFIG.supabaseKey
-    );
-    const { error } = await sbPassword.auth.updateUser({ password });
+
+    const sbPassword =
+      window.supabase.createClient(
+        window.WR_CONFIG.supabaseUrl,
+        window.WR_CONFIG.supabaseKey
+      );
+
+
+    const { error } =
+      await sbPassword.auth.updateUser({
+        password
+      });
+
+
     if (error) throw error;
 
-    passwordMessage.style.color = "#087451";
-    passwordMessage.textContent = "تم تغيير كلمة المرور بنجاح ✓";
+
+    passwordMessage.style.color =
+      "#087451";
+
+    passwordMessage.textContent =
+      "تم تغيير كلمة المرور بنجاح ✓";
+
     newPassword.value = "";
     confirmNewPassword.value = "";
-    setTimeout(() => passwordModal.classList.add("hidden"), 1400);
+
+    setTimeout(
+      () => passwordModal.classList.add("hidden"),
+      1400
+    );
+
+
   } catch (error) {
-    console.error("Password update error:", error);
-    passwordMessage.textContent = "تعذر تغيير كلمة المرور. حاولي مرة أخرى.";
+
+    console.error(
+      "Password update error:",
+      error
+    );
+
+    passwordMessage.textContent =
+      "تعذر تغيير كلمة المرور. حاولي مرة أخرى.";
+
+
   } finally {
+
     savePasswordBtn.disabled = false;
-    savePasswordBtn.textContent = "حفظ كلمة المرور";
+    savePasswordBtn.textContent =
+      "حفظ كلمة المرور";
+
   }
+
 });
 
 
