@@ -460,21 +460,8 @@
       padding:22px;
     }
 
-    /*
-      عند إنشاء PDF نجعل الورقة قابلة للرسم فعليًا ولكن خارج الشاشة،
-      بدل الانتقال اللحظي من display:none إلى الالتقاط.
-    */
     #pdfSheet.pdf-visible{
       display:block;
-      position:fixed;
-      top:0;
-      left:-10000px;
-      width:794px;
-      max-width:794px;
-      min-height:1px;
-      z-index:-1;
-      overflow:visible;
-      pointer-events:none;
     }
 
     .pdf-title{
@@ -2597,26 +2584,33 @@ async function downloadPlanPdf(planId){
 
     pdf.classList.add("pdf-visible");
 
-    /*
-      ننتظر اكتمال الخطوط ودورتين رسم قبل الالتقاط حتى لا ينتج PDF أبيض.
-    */
-    if(document.fonts && document.fonts.ready){
-      try{
-        await document.fonts.ready;
-      }catch(_){}
-    }
-
-    await new Promise(resolve =>
-      requestAnimationFrame(() =>
-        requestAnimationFrame(resolve)
-      )
-    );
-
     const fileName =
       "تحضير_" +
       String(plan.subject || "درس").replace(/\s+/g,"_") +
       "_" +
       String(plan.lesson_date || "");
+
+    /*
+      منع الـ PDF الأبيض في التحاضير الطويلة:
+      html2pdf/html2canvas ينشئ Canvas واحدًا قبل تقسيم الصفحات.
+      مع scale:2 قد يتجاوز التحضير الطويل الحد الأقصى للـ Canvas
+      فينتج ملف PDF أبيض بالكامل.
+      نخفض المقياس تلقائيًا حسب ارتفاع التحضير.
+    */
+    const pdfHeight = Math.max(
+      pdf.scrollHeight || 0,
+      pdf.getBoundingClientRect().height || 0,
+      1
+    );
+
+    const safeCanvasHeight = 12000;
+    const renderScale = Math.max(
+      0.8,
+      Math.min(
+        1.35,
+        safeCanvasHeight / pdfHeight
+      )
+    );
 
     await html2pdf()
       .set({
@@ -2627,11 +2621,12 @@ async function downloadPlanPdf(planId){
           quality:0.98
         },
         html2canvas:{
-          scale:2,
+          scale:renderScale,
           useCORS:true,
           backgroundColor:"#ffffff",
           logging:false,
-          windowWidth:794
+          scrollX:0,
+          scrollY:0
         },
         jsPDF:{
           unit:"mm",
@@ -2651,9 +2646,7 @@ async function downloadPlanPdf(planId){
   }catch(error){
     console.error("PDF lesson plan:",error);
 
-    const failedPdf = byId("pdfSheet");
-    failedPdf.classList.remove("pdf-visible");
-    failedPdf.innerHTML = "";
+    byId("pdfSheet").classList.remove("pdf-visible");
 
     alert(
       "تعذر إنشاء ملف PDF للتحضير."
