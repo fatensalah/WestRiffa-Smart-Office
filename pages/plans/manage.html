@@ -31,8 +31,64 @@ const $=id=>document.getElementById(id);const esc=v=>String(v??"").replaceAll("&
 function status(m,t="info"){let x=$("pageStatus");x.className=`status ${t}`;x.textContent=m}function hideStatus(){$("pageStatus").className="status"}
 function monthName(n){return (MONTHS.find(x=>x[0]===Number(n))||[0,n])[1]}
 function domainFallback(r){if(r.domain_name)return r.domain_name;let p=String(r.program_name||"");if(p.includes("آفاق"))return"مجال الإنجاز الأكاديمي";if(p.includes("رايات"))return"مجال التطور الشخصي للطلبة ورعايتهم";if(p.includes("مداد"))return"مجال التعليم والتعلم والتقويم";if(p.includes("خطى"))return"مجال القيادة والإدارة";return"—"}
-document.addEventListener("DOMContentLoaded",init);
-async function init(){try{let a=await sb.auth.getUser();if(a.error)throw a.error;user=a.data.user;if(!user){location.href="../../index.html";return}let r=await sb.from("user_profiles").select("*").eq("user_id",user.id).maybeSingle();profile=r.data;if(!profile){r=await sb.from("profiles").select("*").eq("id",user.id).maybeSingle();profile=r.data}isAdmin=String(profile?.role||"").toLowerCase()==="admin";if(!["admin","coordinator"].includes(String(profile?.role||"").toLowerCase())){alert("إدارة الخطط متاحة للقيادة العليا ومنسقات الأقسام فقط.");location.href="index.html";return}$("accessBox").textContent=isAdmin?"صلاحية القيادة العليا — يمكنك إدارة خطط المدرسة وفق صلاحيات الحساب.":`الحساب: ${profile?.full_name||user.email} — يمكنك إدارة خطة القسم المرتبطة بحسابك.`;let d=await sb.from("departments").select("id,name");if(d.error)throw d.error;departmentMap=new Map((d.data||[]).map(x=>[x.id,x.name]));buildMonths();await load()}catch(e){console.error(e);status("تعذر تحميل إدارة الخطة: "+(e.message||e),"error")}}
+document.addEventListener("DOMContentLoaded", init);
+async function init(){
+  try{
+    if(window.WRGraph && typeof WRGraph.init === "function"){
+      await WRGraph.init();
+    }
+
+    if(window.WRGraph && typeof WRGraph.getAccount === "function"){
+      user = await WRGraph.getAccount();
+    }else{
+      const a = await sb.auth.getUser();
+      if(a.error) throw a.error;
+      user = a.data?.user || null;
+    }
+
+    if(!user){
+      location.replace("../../index.html");
+      return;
+    }
+
+    if(window.WRAccess && typeof WRAccess.getProfile === "function"){
+      profile = await WRAccess.getProfile(true);
+    }else if(window.WRGraph && typeof WRGraph.getUserProfile === "function"){
+      profile = await WRGraph.getUserProfile();
+    }else{
+      let r = await sb.from("user_profiles").select("*").eq("user_id",user.id).maybeSingle();
+      if(r.error && r.error.code !== "PGRST116") throw r.error;
+      profile = r.data || null;
+      if(!profile){
+        r = await sb.from("profiles").select("*").eq("id",user.id).maybeSingle();
+        if(r.error && r.error.code !== "PGRST116") throw r.error;
+        profile = r.data || null;
+      }
+    }
+
+    const role = String(profile?.role || "").trim().toLowerCase();
+    isAdmin = role === "admin";
+
+    if(!profile || !["admin","coordinator"].includes(role)){
+      throw new Error("هذا الحساب لا يمتلك صلاحية إدارة الخطط.");
+    }
+
+    $("accessBox").textContent = isAdmin
+      ? "صلاحية القيادة العليا — يمكنك إدارة خطط المدرسة وفق صلاحيات الحساب."
+      : `الحساب: ${profile?.full_name || user.email || ""} — يمكنك إدارة خطة القسم المرتبطة بحسابك.`;
+
+    const d = await sb.from("departments").select("id,name");
+    if(d.error) throw d.error;
+    departmentMap = new Map((d.data || []).map(x => [x.id,x.name]));
+
+    buildMonths();
+    await load();
+  }catch(e){
+    console.error("Manage init error:",e);
+    status("تعذر تحميل إدارة الخطة: "+(e.message || e),"error");
+    $("accessBox").textContent = "تعذر التحقق من الصلاحية — راجعي رسالة الخطأ أدناه.";
+  }
+}
 function buildMonths(){$("monthChecks").innerHTML=MONTHS.map(([n,m])=>`<label class="check"><input class="monthInput" type="checkbox" value="${n}">${m}</label>`).join("")}
 async function load(){status("جاري تحميل الخطة...","info");let q=sb.from("plans").select("id,department_id,coordinator_id,school_year,plan_title,status,source_file_name,created_at").order("created_at",{ascending:false});let r=await q;if(r.error)throw r.error;plans=r.data||[];procedures.clear();for(let p of plans){let z=await sb.from("plan_procedures").select("id,plan_id,sequence_no,path_code,domain_name,general_goal,specific_goal,success_criterion,program_name,objective,procedure_text,target_group,implementers,responsible_person,execution_follower,evaluation_methods,planned_months,notes").eq("plan_id",p.id).order("sequence_no");if(z.error)throw z.error;procedures.set(p.id,z.data||[])}render();hideStatus()}
 function render(){if(!plans.length){$("plansContainer").innerHTML=`<section class="card empty"><h2>لا توجد خطة مرفوعة حاليًا</h2><p>يمكنك رفع خطة جديدة من صفحة رفع خطة القسم.</p><a class="btn btn-main" href="upload.html">رفع خطة جديدة</a></section>`;return}$("plansContainer").innerHTML=plans.map(p=>{let rows=procedures.get(p.id)||[];return`<section class="card plan-shell" data-plan="${p.id}"><div class="print-only"><img src="../../assets/school-header.jpg"><h2>الخطة التشغيلية / التدفقية للقسم</h2></div><div class="plan-head"><div><div class="plan-title">${esc(p.plan_title||"الخطة السنوية")}</div><div class="badges"><span class="badge">القسم: ${esc(departmentMap.get(p.department_id)||"—")}</span><span class="badge">السنة: ${esc(p.school_year)}</span><span class="badge">الإجراءات: ${rows.length}</span><span class="badge">الملف: ${esc(p.source_file_name||"—")}</span></div></div><div class="actions"><button class="btn btn-main" onclick="printPlan('${p.id}')">🖨️ طباعة</button><button class="btn btn-gold" onclick="openAdd('${p.id}')">➕ إضافة إجراء</button><button class="btn btn-danger" onclick="deletePlan('${p.id}')">🗑️ حذف الخطة</button></div></div><div class="summary"><div class="stat"><strong>${rows.length}</strong><span>إجراء</span></div><div class="stat"><strong>${new Set(rows.map(x=>domainFallback(x))).size}</strong><span>مجال</span></div><div class="stat"><strong>${new Set(rows.map(x=>x.program_name).filter(Boolean)).size}</strong><span>برنامج / مشروع</span></div><div class="stat"><strong>${new Set(rows.flatMap(x=>x.planned_months||[])).size}</strong><span>شهر تنفيذ</span></div></div><div class="table-wrap"><table><thead><tr><th>#</th><th>المجال</th><th>الهدف العام</th><th>الهدف الخاص</th><th>معيار النجاح</th><th>البرنامج / المشروع</th><th>الإجراء</th><th>الفئة</th><th>المنفذون</th><th>المتابع</th><th>الشهور</th><th>التقويم</th><th>ملاحظات</th><th class="no-print">إدارة</th></tr></thead><tbody>${rows.map((r,i)=>`<tr><td>${i+1}</td><td>${esc(domainFallback(r))}</td><td>${esc(r.general_goal||"—")}</td><td>${esc(r.specific_goal||"—")}</td><td>${esc(r.success_criterion||"—")}</td><td>${esc(r.program_name||"—")}</td><td>${esc(r.procedure_text||"—")}</td><td>${esc(r.target_group||"—")}</td><td>${esc(r.implementers||"—")}</td><td>${esc(r.execution_follower||"—")}</td><td><div class="months">${(r.planned_months||[]).map(m=>`<span class="month">${monthName(m)}</span>`).join("")}</div></td><td>${esc(r.evaluation_methods||"—")}</td><td>${esc(r.notes||"—")}</td><td class="no-print"><div class="small-actions"><button class="edit" onclick="openEdit('${p.id}','${r.id}')">تعديل</button><button class="del" onclick="deleteProcedure('${p.id}','${r.id}')">حذف</button></div></td></tr>`).join("")}</tbody></table></div><div class="signature"><span>منسقة القسم: ${esc(profile?.full_name||"")}</span><span>المديرة المساعدة: خلود الكعبي</span><span>مديرة المدرسة: أحلام السويدي</span></div></section>`}).join("")}
