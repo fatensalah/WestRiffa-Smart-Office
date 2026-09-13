@@ -460,8 +460,21 @@
       padding:22px;
     }
 
+    /*
+      عند إنشاء PDF نجعل الورقة قابلة للرسم فعليًا ولكن خارج الشاشة،
+      بدل الانتقال اللحظي من display:none إلى الالتقاط.
+    */
     #pdfSheet.pdf-visible{
       display:block;
+      position:fixed;
+      top:0;
+      left:-10000px;
+      width:794px;
+      max-width:794px;
+      min-height:1px;
+      z-index:-1;
+      overflow:visible;
+      pointer-events:none;
     }
 
     .pdf-title{
@@ -2584,6 +2597,21 @@ async function downloadPlanPdf(planId){
 
     pdf.classList.add("pdf-visible");
 
+    /*
+      ننتظر اكتمال الخطوط ودورتين رسم قبل الالتقاط حتى لا ينتج PDF أبيض.
+    */
+    if(document.fonts && document.fonts.ready){
+      try{
+        await document.fonts.ready;
+      }catch(_){}
+    }
+
+    await new Promise(resolve =>
+      requestAnimationFrame(() =>
+        requestAnimationFrame(resolve)
+      )
+    );
+
     const fileName =
       "تحضير_" +
       String(plan.subject || "درس").replace(/\s+/g,"_") +
@@ -2600,7 +2628,10 @@ async function downloadPlanPdf(planId){
         },
         html2canvas:{
           scale:2,
-          useCORS:true
+          useCORS:true,
+          backgroundColor:"#ffffff",
+          logging:false,
+          windowWidth:794
         },
         jsPDF:{
           unit:"mm",
@@ -2620,7 +2651,9 @@ async function downloadPlanPdf(planId){
   }catch(error){
     console.error("PDF lesson plan:",error);
 
-    byId("pdfSheet").classList.remove("pdf-visible");
+    const failedPdf = byId("pdfSheet");
+    failedPdf.classList.remove("pdf-visible");
+    failedPdf.innerHTML = "";
 
     alert(
       "تعذر إنشاء ملف PDF للتحضير."
