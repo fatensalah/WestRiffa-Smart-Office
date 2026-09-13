@@ -331,12 +331,11 @@ textarea.control{
     ← العودة إلى الخطة التدفقية
   </a>
 
-  <a
-    class="btn-link"
-    href="../../index.html"
-  >
-    لوحة التحكم
-  </a>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;">
+    <a class="btn-link" href="reports.html?type=monthly">📑 تقرير الشهر</a>
+    <a class="btn-link" href="manage.html">🗂️ إدارة الخطة</a>
+    <a class="btn-link" href="../../index.html">لوحة التحكم</a>
+  </div>
 
 </div>
 
@@ -1396,6 +1395,7 @@ async function loadMonthlyFollowups(){
           plan_id,
           sequence_no,
           path_code,
+          domain_name,
           general_goal,
           specific_goal,
           success_criterion,
@@ -2068,6 +2068,9 @@ async function saveFollowup(
 function getDomainName(
   procedure
 ){
+
+  const explicitDomain = String(procedure.domain_name || "").trim();
+  if(explicitDomain){ return explicitDomain; }
 
   const program =
     String(

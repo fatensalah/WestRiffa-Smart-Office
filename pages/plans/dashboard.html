@@ -299,9 +299,10 @@
       ← العودة إلى الخطة التدفقية
     </a>
 
-    <a class="btn-link" href="../../index.html">
-      لوحة التحكم
-    </a>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <a class="btn-link" href="reports.html">📑 التقارير الرسمية</a>
+      <a class="btn-link" href="../../index.html">لوحة التحكم</a>
+    </div>
 
   </div>
 
@@ -910,6 +911,7 @@ async function loadDashboard() {
           plan_id,
           sequence_no,
           path_code,
+          domain_name,
           program_name,
           procedure_text
         `)
@@ -1062,7 +1064,7 @@ function renderDashboard() {
 
         const domainKey =
           getDomainKey(
-            procedure.program_name
+            procedure.domain_name || procedure.program_name
           );
 
 
@@ -1830,36 +1832,28 @@ function getDomainKey(
     ).trim();
 
 
-  if (
-    program.includes("آفاق")
-  ) {
+  if (program.includes("الإنجاز الأكاديمي") || program.includes("آفاق")) {
 
     return "academic";
 
   }
 
 
-  if (
-    program.includes("رايات")
-  ) {
+  if (program.includes("التطور الشخصي") || program.includes("رايات")) {
 
     return "personal";
 
   }
 
 
-  if (
-    program.includes("مداد")
-  ) {
+  if (program.includes("التعليم والتعلم") || program.includes("مداد")) {
 
     return "teaching";
 
   }
 
 
-  if (
-    program.includes("خطى")
-  ) {
+  if (program.includes("القيادة والإدارة") || program.includes("خطى")) {
 
     return "leadership";
 
