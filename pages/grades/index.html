@@ -441,6 +441,95 @@
 
     .hidden{display:none !important}
 
+    .competency-box{
+      margin-top:18px;
+      padding:16px;
+      border:1px solid #d9e7e1;
+      border-radius:14px;
+      background:#f9fcfb;
+    }
+
+    .competency-row{
+      display:grid;
+      grid-template-columns:1fr 160px auto;
+      gap:10px;
+      align-items:end;
+      margin-bottom:10px;
+    }
+
+    .competency-row input{
+      width:100%;
+      border:1px solid #cfdad4;
+      border-radius:10px;
+      padding:10px 11px;
+      font-family:inherit;
+    }
+
+    .analysis-table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:760px;
+    }
+
+    .analysis-table th,.analysis-table td{
+      border:1px solid #e2ebe7;
+      padding:9px;
+      text-align:center;
+    }
+
+    .status-good{color:#087451;font-weight:700}
+    .status-bad{color:#b42318;font-weight:700}
+    .status-mid{color:#9a7420;font-weight:700}
+
+    .student-card-head{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-bottom:14px;
+    }
+
+    .mini-grid{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:10px;
+      margin:12px 0;
+    }
+
+    .mini-stat{
+      background:#f6faf8;
+      border:1px solid #dfeae5;
+      border-radius:12px;
+      padding:12px;
+      text-align:center;
+    }
+
+    .mini-stat strong{display:block;font-size:22px;color:#075c40;margin-top:5px}
+
+    .wrso-print-area{display:none}
+    .wrso-print-field-value{
+      min-height:70px;
+      white-space:pre-wrap;
+      border:1px solid #cfdad4;
+      border-radius:8px;
+      padding:10px;
+      background:#fff;
+      line-height:1.8;
+    }
+    .wrso-print-title{text-align:center;margin:0 0 20px;color:#075c40}
+
+    @media print{
+      body > *:not(.wrso-print-area){display:none !important}
+      .wrso-print-area{display:block !important;direction:rtl;color:#111;background:#fff;padding:0}
+      .wrso-print-area .hidden{display:block !important}
+      .wrso-print-area .students-wrapper{overflow:visible !important;border:0}
+      .wrso-print-area table{min-width:0 !important;width:100% !important;page-break-inside:auto}
+      .wrso-print-area tr{page-break-inside:avoid;page-break-after:auto}
+      .wrso-print-area .card,.wrso-print-area .analysis-card{box-shadow:none !important;break-inside:avoid}
+      @page{size:A4;margin:12mm}
+    }
+
     @media(max-width:1150px){
       .form-grid{grid-template-columns:repeat(2,1fr)}
       .stats-grid{grid-template-columns:repeat(3,1fr)}
@@ -461,7 +550,52 @@
         grid-template-columns:110px 1fr 55px;
       }
     }
-  </style>
+
+
+    /* ===== تقارير قابلة للتعديل والطباعة ===== */
+    .report-toolbar{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0}
+    .report-editor{margin-top:14px;border:1px solid #dce8e3;border-radius:14px;padding:16px;background:#fbfdfc}
+    .report-editor-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .report-editor textarea,.student-followup textarea{width:100%;min-height:105px;border:1px solid #cfdad4;border-radius:10px;padding:11px 12px;font-family:inherit;line-height:1.8;resize:vertical;background:#fff}
+    .student-note-input{width:220px;min-height:58px;border:1px solid #cfdad4;border-radius:9px;padding:8px;font-family:inherit;resize:vertical}
+    .student-followup{margin-top:16px;border:1px solid #dce8e3;border-radius:14px;padding:16px;background:#fbfdfc}
+    .student-followup-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .print-title{display:none}
+    @media(max-width:750px){.report-editor-grid,.student-followup-grid{grid-template-columns:1fr}}
+    @media print{
+      body{background:#fff;color:#000}
+      .page-header,.top-actions,.tabs,.filters,.report-toolbar,.btn,.scope-box,#adminSheetList{display:none !important}
+      .container{width:100%;margin:0}
+      .card,.analysis-card,.report-editor,.student-followup{box-shadow:none;border:0;padding:0;margin:0 0 14px}
+      .print-title{display:block;text-align:center;margin:0 0 18px}
+      textarea{border:0 !important;resize:none;overflow:visible;background:#fff !important}
+      .students-wrapper{overflow:visible;border:0}
+      table{min-width:0 !important;font-size:11px}
+      th,td{font-size:11px;padding:6px}
+      .no-print{display:none !important}
+      .print-area{display:block !important}
+    }
+
+  
+/* ===== أقسام متابعة القسم ===== */
+.admin-subnav{
+  display:flex; gap:10px; flex-wrap:wrap; margin:16px 0 20px;
+  padding:10px; background:#f7fbf9; border:1px solid #d9e8e1; border-radius:16px;
+  position:sticky; top:8px; z-index:20;
+}
+.admin-subnav-btn{
+  border:1px solid #cfe0d8; background:#fff; color:#075f45;
+  padding:11px 18px; border-radius:12px; font-weight:800; cursor:pointer;
+  font-family:inherit;
+}
+.admin-subnav-btn.active{background:#087451;color:#fff;border-color:#087451}
+.admin-subpanel{display:none}
+.admin-subpanel.active{display:block}
+@media print{
+  .admin-subnav{display:none!important}
+  .admin-subpanel{display:block!important}
+}
+</style>
 </head>
 
 <body>
@@ -552,6 +686,16 @@
         </div>
 
         <div class="field">
+          <label for="passPercentage">حد النجاح %</label>
+          <input id="passPercentage" type="number" min="0" max="100" step="1" value="60">
+        </div>
+
+        <div class="field">
+          <label for="masteryPercentage">حد الإتقان %</label>
+          <input id="masteryPercentage" type="number" min="0" max="100" step="1" value="80">
+        </div>
+
+        <div class="field">
           <label for="examDate">تاريخ الاختبار *</label>
           <input id="examDate" type="date">
         </div>
@@ -561,6 +705,16 @@
           <textarea id="notes" placeholder="ملاحظات اختيارية على الاختبار..."></textarea>
         </div>
 
+      </div>
+
+      <div class="competency-box">
+        <h3 style="margin-bottom:6px">🎯 الكفايات التعليمية للاختبار</h3>
+        <div class="sub" style="margin-bottom:12px">أضيفي الكفايات التي يقيسها الاختبار وحددي الدرجة العظمى لكل كفاية. يجب أن يساوي مجموعها الدرجة العظمى للاختبار.</div>
+        <div id="competencyRows"></div>
+        <div class="action-row" style="margin-top:8px">
+          <button id="addCompetencyBtn" class="btn btn-soft" type="button">+ إضافة كفاية</button>
+          <span id="competencyTotalState" class="save-state"></span>
+        </div>
       </div>
 
       <div class="action-row">
@@ -677,6 +831,27 @@
         <span>يحتاجون دعم &lt; 60%</span>
         <strong id="adminSupportRate">—</strong>
       </article>
+
+
+      <article class="stat">
+        <span>عدد الناجحين</span>
+        <strong id="adminPassedCount">0</strong>
+      </article>
+
+      <article class="stat">
+        <span>عدد الراسبين</span>
+        <strong id="adminFailedCount">0</strong>
+      </article>
+
+      <article class="stat">
+        <span>عدد المتقنين</span>
+        <strong id="adminMasteredCount">0</strong>
+      </article>
+
+      <article class="stat">
+        <span>عدد غير المتقنين</span>
+        <strong id="adminNotMasteredCount">0</strong>
+      </article>
     </div>
 
     <section class="card">
@@ -715,6 +890,15 @@
       </div>
     </section>
 
+    <div class="admin-subnav" id="adminSubnav">
+      <button class="admin-subnav-btn active" type="button" data-admin-view="overview">📊 نظرة عامة</button>
+      <button class="admin-subnav-btn" type="button" data-admin-view="subject">📚 تقرير المادة</button>
+      <button class="admin-subnav-btn" type="button" data-admin-view="grade">🏫 تقرير الصف</button>
+      <button class="admin-subnav-btn" type="button" data-admin-view="student">👤 تتبع الطالب</button>
+      <button id="leadershipReportNavBtn" class="admin-subnav-btn hidden" type="button" data-admin-view="leadership">🏛️ التقرير الشامل للقيادة العليا</button>
+    </div>
+
+    <div id="adminViewOverview" class="admin-subpanel active">
     <div class="admin-grid">
 
       <section class="analysis-card">
@@ -737,6 +921,110 @@
         <div id="performanceAnalysis" class="bar-list"></div>
       </section>
 
+    </div>
+
+    </div>
+
+    <div id="adminViewSubject" class="admin-subpanel">
+    <section class="card">
+      <h2>📚 نتيجة المادة في جميع الصفوف</h2>
+      <div class="form-grid" style="grid-template-columns:minmax(220px,320px)">
+        <div class="field">
+          <label for="matrixSubject">اختاري المادة</label>
+          <select id="matrixSubject"><option value="">— اختاري المادة —</option></select>
+        </div>
+      </div>
+      <div id="subjectGradeMatrix" style="margin-top:14px"></div>
+      <div id="subjectReportEditor" class="report-editor hidden">
+        <div class="report-editor-grid">
+          <div class="field"><label>القراءة التحليلية للنتائج</label><textarea id="subjectAnalysisText" placeholder="اكتبي تفسيرًا مختصرًا للنتائج وأبرز الملاحظات..."></textarea></div>
+          <div class="field"><label>الإجراءات والتوصيات القادمة</label><textarea id="subjectActionsText" placeholder="الإجراءات العلاجية/الإثرائية والتوصيات المقترحة..."></textarea></div>
+        </div>
+        <div class="report-toolbar">
+          <button id="saveSubjectReportBtn" class="btn btn-primary" type="button">💾 حفظ التقرير</button>
+          <button id="printSubjectReportBtn" class="btn btn-gold" type="button">🖨️ طباعة / PDF</button>
+          <span id="subjectReportState" class="save-state"></span>
+        </div>
+      </div>
+    </section>
+
+    </div>
+
+    <div id="adminViewGrade" class="admin-subpanel">
+    <section class="card">
+      <h2>🏫 نتيجة الصف في جميع المواد</h2>
+      <div class="form-grid" style="grid-template-columns:minmax(220px,320px)">
+        <div class="field">
+          <label for="matrixGrade">اختاري الصف</label>
+          <select id="matrixGrade">
+            <option value="">— اختاري الصف —</option>
+            <option>الأول</option><option>الثاني</option><option>الثالث</option><option>الرابع</option><option>الخامس</option>
+          </select>
+        </div>
+      </div>
+      <div id="gradeSubjectMatrix" style="margin-top:14px"></div>
+      <div id="gradeReportEditor" class="report-editor hidden">
+        <div class="report-editor-grid">
+          <div class="field"><label>القراءة التحليلية لنتائج الصف</label><textarea id="gradeAnalysisText" placeholder="اكتبي أبرز أنماط الأداء والفجوات بين المواد..."></textarea></div>
+          <div class="field"><label>الإجراءات والتوصيات القادمة</label><textarea id="gradeActionsText" placeholder="الإجراءات المقترحة للصف والمتابعة القادمة..."></textarea></div>
+        </div>
+        <div class="report-toolbar">
+          <button id="saveGradeReportBtn" class="btn btn-primary" type="button">💾 حفظ التقرير</button>
+          <button id="printGradeReportBtn" class="btn btn-gold" type="button">🖨️ طباعة / PDF</button>
+          <span id="gradeReportState" class="save-state"></span>
+        </div>
+      </div>
+    </section>
+
+    </div>
+
+    <div id="adminViewAdvanced" class="admin-subpanel active">
+    <section class="card">
+      <h2>🎯 التحليل بالكفايات التعليمية</h2>
+      <div class="sub">يعرض متوسط أداء كل كفاية وعدد المتقنين وغير المتقنين وفق حد الإتقان المحدد في كل اختبار.</div>
+      <div id="competencyAnalysisTable"></div>
+    </section>
+
+    <section class="card">
+      <h2>📈 مقارنة الاختبارات ومعدل النمو</h2>
+      <div class="sub">مقارنة متوسط التحصيل ونسبة النجاح والإتقان بين الاختبارات لكل مادة.</div>
+      <div id="examGrowthTable"></div>
+    </section>
+
+    </div>
+
+    <div id="adminViewStudent" class="admin-subpanel">
+    <section class="card">
+      <h2>👤 بطاقة تتبع أداء الطالب</h2>
+      <div class="form-grid" style="grid-template-columns:minmax(260px,420px)">
+        <div class="field">
+          <label for="studentTrackingSelect">الطالب</label>
+          <select id="studentTrackingSelect"><option value="">— اختاري الطالب —</option></select>
+        </div>
+      </div>
+      <div id="studentTrackingToolbar" class="report-toolbar hidden">
+        <button id="saveStudentTrackingBtn" class="btn btn-primary" type="button">💾 حفظ بطاقة الطالب</button>
+        <button id="printStudentTrackingBtn" class="btn btn-gold" type="button">🖨️ طباعة / PDF</button>
+        <button id="printAllStudentCardsBtn" class="btn btn-soft" type="button">🖨️ طباعة بطاقات جميع الطلاب في النطاق</button>
+        <span id="studentTrackingState" class="save-state"></span>
+      </div>
+      <div id="studentTrackingCard" style="margin-top:14px">
+        <div class="empty">اختاري طالبًا لعرض مسار أدائه بعد كل اختبار.</div>
+      </div>
+    </section>
+
+    </div>
+
+    <div id="adminViewLeadership" class="admin-subpanel">
+      <section class="card">
+        <h2>🏛️ التقرير الشامل للقيادة العليا</h2>
+        <div class="sub">هذا التقرير متاح لحسابات القيادة العليا فقط، ويتأثر بفلاتر المادة والصف ونوع الاختبار والتاريخ الموجودة أعلى الصفحة.</div>
+        <div class="report-toolbar" style="margin-top:14px">
+          <button id="refreshLeadershipReportBtn" class="btn btn-primary" type="button">🔄 تحديث التقرير</button>
+          <button id="printLeadershipReportBtn" class="btn btn-gold" type="button">🖨️ طباعة / PDF</button>
+        </div>
+        <div id="leadershipComprehensiveReport" style="margin-top:16px"></div>
+      </section>
     </div>
 
     <section class="card">
@@ -877,6 +1165,8 @@ let currentStudents = [];
 let allSheets = [];
 let allStudents = [];
 let adminGradeRows = [];
+let adminCompetencyRows = [];
+let currentCompetencies = [];
 
 const SUBJECTS = [
   "اللغة العربية",
@@ -1076,6 +1366,7 @@ async function init(){
 
       byId("adminTabBtn").classList.remove("hidden");
       byId("studentsTabBtn").classList.remove("hidden");
+      byId("leadershipReportNavBtn")?.classList.remove("hidden");
 
       byId("entryTabBtn").classList.add("hidden");
 
@@ -1797,6 +2088,7 @@ async function getSheetGrades(sheetId){
         score,
         percentage,
         performance_level,
+        student_note,
         students (
           student_name,
           academic_id,
@@ -2612,6 +2904,555 @@ function renderAdminStudents(){
   `;
 }
 
+
+/* =====================================================
+   التوسعة الأكاديمية: الكفايات + النجاح/الرسوب + التتبع
+   ===================================================== */
+
+function addCompetencyRowData(name="",maxScore=""){
+  currentCompetencies.push({
+    competency_name:name,
+    max_score:maxScore,
+    sort_order:currentCompetencies.length + 1
+  });
+  renderCompetencyBuilder();
+}
+
+function renderCompetencyBuilder(){
+  const box = byId("competencyRows");
+  if(!box) return;
+
+  if(!currentCompetencies.length){
+    box.innerHTML = '<div class="empty" style="padding:16px">لم تتم إضافة كفايات بعد.</div>';
+  }else{
+    box.innerHTML = currentCompetencies.map((item,index) => `
+      <div class="competency-row" data-index="${index}">
+        <div class="field">
+          <label>اسم الكفاية ${index + 1}</label>
+          <input class="comp-name" value="${esc(item.competency_name || "")}" placeholder="مثال: القراءة والفهم">
+        </div>
+        <div class="field">
+          <label>الدرجة العظمى</label>
+          <input class="comp-max" type="number" min="0.01" step="0.01" value="${esc(item.max_score ?? "")}" placeholder="مثال: 5">
+        </div>
+        <button class="btn btn-danger comp-remove" type="button" data-index="${index}">حذف</button>
+      </div>
+    `).join("");
+
+    box.querySelectorAll(".comp-name,.comp-max").forEach(input => {
+      input.addEventListener("input",syncCompetenciesFromUI);
+    });
+    box.querySelectorAll(".comp-remove").forEach(btn => {
+      btn.addEventListener("click",() => {
+        syncCompetenciesFromUI();
+        currentCompetencies.splice(Number(btn.dataset.index),1);
+        currentCompetencies.forEach((x,i)=>x.sort_order=i+1);
+        renderCompetencyBuilder();
+      });
+    });
+  }
+  updateCompetencyTotalState();
+}
+
+function syncCompetenciesFromUI(){
+  const rows = [...document.querySelectorAll("#competencyRows .competency-row")];
+  if(!rows.length){ updateCompetencyTotalState(); return; }
+  currentCompetencies = rows.map((row,index) => ({
+    competency_name:row.querySelector(".comp-name")?.value.trim() || "",
+    max_score:Number(row.querySelector(".comp-max")?.value || 0),
+    sort_order:index + 1
+  }));
+  updateCompetencyTotalState();
+}
+
+function updateCompetencyTotalState(){
+  const state = byId("competencyTotalState");
+  if(!state) return;
+  const total = currentCompetencies.reduce((s,x)=>s + Number(x.max_score || 0),0);
+  const max = Number(byId("maxScore")?.value || 0);
+  state.className = "save-state " + (max && Math.abs(total-max)<0.001 ? "ok" : "");
+  state.textContent = currentCompetencies.length
+    ? `مجموع درجات الكفايات: ${total}${max ? " من " + max : ""}`
+    : "";
+}
+
+function validateCompetencies(){
+  syncCompetenciesFromUI();
+  if(!currentCompetencies.length){
+    return "أضيفي كفاية تعليمية واحدة على الأقل للاختبار.";
+  }
+  if(currentCompetencies.some(x => !x.competency_name || !Number(x.max_score))){
+    return "أكملي اسم كل كفاية ودرجتها العظمى.";
+  }
+  const names = currentCompetencies.map(x=>x.competency_name.trim().toLowerCase());
+  if(new Set(names).size !== names.length){
+    return "يوجد اسم كفاية مكرر.";
+  }
+  const total = currentCompetencies.reduce((s,x)=>s + Number(x.max_score),0);
+  const max = Number(byId("maxScore").value || 0);
+  if(Math.abs(total-max) > 0.001){
+    return `مجموع درجات الكفايات (${total}) يجب أن يساوي الدرجة العظمى للاختبار (${max}).`;
+  }
+  return "";
+}
+
+function levelByThresholds(value,pass,mastery){
+  if(value >= mastery) return "متقن";
+  if(value >= pass) return "ناجح غير متقن";
+  return "متعثر";
+}
+
+function renderStudentsTable(existingGrades = new Map(), existingCompScores = new Map()){
+  const maxScore = Number(byId("maxScore").value) || 0;
+  const pass = Number(byId("passPercentage")?.value || 60);
+  const mastery = Number(byId("masteryPercentage")?.value || 80);
+
+  const compHeaders = currentCompetencies.map(c =>
+    `<th>${esc(c.competency_name)}<br><small>من ${esc(c.max_score)}</small></th>`
+  ).join("");
+
+  byId("studentsArea").innerHTML = `
+    <div class="students-wrapper">
+      <table style="min-width:${900 + currentCompetencies.length*130}px">
+        <thead><tr>
+          <th>#</th><th>اسم الطالب</th>
+          ${compHeaders}
+          <th>المجموع من ${esc(maxScore)}</th>
+          <th>النسبة</th><th>النجاح</th><th>الإتقان</th><th>ملاحظات الطالب</th>
+        </tr></thead>
+        <tbody>
+          ${currentStudents.map((student,index) => {
+            const overall = existingGrades.get(student.id);
+            const scores = existingCompScores.get(student.id) || new Map();
+            return `<tr data-student-id="${student.id}">
+              <td>${index+1}</td><td>${esc(student.student_name)}</td>
+              ${currentCompetencies.map((c,ci) => {
+                const key = c.id || c.competency_name;
+                const v = scores.get(key);
+                return `<td><input class="score-input competency-score" data-comp-index="${ci}" type="number" min="0" max="${esc(c.max_score)}" step="0.01" value="${v?.score ?? ""}"></td>`;
+              }).join("")}
+              <td class="row-total">${overall?.score ?? "—"}</td>
+              <td class="preview-percentage">${overall?.percentage != null ? esc(overall.percentage + "%") : "—"}</td>
+              <td class="preview-pass">—</td>
+              <td class="preview-mastery">—</td>
+              <td><textarea class="student-note-input" placeholder="ملاحظة خاصة بهذا الطالب في هذا الاختبار...">${esc(overall?.student_note || "")}</textarea></td>
+            </tr>`;
+          }).join("")}
+        </tbody>
+      </table>
+    </div>`;
+
+  document.querySelectorAll("#studentsArea .competency-score").forEach(input => {
+    input.addEventListener("input",()=>previewCompetencyRow(input.closest("tr")));
+  });
+  document.querySelectorAll("#studentsArea tbody tr").forEach(row=>previewCompetencyRow(row));
+  byId("gradeActions").classList.remove("hidden");
+}
+
+function previewCompetencyRow(row){
+  const inputs=[...row.querySelectorAll(".competency-score")];
+  const maxScore=Number(byId("maxScore").value)||0;
+  const pass=Number(byId("passPercentage")?.value||60);
+  const mastery=Number(byId("masteryPercentage")?.value||80);
+  let total=0, has=false, invalid=false;
+  inputs.forEach((input,index)=>{
+    if(input.value!==""){
+      has=true;
+      const n=Number(input.value), mx=Number(currentCompetencies[index]?.max_score||0);
+      if(!Number.isFinite(n)||n<0||n>mx) invalid=true;
+      else total+=n;
+    }
+  });
+  if(invalid){
+    row.querySelector(".row-total").textContent="خطأ";
+    row.querySelector(".preview-percentage").textContent="خطأ";
+    row.querySelector(".preview-pass").textContent="—";
+    row.querySelector(".preview-mastery").textContent="—";
+    return;
+  }
+  if(!has){
+    row.querySelector(".row-total").textContent="—";
+    row.querySelector(".preview-percentage").textContent="—";
+    row.querySelector(".preview-pass").textContent="—";
+    row.querySelector(".preview-mastery").textContent="—";
+    return;
+  }
+  const pct=maxScore ? Math.round((total/maxScore)*10000)/100 : 0;
+  row.querySelector(".row-total").textContent=total;
+  row.querySelector(".preview-percentage").textContent=pct+"%";
+  row.querySelector(".preview-pass").innerHTML=pct>=pass?'<span class="status-good">ناجح</span>':'<span class="status-bad">راسب</span>';
+  row.querySelector(".preview-mastery").innerHTML=pct>=mastery?'<span class="status-good">متقن</span>':'<span class="status-mid">غير متقن</span>';
+}
+
+async function loadStudentsForEntry(){
+  const grade=byId("grade").value, section=byId("classSection").value, subject=byId("subject").value,
+        examType=byId("examType").value, maxScore=Number(byId("maxScore").value), examDate=byId("examDate").value;
+  const state=byId("entryState"); state.textContent=""; state.className="save-state";
+  if(!grade||!section||!subject||!examType||!maxScore||!examDate){
+    state.textContent="أكملي المادة والصف والشعبة ونوع الاختبار والدرجة العظمى والتاريخ."; state.className="save-state error"; return;
+  }
+  const compError=validateCompetencies();
+  if(compError){ state.textContent=compError; state.className="save-state error"; return; }
+  currentStudents=allStudents.filter(s=>s.grade===grade&&s.class_section===section);
+  if(!currentStudents.length){
+    byId("studentsArea").innerHTML=`<div class="warning">لا توجد أسماء طلاب مسجلة للصف ${esc(grade)} — الشعبة ${esc(section)} حتى الآن.</div>`;
+    byId("gradeActions").classList.add("hidden"); return;
+  }
+  renderStudentsTable();
+}
+
+async function saveSheet(status){
+  const state=byId("gradeSaveState"); state.textContent=""; state.className="save-state";
+  if(!currentStudents.length){ state.textContent="لا توجد أسماء طلاب في هذه الشعبة."; state.className="save-state error"; return; }
+  const compError=validateCompetencies();
+  if(compError){ state.textContent=compError; state.className="save-state error"; return; }
+
+  const maxScore=Number(byId("maxScore").value);
+  const pass=Number(byId("passPercentage").value||60), mastery=Number(byId("masteryPercentage").value||80);
+  if(pass<0||pass>100||mastery<0||mastery>100||mastery<pass){
+    state.textContent="راجعي حدود النجاح والإتقان؛ يجب أن يكون الإتقان مساويًا أو أعلى من النجاح."; state.className="save-state error"; return;
+  }
+
+  const rows=[...document.querySelectorAll("#studentsArea tbody tr")];
+  const studentPayload=[]; let invalid=false;
+  rows.forEach(row=>{
+    const compScores=[...row.querySelectorAll(".competency-score")].map((input,index)=>{
+      const score=input.value===""?null:Number(input.value), mx=Number(currentCompetencies[index].max_score);
+      if(score!=null && (!Number.isFinite(score)||score<0||score>mx)) invalid=true;
+      return {index,score};
+    });
+    const nonNull=compScores.filter(x=>x.score!=null);
+    const total=nonNull.length?nonNull.reduce((s,x)=>s+x.score,0):null;
+    const student_note=row.querySelector(".student-note-input")?.value.trim() || null;
+    studentPayload.push({student_id:row.dataset.studentId,total,compScores,student_note});
+  });
+  if(invalid){ state.textContent="توجد درجة كفاية غير صحيحة أو أعلى من درجتها العظمى."; state.className="save-state error"; return; }
+
+  const editingId=byId("editingSheetId").value||null;
+  const sheetRow={
+    teacher_id:currentUser.id, teacher_name:currentProfile.full_name||currentUser.email,
+    subject:byId("subject").value, grade:byId("grade").value, class_section:byId("classSection").value,
+    exam_type:byId("examType").value, max_score:maxScore, exam_date:byId("examDate").value,
+    notes:byId("notes").value.trim()||null, status, pass_percentage:pass, mastery_percentage:mastery,
+    updated_at:new Date().toISOString()
+  };
+
+  try{
+    let sheetId=editingId;
+    if(editingId){
+      const {error}=await sb.from("grade_sheets").update(sheetRow).eq("id",editingId); if(error) throw error;
+    }else{
+      const {data,error}=await sb.from("grade_sheets").insert(sheetRow).select("id").single(); if(error) throw error; sheetId=data.id;
+    }
+
+    let del=await sb.from("student_grades").delete().eq("grade_sheet_id",sheetId); if(del.error) throw del.error;
+    const gradeRows=studentPayload.filter(x=>x.total!=null).map(x=>({grade_sheet_id:sheetId,student_id:x.student_id,score:x.total,student_note:x.student_note}));
+    if(gradeRows.length){ const r=await sb.from("student_grades").insert(gradeRows); if(r.error) throw r.error; }
+
+    const oldComp=await sb.from("grade_competencies").delete().eq("grade_sheet_id",sheetId); if(oldComp.error) throw oldComp.error;
+    const {data:insertedComps,error:compInsertError}=await sb.from("grade_competencies").insert(
+      currentCompetencies.map((c,i)=>({grade_sheet_id:sheetId,competency_name:c.competency_name,max_score:Number(c.max_score),sort_order:i+1}))
+    ).select("id,competency_name,max_score,sort_order");
+    if(compInsertError) throw compInsertError;
+    const ordered=[...(insertedComps||[])].sort((a,b)=>a.sort_order-b.sort_order);
+    const compScoreRows=[];
+    studentPayload.forEach(st=>st.compScores.forEach(x=>{
+      if(x.score!=null && ordered[x.index]) compScoreRows.push({grade_sheet_id:sheetId,competency_id:ordered[x.index].id,student_id:st.student_id,score:x.score});
+    }));
+    if(compScoreRows.length){ const r=await sb.from("student_competency_scores").insert(compScoreRows); if(r.error) throw r.error; }
+
+    currentCompetencies=ordered.map(x=>({...x}));
+    byId("editingSheetId").value=sheetId;
+    state.textContent=status==="submitted"?"✓ تم اعتماد الدرجات والكفايات وحفظها بنجاح.":"✓ تم حفظ سجل الدرجات والكفايات كمسودة.";
+    state.className="save-state ok";
+    await loadSheets();
+    if(canViewDepartmentOverview) await loadAdminGradeRows();
+  }catch(error){
+    console.error("Save grades upgraded:",error);
+    state.textContent="تعذر حفظ الدرجات: "+(error.message||"خطأ غير متوقع"); state.className="save-state error";
+  }
+}
+
+async function editSheet(sheetId){
+  try{
+    const sheet=allSheets.find(x=>x.id===sheetId); if(!sheet) return;
+    if(sheet.teacher_id!==currentUser.id){ alert("لا يمكنكِ تعديل درجات معلمة أخرى."); return; }
+    byId("editingSheetId").value=sheet.id; byId("subject").value=sheet.subject; byId("grade").value=sheet.grade;
+    fillSectionSelect("classSection",sheet.grade,false); byId("classSection").value=sheet.class_section;
+    byId("examType").value=sheet.exam_type; byId("maxScore").value=sheet.max_score; byId("examDate").value=sheet.exam_date;
+    byId("notes").value=sheet.notes||""; byId("passPercentage").value=sheet.pass_percentage??60; byId("masteryPercentage").value=sheet.mastery_percentage??80;
+    const {data:comps,error:ce}=await sb.from("grade_competencies").select("*").eq("grade_sheet_id",sheetId).order("sort_order"); if(ce) throw ce;
+    currentCompetencies=(comps||[]).map(x=>({...x})); renderCompetencyBuilder();
+    currentStudents=allStudents.filter(s=>s.grade===sheet.grade&&s.class_section===sheet.class_section);
+    const grades=await getSheetGrades(sheetId); const gradeMap=new Map(grades.map(x=>[x.student_id,x]));
+    const {data:cs,error:cse}=await sb.from("student_competency_scores").select("competency_id,student_id,score").eq("grade_sheet_id",sheetId); if(cse) throw cse;
+    const compMap=new Map(); (cs||[]).forEach(x=>{ if(!compMap.has(x.student_id)) compMap.set(x.student_id,new Map()); compMap.get(x.student_id).set(x.competency_id,x); });
+    renderStudentsTable(gradeMap,compMap); showTab("entryTab"); window.scrollTo({top:0,behavior:"smooth"});
+  }catch(error){ console.error("Edit sheet upgraded:",error); alert("تعذر تحميل سجل الدرجات والكفايات للتعديل."); }
+}
+
+function resetEntry(){
+  byId("editingSheetId").value=""; byId("subject").value=""; byId("grade").value=""; fillSectionSelect("classSection","",false);
+  byId("examType").value=""; byId("maxScore").value=""; byId("passPercentage").value=60; byId("masteryPercentage").value=80;
+  byId("examDate").value=new Date().toISOString().slice(0,10); byId("notes").value=""; currentStudents=[]; currentCompetencies=[]; renderCompetencyBuilder();
+  byId("studentsArea").innerHTML='<div class="empty">اختاري بيانات الاختبار ثم اضغطي «تحميل طلاب الشعبة».</div>';
+  byId("gradeActions").classList.add("hidden"); byId("entryState").textContent=""; byId("gradeSaveState").textContent="";
+}
+
+async function loadAdminGradeRows(){
+  if(!canViewDepartmentOverview) return;
+  const {data,error}=await sb.from("student_grades").select(`id,score,percentage,performance_level,student_note,student_id,grade_sheet_id,students(student_name,grade,class_section),grade_sheets(teacher_id,teacher_name,subject,grade,class_section,exam_type,exam_date,status,max_score,pass_percentage,mastery_percentage)`);
+  if(error) throw error;
+  adminGradeRows=(data||[]).filter(row=>{const t=row.grade_sheets?.teacher_id; return isAdminUser?true:isCoordinatorUser?coordinatorTeacherIds.includes(t):t===currentUser.id;});
+
+  const {data:compData,error:compError}=await sb.from("student_competency_scores").select(`id,score,student_id,grade_sheet_id,competency_id,students(student_name,grade,class_section),grade_competencies(competency_name,max_score,sort_order),grade_sheets(teacher_id,teacher_name,subject,grade,class_section,exam_type,exam_date,status,pass_percentage,mastery_percentage)`);
+  if(compError) throw compError;
+  adminCompetencyRows=(compData||[]).filter(row=>{const t=row.grade_sheets?.teacher_id; return isAdminUser?true:isCoordinatorUser?coordinatorTeacherIds.includes(t):t===currentUser.id;});
+  fillAdvancedAnalysisSelectors(); renderAdmin();
+}
+
+function metricSummary(rows){
+  const valid=rows.filter(x=>x.percentage!=null), total=valid.length;
+  const passed=valid.filter(x=>Number(x.percentage)>=Number(x.grade_sheets?.pass_percentage??60)).length;
+  const mastered=valid.filter(x=>Number(x.percentage)>=Number(x.grade_sheets?.mastery_percentage??80)).length;
+  const avg=total?valid.reduce((s,x)=>s+Number(x.percentage),0)/total:0;
+  return {total,passed,failed:total-passed,mastered,notMastered:total-mastered,avg,passRate:total?passed/total*100:0,masteryRate:total?mastered/total*100:0,failRate:total?(total-passed)/total*100:0};
+}
+
+function renderAdmin(){
+  if(!canViewDepartmentOverview) return;
+  const sheets=adminFilteredSheets(); const grades=adminFilteredGrades().filter(r=>r.percentage!=null); const m=metricSummary(grades);
+  byId("adminSheetsCount").textContent=sheets.length; byId("adminStudentsCount").textContent=new Set(grades.map(x=>x.student_id)).size;
+  byId("adminAverage").textContent=m.total?m.avg.toFixed(1)+"%":"—"; byId("adminMasteryRate").textContent=m.total?m.masteryRate.toFixed(1)+"%":"—";
+  byId("adminSupportRate").textContent=m.total?m.failRate.toFixed(1)+"%":"—";
+  byId("adminPassedCount").textContent=m.passed; byId("adminFailedCount").textContent=m.failed; byId("adminMasteredCount").textContent=m.mastered; byId("adminNotMasteredCount").textContent=m.notMastered;
+  renderAverageBars("subjectAnalysis",grades,row=>row.grade_sheets?.subject||"غير محدد"); renderAverageBars("gradeAnalysis",grades,row=>row.grade_sheets?.grade||"غير محدد");
+  renderAverageBars("examAnalysis",grades,row=>row.grade_sheets?.exam_type||"غير محدد"); renderPerformanceBars("performanceAnalysis",grades);
+  byId("adminSheetList").innerHTML=sheets.length?sheets.map(s=>renderSheetCard(s,true)).join(""):'<div class="empty">لا توجد سجلات مطابقة.</div>';
+  renderSubjectGradeMatrix(); renderGradeSubjectMatrix(); renderCompetencyAnalysis(); renderExamGrowth(); fillStudentTrackingSelect(); if(isAdminUser && byId("adminViewLeadership")?.classList.contains("active")) renderLeadershipComprehensiveReport();
+}
+
+function fillAdvancedAnalysisSelectors(){
+  const subjects=[...new Set(allSheets.map(x=>x.subject).filter(Boolean))].sort();
+  const sel=byId("matrixSubject"); if(sel){const old=sel.value; sel.innerHTML='<option value="">— اختاري المادة —</option>'+subjects.map(x=>`<option>${esc(x)}</option>`).join(""); if(subjects.includes(old)) sel.value=old;}
+}
+
+function rowsForCurrentAdminFilters(){ return adminFilteredGrades().filter(r=>r.percentage!=null); }
+
+function analysisTableHtml(titleKey,items){
+  if(!items.length) return '<div class="empty">لا توجد بيانات مطابقة.</div>';
+  return `<div class="students-wrapper"><table class="analysis-table"><thead><tr><th>${titleKey}</th><th>المقيمون</th><th>الناجحون</th><th>نسبة النجاح</th><th>الراسبون</th><th>المتقنون</th><th>نسبة الإتقان</th><th>غير المتقنين</th><th>المتوسط</th></tr></thead><tbody>${items.map(([name,m])=>`<tr><td><strong>${esc(name)}</strong></td><td>${m.total}</td><td>${m.passed}</td><td>${m.passRate.toFixed(1)}%</td><td>${m.failed}</td><td>${m.mastered}</td><td>${m.masteryRate.toFixed(1)}%</td><td>${m.notMastered}</td><td>${m.avg.toFixed(1)}%</td></tr>`).join("")}</tbody></table></div>`;
+}
+
+
+function latestStudentRows(rows){
+  const map=new Map();
+  [...rows].sort((a,b)=>String(a.grade_sheets?.exam_date||"").localeCompare(String(b.grade_sheets?.exam_date||""))).forEach(r=>map.set(r.student_id,r));
+  return [...map.values()];
+}
+
+function supportStudentsHtml(rows){
+  const latest=latestStudentRows(rows).filter(r=>Number(r.percentage)<Number(r.grade_sheets?.pass_percentage??60)).sort((a,b)=>Number(a.percentage)-Number(b.percentage));
+  if(!latest.length) return '<div class="empty">لا يوجد طلاب أقل من حد النجاح في آخر نتيجة مسجلة ضمن الفلاتر الحالية.</div>';
+  return `<div class="students-wrapper"><table class="analysis-table"><thead><tr><th>الطالب</th><th>الصف / الشعبة</th><th>آخر اختبار</th><th>النسبة</th><th>ملاحظة المعلمة</th></tr></thead><tbody>${latest.map(r=>`<tr><td>${esc(r.students?.student_name||"—")}</td><td>${esc(r.students?.grade||r.grade_sheets?.grade||"—")} / ${esc(r.students?.class_section||r.grade_sheets?.class_section||"—")}</td><td>${esc(r.grade_sheets?.exam_type||"—")}</td><td><span class="status-bad">${Number(r.percentage).toFixed(1)}%</span></td><td>${esc(r.student_note||"—")}</td></tr>`).join("")}</tbody></table></div>`;
+}
+
+function subjectCompetencySummaryHtml(subject){
+  const sheetIds=new Set(adminFilteredSheets().filter(x=>x.subject===subject).map(x=>x.id));
+  const rows=adminCompetencyRows.filter(r=>sheetIds.has(r.grade_sheet_id)&&r.score!=null&&Number(r.grade_competencies?.max_score)>0);
+  const map=new Map();
+  rows.forEach(r=>{const name=r.grade_competencies?.competency_name||"غير محدد",pct=Number(r.score)/Number(r.grade_competencies.max_score)*100;const v=map.get(name)||{sum:0,count:0};v.sum+=pct;v.count++;map.set(name,v);});
+  const items=[...map.entries()].map(([name,v])=>({name,avg:v.sum/v.count})).sort((a,b)=>b.avg-a.avg);
+  if(!items.length) return '<div class="empty">لا توجد بيانات كفايات لهذه المادة حتى الآن.</div>';
+  const strongest=items.slice(0,5), weakest=[...items].sort((a,b)=>a.avg-b.avg).slice(0,5);
+  const list=x=>`<div class="bar-list">${x.map(v=>`<div class="bar-row"><span>${esc(v.name)}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.max(0,Math.min(100,v.avg))}%"></div></div><strong>${v.avg.toFixed(1)}%</strong></div>`).join("")}</div>`;
+  return `<div class="admin-grid"><div class="analysis-card"><h3>أقوى الكفايات</h3>${list(strongest)}</div><div class="analysis-card"><h3>الكفايات الأكثر احتياجًا للتحسين</h3>${list(weakest)}</div></div>`;
+}
+
+function renderSubjectGradeMatrix(){
+  const container=byId("subjectGradeMatrix"), subject=byId("matrixSubject")?.value; if(!container) return;
+  const editor=byId("subjectReportEditor");
+  if(!subject){container.innerHTML='<div class="empty">اختاري مادة لعرض نتيجتها في جميع الصفوف.</div>'; editor?.classList.add("hidden"); return;}
+  const rows=rowsForCurrentAdminFilters().filter(r=>r.grade_sheets?.subject===subject), grades=["الأول","الثاني","الثالث","الرابع","الخامس"];
+  const m=metricSummary(rows);
+  const items=grades.map(g=>[g,metricSummary(rows.filter(r=>r.grade_sheets?.grade===g))]).filter(([,x])=>x.total);
+  const exams=[...new Set(rows.map(r=>r.grade_sheets?.exam_type).filter(Boolean))].sort((a,b)=>(EXAM_ORDER[a]??99)-(EXAM_ORDER[b]??99));
+  const examItems=exams.map(e=>[e,metricSummary(rows.filter(r=>r.grade_sheets?.exam_type===e))]);
+  container.innerHTML=`<div class="print-title"><h2>تقرير تحليل مادة ${esc(subject)}</h2></div>
+    <div class="mini-grid"><div class="mini-stat">النتائج المسجلة<strong>${m.total}</strong></div><div class="mini-stat">متوسط التحصيل<strong>${m.avg.toFixed(1)}%</strong></div><div class="mini-stat">نسبة النجاح<strong>${m.passRate.toFixed(1)}%</strong></div><div class="mini-stat">نسبة الإتقان<strong>${m.masteryRate.toFixed(1)}%</strong></div></div>
+    <h3>النتائج حسب الصف</h3>${analysisTableHtml("الصف",items)}
+    <h3 style="margin-top:18px">النتائج حسب الاختبار</h3>${analysisTableHtml("الاختبار",examItems)}
+    <h3 style="margin-top:18px">تحليل الكفايات</h3>${subjectCompetencySummaryHtml(subject)}
+    <h3 style="margin-top:18px">الطلاب المحتاجون للدعم</h3>${supportStudentsHtml(rows)}`;
+  editor?.classList.remove("hidden");
+  loadReportNote("subject",subject);
+}
+
+function renderGradeSubjectMatrix(){
+  const container=byId("gradeSubjectMatrix"), grade=byId("matrixGrade")?.value; if(!container) return;
+  const editor=byId("gradeReportEditor");
+  if(!grade){container.innerHTML='<div class="empty">اختاري صفًا لعرض نتيجته في جميع المواد.</div>'; editor?.classList.add("hidden"); return;}
+  const rows=rowsForCurrentAdminFilters().filter(r=>r.grade_sheets?.grade===grade), subjects=[...new Set(rows.map(r=>r.grade_sheets?.subject).filter(Boolean))].sort();
+  const m=metricSummary(rows), items=subjects.map(sub=>[sub,metricSummary(rows.filter(r=>r.grade_sheets?.subject===sub))]);
+  container.innerHTML=`<div class="print-title"><h2>تقرير تحليل الصف ${esc(grade)}</h2></div>
+    <div class="mini-grid"><div class="mini-stat">النتائج المسجلة<strong>${m.total}</strong></div><div class="mini-stat">متوسط التحصيل<strong>${m.avg.toFixed(1)}%</strong></div><div class="mini-stat">نسبة النجاح<strong>${m.passRate.toFixed(1)}%</strong></div><div class="mini-stat">نسبة الإتقان<strong>${m.masteryRate.toFixed(1)}%</strong></div></div>
+    <h3>النتائج حسب المادة</h3>${analysisTableHtml("المادة",items)}
+    <h3 style="margin-top:18px">الطلاب المحتاجون للدعم</h3>${supportStudentsHtml(rows)}`;
+  editor?.classList.remove("hidden");
+  loadReportNote("grade",grade);
+}
+
+function renderCompetencyAnalysis(){
+  const container=byId("competencyAnalysisTable"); if(!container) return;
+  const sheetIds=new Set(adminFilteredSheets().map(x=>x.id)); const rows=adminCompetencyRows.filter(r=>sheetIds.has(r.grade_sheet_id)&&r.score!=null&&Number(r.grade_competencies?.max_score)>0);
+  const map=new Map(); rows.forEach(r=>{const name=r.grade_competencies?.competency_name||"غير محدد", key=(r.grade_sheets?.subject||"")+"||"+name, pct=Number(r.score)/Number(r.grade_competencies.max_score)*100, mastery=Number(r.grade_sheets?.mastery_percentage??80); const v=map.get(key)||{subject:r.grade_sheets?.subject||"—",name,total:0,count:0,mastered:0}; v.total+=pct;v.count++;if(pct>=mastery)v.mastered++;map.set(key,v);});
+  const items=[...map.values()].map(v=>({...v,avg:v.total/v.count})).sort((a,b)=>b.avg-a.avg);
+  if(!items.length){container.innerHTML='<div class="empty">لا توجد درجات كفايات حتى الآن.</div>';return;}
+  container.innerHTML=`<div class="students-wrapper"><table class="analysis-table"><thead><tr><th>المادة</th><th>الكفاية</th><th>عدد النتائج</th><th>متوسط الكفاية</th><th>متقنون</th><th>غير متقنين</th><th>نسبة الإتقان</th></tr></thead><tbody>${items.map(v=>`<tr><td>${esc(v.subject)}</td><td>${esc(v.name)}</td><td>${v.count}</td><td>${v.avg.toFixed(1)}%</td><td>${v.mastered}</td><td>${v.count-v.mastered}</td><td>${(v.mastered/v.count*100).toFixed(1)}%</td></tr>`).join("")}</tbody></table></div>`;
+}
+
+const EXAM_ORDER={"تشخيصي":0,"الاختبار الأول":1,"الاختبار الثاني":2,"الاختبار الثالث":3};
+function renderExamGrowth(){
+  const container=byId("examGrowthTable"); if(!container)return; const rows=rowsForCurrentAdminFilters();
+  const subjects=[...new Set(rows.map(r=>r.grade_sheets?.subject).filter(Boolean))].sort(); const out=[];
+  subjects.forEach(subject=>{const ex=[...new Set(rows.filter(r=>r.grade_sheets?.subject===subject).map(r=>r.grade_sheets?.exam_type).filter(Boolean))].sort((a,b)=>(EXAM_ORDER[a]??99)-(EXAM_ORDER[b]??99)); let prev=null; ex.forEach(e=>{const m=metricSummary(rows.filter(r=>r.grade_sheets?.subject===subject&&r.grade_sheets?.exam_type===e)); out.push({subject,exam:e,m,growth:prev?m.masteryRate-prev.masteryRate:null}); prev=m;});});
+  if(!out.length){container.innerHTML='<div class="empty">لا توجد بيانات للمقارنة.</div>';return;}
+  container.innerHTML=`<div class="students-wrapper"><table class="analysis-table"><thead><tr><th>المادة</th><th>الاختبار</th><th>نسبة النجاح</th><th>نسبة الإتقان</th><th>المتعثرون</th><th>النمو في الإتقان</th></tr></thead><tbody>${out.map(x=>`<tr><td>${esc(x.subject)}</td><td>${esc(x.exam)}</td><td>${x.m.passRate.toFixed(1)}%</td><td>${x.m.masteryRate.toFixed(1)}%</td><td>${x.m.failed}</td><td>${x.growth==null?"—":(x.growth>=0?"+":"")+x.growth.toFixed(1)+"%"}</td></tr>`).join("")}</tbody></table></div>`;
+}
+
+function fillStudentTrackingSelect(){
+  const sel=byId("studentTrackingSelect"); if(!sel)return; const visibleIds=new Set(rowsForCurrentAdminFilters().map(r=>r.student_id)); const students=allStudents.filter(s=>visibleIds.has(s.id)).sort((a,b)=>String(a.student_name).localeCompare(String(b.student_name),"ar")); const old=sel.value; sel.innerHTML='<option value="">— اختاري الطالب —</option>'+students.map(s=>`<option value="${s.id}">${esc(s.student_name)} — ${esc(s.grade)} / ${esc(s.class_section)}</option>`).join(""); if(students.some(s=>s.id===old))sel.value=old;
+}
+
+function renderStudentTracking(){
+  const container=byId("studentTrackingCard"), id=byId("studentTrackingSelect")?.value, toolbar=byId("studentTrackingToolbar"); if(!container)return;
+  if(!id){container.innerHTML='<div class="empty">اختاري طالبًا لعرض مسار أدائه بعد كل اختبار.</div>';toolbar?.classList.add("hidden");return;}
+  const student=allStudents.find(s=>s.id===id), rows=rowsForCurrentAdminFilters().filter(r=>r.student_id===id).sort((a,b)=>String(a.grade_sheets?.exam_date||"").localeCompare(String(b.grade_sheets?.exam_date||"")));
+  if(!rows.length){container.innerHTML='<div class="empty">لا توجد نتائج لهذا الطالب ضمن نطاق الصلاحية.</div>';toolbar?.classList.add("hidden");return;}
+  toolbar?.classList.remove("hidden");
+  const avg=rows.reduce((s,r)=>s+Number(r.percentage),0)/rows.length, first=Number(rows[0].percentage), last=Number(rows[rows.length-1].percentage), growth=last-first;
+  const subjects=[...new Set(rows.map(r=>r.grade_sheets?.subject).filter(Boolean))];
+  const compRows=adminCompetencyRows.filter(r=>r.student_id===id&&r.score!=null&&Number(r.grade_competencies?.max_score)>0);
+  const weak=compRows.map(r=>({name:r.grade_competencies?.competency_name||"—",subject:r.grade_sheets?.subject||"—",pct:Number(r.score)/Number(r.grade_competencies.max_score)*100,mastery:Number(r.grade_sheets?.mastery_percentage??80)})).filter(x=>x.pct<x.mastery).sort((a,b)=>a.pct-b.pct).slice(0,8);
+  container.innerHTML=`<div class="print-title"><h2>بطاقة تتبع أداء الطالب</h2></div><div class="student-card-head"><div><h3 style="margin:0">${esc(student?.student_name||"الطالب")}</h3><div class="sheet-meta">${esc(student?.grade||"")} — الشعبة ${esc(student?.class_section||"")} • المواد المقيمة: ${subjects.map(esc).join("، ")}</div></div></div>
+    <div class="mini-grid"><div class="mini-stat">عدد الاختبارات<strong>${rows.length}</strong></div><div class="mini-stat">عدد المواد<strong>${subjects.length}</strong></div><div class="mini-stat">متوسط الأداء<strong>${avg.toFixed(1)}%</strong></div><div class="mini-stat">معدل التغير<strong>${growth>=0?"+":""}${growth.toFixed(1)}%</strong></div></div>
+    <div class="students-wrapper"><table class="analysis-table"><thead><tr><th>التاريخ</th><th>المادة</th><th>الاختبار</th><th>الدرجة</th><th>النسبة</th><th>النجاح</th><th>الإتقان</th><th>ملاحظة المعلمة</th></tr></thead><tbody>${rows.map(r=>{const p=Number(r.percentage),pass=Number(r.grade_sheets?.pass_percentage??60),mast=Number(r.grade_sheets?.mastery_percentage??80);return `<tr><td>${esc(formatDate(r.grade_sheets?.exam_date))}</td><td>${esc(r.grade_sheets?.subject||"—")}</td><td>${esc(r.grade_sheets?.exam_type||"—")}</td><td>${esc(r.score??"—")} / ${esc(r.grade_sheets?.max_score??"—")}</td><td>${p.toFixed(1)}%</td><td>${p>=pass?'<span class="status-good">ناجح</span>':'<span class="status-bad">راسب</span>'}</td><td>${p>=mast?'<span class="status-good">متقن</span>':'<span class="status-mid">غير متقن</span>'}</td><td>${esc(r.student_note||"—")}</td></tr>`;}).join("")}</tbody></table></div>
+    <div style="margin-top:16px"><h3>الكفايات التي تحتاج متابعة</h3>${weak.length?`<div class="bar-list">${weak.map(x=>`<div class="bar-row"><span>${esc(x.subject)} — ${esc(x.name)}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.max(0,Math.min(100,x.pct))}%"></div></div><strong>${x.pct.toFixed(1)}%</strong></div>`).join("")}</div>`:'<div class="empty">لا توجد كفايات أقل من حد الإتقان ضمن النتائج المسجلة.</div>'}</div>
+    <div class="student-followup"><h3>✏️ متابعة الطالب</h3><div class="student-followup-grid">
+      <div class="field"><label>نقاط القوة</label><textarea id="studentStrengths"></textarea></div>
+      <div class="field"><label>جوانب التحسين</label><textarea id="studentImprovements"></textarea></div>
+      <div class="field"><label>الإجراء / التدخل المتخذ</label><textarea id="studentIntervention"></textarea></div>
+      <div class="field"><label>الأثر / نتيجة المتابعة</label><textarea id="studentImpact"></textarea></div>
+      <div class="field full"><label>ملاحظات عامة</label><textarea id="studentGeneralNotes"></textarea></div>
+    </div></div>`;
+  loadStudentTrackingNote(id);
+}
+
+
+/* =====================================================
+   حفظ التقارير وبطاقات المتابعة + الطباعة
+   ===================================================== */
+async function loadReportNote(reportType,reportKey){
+  const isSubject=reportType==="subject";
+  const a=byId(isSubject?"subjectAnalysisText":"gradeAnalysisText"), b=byId(isSubject?"subjectActionsText":"gradeActionsText");
+  if(!a||!b||!reportKey) return;
+  a.value="";b.value="";
+  const {data,error}=await sb.from("analysis_report_notes").select("analysis_text,actions_text").eq("report_type",reportType).eq("report_key",reportKey).maybeSingle();
+  if(error){console.warn("Load report note:",error);return;}
+  a.value=data?.analysis_text||""; b.value=data?.actions_text||"";
+}
+
+async function saveReportNote(reportType){
+  const isSubject=reportType==="subject";
+  const key=byId(isSubject?"matrixSubject":"matrixGrade")?.value;
+  const state=byId(isSubject?"subjectReportState":"gradeReportState");
+  if(!key){if(state) state.textContent="اختاري التقرير أولًا.";return;}
+  const payload={report_type:reportType,report_key:key,analysis_text:byId(isSubject?"subjectAnalysisText":"gradeAnalysisText")?.value.trim()||null,actions_text:byId(isSubject?"subjectActionsText":"gradeActionsText")?.value.trim()||null,updated_by:currentUser.id,updated_at:new Date().toISOString()};
+  const {error}=await sb.from("analysis_report_notes").upsert(payload,{onConflict:"report_type,report_key"});
+  if(state){state.textContent=error?"تعذر حفظ التقرير: "+error.message:"✓ تم حفظ التقرير.";state.className="save-state "+(error?"error":"ok");}
+}
+
+async function loadStudentTrackingNote(studentId){
+  const ids=["studentStrengths","studentImprovements","studentIntervention","studentImpact","studentGeneralNotes"];
+  ids.forEach(id=>{if(byId(id))byId(id).value="";});
+  const {data,error}=await sb.from("student_tracking_notes").select("strengths,improvements,intervention,impact,general_notes").eq("student_id",studentId).maybeSingle();
+  if(error){console.warn("Load student tracking note:",error);return;}
+  if(!data)return;
+  byId("studentStrengths").value=data.strengths||"";byId("studentImprovements").value=data.improvements||"";byId("studentIntervention").value=data.intervention||"";byId("studentImpact").value=data.impact||"";byId("studentGeneralNotes").value=data.general_notes||"";
+}
+
+async function saveStudentTrackingNote(){
+  const studentId=byId("studentTrackingSelect")?.value, state=byId("studentTrackingState");
+  if(!studentId){if(state)state.textContent="اختاري الطالب أولًا.";return;}
+  const payload={student_id:studentId,strengths:byId("studentStrengths")?.value.trim()||null,improvements:byId("studentImprovements")?.value.trim()||null,intervention:byId("studentIntervention")?.value.trim()||null,impact:byId("studentImpact")?.value.trim()||null,general_notes:byId("studentGeneralNotes")?.value.trim()||null,updated_by:currentUser.id,updated_at:new Date().toISOString()};
+  const {error}=await sb.from("student_tracking_notes").upsert(payload,{onConflict:"student_id"});
+  if(state){state.textContent=error?"تعذر حفظ البطاقة: "+error.message:"✓ تم حفظ بطاقة الطالب.";state.className="save-state "+(error?"error":"ok");}
+}
+
+function buildPrintArea(elementIds,title){
+  document.getElementById("wrsoPrintArea")?.remove();
+
+  const area=document.createElement("section");
+  area.id="wrsoPrintArea";
+  area.className="wrso-print-area";
+
+  const heading=document.createElement("h2");
+  heading.className="wrso-print-title";
+  heading.textContent=title||"تقرير";
+  area.appendChild(heading);
+
+  elementIds.forEach(id=>{
+    const source=byId(id);
+    if(!source)return;
+    const clone=source.cloneNode(true);
+    clone.classList.remove("hidden");
+
+    /* نحول حقول التحرير إلى نص مطبوع حتى تظهر القيم المكتوبة بوضوح */
+    clone.querySelectorAll("textarea,input").forEach(field=>{
+      if(field.type==="button"||field.type==="submit")return;
+      const value=document.getElementById(field.id)?.value ?? field.value ?? "";
+      const box=document.createElement("div");
+      box.className="wrso-print-field-value";
+      box.textContent=value||"—";
+      field.replaceWith(box);
+    });
+
+    clone.querySelectorAll(".report-toolbar,.btn,.save-state").forEach(x=>x.remove());
+    area.appendChild(clone);
+  });
+
+  document.body.appendChild(area);
+  return area;
+}
+
+function runPrint(elementIds,title){
+  const area=buildPrintArea(elementIds,title);
+  if(!area||area.children.length<2){
+    alert("لا توجد بيانات جاهزة للطباعة.");
+    area?.remove();
+    return;
+  }
+
+  const cleanup=()=>{
+    document.getElementById("wrsoPrintArea")?.remove();
+    window.removeEventListener("afterprint",cleanup);
+  };
+
+  window.addEventListener("afterprint",cleanup);
+  window.print();
+  setTimeout(()=>{
+    if(document.getElementById("wrsoPrintArea")) cleanup();
+  },1500);
+}
+
+function printCombinedReport(elementIds,title){
+  runPrint(elementIds,title);
+}
+
+function printElementReport(elementId,title){
+  runPrint([elementId],title);
+}
+
 /* =====================================================
    الأحداث
    ===================================================== */
@@ -2623,6 +3464,21 @@ document.querySelectorAll(".tab-btn")
       () => showTab(btn.dataset.tab)
     );
   });
+
+byId("addCompetencyBtn")?.addEventListener("click",()=>addCompetencyRowData());
+byId("maxScore")?.addEventListener("input",updateCompetencyTotalState);
+byId("matrixSubject")?.addEventListener("change",renderSubjectGradeMatrix);
+byId("matrixGrade")?.addEventListener("change",renderGradeSubjectMatrix);
+byId("studentTrackingSelect")?.addEventListener("change",renderStudentTracking);
+byId("saveSubjectReportBtn")?.addEventListener("click",()=>saveReportNote("subject"));
+byId("saveGradeReportBtn")?.addEventListener("click",()=>saveReportNote("grade"));
+byId("saveStudentTrackingBtn")?.addEventListener("click",saveStudentTrackingNote);
+byId("printSubjectReportBtn")?.addEventListener("click",()=>printCombinedReport(["subjectGradeMatrix","subjectReportEditor"],"تقرير تحليل المادة — "+(byId("matrixSubject")?.value||"")));
+byId("printGradeReportBtn")?.addEventListener("click",()=>printCombinedReport(["gradeSubjectMatrix","gradeReportEditor"],"تقرير تحليل الصف — "+(byId("matrixGrade")?.value||"")));
+byId("printStudentTrackingBtn")?.addEventListener("click",()=>printElementReport("studentTrackingCard","بطاقة تتبع أداء الطالب"));
+byId("printAllStudentCardsBtn")?.addEventListener("click",printAllStudentCardsInScope);
+byId("refreshLeadershipReportBtn")?.addEventListener("click",renderLeadershipComprehensiveReport);
+byId("printLeadershipReportBtn")?.addEventListener("click",()=>{renderLeadershipComprehensiveReport();printElementReport("leadershipComprehensiveReport","التقرير الشامل للقيادة العليا");});
 
 byId("grade")
   .addEventListener(
@@ -2762,6 +3618,8 @@ byId("refreshStudentsBtn")
     loadStudentsMaster
   );
 
+renderCompetencyBuilder();
+
 document.addEventListener(
   "DOMContentLoaded",
   init
@@ -2772,6 +3630,102 @@ window.editSheet = editSheet;
 window.deleteSheet = deleteSheet;
 window.viewSheet = viewSheet;
 
+
+
+function leadershipMetricRow(label,m){
+  return `<tr><td><strong>${esc(label)}</strong></td><td>${m.total}</td><td>${m.passed}</td><td>${m.failed}</td><td>${m.passRate.toFixed(1)}%</td><td>${m.mastered}</td><td>${m.notMastered}</td><td>${m.masteryRate.toFixed(1)}%</td><td>${m.avg.toFixed(1)}%</td></tr>`;
+}
+
+function renderLeadershipComprehensiveReport(){
+  const box=byId("leadershipComprehensiveReport");
+  if(!box) return;
+  if(!isAdminUser){
+    box.innerHTML='<div class="empty">هذا التقرير متاح للقيادة العليا فقط.</div>';
+    return;
+  }
+  const rows=rowsForCurrentAdminFilters();
+  if(!rows.length){
+    box.innerHTML='<div class="empty">لا توجد نتائج مطابقة للفلاتر الحالية.</div>';
+    return;
+  }
+  const overall=metricSummary(rows);
+  const subjects=[...new Set(rows.map(r=>r.grade_sheets?.subject).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),"ar"));
+  const grades=["الأول","الثاني","الثالث","الرابع","الخامس"].filter(g=>rows.some(r=>r.grade_sheets?.grade===g));
+  const exam=byId("adminExam")?.value||"جميع الاختبارات";
+  const subject=byId("adminSubject")?.value||"جميع المواد";
+  const grade=byId("adminGrade")?.value||"جميع الصفوف";
+
+  const studentIds=new Set(rows.map(r=>r.student_id).filter(Boolean));
+  box.innerHTML=`
+    <div class="print-title"><h2>التقرير الشامل للتحصيل والدرجات</h2>
+      <div class="sheet-meta">الاختبار: ${esc(exam)} • المادة: ${esc(subject)} • الصف: ${esc(grade)}</div>
+    </div>
+    <div class="mini-grid">
+      <div class="mini-stat">الطلاب المقيمون<strong>${studentIds.size}</strong></div>
+      <div class="mini-stat">النتائج المسجلة<strong>${overall.total}</strong></div>
+      <div class="mini-stat">متوسط التحصيل<strong>${overall.avg.toFixed(1)}%</strong></div>
+      <div class="mini-stat">نسبة النجاح<strong>${overall.passRate.toFixed(1)}%</strong></div>
+      <div class="mini-stat">نسبة الإتقان<strong>${overall.masteryRate.toFixed(1)}%</strong></div>
+    </div>
+    <h3 style="margin-top:18px">التحليل حسب المادة</h3>
+    <div class="students-wrapper"><table class="analysis-table"><thead><tr><th>المادة</th><th>المقيمون</th><th>الناجحون</th><th>الراسبون</th><th>نسبة النجاح</th><th>المتقنون</th><th>غير المتقنين</th><th>نسبة الإتقان</th><th>المتوسط</th></tr></thead><tbody>
+      ${subjects.map(s=>leadershipMetricRow(s,metricSummary(rows.filter(r=>r.grade_sheets?.subject===s)))).join("")}
+    </tbody></table></div>
+    <h3 style="margin-top:18px">التحليل حسب الصف</h3>
+    <div class="students-wrapper"><table class="analysis-table"><thead><tr><th>الصف</th><th>المقيمون</th><th>الناجحون</th><th>الراسبون</th><th>نسبة النجاح</th><th>المتقنون</th><th>غير المتقنين</th><th>نسبة الإتقان</th><th>المتوسط</th></tr></thead><tbody>
+      ${grades.map(g=>leadershipMetricRow(g,metricSummary(rows.filter(r=>r.grade_sheets?.grade===g)))).join("")}
+    </tbody></table></div>
+    <h3 style="margin-top:18px">تفصيل المواد حسب الصفوف</h3>
+    ${subjects.map(s=>{
+      const sr=rows.filter(r=>r.grade_sheets?.subject===s);
+      return `<h4>${esc(s)}</h4><div class="students-wrapper"><table class="analysis-table"><thead><tr><th>الصف</th><th>المقيمون</th><th>الناجحون</th><th>الراسبون</th><th>نسبة النجاح</th><th>المتقنون</th><th>غير المتقنين</th><th>نسبة الإتقان</th><th>المتوسط</th></tr></thead><tbody>${grades.filter(g=>sr.some(r=>r.grade_sheets?.grade===g)).map(g=>leadershipMetricRow(g,metricSummary(sr.filter(r=>r.grade_sheets?.grade===g)))).join("")}</tbody></table></div>`;
+    }).join("")}
+  `;
+}
+
+function buildStudentCardHtml(student,rows){
+  const ordered=[...rows].sort((a,b)=>String(a.grade_sheets?.exam_date||"").localeCompare(String(b.grade_sheets?.exam_date||"")));
+  const avg=ordered.length?ordered.reduce((s,r)=>s+Number(r.percentage),0)/ordered.length:0;
+  const subjects=[...new Set(ordered.map(r=>r.grade_sheets?.subject).filter(Boolean))];
+  return `<article class="bulk-student-card" style="page-break-after:always">
+    <h2>بطاقة تتبع أداء الطالب</h2>
+    <h3>${esc(student?.student_name||"الطالب")}</h3>
+    <div class="sheet-meta">${esc(student?.grade||"")} — الشعبة ${esc(student?.class_section||"")} • المواد المقيمة: ${subjects.map(esc).join("، ")}</div>
+    <div class="mini-grid"><div class="mini-stat">عدد الاختبارات<strong>${ordered.length}</strong></div><div class="mini-stat">عدد المواد<strong>${subjects.length}</strong></div><div class="mini-stat">متوسط الأداء<strong>${avg.toFixed(1)}%</strong></div></div>
+    <div class="students-wrapper"><table class="analysis-table"><thead><tr><th>المادة</th><th>الاختبار</th><th>الدرجة</th><th>النسبة</th><th>النجاح</th><th>الإتقان</th><th>ملاحظة المعلمة</th></tr></thead><tbody>${ordered.map(r=>{const p=Number(r.percentage),pass=Number(r.grade_sheets?.pass_percentage??60),mast=Number(r.grade_sheets?.mastery_percentage??80);return `<tr><td>${esc(r.grade_sheets?.subject||"—")}</td><td>${esc(r.grade_sheets?.exam_type||"—")}</td><td>${esc(r.score??"—")} / ${esc(r.grade_sheets?.max_score??"—")}</td><td>${p.toFixed(1)}%</td><td>${p>=pass?"ناجح":"راسب"}</td><td>${p>=mast?"متقن":"غير متقن"}</td><td>${esc(r.student_note||"—")}</td></tr>`}).join("")}</tbody></table></div>
+  </article>`;
+}
+
+function printAllStudentCardsInScope(){
+  const rows=rowsForCurrentAdminFilters();
+  if(!rows.length){alert("لا توجد نتائج لطلاب ضمن الفلاتر الحالية.");return;}
+  const ids=[...new Set(rows.map(r=>r.student_id).filter(Boolean))];
+  const holder=document.createElement("div");
+  holder.id="bulkStudentCardsPrint";
+  holder.className="hidden";
+  holder.innerHTML=ids.map(id=>{
+    const st=allStudents.find(s=>s.id===id);
+    return buildStudentCardHtml(st,rows.filter(r=>r.student_id===id));
+  }).join("");
+  document.body.appendChild(holder);
+  runPrint(["bulkStudentCardsPrint"],"بطاقات تتبع الطلاب");
+  setTimeout(()=>holder.remove(),2000);
+}
+
+function showAdminSubView(view){
+  const map={overview:"adminViewOverview",subject:"adminViewSubject",grade:"adminViewGrade",student:"adminViewStudent",leadership:"adminViewLeadership"};
+  ["adminViewOverview","adminViewSubject","adminViewGrade","adminViewStudent","adminViewAdvanced","adminViewLeadership"].forEach(id=>{
+    const el=byId(id); if(el) el.classList.remove("active");
+  });
+  if(view==="leadership" && !isAdminUser){ view="overview"; }
+  const target=byId(map[view]||"adminViewOverview"); if(target) target.classList.add("active");
+  const adv=byId("adminViewAdvanced"); if(adv && view==="overview") adv.classList.add("active");
+  if(view==="leadership") renderLeadershipComprehensiveReport();
+  document.querySelectorAll(".admin-subnav-btn").forEach(b=>b.classList.toggle("active",b.dataset.adminView===view));
+}
+document.querySelectorAll(".admin-subnav-btn").forEach(btn=>{
+  btn.addEventListener("click",()=>showAdminSubView(btn.dataset.adminView));
+});
 </script>
 
 </body>
