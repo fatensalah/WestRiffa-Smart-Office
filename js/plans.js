@@ -442,6 +442,23 @@ async function saveApprovedPlan() {
   let createdPlanId = null;
 
   try {
+    const { data: authData, error: authError } = await plansSupabase.auth.getUser();
+    if (authError) throw authError;
+    const currentUserId = authData?.user?.id;
+    if (!currentUserId) throw new Error("تعذر تحديد الحساب الحالي.");
+
+    const { data: existingPlan, error: existingError } = await plansSupabase
+      .from("plans")
+      .select("id, plan_title")
+      .eq("department_id", selectedDepartment)
+      .eq("school_year", selectedSchoolYear)
+      .maybeSingle();
+
+    if (existingError) throw existingError;
+    if (existingPlan) {
+      throw new Error("توجد خطة مرفوعة بالفعل لهذا القسم وهذه السنة. افتحي «إدارة الخطة الحالية» لتعديلها أو حذفها ثم رفع خطة جديدة.");
+    }
+
     const departmentName =
       departmentSelect.options[
         departmentSelect.selectedIndex
@@ -452,6 +469,7 @@ async function saveApprovedPlan() {
         .from("plans")
         .insert({
           department_id: selectedDepartment,
+          coordinator_id: currentUserId,
           school_year: selectedSchoolYear,
           plan_title:
             `الخطة السنوية - ${departmentName} - ${selectedSchoolYear}`,
@@ -475,6 +493,9 @@ async function saveApprovedPlan() {
 
         path_code:
           item.pathCode || null,
+
+        domain_name:
+          item.domain || null,
 
         general_goal:
           item.generalGoal || null,
