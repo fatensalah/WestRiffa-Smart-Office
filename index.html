@@ -2092,23 +2092,17 @@ async function configureRoleUI(user) {
 
   /*
     أدوات الاجتماعات:
-    دعوة الاجتماع ومحضر الاجتماع للإدارة والمنسقة فقط.
+    دعوة الاجتماع ومحضر الاجتماع متاحان لكل مستخدم مسجل دخوله
+    (إدارة / منسقة / معلمة).
+    نطاق السجلات التي تظهر لكل مستخدم تحدده صلاحيات قاعدة البيانات RLS.
   */
-  [
-    meetingInvitationCard,
-    meetingMinutesCard
-  ].forEach(element => {
+  if (meetingInvitationCard) {
+    meetingInvitationCard.style.display = "";
+  }
 
-    if (!element) return;
-
-    element.style.display =
-      (
-        isAdmin ||
-        isCoordinator
-      )
-        ? ""
-        : "none";
-  });
+  if (meetingMinutesCard) {
+    meetingMinutesCard.style.display = "";
+  }
 
   /*
     شهادة التقدير متاحة لكل مستخدم مسجل دخوله،
