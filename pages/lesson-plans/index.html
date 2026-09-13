@@ -638,6 +638,171 @@
       margin-top:3px;
     }
 
+  
+    /* ===== FINAL LANDSCAPE A4 LESSON PLAN ===== */
+    #pdfSheet{
+      width:1123px !important;
+      max-width:1123px !important;
+      padding:0 !important;
+      background:#fff !important;
+      color:#183b34 !important;
+      direction:rtl !important;
+    }
+    #pdfSheet.pdf-visible{
+      display:block !important;
+      position:fixed !important;
+      top:0 !important;
+      left:-14000px !important;
+      width:1123px !important;
+      z-index:-1 !important;
+      pointer-events:none !important;
+      overflow:visible !important;
+    }
+    #pdfSheet .lesson-pdf-page{
+      width:1123px !important;
+      min-height:760px;
+      padding:14px 20px 16px !important;
+      background:#fff;
+    }
+    #pdfSheet .lesson-pdf-brand{
+      height:82px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-bottom:2px solid #0b6a50;
+      margin:0 0 5px !important;
+      padding:0 0 5px !important;
+      overflow:hidden;
+    }
+    #pdfSheet .lesson-pdf-brand img{
+      width:auto !important;
+      max-width:100% !important;
+      height:74px !important;
+      max-height:74px !important;
+      object-fit:contain !important;
+      margin:0 auto !important;
+    }
+    #pdfSheet .lesson-pdf-heading{
+      margin:3px 0 7px !important;
+      text-align:center;
+    }
+    #pdfSheet .lesson-pdf-heading h1{
+      margin:0 !important;
+      font-size:23px !important;
+      line-height:1.15;
+      color:#086247 !important;
+    }
+    #pdfSheet .lesson-pdf-heading .sub{
+      margin-top:2px !important;
+      font-size:11px !important;
+    }
+    #pdfSheet .lesson-pdf-meta{
+      display:grid !important;
+      grid-template-columns:2.1fr 1fr 1fr 1fr 1fr 1fr !important;
+      gap:4px !important;
+      margin-bottom:5px !important;
+    }
+    #pdfSheet .meta-cell{
+      min-height:32px !important;
+      padding:5px 7px !important;
+      border:1px solid #b9cec6 !important;
+      border-radius:5px !important;
+      font-size:10.5px !important;
+      line-height:1.35 !important;
+      background:#fbfdfc !important;
+    }
+    #pdfSheet .meta-cell.wide{grid-column:auto !important}
+    #pdfSheet .meta-unit{grid-column:span 2 !important}
+    #pdfSheet .meta-title{grid-column:span 4 !important}
+
+    #pdfSheet .pdf-three{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:5px;
+      margin:5px 0;
+    }
+    #pdfSheet .pdf-four{
+      display:grid;
+      grid-template-columns:1.15fr .85fr 1.1fr 1fr;
+      gap:5px;
+      margin:5px 0;
+    }
+    #pdfSheet .mini-panel,
+    #pdfSheet .lesson-section{
+      border:1px solid #b9cec6 !important;
+      border-radius:6px !important;
+      margin:0 !important;
+      overflow:hidden !important;
+      break-inside:avoid !important;
+      page-break-inside:avoid !important;
+      background:#fff;
+    }
+    #pdfSheet .mini-title,
+    #pdfSheet .lesson-section-title{
+      background:#087052 !important;
+      color:#fff !important;
+      font-size:11px !important;
+      font-weight:800 !important;
+      padding:4px 7px !important;
+      border:0 !important;
+      text-align:right;
+    }
+    #pdfSheet .mini-body,
+    #pdfSheet .lesson-section-body{
+      padding:5px 7px !important;
+      font-size:9.6px !important;
+      line-height:1.5 !important;
+    }
+    #pdfSheet .objectives-table{
+      width:100%;
+      border-collapse:collapse;
+      margin:5px 0;
+      table-layout:fixed;
+      font-size:9.5px;
+      direction:rtl;
+    }
+    #pdfSheet .objectives-table th{
+      background:#087052;
+      color:#fff;
+      border:1px solid #0a664d;
+      padding:5px 5px;
+      font-size:10px;
+    }
+    #pdfSheet .objectives-table td{
+      border:1px solid #bfd0ca;
+      padding:5px 6px;
+      vertical-align:top;
+      line-height:1.45;
+      white-space:normal;
+      word-break:break-word;
+    }
+    #pdfSheet .objectives-table .ncol{width:4%; text-align:center}
+    #pdfSheet .objectives-table .goalcol{width:30%}
+    #pdfSheet .objectives-table .stepscol{width:42%}
+    #pdfSheet .objectives-table .timecol{width:9%; text-align:center}
+    #pdfSheet .objectives-table .assesscol{width:15%}
+
+    #pdfSheet .pdf-bottom{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr 1fr;
+      gap:5px;
+      margin-top:5px;
+    }
+    #pdfSheet .lesson-pdf-footer{
+      margin-top:7px !important;
+      padding-top:5px !important;
+      border-top:1.5px solid #0b6a50 !important;
+      display:grid !important;
+      grid-template-columns:repeat(3,1fr) !important;
+      gap:20px !important;
+      font-size:9.5px !important;
+      line-height:1.25;
+    }
+    #pdfSheet .lesson-pdf-footer strong{
+      font-size:10.5px !important;
+      margin-top:2px !important;
+    }
+
   </style>
 </head>
 
@@ -2583,84 +2748,118 @@ async function downloadPlanPdf(planId){
         </div>
 
         <div class="lesson-pdf-meta">
-          <div class="meta-cell wide"><strong>اسم المعلمة:</strong> ${esc(plan.teacher_name || "—")}</div>
+          <div class="meta-cell"><strong>اسم المعلمة:</strong> ${esc(plan.teacher_name || "—")}</div>
           <div class="meta-cell"><strong>التاريخ:</strong> ${esc(formatDate(plan.lesson_date))}</div>
           <div class="meta-cell"><strong>اليوم:</strong> ${esc(plan.lesson_day || "—")}</div>
           <div class="meta-cell"><strong>المادة:</strong> ${esc(plan.subject || "—")}</div>
-          <div class="meta-cell"><strong>الصف:</strong> ${esc(plan.grade || "—")}</div>
-          <div class="meta-cell"><strong>الشعبة:</strong> ${esc(plan.class_section || "—")}</div>
+          <div class="meta-cell"><strong>الصف / الشعبة:</strong> ${esc(plan.grade || "—")}${plan.class_section ? " / " + esc(plan.class_section) : ""}</div>
           <div class="meta-cell"><strong>الحصة:</strong> ${esc(plan.period || "—")}</div>
-          <div class="meta-cell wide"><strong>الوحدة:</strong> ${esc(plan.unit_name || "—")}</div>
-          <div class="meta-cell wide"><strong>عنوان الدرس:</strong> ${esc(plan.lesson_title || "—")}</div>
+          <div class="meta-cell meta-unit"><strong>الوحدة:</strong> ${esc(plan.unit_name || "—")}</div>
+          <div class="meta-cell meta-title"><strong>عنوان الدرس:</strong> ${esc(plan.lesson_title || "—")}</div>
         </div>
 
-        <div class="lesson-section">
-          <div class="lesson-section-title">التهيئة والربط والقيم</div>
-          <div class="lesson-section-body">
-            <strong>الربط:</strong> ${esc(plan.subject_connection || "—")}<br>
-            <strong>القيم:</strong> ${esc(plan.values_connection || "—")}<br>
-            <strong>المقدمة (${esc(plan.introduction_minutes || "—")} د):</strong> ${esc(plan.introduction || "—")}
+        <div class="pdf-three">
+          <div class="mini-panel">
+            <div class="mini-title">التهيئة للدرس</div>
+            <div class="mini-body"><strong>المقدمة (${esc(plan.introduction_minutes || "—")} د):</strong><br>${esc(plan.introduction || "—")}</div>
+          </div>
+          <div class="mini-panel">
+            <div class="mini-title">الربط</div>
+            <div class="mini-body">${esc(plan.subject_connection || "—")}</div>
+          </div>
+          <div class="mini-panel">
+            <div class="mini-title">القيم والانضباط</div>
+            <div class="mini-body">${esc(plan.values_connection || "—")}</div>
           </div>
         </div>
 
-        <div class="lesson-section">
-          <div class="lesson-section-title">الموارد واستراتيجيات التعلم والتقييم</div>
-          <div class="lesson-section-body">
-            <strong>الموارد والمصادر:</strong> ${listHtml(plan.resources)}<br>
-            <strong>أنماط التعلم:</strong> ${listHtml(plan.learning_styles)}<br>
-            <strong>استراتيجيات التدريس:</strong> ${listHtml(plan.teaching_strategies)}<br>
-            <strong>أساليب التقييم:</strong> ${listHtml(plan.assessment_methods)}<br>
-            <strong>مهارات القرن الحادي والعشرين:</strong> ${listHtml(plan.century21_skills)}
+        <div class="pdf-four">
+          <div class="mini-panel">
+            <div class="mini-title">الموارد والمصادر التعليمية</div>
+            <div class="mini-body">${listHtml(plan.resources)}</div>
+          </div>
+          <div class="mini-panel">
+            <div class="mini-title">أنماط التعلم</div>
+            <div class="mini-body">${listHtml(plan.learning_styles)}</div>
+          </div>
+          <div class="mini-panel">
+            <div class="mini-title">استراتيجيات التدريس</div>
+            <div class="mini-body">${listHtml(plan.teaching_strategies)}</div>
+          </div>
+          <div class="mini-panel">
+            <div class="mini-title">مهارات القرن 21</div>
+            <div class="mini-body">${listHtml(plan.century21_skills)}</div>
           </div>
         </div>
 
-        ${
-          objectives.map((item,index) => `
-            <div class="objective-card">
-              <div class="objective-head">هدف التعلم ${index + 1} — الزمن: ${esc(item.duration_minutes || "—")} دقيقة</div>
-              <div class="objective-body">
-                <span class="label">هدف التعلم:</span> ${esc(item.learning_objective || "—")}<br>
-                <span class="label">إجراءات سير الدرس:</span><br>
-                ${esc(item.lesson_procedures || "—")}<br>
-                <span class="label">التقييم:</span> ${esc(item.assessment_details || "—")}
-              </div>
+        <table class="objectives-table">
+          <thead>
+            <tr>
+              <th class="ncol">م</th>
+              <th class="goalcol">هدف التعلم</th>
+              <th class="stepscol">إجراءات سير الدرس</th>
+              <th class="timecol">الزمن</th>
+              <th class="assesscol">التقييم</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${
+              objectives.length
+                ? objectives.map((item,index) => `
+                    <tr>
+                      <td class="ncol">${index + 1}</td>
+                      <td>${esc(item.learning_objective || "—")}</td>
+                      <td>${esc(item.lesson_procedures || "—")}</td>
+                      <td class="timecol">${esc(item.duration_minutes || "—")} د</td>
+                      <td>${esc(item.assessment_details || "—")}</td>
+                    </tr>
+                  `).join("")
+                : `<tr><td colspan="5">—</td></tr>`
+            }
+          </tbody>
+        </table>
+
+        <div class="pdf-bottom">
+          <div class="mini-panel">
+            <div class="mini-title">التأمل الذاتي للمعلمة</div>
+            <div class="mini-body">
+              <strong>${esc(plan.reflection_status || "—")}</strong>
+              ${plan.reflection_notes ? "<br>" + esc(plan.reflection_notes) : ""}
             </div>
-          `).join("")
-        }
-
-        <div class="lesson-section">
-          <div class="lesson-section-title">الإنتاج الطلابي والتأمل الذاتي</div>
-          <div class="lesson-section-body">
-            <strong>الإنتاج الطلابي:</strong> ${esc(plan.student_product_type || "—")}
-            ${plan.student_product_description ? "<br>" + esc(plan.student_product_description) : ""}
-            <br><strong>التأمل الذاتي:</strong> ${esc(plan.reflection_status || "—")}
-            ${plan.reflection_notes ? "<br>" + esc(plan.reflection_notes) : ""}
           </div>
-        </div>
 
-        ${
-          support.length
-            ? `
-              <div class="lesson-section">
-                <div class="lesson-section-title">الدعم والمساندة</div>
-                <div class="lesson-section-body">
-                  ${
-                    support.map(item => `
+          <div class="mini-panel">
+            <div class="mini-title">الدعم والمساندة</div>
+            <div class="mini-body">
+              ${
+                support.length
+                  ? support.map(item => `
                       • ${esc(item.category || "—")}
                       ${item.student_name ? " — " + esc(item.student_name) : ""}
                       ${item.difficulty_type ? " — " + esc(item.difficulty_type) : ""}
-                      ${item.support_procedure ? "<br>" + esc(item.support_procedure) : ""}
-                      <br>
+                      ${item.support_procedure ? "<br>" + esc(item.support_procedure) : ""}<br>
                     `).join("")
-                  }
-                </div>
-              </div>
-            `
-            : ""
-        }
+                  : "—"
+              }
+            </div>
+          </div>
+
+          <div class="mini-panel">
+            <div class="mini-title">الإنتاج الطلابي</div>
+            <div class="mini-body">
+              ${esc(plan.student_product_type || "—")}
+              ${plan.student_product_description ? "<br>" + esc(plan.student_product_description) : ""}
+            </div>
+          </div>
+
+          <div class="mini-panel">
+            <div class="mini-title">أساليب التقييم</div>
+            <div class="mini-body">${listHtml(plan.assessment_methods)}</div>
+          </div>
+        </div>
 
         <div class="lesson-pdf-footer">
-          <div>إعداد التحضير<strong>${esc(plan.teacher_name || "المعلمة")}</strong></div>
+          <div>إعداد المعلمة<strong>${esc(plan.teacher_name || "—")}</strong></div>
           <div>المديرة المساعدة<strong>خلود الكعبي</strong></div>
           <div>مديرة المدرسة<strong>أحلام السويدي</strong></div>
         </div>
@@ -2688,11 +2887,10 @@ async function downloadPlanPdf(planId){
       1
     );
 
-    const safeCanvasHeight = 12000;
+    const safeCanvasHeight = 11000;
     const renderScale = Math.max(
       0.8,
-      Math.min(
-        1.35,
+      Math.min(1.15,
         safeCanvasHeight / pdfHeight
       )
     );
@@ -2716,7 +2914,7 @@ async function downloadPlanPdf(planId){
         jsPDF:{
           unit:"mm",
           format:"a4",
-          orientation:"portrait"
+          orientation:"landscape"
         },
         pagebreak:{
           mode:["css","legacy"]
