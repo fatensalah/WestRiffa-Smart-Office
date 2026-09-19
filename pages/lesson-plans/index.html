@@ -464,11 +464,11 @@
 
     #pdfSheet.pdf-visible{
       display:block;
-      position:fixed;
+      position:absolute;
       top:0;
-      left:-20000px;
+      left:0;
       width:297mm;
-      z-index:-1;
+      z-index:2147483000;
       pointer-events:none;
       background:#fff;
     }
@@ -852,6 +852,70 @@
       margin-top:1.2mm !important;
     }
 
+
+
+    /* ======================================================
+       متابعة وتقييم التحضير اليومي
+       ====================================================== */
+    .review-modal{position:fixed;inset:0;z-index:12000;background:rgba(7,43,34,.72);display:flex;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(3px)}
+    .review-modal.hidden{display:none!important}
+    .review-dialog{width:min(1100px,100%);max-height:94vh;overflow:auto;background:#fff;border-radius:20px;box-shadow:0 24px 70px rgba(0,0,0,.28);padding:22px}
+    .review-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;border-bottom:1px solid #e1e9e5;padding-bottom:14px;margin-bottom:16px}
+    .review-head h2{margin:0;color:#075c40}.review-head p{margin:6px 0 0;color:#6b7a72;line-height:1.7}
+    .review-close{border:0;background:#eef4f2;color:#075c40;width:38px;height:38px;border-radius:10px;font-size:22px;cursor:pointer}
+    .review-meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px}
+    .review-meta-box{background:#f7faf8;border:1px solid #e0e9e5;border-radius:11px;padding:11px;font-size:13px;line-height:1.7}.review-meta-box strong{color:#075c40;display:block}
+    .review-domain{margin:18px 0 8px;padding:9px 12px;background:#edf8f3;color:#075c40;border-radius:10px;font-weight:800}
+    .review-criterion{border:1px solid #e0e9e5;border-radius:13px;padding:13px;margin-bottom:10px;background:#fff}
+    .review-criterion-title{font-weight:700;color:#27493d;line-height:1.7;margin-bottom:10px}
+    .review-rating{display:flex;gap:8px;flex-wrap:wrap}.review-rating label{display:flex;align-items:center;gap:6px;padding:8px 10px;border:1px solid #dce6e2;border-radius:9px;background:#fafcfb;cursor:pointer;font-size:13px}.review-rating input{margin:0}
+    .review-note{width:100%;margin-top:9px;border:1px solid #d6e0db;border-radius:9px;padding:9px 10px;font-family:inherit;resize:vertical;min-height:54px}
+    .review-general{width:100%;min-height:90px;border:1px solid #cfdad4;border-radius:10px;padding:11px;font-family:inherit;resize:vertical;line-height:1.7}
+    .review-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.review-message{min-height:22px;margin-top:10px;font-size:13px;font-weight:700}.review-message.ok{color:#087451}.review-message.error{color:#b42318}
+    .review-summary{margin-top:12px;padding:11px 13px;background:#f7faf8;border:1px solid #e0e9e5;border-radius:11px;color:#45645a;font-size:13px;line-height:1.8}
+    .chip-review{background:#eef2ff;color:#3949ab}.chip-reviewed{background:#e9f7ef;color:#087451}
+    .review-report{margin-top:22px;border-top:1px solid #e3ebe7;padding-top:18px}
+    .review-report-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+    .review-report-head h3{margin:0;color:#075c40}
+    .review-report-filters{display:flex;gap:8px;flex-wrap:wrap}
+    .review-report-filters select{min-width:180px}
+    .review-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:12px 0}
+    .review-kpi{border:1px solid #e0e9e5;border-radius:12px;background:#f8fbf9;padding:12px;text-align:center}
+    .review-kpi span{display:block;color:#687a72;font-size:12px;margin-bottom:5px}.review-kpi strong{font-size:22px;color:#075c40}
+    .review-table-wrap{overflow:auto;border:1px solid #e0e9e5;border-radius:12px;margin-top:12px}
+    .review-table{width:100%;border-collapse:collapse;min-width:780px;background:#fff}
+    .review-table th,.review-table td{padding:10px 12px;border-bottom:1px solid #edf1ef;text-align:right;vertical-align:middle}
+    .review-table th{background:#f2f8f5;color:#075c40;font-weight:800;position:sticky;top:0}
+    .review-table tr:last-child td{border-bottom:0}
+    .review-good{color:#087451;font-weight:800}.review-partial{color:#9a6a00;font-weight:800}.review-bad{color:#b42318;font-weight:800}
+    .review-empty{padding:18px;text-align:center;color:#718078}
+    .review-result-box{margin-top:12px;border:1px solid #dce7e2;border-radius:12px;padding:12px;background:#fbfdfc}
+    .review-result-row{display:grid;grid-template-columns:minmax(220px,1fr) 150px minmax(220px,1fr);gap:10px;padding:9px 0;border-bottom:1px solid #edf1ef;align-items:start}
+    .review-result-row:last-child{border-bottom:0}.review-result-row strong{color:#27493d}.review-result-note{color:#66776f;font-size:13px}
+    @media(max-width:900px){.review-kpis{grid-template-columns:repeat(2,1fr)}.review-result-row{grid-template-columns:1fr}}
+    .review-tools{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+    .archive-section{margin-top:24px;border-top:1px solid #e3ebe7;padding-top:18px}
+    .archive-filters{display:grid;grid-template-columns:repeat(5,minmax(150px,1fr));gap:8px;margin:12px 0}
+    .archive-card{border:1px solid #dfe9e4;border-radius:14px;padding:14px;background:#fff;margin:10px 0}
+    .archive-card-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+    .archive-card-title{font-weight:900;color:#075c40;font-size:16px}.archive-card-meta{color:#63766d;font-size:13px;line-height:1.8}
+    .plan-preview-dialog{width:min(1120px,96vw);max-height:94vh;overflow:auto}
+    .plan-preview-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .plan-preview-box{border:1px solid #dfe9e4;border-radius:12px;padding:12px;background:#fbfdfc}
+    .plan-preview-box strong{display:block;color:#075c40;margin-bottom:6px}
+    .plan-preview-wide{grid-column:1/-1}
+    .official-review-sheet{direction:rtl;font-family:Arial,Tahoma,sans-serif;background:#fff;color:#111;padding:22px}
+    .official-review-title{text-align:center;border-bottom:3px solid #075c40;padding-bottom:12px;margin-bottom:14px}
+    .official-review-title h1{font-size:21px;margin:0 0 6px;color:#075c40}.official-review-title p{margin:0;color:#555}
+    .official-review-meta{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0}
+    .official-review-meta div{border:1px solid #ccd9d3;padding:9px;border-radius:7px}
+    .official-review-table{width:100%;border-collapse:collapse;margin-top:12px}
+    .official-review-table th,.official-review-table td{border:1px solid #aebdb6;padding:8px;text-align:right;vertical-align:top}
+    .official-review-table th{background:#eef6f2;color:#075c40}
+    .official-review-footer{margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    @media(max-width:900px){.archive-filters{grid-template-columns:1fr 1fr}.plan-preview-grid{grid-template-columns:1fr}.plan-preview-wide{grid-column:auto}}
+    @media(max-width:760px){.review-meta{grid-template-columns:1fr 1fr}.review-dialog{padding:15px}.review-rating{display:grid;grid-template-columns:1fr}}
+
   </style>
 </head>
 
@@ -937,7 +1001,9 @@
 
         <div class="field">
           <label for="subject">المادة *</label>
-          <input id="subject" type="text" placeholder="مثال: الرياضيات">
+          <select id="subject">
+            <option value="">— اختاري المادة —</option>
+          </select>
         </div>
 
         <div class="field">
@@ -1221,6 +1287,143 @@
 
       </div>
 
+      <section id="reviewReportsSection" class="review-report">
+        <div class="review-report-head">
+          <div>
+            <h3>📈 تقارير متابعة التحضير</h3>
+            <div class="muted" id="reviewReportScopeText">تحليل المتابعات المعتمدة فقط</div>
+          </div>
+          <div class="review-report-filters">
+            <select id="reviewReportDimension" aria-label="نوع التقرير">
+              <option value="department">حسب القسم</option>
+              <option value="subject">حسب المادة</option>
+              <option value="teacher">حسب المعلمة</option>
+              <option value="all">الجميع</option>
+            </select>
+            <select id="reviewReportValue" aria-label="تصفية التقرير">
+              <option value="">الكل</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="review-kpis">
+          <div class="review-kpi"><span>المتابعات المعتمدة</span><strong id="reviewKpiTotal">0</strong></div>
+          <div class="review-kpi"><span>المعلمات المتابعات</span><strong id="reviewKpiTeachers">0</strong></div>
+          <div class="review-kpi"><span>متحقق</span><strong id="reviewKpiMet">0%</strong></div>
+          <div class="review-kpi"><span>متحقق جزئيًا</span><strong id="reviewKpiPartial">0%</strong></div>
+          <div class="review-kpi"><span>غير متحقق</span><strong id="reviewKpiNotMet">0%</strong></div>
+        </div>
+
+        <div class="review-table-wrap">
+          <table class="review-table">
+            <thead>
+              <tr>
+                <th id="reviewGroupHeading">القسم</th>
+                <th>المتابعات</th>
+                <th>المعلمات</th>
+                <th>متحقق</th>
+                <th>متحقق جزئيًا</th>
+                <th>غير متحقق</th>
+                <th>آخر متابعة</th>
+              </tr>
+            </thead>
+            <tbody id="reviewSummaryBody"></tbody>
+          </table>
+        </div>
+
+        <h3 style="margin-top:18px">تحليل المعايير</h3>
+        <div class="review-table-wrap">
+          <table class="review-table">
+            <thead>
+              <tr>
+                <th>المعيار</th>
+                <th>متحقق</th>
+                <th>متحقق جزئيًا</th>
+                <th>غير متحقق</th>
+              </tr>
+            </thead>
+            <tbody id="reviewCriteriaReportBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+
+
+      <section id="aggregateReviewReportsSection" class="review-report">
+        <div class="review-report-head">
+          <div>
+            <h3>📊 التقرير التجميعي لمتابعة التحضير</h3>
+            <div class="muted" id="aggregateScopeText">يعتمد على المتابعات المعتمدة فقط.</div>
+          </div>
+          <div class="review-tools">
+            <button id="printAggregateReportBtn" class="btn btn-gold" type="button">🖨️ طباعة / PDF التقرير التجميعي</button>
+          </div>
+        </div>
+
+        <div class="archive-filters" style="grid-template-columns:repeat(4,minmax(160px,1fr));">
+          <select id="aggregateDepartment"><option value="">كل الأقسام</option></select>
+          <select id="aggregateSubject"><option value="">كل المواد</option></select>
+          <select id="aggregateTeacher"><option value="">كل المعلمات</option></select>
+          <select id="aggregateCycle"><option value="">كل المتابعات</option><option value="1">المتابعة الأولى</option><option value="2">المتابعة الثانية</option><option value="3">المتابعة الثالثة</option></select>
+        </div>
+
+        <div class="review-kpis">
+          <div class="review-kpi"><span>المتابعات المعتمدة</span><strong id="aggKpiReviews">0</strong></div>
+          <div class="review-kpi"><span>المعلمات</span><strong id="aggKpiTeachers">0</strong></div>
+          <div class="review-kpi"><span>متحقق</span><strong id="aggKpiMet">0%</strong></div>
+          <div class="review-kpi"><span>متحقق جزئيًا</span><strong id="aggKpiPartial">0%</strong></div>
+          <div class="review-kpi"><span>غير متحقق</span><strong id="aggKpiNotMet">0%</strong></div>
+        </div>
+
+        <div class="review-table-wrap">
+          <table class="review-table">
+            <thead><tr><th>المعلمة</th><th>القسم</th><th>المادة</th><th>المتابعات</th><th>متحقق</th><th>جزئيًا</th><th>غير متحقق</th><th>آخر متابعة</th></tr></thead>
+            <tbody id="aggregateTeachersBody"></tbody>
+          </table>
+        </div>
+
+        <h3 style="margin-top:18px">تحليل الأقسام</h3>
+        <div class="review-table-wrap">
+          <table class="review-table">
+            <thead><tr><th>القسم</th><th>المتابعات</th><th>المعلمات</th><th>متحقق</th><th>جزئيًا</th><th>غير متحقق</th></tr></thead>
+            <tbody id="aggregateDepartmentsBody"></tbody>
+          </table>
+        </div>
+
+        <h3 style="margin-top:18px">تحليل المواد</h3>
+        <div class="review-table-wrap">
+          <table class="review-table">
+            <thead><tr><th>المادة</th><th>المتابعات</th><th>المعلمات</th><th>متحقق</th><th>جزئيًا</th><th>غير متحقق</th></tr></thead>
+            <tbody id="aggregateSubjectsBody"></tbody>
+          </table>
+        </div>
+
+        <h3 style="margin-top:18px">تحليل المعايير الـ13</h3>
+        <div class="review-table-wrap">
+          <table class="review-table">
+            <thead><tr><th>المعيار</th><th>متحقق</th><th>متحقق جزئيًا</th><th>غير متحقق</th></tr></thead>
+            <tbody id="aggregateCriteriaBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="reviewArchiveSection" class="archive-section">
+        <div class="review-report-head">
+          <div>
+            <h3>🗂️ أرشيف متابعات التحضير المعتمدة</h3>
+            <div class="muted">كل متابعة معتمدة محفوظة كسجل رسمي مرتبط بالمعلمة والمادة وعنوان الدرس.</div>
+          </div>
+        </div>
+        <div class="archive-filters">
+          <input id="archiveTeacherSearch" type="search" placeholder="اسم المعلمة">
+          <select id="archiveDepartment"><option value="">كل الأقسام</option></select>
+          <select id="archiveSubject"><option value="">كل المواد</option></select>
+          <input id="archiveLessonSearch" type="search" placeholder="عنوان الدرس">
+          <select id="archiveCycle"><option value="">كل المتابعات</option><option value="1">المتابعة الأولى</option><option value="2">المتابعة الثانية</option><option value="3">المتابعة الثالثة</option></select>
+        </div>
+        <div id="reviewArchiveList"></div>
+      </section>
+
       <h3>سجل التحاضير</h3>
       <div id="adminPlansList" class="plan-list"></div>
     </section>
@@ -1228,6 +1431,58 @@
   </section>
 
 </main>
+
+
+
+<!-- متابعة وتقييم التحضير -->
+<div id="lessonReviewModal" class="review-modal hidden">
+  <div class="review-dialog" role="dialog" aria-modal="true" aria-labelledby="lessonReviewTitle">
+    <div class="review-head">
+      <div>
+        <h2 id="lessonReviewTitle">📝 متابعة وتقييم التحضير</h2>
+        <p>استمارة متابعة تخطيط الدروس اليومية — التقييم وفق المعايير المعتمدة.</p>
+      </div>
+      <button id="closeLessonReviewBtn" class="review-close" type="button" aria-label="إغلاق">×</button>
+    </div>
+    <input id="reviewPlanId" type="hidden">
+    <input id="reviewExistingId" type="hidden">
+    <div id="reviewMeta" class="review-meta"></div>
+    <div class="review-tools">
+      <button id="viewPlanDuringReviewBtn" class="btn btn-gold" type="button" onclick="window.openPlanPreview(document.getElementById('reviewPlanId').value)">📖 عرض التحضير</button>
+      <button id="printCurrentReviewBtn" class="btn btn-soft hidden" type="button" onclick="window.printReview(this.dataset.reviewId)">🖨️ طباعة التقرير</button>
+    </div>
+    <div id="reviewHistory" class="review-summary hidden"></div>
+    <div id="reviewCriteriaContainer"></div>
+    <div class="field full" style="margin-top:16px">
+      <label for="reviewGeneralNotes">الملاحظات العامة</label>
+      <textarea id="reviewGeneralNotes" class="review-general" placeholder="اكتبي الملاحظات العامة على التخطيط..."></textarea>
+    </div>
+    <div class="review-actions">
+      <button id="saveLessonReviewDraftBtn" class="btn btn-soft" type="button">💾 حفظ المتابعة</button>
+      <button id="approveLessonReviewBtn" class="btn btn-primary" type="button">✅ اعتماد المتابعة</button>
+      <button id="cancelLessonReviewBtn" class="btn btn-soft" type="button">إغلاق</button>
+    </div>
+    <div id="lessonReviewMessage" class="review-message"></div>
+  </div>
+</div>
+
+
+<!-- عرض التحضير أثناء المتابعة -->
+<div id="planPreviewModal" class="review-modal hidden">
+  <div class="review-dialog plan-preview-dialog" role="dialog" aria-modal="true">
+    <div class="review-head">
+      <div>
+        <h2>📖 التحضير محل المتابعة</h2>
+        <p>عرض للقراءة فقط — لن تفقدي اختيارات التقييم عند فتحه أو إغلاقه.</p>
+      </div>
+      <button id="closePlanPreviewBtn" class="review-close" type="button" aria-label="إغلاق" onclick="closePlanPreview()">×</button>
+    </div>
+    <div id="planPreviewContent"></div>
+    <div class="review-actions">
+      <button id="closePlanPreviewBottomBtn" class="btn btn-primary" type="button" onclick="closePlanPreview()">العودة للتقييم</button>
+    </div>
+  </div>
+</div>
 
 <!-- ورقة PDF المخفية -->
 <section id="pdfSheet"></section>
@@ -1254,8 +1509,15 @@ let coordinatorDepartmentIds = [];
 let coordinatorVisibleTeacherIds = [];
 
 let allPlans = [];
+let availableSubjects = [];
 let objectiveCounter = 0;
 let supportCounter = 0;
+
+let reviewCriteria = [];
+let lessonPlanReviews = [];
+let lessonPlanReviewItems = [];
+let reviewDepartmentNames = {};
+let currentReviewPlan = null;
 
 const RESOURCES = [
   "لابتوب",
@@ -1605,6 +1867,116 @@ function collectSupport(){
   );
 }
 
+async function loadSubjectOptions(){
+  const select = byId("subject");
+  const currentValue = select.value;
+  availableSubjects = [];
+
+  // القيادة/الإدارة ترى جميع المواد. أما المنسقة والمعلمة فتظهر لها مواد أقسامها فقط.
+  let departmentIds = [];
+
+  if(isCoordinatorUser && coordinatorDepartmentIds.length){
+    departmentIds = [...coordinatorDepartmentIds];
+  }else if(!isAdminUser){
+    // المصدر الأساسي: profile_departments
+    const { data: assignments, error: assignmentsError } = await sb
+      .from("profile_departments")
+      .select("department_id")
+      .eq("profile_id", currentUser.id);
+
+    if(!assignmentsError){
+      departmentIds = [...new Set((assignments || [])
+        .map(x => x.department_id)
+        .filter(Boolean)
+        .map(String))];
+    }else{
+      console.warn("تعذر قراءة أقسام المستخدم من profile_departments:", assignmentsError);
+    }
+
+    // توافق مع الحسابات القديمة إن لم يوجد ربط في profile_departments
+    if(!departmentIds.length && currentProfile?.department_id){
+      departmentIds = [String(currentProfile.department_id)];
+    }
+  }
+
+  let allowedSubjectIds = null;
+
+  if(!isAdminUser && departmentIds.length){
+    const { data: links, error: linksError } = await sb
+      .from("department_subjects")
+      .select("subject_id")
+      .in("department_id", departmentIds);
+
+    if(linksError) throw linksError;
+
+    allowedSubjectIds = [...new Set((links || [])
+      .map(x => x.subject_id)
+      .filter(Boolean)
+      .map(String))];
+  }
+
+  let query = sb
+    .from("subjects")
+    .select("id,name,active")
+    .eq("active",true)
+    .order("name");
+
+  if(Array.isArray(allowedSubjectIds)){
+    if(!allowedSubjectIds.length){
+      select.innerHTML = '<option value="">— لا توجد مواد مرتبطة بالقسم —</option>';
+      return;
+    }
+    query = query.in("id", allowedSubjectIds);
+  }
+
+  const { data, error } = await query;
+  if(error) throw error;
+
+  availableSubjects = data || [];
+
+  select.innerHTML =
+    '<option value="">— اختاري المادة —</option>' +
+    availableSubjects.map(item =>
+      `<option value="${esc(item.id)}">${esc(item.name)}</option>`
+    ).join("");
+
+  if(currentValue && availableSubjects.some(item => String(item.id) === String(currentValue))){
+    select.value = currentValue;
+  }
+}
+
+function selectedSubject(){
+  const id = byId("subject").value;
+  return availableSubjects.find(item => String(item.id) === String(id)) || null;
+}
+
+function normalizeSubjectName(value){
+  return String(value || "")
+    .trim()
+    .replace(/^ال/, "")
+    .replace(/\s+/g, " ");
+}
+
+function findSubjectIdByLegacyName(value){
+  const normalized = normalizeSubjectName(value);
+  const aliases = {
+    "لغة عربية":"عربي",
+    "العربية":"عربي",
+    "لغة انجليزية":"إنجليزي",
+    "انجليزي":"إنجليزي",
+    "الانجليزية":"إنجليزي",
+    "تربية اسلامية":"دين",
+    "اسلامية":"دين",
+    "تقنية":"تقانة"
+  };
+  const target = aliases[normalized] || normalized;
+  const found = availableSubjects.find(item => {
+    const name = normalizeSubjectName(item.name);
+    return name === target || (aliases[name] || name) === target;
+  });
+  return found?.id || "";
+}
+
 function populateStaticOptions(){
   renderChecks("resourcesChecks","resources",RESOURCES);
   renderChecks("learningStylesChecks","learning_styles",LEARNING_STYLES);
@@ -1833,6 +2205,7 @@ async function init(){
     }
 
     populateStaticOptions();
+    await loadSubjectOptions();
 
     byId("teacherName").value =
       currentProfile.full_name ||
@@ -1885,7 +2258,39 @@ async function init(){
         "دفتر التحضير الخاص بكِ — يمكنك إنشاء التحاضير وحفظها ونسخها وتعديلها وتنزيلها PDF.";
     }
 
+    await loadReviewCriteria();
+    await loadLessonPlanReviews();
     await loadPlans();
+
+    if(isCoordinatorUser){
+      const allOption=byId("reviewReportDimension")?.querySelector('option[value="all"]');
+      if(allOption) allOption.remove();
+    }
+    renderReviewReports();
+
+    const deepLinkParams=new URLSearchParams(window.location.search);
+    const deepReviewId=deepLinkParams.get("reviewId");
+    const deepPlanId=deepLinkParams.get("planId");
+    const deepView=deepLinkParams.get("view");
+    const deepPrint=deepLinkParams.get("print");
+
+    if(deepReviewId){
+      const deepReview=lessonPlanReviews.find(r=>String(r.id)===String(deepReviewId) && r.status==="final");
+      if(deepReview){
+        setTimeout(async ()=>{
+          if(deepPrint==="1"){
+            await printReview(deepReview.id);
+          }else{
+            await openReviewResult(deepReview.lesson_plan_id,deepReview.id);
+          }
+        },180);
+      }
+    }else if(deepPlanId && deepView==="plan"){
+      const deepPlan=allPlans.find(p=>String(p.id)===String(deepPlanId));
+      if(deepPlan){
+        setTimeout(()=>openPlanPreview(deepPlan.id),180);
+      }
+    }
 
   }catch(error){
     console.error("Lesson plans init:",error);
@@ -1906,7 +2311,7 @@ async function savePlan(status){
 
   if(
     !byId("lessonDate").value ||
-    !byId("subject").value.trim() ||
+    !byId("subject").value ||
     !byId("grade").value ||
     !byId("lessonTitle").value.trim() ||
     !objectives.length
@@ -1923,6 +2328,14 @@ async function savePlan(status){
   const editingId =
     byId("editingPlanId").value || null;
 
+  const subjectRecord = selectedSubject();
+
+  if(!subjectRecord){
+    state.textContent = "اختاري المادة من القائمة المعتمدة.";
+    state.className = "save-state error";
+    return;
+  }
+
   const row = {
     teacher_id:currentUser.id,
     teacher_name:
@@ -1931,7 +2344,8 @@ async function savePlan(status){
 
     lesson_date:byId("lessonDate").value,
     lesson_day:byId("lessonDay").value || null,
-    subject:byId("subject").value.trim(),
+    subject:subjectRecord.name,
+    subject_id:subjectRecord.id,
     grade:byId("grade").value,
     class_section:
       byId("classSection").value.trim() || null,
@@ -2352,7 +2766,25 @@ function renderPlanCard(plan,adminView){
           ⬇️ PDF
         </button>
 
+        ${
+          adminView && plan.status === "completed" && canViewDepartmentOverview
+            ? `<button class="btn btn-primary" type="button" onclick="openLessonReview('${plan.id}')">📝 ${planReviews(plan.id).some(r=>r.status==="final") ? "متابعة جديدة" : "متابعة وتقييم"}</button>`
+            : ""
+        }
+
+        ${
+          planReviews(plan.id).some(r=>r.status==="final")
+            ? `<button class="btn btn-soft" type="button" onclick="openReviewResult('${plan.id}')">📋 عرض المتابعة</button>`
+            : ""
+        }
+
       </div>
+
+      ${
+        planReviews(plan.id).some(r=>r.status==="final")
+          ? `<div class="review-summary"><span class="chip chip-reviewed">✓ تمت المتابعة</span> آخر متابعة معتمدة: ${esc(formatDate(planReviews(plan.id).filter(r=>r.status==="final").sort((a,b)=>Number(b.review_cycle||0)-Number(a.review_cycle||0))[0]?.review_date))}</div>`
+          : ""
+      }
 
     </article>
   `;
@@ -2422,7 +2854,7 @@ async function editPlan(planId){
       plan.lesson_day || "";
 
     byId("subject").value =
-      plan.subject || "";
+      plan.subject_id || findSubjectIdByLegacyName(plan.subject);
 
     byId("grade").value =
       plan.grade || "";
@@ -2759,6 +3191,698 @@ function renderAdmin(){
           plan => renderPlanCard(plan,true)
         ).join("")
       : '<div class="empty">لا توجد تحاضير مطابقة.</div>';
+
+  renderReviewReports();
+}
+
+
+/* ======================================================
+   متابعة وتقييم التحضير
+   ====================================================== */
+async function loadReviewCriteria(){
+  try{
+    const {data,error}=await sb.from("lesson_plan_review_criteria").select("id,domain_name,criterion_text,display_order,active").eq("active",true).order("display_order",{ascending:true});
+    if(error) throw error;
+    reviewCriteria=data||[];
+  }catch(error){console.error("Load review criteria:",error);reviewCriteria=[];}
+}
+
+async function loadLessonPlanReviews(){
+  try{
+    let query=sb.from("lesson_plan_reviews").select("*").order("review_date",{ascending:false}).order("review_cycle",{ascending:false});
+    const {data,error}=await query;
+    if(error) throw error;
+    lessonPlanReviews=data||[];
+
+    lessonPlanReviewItems=[];
+    const reviewIds=lessonPlanReviews.map(x=>x.id).filter(Boolean);
+    if(reviewIds.length){
+      const {data:itemData,error:itemError}=await sb
+        .from("lesson_plan_review_items")
+        .select("review_id,criterion_id,rating,evaluator_note")
+        .in("review_id",reviewIds);
+      if(itemError) throw itemError;
+      lessonPlanReviewItems=itemData||[];
+    }
+
+    reviewDepartmentNames={};
+    const departmentIds=[...new Set(lessonPlanReviews.map(x=>x.department_id).filter(Boolean).map(String))];
+    if(departmentIds.length){
+      const {data:deptData,error:deptError}=await sb
+        .from("departments")
+        .select("id,name")
+        .in("id",departmentIds);
+      if(!deptError){
+        (deptData||[]).forEach(d=>reviewDepartmentNames[String(d.id)]=d.name||"قسم غير مسمى");
+      }
+    }
+  }catch(error){
+    console.warn("Load lesson plan reviews:",error);
+    lessonPlanReviews=[];
+    lessonPlanReviewItems=[];
+    reviewDepartmentNames={};
+  }
+}
+
+function planReviews(planId){return lessonPlanReviews.filter(r=>String(r.lesson_plan_id)===String(planId));}
+
+async function resolveReviewDepartmentId(plan){
+  if(isCoordinatorUser && coordinatorDepartmentIds.length) return coordinatorDepartmentIds[0];
+  try{
+    const {data,error}=await sb.from("profile_departments").select("department_id,assignment_type").eq("profile_id",plan.teacher_id);
+    if(!error && data?.length) return data.find(x=>String(x.assignment_type||"").toLowerCase()==="teacher")?.department_id || data[0].department_id || null;
+  }catch(_){}
+  return null;
+}
+
+function reviewRatingLabel(value){return value==="met"?"متحقق":value==="partial"?"متحقق جزئيًا":value==="not_met"?"غير متحقق":"—";}
+
+function renderReviewCriteria(items={}){
+  const container=byId("reviewCriteriaContainer");
+  if(!reviewCriteria.length){container.innerHTML='<div class="empty">تعذر تحميل معايير المتابعة.</div>';return;}
+  let lastDomain="";let html="";
+  reviewCriteria.forEach((criterion,index)=>{
+    if(criterion.domain_name!==lastDomain){lastDomain=criterion.domain_name;html+=`<div class="review-domain">${esc(lastDomain)}</div>`;}
+    const old=items[String(criterion.id)]||{};
+    html+=`<div class="review-criterion" data-criterion-id="${criterion.id}">
+      <div class="review-criterion-title">${index+1}. ${esc(criterion.criterion_text)}</div>
+      <div class="review-rating">
+        ${[["met","متحقق"],["partial","متحقق جزئيًا"],["not_met","غير متحقق"]].map(([value,label])=>`<label><input type="radio" name="rating_${criterion.id}" value="${value}" ${old.rating===value?"checked":""}> ${label}</label>`).join("")}
+      </div>
+      <textarea class="review-note" placeholder="ملاحظة على هذا المعيار — اختياري">${esc(old.evaluator_note||"")}</textarea>
+    </div>`;
+  });
+  container.innerHTML=html;
+}
+
+async function openLessonReview(planId){
+  prepareReviewEditMode();
+  const plan=allPlans.find(x=>String(x.id)===String(planId));
+  if(!plan || !canViewDepartmentOverview || plan.status!=="completed") return;
+  currentReviewPlan=plan;
+  byId("reviewPlanId").value=plan.id;
+  byId("reviewExistingId").value="";
+  byId("reviewGeneralNotes").value="";
+  byId("lessonReviewMessage").textContent="";
+  const history=planReviews(plan.id).sort((a,b)=>Number(b.review_cycle||0)-Number(a.review_cycle||0));
+  const ownExisting=history.find(r=>String(r.reviewer_id)===String(currentUser.id) && r.status!=="final");
+  let itemMap={};
+  if(ownExisting){
+    byId("reviewExistingId").value=ownExisting.id;
+    byId("reviewGeneralNotes").value=ownExisting.general_notes||"";
+    const {data,error}=await sb.from("lesson_plan_review_items").select("criterion_id,rating,evaluator_note").eq("review_id",ownExisting.id);
+    if(!error)(data||[]).forEach(x=>itemMap[String(x.criterion_id)]=x);
+  }
+  byId("reviewMeta").innerHTML=`
+    <div class="review-meta-box"><strong>المعلمة</strong>${esc(plan.teacher_name||"—")}</div>
+    <div class="review-meta-box"><strong>المادة</strong>${esc(plan.subject||"—")}</div>
+    <div class="review-meta-box"><strong>الدرس</strong>${esc(plan.lesson_title||"—")}</div>
+    <div class="review-meta-box"><strong>التاريخ</strong>${esc(formatDate(plan.lesson_date))}</div>`;
+  const historyBox=byId("reviewHistory");
+  if(history.length){historyBox.classList.remove("hidden");historyBox.innerHTML="<strong>سجل المتابعة:</strong> "+history.map(r=>`المتابعة ${esc(r.review_cycle)} — ${esc(formatDate(r.review_date))} — ${r.status==="final"?"معتمدة":"محفوظة"}`).join(" &nbsp; | &nbsp; ");}else{historyBox.classList.add("hidden");historyBox.innerHTML="";}
+  renderReviewCriteria(itemMap);
+  byId("lessonReviewModal").classList.remove("hidden");
+}
+
+function closeLessonReview(){byId("lessonReviewModal").classList.add("hidden");currentReviewPlan=null;}
+
+function collectReviewItems(){
+  return reviewCriteria.map(c=>{
+    const box=document.querySelector(`[data-criterion-id="${c.id}"]`);
+    const rating=box?.querySelector(`input[name="rating_${c.id}"]:checked`)?.value||"";
+    const evaluator_note=box?.querySelector(".review-note")?.value.trim()||null;
+    return {criterion_id:c.id,rating,evaluator_note};
+  });
+}
+
+async function saveLessonReview(status){
+  const msg=byId("lessonReviewMessage");msg.textContent="";msg.className="review-message";
+  if(!currentReviewPlan) return;
+  const items=collectReviewItems();
+  if(items.some(x=>!x.rating)){msg.textContent="يجب تقييم جميع المعايير الثلاثة عشر قبل الحفظ.";msg.className="review-message error";return;}
+  const btn=status==="final"?byId("approveLessonReviewBtn"):byId("saveLessonReviewDraftBtn");btn.disabled=true;
+  try{
+    const existingId=byId("reviewExistingId").value||null;
+    const history=planReviews(currentReviewPlan.id);
+    const nextCycle=history.length?Math.max(...history.map(x=>Number(x.review_cycle)||0))+1:1;
+    const departmentId=await resolveReviewDepartmentId(currentReviewPlan);
+    const row={lesson_plan_id:currentReviewPlan.id,reviewer_id:currentUser.id,department_id:departmentId,review_date:new Date().toISOString().slice(0,10),review_cycle:existingId?(history.find(x=>String(x.id)===String(existingId))?.review_cycle||1):nextCycle,general_notes:byId("reviewGeneralNotes").value.trim()||null,status,updated_at:new Date().toISOString()};
+    let reviewId=existingId;
+    if(existingId){const {error}=await sb.from("lesson_plan_reviews").update(row).eq("id",existingId);if(error)throw error;}else{const {data,error}=await sb.from("lesson_plan_reviews").insert(row).select("id").single();if(error)throw error;reviewId=data.id;}
+    {const {error}=await sb.from("lesson_plan_review_items").delete().eq("review_id",reviewId);if(error)throw error;}
+    const rows=items.map(x=>({...x,review_id:reviewId,updated_at:new Date().toISOString()}));
+    {const {error}=await sb.from("lesson_plan_review_items").insert(rows);if(error)throw error;}
+    msg.textContent=status==="final"?"✓ تم اعتماد متابعة التحضير بنجاح.":"✓ تم حفظ المتابعة بنجاح.";msg.className="review-message ok";
+    await loadLessonPlanReviews();
+    byId("reviewExistingId").value=status==="final"?"":reviewId;
+    renderReviewReports();
+    setTimeout(()=>{closeLessonReview();renderAdmin();},650);
+  }catch(error){console.error("Save lesson review:",error);msg.textContent="تعذر حفظ المتابعة: "+(error.message||"خطأ غير متوقع");msg.className="review-message error";}finally{btn.disabled=false;}
+}
+
+
+
+function latestFinalReview(planId){
+  return planReviews(planId).filter(r=>r.status==="final").sort((a,b)=>Number(b.review_cycle||0)-Number(a.review_cycle||0))[0]||null;
+}
+
+async function openPlanPreview(planId){
+  const plan=reviewPlanById(planId);
+  if(!plan) return;
+  const {objectives,support}=await getPlanChildren(planId);
+  const arr=v=>Array.isArray(v)?v:(v?[v]:[]);
+  const bullets=v=>arr(v).length?arr(v).map(x=>`<span class="chip">${esc(x)}</span>`).join(" "):"—";
+  byId("planPreviewContent").innerHTML=`
+    <div class="plan-preview-grid">
+      <div class="plan-preview-box"><strong>المعلمة</strong>${esc(plan.teacher_name||"—")}</div>
+      <div class="plan-preview-box"><strong>المادة</strong>${esc(plan.subject||"—")}</div>
+      <div class="plan-preview-box"><strong>عنوان الدرس</strong>${esc(plan.lesson_title||"—")}</div>
+      <div class="plan-preview-box"><strong>التاريخ والحصة</strong>${esc(formatDate(plan.lesson_date))} ${plan.period?" — الحصة "+esc(plan.period):""}</div>
+      <div class="plan-preview-box"><strong>الصف والشعبة</strong>${esc(plan.grade||"—")} ${plan.class_section?" — "+esc(plan.class_section):""}</div>
+      <div class="plan-preview-box"><strong>مصادر وموارد التعلم</strong>${bullets(plan.resources)}</div>
+      <div class="plan-preview-box"><strong>استراتيجيات التعليم والتعلم</strong>${bullets(plan.teaching_strategies)}</div>
+      <div class="plan-preview-box"><strong>أنماط التعلم</strong>${bullets(plan.learning_styles)}</div>
+      <div class="plan-preview-box"><strong>مهارات القرن الحادي والعشرين</strong>${bullets(plan.century21_skills)}</div>
+      <div class="plan-preview-box"><strong>أساليب التقييم</strong>${bullets(plan.assessment_methods)}</div>
+      <div class="plan-preview-box plan-preview-wide"><strong>أهداف التعلم وإجراءات سير الدرس</strong>
+        ${objectives.length?`<div class="review-table-wrap"><table class="review-table"><thead><tr><th>م</th><th>هدف التعلم</th><th>إجراءات سير الدرس</th><th>الزمن</th><th>التقييم</th></tr></thead><tbody>${objectives.map((o,i)=>`<tr><td>${i+1}</td><td>${esc(o.learning_objective||"—")}</td><td>${esc(o.lesson_procedures||"—")}</td><td>${esc(o.duration_minutes||"—")}</td><td>${esc(o.assessment_details||"—")}</td></tr>`).join("")}</tbody></table></div>`:"—"}
+      </div>
+      <div class="plan-preview-box plan-preview-wide"><strong>الدعم والمساندة</strong>${support.length?support.map(s=>`<div>• ${esc(s.category||"—")} ${s.student_name?" — "+esc(s.student_name):""} ${s.difficulty_type?" — "+esc(s.difficulty_type):""}</div>`).join(""):"—"}</div>
+      <div class="plan-preview-box"><strong>الإنتاج الطلابي</strong>${esc(plan.student_product_type||"—")} ${plan.student_product_description?" — "+esc(plan.student_product_description):""}</div>
+    </div>`;
+  byId("planPreviewModal").classList.remove("hidden");
+}
+function closePlanPreview(){byId("planPreviewModal").classList.add("hidden");}
+
+function getReviewItemsMap(reviewId){
+  const map={};
+  lessonPlanReviewItems.filter(i=>String(i.review_id)===String(reviewId)).forEach(i=>map[String(i.criterion_id)]=i);
+  return map;
+}
+
+function buildOfficialReviewHtml(review){
+  const plan=reviewPlanById(review.lesson_plan_id)||{};
+  const map=getReviewItemsMap(review.id);
+  const department=reviewDepartmentLabel(review);
+  const rows=reviewCriteria.map((c,i)=>{
+    const item=map[String(c.id)]||{};
+    return `<tr>
+      <td>${i+1}</td>
+      <td>${esc(c.domain_name||"—")}</td>
+      <td>${esc(c.criterion_text||"—")}</td>
+      <td>${esc(reviewRatingLabel(item.rating))}</td>
+      <td>${esc(item.evaluator_note||"—")}</td>
+    </tr>`;
+  }).join("");
+
+  return `<div class="official-review-sheet">
+    <div style="text-align:center;margin-bottom:8px;">
+      <img src="../../assets/school-header.jpg" alt="شعار المدرسة"
+           style="max-width:100%;height:24mm;object-fit:contain;display:block;margin:0 auto 5px;">
+    </div>
+
+    <div class="official-review-title">
+      <h1>تقرير متابعة تخطيط الدروس اليومية</h1>
+      <p>مدرسة الرفاع الغربي الابتدائية للبنين — العام الدراسي 2026/2027م</p>
+      <p style="margin-top:4px;font-weight:700;color:#075c40;">متابعة معتمدة</p>
+    </div>
+
+    <div class="official-review-meta">
+      <div><strong>اسم المعلمة:</strong> ${esc(plan.teacher_name||"—")}</div>
+      <div><strong>القسم:</strong> ${esc(department||"—")}</div>
+      <div><strong>المادة:</strong> ${esc(plan.subject||"—")}</div>
+      <div><strong>عنوان الدرس:</strong> ${esc(plan.lesson_title||"—")}</div>
+      <div><strong>الصف / الشعبة:</strong> ${esc(plan.grade||"—")} ${plan.class_section?` / ${esc(plan.class_section)}`:""}</div>
+      <div><strong>تاريخ الدرس:</strong> ${esc(formatDate(plan.lesson_date))}</div>
+      <div><strong>رقم المتابعة:</strong> ${esc(review.review_cycle||1)}</div>
+      <div><strong>تاريخ المتابعة:</strong> ${esc(formatDate(review.review_date))}</div>
+    </div>
+
+    <table class="official-review-table">
+      <thead>
+        <tr><th>م</th><th>المجال</th><th>المعيار</th><th>التقييم</th><th>الملاحظة</th></tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+
+    <div class="plan-preview-box" style="margin-top:12px">
+      <strong>الملاحظات العامة</strong>
+      ${esc(review.general_notes||"لا توجد ملاحظات عامة.")}
+    </div>
+
+    <div style="margin-top:18px;border-top:2px solid #0b6d50;padding-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:24px;text-align:center;color:#173c34;">
+      <div>
+        <div style="font-size:12px;margin-bottom:5px;">المديرة المساعدة</div>
+        <strong style="color:#075c40;font-size:14px;">خلود الكعبي</strong>
+      </div>
+      <div>
+        <div style="font-size:12px;margin-bottom:5px;">مديرة المدرسة</div>
+        <strong style="color:#075c40;font-size:14px;">أحلام السويدي</strong>
+      </div>
+    </div>
+  </div>`;
+}
+
+async function printReview(reviewId){
+  try{
+    if(!reviewId){alert("لا يوجد تقرير معتمد للطباعة.");return;}
+    const review=lessonPlanReviews.find(r=>String(r.id)===String(reviewId));
+    if(!review) throw new Error("المتابعة غير موجودة");
+
+    let existing=lessonPlanReviewItems.filter(i=>String(i.review_id)===String(reviewId));
+    if(!existing.length){
+      const {data,error}=await sb
+        .from("lesson_plan_review_items")
+        .select("review_id,criterion_id,rating,evaluator_note")
+        .eq("review_id",reviewId);
+      if(error) throw error;
+      lessonPlanReviewItems.push(...(data||[]));
+    }
+
+    const pdf=byId("pdfSheet");
+    pdf.innerHTML=`<section id="officialReviewPdfPage" style="width:210mm;min-height:297mm;box-sizing:border-box;background:#fff;padding:10mm;direction:rtl;">${buildOfficialReviewHtml(review)}</section>`;
+    pdf.style.width="210mm";
+    pdf.classList.add("pdf-visible");
+
+    if(document.fonts?.ready){try{await document.fonts.ready;}catch(_){}}
+    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+
+    const page=byId("officialReviewPdfPage");
+    const canvas=await html2canvas(page,{
+      scale:1.5,
+      useCORS:true,
+      backgroundColor:"#ffffff",
+      logging:false,
+      scrollX:0,
+      scrollY:0,
+      windowWidth:page.scrollWidth,
+      windowHeight:page.scrollHeight
+    });
+
+    const JsPDF=window.jspdf?.jsPDF||window.jsPDF;
+    if(!JsPDF) throw new Error("مكتبة PDF غير متاحة");
+
+    const doc=new JsPDF({orientation:"portrait",unit:"mm",format:"a4",compress:true});
+    const imgData=canvas.toDataURL("image/jpeg",0.96);
+    const pageW=210, pageH=297;
+    const ratio=Math.min(pageW/canvas.width,pageH/canvas.height);
+    const imgW=canvas.width*ratio, imgH=canvas.height*ratio;
+    doc.addImage(imgData,"JPEG",(pageW-imgW)/2,0,imgW,imgH,undefined,"FAST");
+
+    const plan=reviewPlanById(review.lesson_plan_id)||{};
+    const clean=s=>String(s||"").replace(/[\\/:*?"<>|]/g,"_").replace(/\s+/g,"_");
+    doc.save(`متابعة_${clean(plan.teacher_name||"معلمة")}_${clean(plan.lesson_title||"تحضير")}_${review.review_cycle||1}.pdf`);
+
+    pdf.classList.remove("pdf-visible");
+    pdf.style.width="";
+    pdf.innerHTML="";
+  }catch(error){
+    console.error("Review PDF:",error);
+    const pdf=byId("pdfSheet");
+    if(pdf){pdf.classList.remove("pdf-visible");pdf.style.width="";pdf.innerHTML="";}
+    alert("تعذر إنشاء تقرير المتابعة PDF.\n"+(error?.message||"خطأ غير معروف"));
+  }
+}
+
+function aggregateVisibleReviews(){
+  let rows=finalizedVisibleReviews();
+  const department=byId("aggregateDepartment")?.value||"";
+  const subject=byId("aggregateSubject")?.value||"";
+  const teacher=byId("aggregateTeacher")?.value||"";
+  const cycle=byId("aggregateCycle")?.value||"";
+  return rows.filter(r=>{
+    const p=reviewPlanById(r.lesson_plan_id)||{};
+    if(department && reviewDepartmentLabel(r)!==department) return false;
+    if(subject && String(p.subject||"")!==subject) return false;
+    if(teacher && String(p.teacher_name||"")!==teacher) return false;
+    if(cycle && String(r.review_cycle||1)!==cycle) return false;
+    return true;
+  });
+}
+
+function fillAggregateFilters(){
+  const reviews=finalizedVisibleReviews();
+  const dep=byId("aggregateDepartment"),sub=byId("aggregateSubject"),teach=byId("aggregateTeacher");
+  if(!dep||!sub||!teach) return;
+  const old=[dep.value,sub.value,teach.value];
+  const deps=[...new Set(reviews.map(reviewDepartmentLabel).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"ar"));
+  const subs=[...new Set(reviews.map(r=>reviewPlanById(r.lesson_plan_id)?.subject).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"ar"));
+  const teachers=[...new Set(reviews.map(r=>reviewPlanById(r.lesson_plan_id)?.teacher_name).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"ar"));
+  dep.innerHTML='<option value="">كل الأقسام</option>'+deps.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");
+  sub.innerHTML='<option value="">كل المواد</option>'+subs.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");
+  teach.innerHTML='<option value="">كل المعلمات</option>'+teachers.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");
+  if(deps.includes(old[0]))dep.value=old[0];if(subs.includes(old[1]))sub.value=old[1];if(teachers.includes(old[2]))teach.value=old[2];
+}
+
+function aggStats(reviews){
+  const ids=reviews.map(r=>r.id);
+  const items=reviewItemsFor(ids);
+  const met=items.filter(x=>x.rating==="met").length;
+  const partial=items.filter(x=>x.rating==="partial").length;
+  const notMet=items.filter(x=>x.rating==="not_met").length;
+  const total=met+partial+notMet;
+  const teachers=new Set(reviews.map(r=>reviewPlanById(r.lesson_plan_id)?.teacher_name).filter(Boolean));
+  return {items,met,partial,notMet,total,teachers:teachers.size};
+}
+
+function renderAggregateReports(){
+  if(!canViewDepartmentOverview) return;
+  fillAggregateFilters();
+  const reviews=aggregateVisibleReviews();
+  const stats=aggStats(reviews);
+  byId("aggregateScopeText").textContent=isCoordinatorUser
+    ?"تقرير تجميعي للمتابعات المعتمدة ضمن أقسام المنسقة فقط."
+    :"تقرير تجميعي للمتابعات المعتمدة على مستوى المدرسة بالكامل.";
+  byId("aggKpiReviews").textContent=reviews.length;
+  byId("aggKpiTeachers").textContent=stats.teachers;
+  byId("aggKpiMet").textContent=pct(stats.met,stats.total)+"%";
+  byId("aggKpiPartial").textContent=pct(stats.partial,stats.total)+"%";
+  byId("aggKpiNotMet").textContent=pct(stats.notMet,stats.total)+"%";
+
+  const renderGrouped=(keyFn,bodyId,includeTeachers=true)=>{
+    const groups={};
+    reviews.forEach(r=>{const k=keyFn(r)||"غير محدد";(groups[k] ||= []).push(r);});
+    const entries=Object.entries(groups).sort((a,b)=>String(a[0]).localeCompare(String(b[0]),"ar"));
+    byId(bodyId).innerHTML=entries.length?entries.map(([name,rs])=>{
+      const s=aggStats(rs);
+      return `<tr><td><strong>${esc(name)}</strong></td><td>${rs.length}</td>${includeTeachers?`<td>${s.teachers}</td>`:""}<td class="review-good">${pct(s.met,s.total)}%</td><td class="review-partial">${pct(s.partial,s.total)}%</td><td class="review-bad">${pct(s.notMet,s.total)}%</td></tr>`;
+    }).join(""):`<tr><td colspan="${includeTeachers?6:5}" class="review-empty">لا توجد بيانات مطابقة.</td></tr>`;
+  };
+
+  renderGrouped(r=>reviewDepartmentLabel(r),"aggregateDepartmentsBody",true);
+  renderGrouped(r=>reviewPlanById(r.lesson_plan_id)?.subject||"غير محدد","aggregateSubjectsBody",true);
+
+  const teacherGroups={};
+  reviews.forEach(r=>{
+    const p=reviewPlanById(r.lesson_plan_id)||{};
+    const key=[p.teacher_name||"غير محدد",reviewDepartmentLabel(r),p.subject||"غير محدد"].join("|||");
+    (teacherGroups[key] ||= []).push(r);
+  });
+  const teacherRows=Object.entries(teacherGroups).sort((a,b)=>a[0].localeCompare(b[0],"ar"));
+  byId("aggregateTeachersBody").innerHTML=teacherRows.length?teacherRows.map(([key,rs])=>{
+    const [teacher,department,subject]=key.split("|||");
+    const s=aggStats(rs);
+    const last=[...rs].sort((a,b)=>String(b.review_date||"").localeCompare(String(a.review_date||"")))[0]?.review_date;
+    return `<tr><td><strong>${esc(teacher)}</strong></td><td>${esc(department)}</td><td>${esc(subject)}</td><td>${rs.length}</td><td class="review-good">${pct(s.met,s.total)}%</td><td class="review-partial">${pct(s.partial,s.total)}%</td><td class="review-bad">${pct(s.notMet,s.total)}%</td><td>${esc(formatDate(last))}</td></tr>`;
+  }).join(""):'<tr><td colspan="8" class="review-empty">لا توجد بيانات مطابقة.</td></tr>';
+
+  byId("aggregateCriteriaBody").innerHTML=reviewCriteria.length?reviewCriteria.map(c=>{
+    const ci=stats.items.filter(i=>String(i.criterion_id)===String(c.id));
+    const m=ci.filter(x=>x.rating==="met").length,p=ci.filter(x=>x.rating==="partial").length,n=ci.filter(x=>x.rating==="not_met").length,t=m+p+n;
+    return `<tr><td><strong>${esc(c.criterion_text)}</strong></td><td class="review-good">${m} (${pct(m,t)}%)</td><td class="review-partial">${p} (${pct(p,t)}%)</td><td class="review-bad">${n} (${pct(n,t)}%)</td></tr>`;
+  }).join(""):'<tr><td colspan="4" class="review-empty">لا توجد معايير.</td></tr>';
+}
+
+async function printAggregateReport(){
+  const reviews=aggregateVisibleReviews();
+  if(!reviews.length){alert("لا توجد بيانات مطابقة لطباعة التقرير.");return;}
+  const stats=aggStats(reviews);
+  const scope=isCoordinatorUser?"نطاق أقسام المنسقة":"المدرسة بالكامل";
+  const dep=byId("aggregateDepartment")?.value||"الكل";
+  const sub=byId("aggregateSubject")?.value||"الكل";
+  const teacher=byId("aggregateTeacher")?.value||"الكل";
+  const cycle=byId("aggregateCycle")?.value||"الكل";
+  const criteriaRows=reviewCriteria.map((c,i)=>{
+    const ci=stats.items.filter(x=>String(x.criterion_id)===String(c.id));
+    const m=ci.filter(x=>x.rating==="met").length,p=ci.filter(x=>x.rating==="partial").length,n=ci.filter(x=>x.rating==="not_met").length,t=m+p+n;
+    return `<tr><td>${i+1}</td><td>${esc(c.criterion_text)}</td><td>${m} (${pct(m,t)}%)</td><td>${p} (${pct(p,t)}%)</td><td>${n} (${pct(n,t)}%)</td></tr>`;
+  }).join("");
+  const pdf=byId("pdfSheet");
+  pdf.innerHTML=`<section id="aggregatePdfPage" style="width:210mm;min-height:297mm;box-sizing:border-box;background:#fff;padding:10mm;direction:rtl;">
+    <div class="official-review-sheet">
+      <div style="text-align:center"><img src="../../assets/school-header.jpg" style="max-width:100%;height:24mm;object-fit:contain"></div>
+      <div class="official-review-title"><h1>التقرير التجميعي لمتابعة التحضير</h1><p>مدرسة الرفاع الغربي الابتدائية للبنين — العام الدراسي 2026/2027م</p></div>
+      <div class="official-review-meta"><div><strong>النطاق:</strong> ${esc(scope)}</div><div><strong>القسم:</strong> ${esc(dep)}</div><div><strong>المادة:</strong> ${esc(sub)}</div><div><strong>المعلمة:</strong> ${esc(teacher)}</div><div><strong>رقم المتابعة:</strong> ${esc(cycle)}</div><div><strong>عدد المتابعات:</strong> ${reviews.length}</div></div>
+      <div class="review-kpis" style="grid-template-columns:repeat(4,1fr)"><div class="review-kpi"><span>المعلمات</span><strong>${stats.teachers}</strong></div><div class="review-kpi"><span>متحقق</span><strong>${pct(stats.met,stats.total)}%</strong></div><div class="review-kpi"><span>جزئيًا</span><strong>${pct(stats.partial,stats.total)}%</strong></div><div class="review-kpi"><span>غير متحقق</span><strong>${pct(stats.notMet,stats.total)}%</strong></div></div>
+      <table class="official-review-table"><thead><tr><th>م</th><th>المعيار</th><th>متحقق</th><th>جزئيًا</th><th>غير متحقق</th></tr></thead><tbody>${criteriaRows}</tbody></table>
+      <div style="margin-top:18px;border-top:2px solid #0b6d50;padding-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:24px;text-align:center"><div>المديرة المساعدة<br><strong>خلود الكعبي</strong></div><div>مديرة المدرسة<br><strong>أحلام السويدي</strong></div></div>
+    </div>
+  </section>`;
+  pdf.classList.add("pdf-visible");pdf.style.width="210mm";
+  if(document.fonts?.ready){try{await document.fonts.ready;}catch(_){}}
+  await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+  try{
+    const page=byId("aggregatePdfPage");
+    const canvas=await html2canvas(page,{scale:1.5,useCORS:true,backgroundColor:"#fff",logging:false});
+    const JsPDF=window.jspdf?.jsPDF||window.jsPDF;
+    const doc=new JsPDF({orientation:"portrait",unit:"mm",format:"a4",compress:true});
+    const img=canvas.toDataURL("image/jpeg",.96),w=210,h=canvas.height*(210/canvas.width);
+    doc.addImage(img,"JPEG",0,0,w,h,undefined,"FAST");
+    doc.save("التقرير_التجميعي_لمتابعة_التحضير.pdf");
+  }finally{pdf.classList.remove("pdf-visible");pdf.style.width="";pdf.innerHTML="";}
+}
+
+function archiveFilteredReviews(){
+  const teacher=(byId("archiveTeacherSearch")?.value||"").trim().toLowerCase();
+  const department=byId("archiveDepartment")?.value||"";
+  const subject=byId("archiveSubject")?.value||"";
+  const lesson=(byId("archiveLessonSearch")?.value||"").trim().toLowerCase();
+  const cycle=byId("archiveCycle")?.value||"";
+  return finalizedVisibleReviews().filter(r=>{
+    const p=reviewPlanById(r.lesson_plan_id)||{};
+    if(teacher && !String(p.teacher_name||"").toLowerCase().includes(teacher)) return false;
+    if(department && reviewDepartmentLabel(r)!==department) return false;
+    if(subject && String(p.subject||"")!==subject) return false;
+    if(lesson && !String(p.lesson_title||"").toLowerCase().includes(lesson)) return false;
+    if(cycle && String(r.review_cycle||1)!==cycle) return false;
+    return true;
+  }).sort((a,b)=>String(b.review_date||"").localeCompare(String(a.review_date||"")));
+}
+
+function refreshArchiveOptions(){
+  const reviews=finalizedVisibleReviews();
+  const dept=byId("archiveDepartment"),sub=byId("archiveSubject");
+  if(!dept||!sub) return;
+  const dv=dept.value,sv=sub.value;
+  const depts=[...new Set(reviews.map(reviewDepartmentLabel).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"ar"));
+  const subs=[...new Set(reviews.map(r=>reviewPlanById(r.lesson_plan_id)?.subject).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"ar"));
+  dept.innerHTML='<option value="">كل الأقسام</option>'+depts.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");
+  sub.innerHTML='<option value="">كل المواد</option>'+subs.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");
+  if(depts.includes(dv))dept.value=dv;if(subs.includes(sv))sub.value=sv;
+}
+
+function renderReviewArchive(){
+  if(!canViewDepartmentOverview) return;
+  refreshArchiveOptions();
+  const list=byId("reviewArchiveList");
+  if(!list) return;
+  const rows=archiveFilteredReviews();
+  list.innerHTML=rows.length?rows.map(r=>{
+    const p=reviewPlanById(r.lesson_plan_id)||{};
+    return `<article class="archive-card">
+      <div class="archive-card-head">
+        <div>
+          <div class="archive-card-title">${esc(p.teacher_name||"—")} — ${esc(p.lesson_title||"تحضير")}</div>
+          <div class="archive-card-meta">القسم: ${esc(reviewDepartmentLabel(r))} • المادة: ${esc(p.subject||"—")} • تاريخ الدرس: ${esc(formatDate(p.lesson_date))}<br>المتابعة رقم ${esc(r.review_cycle||1)} • تاريخ الاعتماد: ${esc(formatDate(r.review_date))}</div>
+        </div>
+        <span class="chip chip-reviewed">✓ معتمد</span>
+      </div>
+      <div class="action-row">
+        <button class="btn btn-soft" type="button" onclick="openReviewResultById('${r.id}')">📋 عرض التقرير</button>
+        <button class="btn btn-gold" type="button" onclick="printReview('${r.id}')">🖨️ طباعة / PDF</button>
+        <button class="btn btn-soft" type="button" onclick="openPlanPreview('${r.lesson_plan_id}')">📖 عرض التحضير</button>
+      </div>
+    </article>`;
+  }).join(""):'<div class="empty">لا توجد متابعات معتمدة مطابقة.</div>';
+}
+
+async function openReviewResultById(reviewId){
+  const review=lessonPlanReviews.find(r=>String(r.id)===String(reviewId));
+  if(!review) return;
+  await openReviewResult(review.lesson_plan_id, reviewId);
+}
+
+function reviewPlanById(planId){
+  return allPlans.find(p=>String(p.id)===String(planId))||null;
+}
+
+function finalizedVisibleReviews(){
+  const visiblePlanIds=new Set(allPlans.map(p=>String(p.id)));
+  return lessonPlanReviews.filter(r=>r.status==="final" && visiblePlanIds.has(String(r.lesson_plan_id)));
+}
+
+function reviewDepartmentLabel(review){
+  if(review?.department_id && reviewDepartmentNames[String(review.department_id)]) return reviewDepartmentNames[String(review.department_id)];
+  const plan=reviewPlanById(review?.lesson_plan_id);
+  if(isCoordinatorUser){
+    const names=Array.isArray(currentProfile?.department_names)?currentProfile.department_names:[];
+    if(names.length===1) return names[0];
+    if(currentProfile?.department_name) return currentProfile.department_name;
+  }
+  return plan?.department_name || "غير محدد";
+}
+
+function reviewDimensionLabel(review,dimension){
+  const plan=reviewPlanById(review.lesson_plan_id);
+  if(dimension==="teacher") return plan?.teacher_name||"غير محدد";
+  if(dimension==="subject") return plan?.subject||"غير محدد";
+  if(dimension==="department") return reviewDepartmentLabel(review);
+  return "جميع المتابعات";
+}
+
+function reviewItemsFor(reviewIds){
+  const ids=new Set(reviewIds.map(String));
+  return lessonPlanReviewItems.filter(i=>ids.has(String(i.review_id)));
+}
+
+function pct(n,total){return total?Math.round((n/total)*100):0;}
+
+function refreshReviewReportValueOptions(){
+  const dimension=byId("reviewReportDimension")?.value||"department";
+  const select=byId("reviewReportValue");
+  if(!select) return;
+  const previous=select.value;
+  const reviews=finalizedVisibleReviews();
+  const values=[...new Set(reviews.map(r=>reviewDimensionLabel(r,dimension)).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),"ar"));
+  select.innerHTML='<option value="">الكل</option>'+values.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join("");
+  if(values.includes(previous)) select.value=previous;
+}
+
+function renderReviewReports(){
+  if(!canViewDepartmentOverview) return;
+  const section=byId("reviewReportsSection");
+  if(!section) return;
+
+  const dimension=byId("reviewReportDimension")?.value||"department";
+  if(isCoordinatorUser && dimension==="all"){
+    byId("reviewReportDimension").value="department";
+    return renderReviewReports();
+  }
+
+  refreshReviewReportValueOptions();
+  const selected=byId("reviewReportValue")?.value||"";
+  let reviews=finalizedVisibleReviews();
+  if(selected) reviews=reviews.filter(r=>reviewDimensionLabel(r,dimension)===selected);
+
+  const reviewIds=reviews.map(r=>r.id);
+  const items=reviewItemsFor(reviewIds);
+  const met=items.filter(x=>x.rating==="met").length;
+  const partial=items.filter(x=>x.rating==="partial").length;
+  const notMet=items.filter(x=>x.rating==="not_met").length;
+  const totalRatings=met+partial+notMet;
+  const teacherIds=new Set(reviews.map(r=>reviewPlanById(r.lesson_plan_id)?.teacher_id).filter(Boolean).map(String));
+
+  byId("reviewKpiTotal").textContent=reviews.length;
+  byId("reviewKpiTeachers").textContent=teacherIds.size;
+  byId("reviewKpiMet").textContent=pct(met,totalRatings)+"%";
+  byId("reviewKpiPartial").textContent=pct(partial,totalRatings)+"%";
+  byId("reviewKpiNotMet").textContent=pct(notMet,totalRatings)+"%";
+
+  const headings={department:"القسم",subject:"المادة",teacher:"المعلمة",all:"النطاق"};
+  byId("reviewGroupHeading").textContent=headings[dimension]||"النطاق";
+  byId("reviewReportScopeText").textContent=isCoordinatorUser
+    ?"تقارير المتابعات المعتمدة ضمن أقسام المنسقة فقط"
+    :"تقارير المتابعات المعتمدة على مستوى المدرسة";
+
+  const groups={};
+  reviews.forEach(r=>{
+    const key=reviewDimensionLabel(r,dimension);
+    (groups[key] ||= []).push(r);
+  });
+
+  const body=byId("reviewSummaryBody");
+  const entries=Object.entries(groups).sort((a,b)=>String(a[0]).localeCompare(String(b[0]),"ar"));
+  if(!entries.length){
+    body.innerHTML='<tr><td colspan="7" class="review-empty">لا توجد متابعات معتمدة ضمن هذا النطاق.</td></tr>';
+  }else{
+    body.innerHTML=entries.map(([name,groupReviews])=>{
+      const ids=groupReviews.map(r=>r.id);
+      const its=reviewItemsFor(ids);
+      const gm=its.filter(x=>x.rating==="met").length;
+      const gp=its.filter(x=>x.rating==="partial").length;
+      const gn=its.filter(x=>x.rating==="not_met").length;
+      const gt=gm+gp+gn;
+      const teachers=new Set(groupReviews.map(r=>reviewPlanById(r.lesson_plan_id)?.teacher_id).filter(Boolean).map(String));
+      const last=[...groupReviews].sort((a,b)=>String(b.review_date||"").localeCompare(String(a.review_date||"")))[0]?.review_date;
+      return `<tr>
+        <td><strong>${esc(name)}</strong></td>
+        <td>${groupReviews.length}</td>
+        <td>${teachers.size}</td>
+        <td class="review-good">${pct(gm,gt)}%</td>
+        <td class="review-partial">${pct(gp,gt)}%</td>
+        <td class="review-bad">${pct(gn,gt)}%</td>
+        <td>${esc(formatDate(last))}</td>
+      </tr>`;
+    }).join("");
+  }
+
+  const criteriaBody=byId("reviewCriteriaReportBody");
+  if(!reviewCriteria.length || !reviews.length){
+    criteriaBody.innerHTML='<tr><td colspan="4" class="review-empty">لا توجد بيانات كافية لتحليل المعايير.</td></tr>';
+  }else{
+    criteriaBody.innerHTML=reviewCriteria.map(c=>{
+      const cItems=items.filter(i=>String(i.criterion_id)===String(c.id));
+      const cm=cItems.filter(x=>x.rating==="met").length;
+      const cp=cItems.filter(x=>x.rating==="partial").length;
+      const cn=cItems.filter(x=>x.rating==="not_met").length;
+      const ct=cm+cp+cn;
+      return `<tr>
+        <td><strong>${esc(c.criterion_text)}</strong></td>
+        <td class="review-good">${cm} (${pct(cm,ct)}%)</td>
+        <td class="review-partial">${cp} (${pct(cp,ct)}%)</td>
+        <td class="review-bad">${cn} (${pct(cn,ct)}%)</td>
+      </tr>`;
+    }).join("");
+  }
+  renderReviewArchive();
+  renderAggregateReports();
+}
+
+async function openReviewResult(planId,specificReviewId=null){
+  const plan=reviewPlanById(planId);
+  if(!plan) return;
+  const finalReviews=planReviews(planId).filter(r=>r.status==="final").sort((a,b)=>Number(b.review_cycle||0)-Number(a.review_cycle||0));
+  if(!finalReviews.length) return;
+  const review=specificReviewId ? finalReviews.find(r=>String(r.id)===String(specificReviewId)) : finalReviews[0];
+  if(!review) return;
+  let items=lessonPlanReviewItems.filter(i=>String(i.review_id)===String(review.id));
+  if(!items.length){
+    const {data,error}=await sb.from("lesson_plan_review_items").select("criterion_id,rating,evaluator_note").eq("review_id",review.id);
+    if(error){alert("تعذر تحميل نتيجة المتابعة.");return;}
+    items=data||[];
+  }
+  const map={};items.forEach(i=>map[String(i.criterion_id)]=i);
+  currentReviewPlan=plan;
+  byId("reviewPlanId").value=plan.id;
+  byId("reviewExistingId").value="";
+  byId("reviewMeta").innerHTML=`
+    <div class="review-meta-box"><strong>المعلمة</strong>${esc(plan.teacher_name||"—")}</div>
+    <div class="review-meta-box"><strong>المادة</strong>${esc(plan.subject||"—")}</div>
+    <div class="review-meta-box"><strong>المتابعة</strong>رقم ${esc(review.review_cycle||1)} — معتمدة</div>
+    <div class="review-meta-box"><strong>التاريخ</strong>${esc(formatDate(review.review_date))}</div>`;
+  byId("reviewHistory").classList.remove("hidden");
+  byId("reviewHistory").innerHTML=`<strong>الملاحظات العامة:</strong> ${esc(review.general_notes||"لا توجد ملاحظات عامة.")}`;
+  let lastDomain="",html="";
+  reviewCriteria.forEach((c,index)=>{
+    if(c.domain_name!==lastDomain){lastDomain=c.domain_name;html+=`<div class="review-domain">${esc(lastDomain)}</div>`;}
+    const item=map[String(c.id)]||{};
+    html+=`<div class="review-result-box">
+      <div class="review-result-row">
+        <strong>${index+1}. ${esc(c.criterion_text)}</strong>
+        <span class="${item.rating==="met"?"review-good":item.rating==="partial"?"review-partial":"review-bad"}">${esc(reviewRatingLabel(item.rating))}</span>
+        <span class="review-result-note">${esc(item.evaluator_note||"لا توجد ملاحظة على هذا المعيار.")}</span>
+      </div>
+    </div>`;
+  });
+  byId("reviewCriteriaContainer").innerHTML=html;
+  byId("reviewGeneralNotes").value=review.general_notes||"";
+  byId("reviewGeneralNotes").readOnly=true;
+  byId("saveLessonReviewDraftBtn").classList.add("hidden");
+  byId("approveLessonReviewBtn").classList.add("hidden");
+  byId("printCurrentReviewBtn").classList.remove("hidden");
+  byId("printCurrentReviewBtn").dataset.reviewId=review.id;
+  byId("lessonReviewMessage").textContent="";
+  byId("lessonReviewTitle").textContent="📋 نتيجة متابعة التحضير";
+  byId("lessonReviewModal").classList.remove("hidden");
+}
+
+function prepareReviewEditMode(){
+  byId("reviewGeneralNotes").readOnly=false;
+  byId("saveLessonReviewDraftBtn").classList.remove("hidden");
+  byId("approveLessonReviewBtn").classList.remove("hidden");
+  byId("printCurrentReviewBtn").classList.add("hidden");
+  byId("printCurrentReviewBtn").dataset.reviewId="";
+  byId("lessonReviewTitle").textContent="📝 متابعة وتقييم التحضير";
 }
 
 async function downloadPlanPdf(planId){
@@ -3125,6 +4249,12 @@ byId("refreshAdminBtn")
     loadPlans
   );
 
+byId("closeLessonReviewBtn").addEventListener("click",closeLessonReview);
+byId("cancelLessonReviewBtn").addEventListener("click",closeLessonReview);
+byId("saveLessonReviewDraftBtn").addEventListener("click",()=>saveLessonReview("draft"));
+byId("approveLessonReviewBtn").addEventListener("click",()=>saveLessonReview("final"));
+byId("lessonReviewModal").addEventListener("click",event=>{if(event.target===byId("lessonReviewModal"))closeLessonReview();});
+
 document.addEventListener(
   "DOMContentLoaded",
   init
@@ -3136,7 +4266,39 @@ window.editPlan = editPlan;
 window.copyPlan = copyPlan;
 window.deletePlan = deletePlan;
 window.downloadPlanPdf = downloadPlanPdf;
+window.openLessonReview = openLessonReview;
+window.openPlanPreview = openPlanPreview;
+window.closePlanPreview = closePlanPreview;
+window.openReviewResultById = openReviewResultById;
+window.printReview = printReview;
+window.printAggregateReport = printAggregateReport;
 
+</script>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+  const q=id=>document.getElementById(id);
+
+  q("reviewReportDimension")?.addEventListener("change",()=>{
+    if(q("reviewReportValue")) q("reviewReportValue").value="";
+    refreshReviewReportValueOptions();
+    renderReviewReports();
+  });
+  q("reviewReportValue")?.addEventListener("change",renderReviewReports);
+q("planPreviewModal")?.addEventListener("click",e=>{
+    if(e.target===q("planPreviewModal")) closePlanPreview();
+  });
+
+  ["archiveTeacherSearch","archiveDepartment","archiveSubject","archiveLessonSearch","archiveCycle"].forEach(id=>{
+    q(id)?.addEventListener(id.includes("Search")?"input":"change",renderReviewArchive);
+  });
+
+  ["aggregateDepartment","aggregateSubject","aggregateTeacher","aggregateCycle"].forEach(id=>{
+    q(id)?.addEventListener("change",renderAggregateReports);
+  });
+  q("printAggregateReportBtn")?.addEventListener("click",printAggregateReport);
+});
 </script>
 
 </body>
