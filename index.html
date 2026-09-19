@@ -637,6 +637,111 @@
     }
 
 
+
+    /* =====================================================
+       استكمال بيانات الحساب
+       ===================================================== */
+    .profile-completion-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 10020;
+      background: rgba(3, 44, 31, .72);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(3px);
+    }
+
+    .profile-completion-modal.hidden {
+      display: none;
+    }
+
+    .profile-completion-card {
+      width: min(470px, 100%);
+      background: #fff;
+      border-radius: 22px;
+      padding: 28px;
+      box-shadow: 0 24px 70px rgba(0,0,0,.28);
+      text-align: right;
+    }
+
+    .profile-completion-icon {
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 15px;
+      background: #eef7f3;
+      color: #075c40;
+      font-size: 27px;
+    }
+
+    .profile-completion-card h3 {
+      margin: 0 0 8px;
+      color: #075c40;
+      font-size: 23px;
+    }
+
+    .profile-completion-card p {
+      margin: 0 0 18px;
+      color: #65766e;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .profile-completion-account {
+      margin-bottom: 16px;
+      padding: 10px 12px;
+      border-radius: 11px;
+      background: #f5f8f6;
+      color: #52685f;
+      font-size: 12px;
+      direction: ltr;
+      text-align: left;
+      overflow-wrap: anywhere;
+    }
+
+    .profile-completion-card label {
+      display: block;
+      margin: 0 0 7px;
+      font-weight: 700;
+      color: #27493d;
+    }
+
+    .profile-completion-card input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 13px 14px;
+      border: 1px solid #d9e1dd;
+      border-radius: 11px;
+      font-family: inherit;
+      font-size: 15px;
+      outline: none;
+    }
+
+    .profile-completion-card input:focus {
+      border-color: #087451;
+      box-shadow: 0 0 0 3px rgba(8,116,81,.08);
+    }
+
+    .profile-completion-actions {
+      margin-top: 18px;
+    }
+
+    .profile-completion-actions .btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .profile-completion-message {
+      min-height: 22px;
+      margin-top: 11px;
+      font-size: 13px;
+      color: #a22;
+    }
+
     /* تغيير كلمة المرور */
     .password-modal { position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; padding: 20px; }
     .password-modal.hidden { display: none; }
@@ -969,6 +1074,16 @@
     href="pages/archive/index.html"
   >
     📂 الأرشيف الذكي
+  </a>
+
+
+  <a
+    id="usersAdminNavLink"
+    class="nav-link"
+    href="pages/users/index.html"
+    style="display:none"
+  >
+    👤 إدارة المستخدمين والصلاحيات
   </a>
 
 
@@ -1713,6 +1828,42 @@
 
 
 
+
+<!-- =====================================================
+     استكمال بيانات الحساب
+     تظهر فقط إذا كان الاسم الحقيقي غير مسجل
+     ===================================================== -->
+<div id="profileCompletionModal" class="profile-completion-modal hidden">
+  <div class="profile-completion-card" role="dialog" aria-modal="true" aria-labelledby="profileCompletionTitle">
+    <div class="profile-completion-icon">👤</div>
+    <h3 id="profileCompletionTitle">استكمال بيانات الحساب</h3>
+    <p>
+      أهلًا بكِ. يرجى كتابة الاسم الكامل الحقيقي لاعتماد بيانات حسابك داخل المنصة.
+      الدور والقسم يتم تحديدهما من مسؤول النظام.
+    </p>
+
+    <div id="profileCompletionAccount" class="profile-completion-account"></div>
+
+    <label for="profileCompletionName">الاسم الكامل</label>
+    <input
+      id="profileCompletionName"
+      type="text"
+      maxlength="150"
+      autocomplete="name"
+      placeholder="مثال: ابتسام محمد أحمد"
+    >
+
+    <div class="profile-completion-actions">
+      <button id="saveProfileCompletionBtn" class="btn btn-primary" type="button">
+        حفظ الاسم والمتابعة
+      </button>
+    </div>
+
+    <div id="profileCompletionMessage" class="profile-completion-message"></div>
+  </div>
+</div>
+
+
 <!-- نافذة تغيير كلمة المرور -->
 <div id="passwordModal" class="password-modal hidden">
   <div class="password-card">
@@ -1809,6 +1960,15 @@ const savePasswordBtn = document.getElementById("savePasswordBtn");
 const cancelPasswordBtn = document.getElementById("cancelPasswordBtn");
 const passwordMessage = document.getElementById("passwordMessage");
 
+const profileCompletionModal = document.getElementById("profileCompletionModal");
+const profileCompletionAccount = document.getElementById("profileCompletionAccount");
+const profileCompletionName = document.getElementById("profileCompletionName");
+const saveProfileCompletionBtn = document.getElementById("saveProfileCompletionBtn");
+const profileCompletionMessage = document.getElementById("profileCompletionMessage");
+
+let pendingProfileCompletionUser = null;
+
+
 
 const currentUserEmail =
   document.getElementById(
@@ -1825,6 +1985,12 @@ const currentUserRole =
 const settingsNavLink =
   document.getElementById(
     "settingsNavLink"
+  );
+
+
+const usersAdminNavLink =
+  document.getElementById(
+    "usersAdminNavLink"
   );
 
 
@@ -1927,6 +2093,48 @@ async function getEffectiveProfile(user) {
 
   if (!user) return null;
 
+  /*
+    profiles هو المرجع الأساسي للدور والصلاحية.
+    هذا مهم خصوصًا لدور system_admin حتى لا يتم استبداله
+    بدور قديم محفوظ في user_profiles / WRGraph.
+  */
+  try {
+
+    const sbProfile =
+      window.supabase.createClient(
+        window.WR_CONFIG.supabaseUrl,
+        window.WR_CONFIG.supabaseKey
+      );
+
+    const { data, error } =
+      await sbProfile
+        .from("profiles")
+        .select("id, full_name, role, job_title, email")
+        .eq("id", user.id)
+        .maybeSingle();
+
+    if (error) {
+      console.warn("profiles lookup:", error);
+    }
+
+    if (data?.role) {
+      return {
+        user_id: user.id,
+        email: data.email || user.email || "",
+        full_name: data.full_name || user.email || "",
+        role: data.role,
+        job_title: data.job_title || ""
+      };
+    }
+
+  } catch (error) {
+    console.warn("profiles lookup:", error);
+  }
+
+  /*
+    توافق احتياطي مع البنية القديمة فقط إذا لم يوجد سجل صالح
+    في profiles.
+  */
   try {
 
     if (
@@ -1943,59 +2151,193 @@ async function getEffectiveProfile(user) {
     }
 
   } catch (error) {
-
-    console.warn(
-      "user_profiles lookup:",
-      error
-    );
+    console.warn("user_profiles fallback:", error);
   }
+
+  return {
+    user_id: user.id,
+    email: user.email || "",
+    full_name: user.email || "",
+    role: "teacher"
+  };
+}
+
+
+
+/* =====================================================
+   التحقق من اكتمال الاسم الحقيقي
+   ===================================================== */
+
+function normalizeProfileValue(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+
+function profileNeedsCompletion(profile, user) {
+
+  const fullName =
+    String(profile?.full_name || "").trim();
+
+  const email =
+    String(
+      profile?.email ||
+      user?.email ||
+      ""
+    ).trim();
+
+  if (!fullName) return true;
+
+  if (
+    email &&
+    normalizeProfileValue(fullName) ===
+    normalizeProfileValue(email)
+  ) {
+    return true;
+  }
+
+  if (fullName.includes("@")) return true;
+
+  return false;
+}
+
+
+async function requireProfileCompletion(user) {
+
+  if (!user) return false;
+
+  const profile =
+    await getEffectiveProfile(user);
+
+  if (!profileNeedsCompletion(profile, user)) {
+    return false;
+  }
+
+  pendingProfileCompletionUser = user;
+
+  profileCompletionAccount.textContent =
+    user.email || profile?.email || "";
+
+  profileCompletionName.value = "";
+  profileCompletionMessage.textContent = "";
+  profileCompletionMessage.style.color = "#a22";
+
+  profileCompletionModal.classList.remove("hidden");
+
+  setTimeout(
+    () => profileCompletionName.focus(),
+    80
+  );
+
+  return true;
+}
+
+
+async function saveProfileCompletion() {
+
+  const user = pendingProfileCompletionUser;
+
+  if (!user) return;
+
+  const fullName =
+    profileCompletionName.value
+      .replace(/\s+/g, " ")
+      .trim();
+
+  const email =
+    String(user.email || "").trim();
+
+  profileCompletionMessage.style.color = "#a22";
+
+  if (fullName.length < 3) {
+    profileCompletionMessage.textContent =
+      "يرجى كتابة الاسم الكامل الحقيقي.";
+    return;
+  }
+
+  if (
+    fullName.includes("@") ||
+    (
+      email &&
+      normalizeProfileValue(fullName) ===
+      normalizeProfileValue(email)
+    )
+  ) {
+    profileCompletionMessage.textContent =
+      "يرجى كتابة الاسم الحقيقي، وليس البريد الإلكتروني.";
+    return;
+  }
+
+  saveProfileCompletionBtn.disabled = true;
+  saveProfileCompletionBtn.textContent = "جاري الحفظ...";
 
   try {
 
-    const sbFallback =
+    const sbProfileCompletion =
       window.supabase.createClient(
         window.WR_CONFIG.supabaseUrl,
         window.WR_CONFIG.supabaseKey
       );
 
-    const { data } =
-      await sbFallback
+    const { data, error } =
+      await sbProfileCompletion
         .from("profiles")
-        .select("id, full_name, role")
+        .update({
+          full_name: fullName
+        })
         .eq("id", user.id)
-        .maybeSingle();
+        .select("id, full_name")
+        .single();
 
-    if (data) {
-      return {
-        user_id: user.id,
-        email: user.email,
-        full_name:
-          data.full_name ||
-          user.email ||
-          "",
-        role:
-          data.role ||
-          "teacher"
-      };
+    if (error) throw error;
+
+    if (!data?.id) {
+      throw new Error("PROFILE_NOT_UPDATED");
     }
+
+    profileCompletionMessage.style.color = "#087451";
+    profileCompletionMessage.textContent =
+      "تم حفظ الاسم بنجاح ✓";
+
+    pendingProfileCompletionUser = null;
+
+    setTimeout(async () => {
+      profileCompletionModal.classList.add("hidden");
+      await showApp(user);
+    }, 650);
 
   } catch (error) {
 
-    console.warn(
-      "legacy profiles lookup:",
+    console.error(
+      "Profile completion error:",
       error
     );
-  }
 
-  return {
-    user_id: user.id,
-    email: user.email,
-    full_name:
-      user.email ||
-      "",
-    role: "teacher"
-  };
+    profileCompletionMessage.textContent =
+      "تعذر حفظ الاسم. يرجى المحاولة مرة أخرى أو التواصل مع مسؤول النظام.";
+
+  } finally {
+
+    saveProfileCompletionBtn.disabled = false;
+    saveProfileCompletionBtn.textContent =
+      "حفظ الاسم والمتابعة";
+  }
 }
+
+
+saveProfileCompletionBtn.addEventListener(
+  "click",
+  saveProfileCompletion
+);
+
+
+profileCompletionName.addEventListener(
+  "keydown",
+  event => {
+    if (event.key === "Enter") {
+      saveProfileCompletion();
+    }
+  }
+);
 
 
 /* =====================================================
@@ -2012,6 +2354,9 @@ async function configureRoleUI(user) {
       .trim()
       .toLowerCase();
 
+  const isSystemAdmin =
+    role === "system_admin";
+
   const isAdmin =
     role === "admin";
 
@@ -2019,12 +2364,16 @@ async function configureRoleUI(user) {
     role === "coordinator";
 
   const roleText =
-    isAdmin
-      ? "إدارة"
+    isSystemAdmin
+      ? "مسؤول النظام"
       : (
-          isCoordinator
-            ? "منسقة"
-            : "معلمة"
+          isAdmin
+            ? "إدارة"
+            : (
+                isCoordinator
+                  ? "منسقة"
+                  : "معلمة"
+              )
         );
 
   if (currentUserRole) {
@@ -2032,6 +2381,17 @@ async function configureRoleUI(user) {
       roleText;
     currentUserRole.style.display =
       "";
+  }
+
+  /*
+    إدارة المستخدمين والصلاحيات:
+    لمسؤول النظام فقط
+  */
+  if (usersAdminNavLink) {
+    usersAdminNavLink.style.display =
+      isSystemAdmin
+        ? ""
+        : "none";
   }
 
   /*
@@ -2279,6 +2639,23 @@ async function configureClassroomVisitsNavigation(user) {
    ===================================================== */
 
 async function showApp(user) {
+
+
+  const needsProfileCompletion =
+    await requireProfileCompletion(user);
+
+  if (needsProfileCompletion) {
+
+    authOverlay.classList.add(
+      "hidden"
+    );
+
+    appRoot.classList.add(
+      "auth-loading"
+    );
+
+    return;
+  }
 
 
   authOverlay.classList.add(
