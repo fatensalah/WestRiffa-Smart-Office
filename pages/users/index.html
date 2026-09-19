@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <title>إدارة المستخدمين والصلاحيات | WestRiffa Smart Office</title>
+
+  <link rel="stylesheet" href="../../css/app.css">
+
+  <style>
+    .users-page {
+      display: none;
+    }
+
+    .users-page.ready {
+      display: block;
+    }
+
+    .users-loading {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f3f6f4;
+      color: #075c40;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .users-toolbar {
+      background: #fff;
+      border: 1px solid #e1e9e5;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 18px;
+      box-shadow: 0 5px 18px rgba(0,0,0,.04);
+    }
+
+    .users-toolbar-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .users-field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .users-field label {
+      margin: 0;
+      font-size: 12px;
+      color: #52685f;
+      font-weight: 700;
+    }
+
+    .users-field input,
+    .users-field select {
+      margin: 0;
+    }
+
+    .users-summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 13px;
+      margin-bottom: 18px;
+    }
+
+    .users-stat {
+      background: #fff;
+      border: 1px solid #e1e9e5;
+      border-top: 4px solid #087451;
+      border-radius: 16px;
+      padding: 17px;
+      box-shadow: 0 5px 18px rgba(0,0,0,.04);
+    }
+
+    .users-stat strong {
+      display: block;
+      font-size: 28px;
+      color: #075c40;
+      margin-bottom: 6px;
+    }
+
+    .users-stat span {
+      color: #6b7a72;
+      font-size: 13px;
+    }
+
+    .users-table-card {
+      background: #fff;
+      border: 1px solid #e1e9e5;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 7px 22px rgba(0,0,0,.05);
+    }
+
+    .users-table-wrap {
+      overflow-x: auto;
+    }
+
+    .users-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+    }
+
+    .users-table th {
+      background: #f4f8f6;
+      color: #075c40;
+      padding: 14px 12px;
+      text-align: right;
+      font-size: 13px;
+      border-bottom: 1px solid #e1e9e5;
+    }
+
+    .users-table td {
+      padding: 13px 12px;
+      border-bottom: 1px solid #edf1ef;
+      vertical-align: middle;
+      font-size: 13px;
+    }
+
+    .users-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .user-name-cell strong {
+      display: block;
+      color: #24352e;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .user-name-cell small {
+      color: #7b8982;
+    }
+
+    .role-pill,
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .role-teacher {
+      background: #eef5f2;
+      color: #52685f;
+    }
+
+    .role-coordinator {
+      background: #fff7e6;
+      color: #8a682a;
+    }
+
+    .role-admin {
+      background: #e9f2ff;
+      color: #175cd3;
+    }
+
+    .role-system_admin {
+      background: #f1eaff;
+      color: #6938a8;
+    }
+
+    .status-active {
+      background: #eaf7ef;
+      color: #087451;
+    }
+
+    .status-disabled {
+      background: #fff1f0;
+      color: #b42318;
+    }
+
+    .user-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .mini-btn {
+      border: 0;
+      border-radius: 8px;
+      padding: 7px 9px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .mini-edit {
+      background: #eaf3ef;
+      color: #075c40;
+    }
+
+    .mini-password {
+      background: #fff7e6;
+      color: #8a682a;
+    }
+
+    .mini-disable {
+      background: #fff1f0;
+      color: #b42318;
+    }
+
+    .mini-enable {
+      background: #eaf7ef;
+      color: #087451;
+    }
+
+    .mini-delete {
+      background: #fee4e2;
+      color: #912018;
+    }
+
+    .users-empty,
+    .users-error {
+      padding: 40px 20px;
+      text-align: center;
+      color: #6b7a72;
+    }
+
+    .users-error {
+      color: #b42318;
+    }
+
+    .user-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      background: rgba(0,0,0,.48);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .user-modal.hidden {
+      display: none;
+    }
+
+    .user-modal-card {
+      width: min(720px,100%);
+      max-height: 90vh;
+      overflow-y: auto;
+      background: #fff;
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 24px 70px rgba(0,0,0,.25);
+    }
+
+    .user-modal-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #e6ece9;
+    }
+
+    .user-modal-head h3 {
+      margin: 0 0 5px;
+      color: #075c40;
+    }
+
+    .user-modal-head p {
+      margin: 0;
+      color: #6b7a72;
+      font-size: 12px;
+    }
+
+    .modal-close {
+      border: 0;
+      background: #f1f4f2;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .user-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 13px;
+    }
+
+    .user-form-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    .user-form-grid label {
+      margin: 0 0 6px;
+      font-size: 12px;
+      color: #52685f;
+    }
+
+    .departments-box {
+      border: 1px solid #d7dfda;
+      border-radius: 12px;
+      padding: 12px;
+      max-height: 190px;
+      overflow-y: auto;
+      background: #fafcfb;
+    }
+
+    .department-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px;
+      border-radius: 8px;
+    }
+
+    .department-option:hover {
+      background: #eef5f2;
+    }
+
+    .department-option input {
+      width: auto;
+      margin: 0;
+    }
+
+    .department-option label {
+      margin: 0;
+      cursor: pointer;
+      font-weight: 400;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 9px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .modal-message {
+      min-height: 22px;
+      margin-top: 12px;
+      font-size: 13px;
+    }
+
+    .security-note {
+      background: #f7f8f7;
+      border-right: 4px solid #b58a36;
+      padding: 12px 14px;
+      border-radius: 10px;
+      color: #52685f;
+      font-size: 12px;
+      line-height: 1.8;
+      margin-bottom: 18px;
+    }
+
+    @media(max-width:900px) {
+      .users-toolbar-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .users-summary {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media(max-width:600px) {
+      .users-toolbar-grid,
+      .users-summary,
+      .user-form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .user-form-grid .full {
+        grid-column: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="usersLoading" class="users-loading">
+    جارٍ التحقق من صلاحية مسؤول النظام...
+  </div>
+
+  <div id="usersPage" class="users-page">
+
+    <header class="topbar">
+
+      <div class="brand">
+        <img src="../../assets/school-header.jpg" alt="شعار المدرسة">
+
+        <div>
+          <h1>WestRiffa Smart Office</h1>
+          <p>مدرسة الرفاع الغربي الابتدائية للبنين</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <span id="currentUserName" class="small"></span>
+
+        <a class="btn btn-soft" href="../../index.html">
+          🏠 الرئيسية
+        </a>
+
+        <button id="logoutBtn" class="btn btn-soft" type="button">
+          تسجيل الخروج
+        </button>
+      </div>
+
+    </header>
+
+    <div class="shell">
+
+      <aside class="sidebar">
+
+        <h3 class="sidebar-title">
+          إدارة النظام
+        </h3>
+
+        <a class="nav-link" href="../../index.html">
+          🏠 لوحة التحكم
+        </a>
+
+        <a class="nav-link active" href="index.html">
+          🛡️ إدارة المستخدمين
+        </a>
+
+        <a class="nav-link" href="../settings/index.html">
+          ⚙️ الإعدادات
+        </a>
+
+      </aside>
+
+      <main class="content">
+
+        <div class="page-head">
+
+          <div>
+            <h2>إدارة المستخدمين والصلاحيات</h2>
+
+            <p>
+              إنشاء الحسابات وإدارة الأدوار والأقسام وصلاحيات الدخول إلى المنصة.
+            </p>
+          </div>
+
+          <div class="page-actions">
+            <button id="addUserBtn" class="btn btn-primary" type="button">
+              ＋ إضافة مستخدم
+            </button>
+          </div>
+
+        </div>
+
+        <div class="security-note">
+          🛡️ هذه الصفحة مخصصة لمسؤول النظام. العمليات الإدارية الحساسة
+          تُنفذ من خلال الخدمة الآمنة ولا يتم تخزين مفاتيح الإدارة داخل المتصفح.
+        </div>
+
+        <section class="users-summary">
+
+          <article class="users-stat">
+            <strong id="totalUsers">0</strong>
+            <span>إجمالي المستخدمين</span>
+          </article>
+
+          <article class="users-stat">
+            <strong id="teacherCount">0</strong>
+            <span>المعلمات</span>
+          </article>
+
+          <article class="users-stat">
+            <strong id="coordinatorCount">0</strong>
+            <span>المنسقات</span>
+          </article>
+
+          <article class="users-stat">
+            <strong id="adminCount">0</strong>
+            <span>القيادة / إدارة النظام</span>
+          </article>
+
+        </section>
+
+        <section class="users-toolbar">
+
+          <div class="users-toolbar-grid">
+
+            <div class="users-field">
+              <label for="userSearch">بحث</label>
+
+              <input
+                id="userSearch"
+                type="search"
+                placeholder="الاسم أو البريد الإلكتروني..."
+              >
+            </div>
+
+            <div class="users-field">
+              <label for="roleFilter">نوع الحساب</label>
+
+              <select id="roleFilter">
+                <option value="">جميع الأدوار</option>
+                <option value="teacher">معلمة</option>
+                <option value="coordinator">منسقة</option>
+                <option value="admin">قيادة عليا</option>
+                <option value="system_admin">مسؤول النظام</option>
+              </select>
+            </div>
+
+            <div class="users-field">
+              <label for="departmentFilter">القسم</label>
+
+              <select id="departmentFilter">
+                <option value="">جميع الأقسام</option>
+              </select>
+            </div>
+
+            <button id="refreshUsersBtn" class="btn btn-soft" type="button">
+              ↻ تحديث
+            </button>
+
+          </div>
+
+        </section>
+
+        <section class="users-table-card">
+
+          <div class="users-table-wrap">
+
+            <table class="users-table">
+
+              <thead>
+                <tr>
+                  <th>المستخدم</th>
+                  <th>نوع الحساب</th>
+                  <th>المسمى الوظيفي</th>
+                  <th>القسم / الأقسام</th>
+                  <th>الحالة</th>
+                  <th>الإجراءات</th>
+                </tr>
+              </thead>
+
+              <tbody id="usersTableBody">
+
+                <tr>
+                  <td colspan="6" class="users-empty">
+                    جارٍ تحميل المستخدمين...
+                  </td>
+                </tr>
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        </section>
+
+      </main>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       نافذة إضافة / تعديل مستخدم
+       ===================================================== -->
+
+  <div id="userModal" class="user-modal hidden">
+
+    <div class="user-modal-card">
+
+      <div class="user-modal-head">
+
+        <div>
+          <h3 id="userModalTitle">إضافة مستخدم</h3>
+          <p id="userModalSubtitle">
+            أدخلي بيانات الحساب والصلاحيات المطلوبة.
+          </p>
+        </div>
+
+        <button id="closeUserModal" class="modal-close" type="button">
+          ×
+        </button>
+
+      </div>
+
+      <input id="editingUserId" type="hidden">
+
+      <div class="user-form-grid">
+
+        <div>
+          <label for="userFullName">الاسم الكامل *</label>
+          <input id="userFullName" type="text">
+        </div>
+
+        <div>
+          <label for="userEmail">البريد الإلكتروني *</label>
+          <input id="userEmail" type="email">
+        </div>
+
+        <div>
+          <label for="userRole">نوع الحساب *</label>
+
+          <select id="userRole">
+            <option value="teacher">معلمة</option>
+            <option value="coordinator">منسقة</option>
+            <option value="admin">قيادة عليا</option>
+            <option value="system_admin">مسؤول النظام</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="userJobTitle">المسمى الوظيفي</label>
+          <input id="userJobTitle" type="text">
+        </div>
+
+        <div id="passwordFieldWrap" class="full">
+          <label for="userPassword">كلمة المرور المؤقتة *</label>
+
+          <input
+            id="userPassword"
+            type="password"
+            autocomplete="new-password"
+            placeholder="6 أحرف على الأقل"
+          >
+        </div>
+
+        <div id="departmentsFieldWrap" class="full">
+
+          <label>القسم / الأقسام</label>
+
+          <div id="departmentsCheckboxes" class="departments-box">
+            جارٍ تحميل الأقسام...
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="modal-actions">
+
+        <button id="saveUserBtn" class="btn btn-primary" type="button">
+          حفظ
+        </button>
+
+        <button id="cancelUserBtn" class="btn btn-soft" type="button">
+          إلغاء
+        </button>
+
+      </div>
+
+      <div id="userModalMessage" class="modal-message"></div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       نافذة تغيير كلمة مرور مستخدم
+       ===================================================== -->
+
+  <div id="passwordAdminModal" class="user-modal hidden">
+
+    <div class="user-modal-card" style="width:min(470px,100%)">
+
+      <div class="user-modal-head">
+
+        <div>
+          <h3>🔐 تغيير كلمة المرور</h3>
+          <p id="passwordTargetName"></p>
+        </div>
+
+        <button id="closePasswordModal" class="modal-close" type="button">
+          ×
+        </button>
+
+      </div>
+
+      <input id="passwordTargetId" type="hidden">
+
+      <label for="adminNewPassword">
+        كلمة المرور الجديدة
+      </label>
+
+      <input
+        id="adminNewPassword"
+        type="password"
+        autocomplete="new-password"
+        placeholder="6 أحرف على الأقل"
+      >
+
+      <label for="adminConfirmPassword">
+        تأكيد كلمة المرور
+      </label>
+
+      <input
+        id="adminConfirmPassword"
+        type="password"
+        autocomplete="new-password"
+        placeholder="أعيدي كتابة كلمة المرور"
+      >
+
+      <div class="modal-actions">
+
+        <button id="saveAdminPassword" class="btn btn-primary" type="button">
+          حفظ كلمة المرور
+        </button>
+
+        <button id="cancelPasswordModal" class="btn btn-soft" type="button">
+          إلغاء
+        </button>
+
+      </div>
+
+      <div id="passwordAdminMessage" class="modal-message"></div>
+
+    </div>
+
+  </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="../../js/config.js"></script>
+
+  <script src="../../js/users.js"></script>
+
+</body>
+</html>
