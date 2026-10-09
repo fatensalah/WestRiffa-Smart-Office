@@ -1500,39 +1500,21 @@ async function loadPlanHomeStats(){
       قراءة المتابعات الشهرية.
     */
 
-    const {
-      data: followups,
-      error: followupsError
-    } =
-      await plansHomeSupabase
+    /* نتجنب Bad Request عند كثرة الإجراءات بجلب المتابعات على دفعات. */
+    const followupList = [];
+    const FOLLOWUP_BATCH_SIZE = 150;
 
-        .from(
-          "plan_monthly_followups"
-        )
+    for (let i = 0; i < procedureIds.length; i += FOLLOWUP_BATCH_SIZE) {
+      const batchIds = procedureIds.slice(i, i + FOLLOWUP_BATCH_SIZE);
+      const { data: batchFollowups, error: followupsError } =
+        await plansHomeSupabase
+          .from("plan_monthly_followups")
+          .select(`procedure_id, execution_status`)
+          .in("procedure_id", batchIds);
 
-        .select(
-          `
-          procedure_id,
-          execution_status
-          `
-        )
-
-        .in(
-          "procedure_id",
-          procedureIds
-        );
-
-
-    if(followupsError){
-
-      throw followupsError;
-
+      if (followupsError) throw followupsError;
+      if (batchFollowups?.length) followupList.push(...batchFollowups);
     }
-
-
-    const followupList =
-      followups ||
-      [];
 
 
     /*

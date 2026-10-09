@@ -504,9 +504,31 @@ async function wrCan(
 
     case "view_own_records":
 
+    case "resource_center_access":
+
+    case "resource_center_create_own":
+
+    case "resource_center_view_own":
+
+    case "resource_center_browse_content":
+
       return Boolean(
         profile.role
       );
+
+    case "resource_center_view_department":
+
+      return profile.role === "coordinator";
+
+    case "resource_center_view_all":
+
+    case "resource_center_view_reports":
+
+    case "resource_center_view_satisfaction":
+
+    case "resource_center_manage_content":
+
+      return profile.role === "admin";
 
 
     case "manage_settings":

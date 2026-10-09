@@ -686,7 +686,10 @@ const ENRICHMENT_SUBJECTS =
   new Set([
     "الحاسوب",
     "الفن",
-    "التصميم والتقانة"
+    "التصميم والتقانة",
+    "التربية الأسرية",
+    "الاسرية",
+    "الأسرية"
   ]);
 
 
@@ -1122,485 +1125,77 @@ schoolYear.addEventListener(
    ========================================================= */
 
 async function loadMonthlyFollowups(){
-
-  const monthNo =
-    Number(
-      monthSelect.value
-    );
-
-
-  const selectedYear =
-    schoolYear.value;
-
-
-  followupBody.innerHTML =
-    "";
-
-
-  emptyState.style.display =
-    "none";
-
-
-  resetSummary();
-
-
-  tableTitle.textContent =
-    `إجراءات شهر ${MONTH_NAMES[monthNo]}`;
-
-
-  showStatus(
-    "جاري تحميل إجراءات المتابعة...",
-    "info"
-  );
-
-
+  const monthNo=Number(monthSelect.value), selectedYear=schoolYear.value;
+  followupBody.innerHTML=""; emptyState.style.display="none"; resetSummary();
+  tableTitle.textContent=`إجراءات شهر ${MONTH_NAMES[monthNo]}`;
+  showStatus("جاري تحميل إجراءات المتابعة...","info");
   try{
-
-
-    const {
-      data: followups,
-      error: followupsError
-    } =
-      await followupSupabase
-
-        .from(
-          "plan_monthly_followups"
-        )
-
-        .select(
-          `
-          id,
-          plan_id,
-          procedure_id,
-          month_no,
-          execution_status,
-          non_completion_reason,
-          followup_notes,
-          updated_at
-          `
-        )
-
-        .eq(
-          "month_no",
-          monthNo
-        );
-
-
-    if(
-      followupsError
-    ){
-
-      throw followupsError;
-
+    /* مصدر الحقيقة هنا هو إجراءات الخطة وأشهر تنفيذها، وليس وجود سجل متابعة مسبق. */
+    const {data:rawPlans,error:plansError}=await followupSupabase.from("plans")
+      .select("id,department_id,school_year,plan_title,status").eq("school_year",selectedYear);
+    if(plansError)throw plansError;
+    let plans=rawPlans||[];
+    if(currentUserProfile.role==="coordinator"){
+      const allowedIds=new Set(allowedPlanDepartmentIds.map(String));
+      plans=plans.filter(plan=>allowedIds.has(String(plan.department_id)));
     }
+    if(!plans.length){hideStatus();emptyState.style.display="block";return;}
 
-
-    if(
-      !followups ||
-      !followups.length
-    ){
-
-      hideStatus();
-
-
-      emptyState.style.display =
-        "block";
-
-
-      return;
-
+    const planIds=plans.map(p=>p.id);
+    let procedures=[];
+    for(let i=0;i<planIds.length;i+=150){
+      const batch=planIds.slice(i,i+150);
+      const {data,error}=await followupSupabase.from("plan_procedures").select(`
+        id,plan_id,sequence_no,path_code,domain_name,general_goal,specific_goal,success_criterion,
+        program_name,procedure_text,target_group,implementers,execution_follower,planned_months
+      `).in("plan_id",batch);
+      if(error)throw error; procedures.push(...(data||[]));
     }
+    const plannedForMonth=procedures.filter(pr=>{
+      const a=Array.isArray(pr.planned_months)?pr.planned_months:[];
+      return a.map(Number).includes(monthNo);
+    });
+    if(!plannedForMonth.length){hideStatus();emptyState.style.display="block";return;}
 
-
-    const planIds = [
-      ...new Set(
-        followups.map(
-          item =>
-            item.plan_id
-        )
-      )
-    ];
-
-
-    const {
-      data: rawPlans,
-      error: plansError
-    } =
-      await followupSupabase
-
-        .from(
-          "plans"
-        )
-
-        .select(
-          `
-          id,
-          department_id,
-          school_year,
-          plan_title,
-          status
-          `
-        )
-
-        .in(
-          "id",
-          planIds
-        )
-
-        .eq(
-          "school_year",
-          selectedYear
-        );
-
-
-    if(
-      plansError
-    ){
-
-      throw plansError;
-
+    const procedureIds=plannedForMonth.map(p=>p.id);
+    let saved=[];
+    for(let i=0;i<procedureIds.length;i+=150){
+      const batch=procedureIds.slice(i,i+150);
+      const {data,error}=await followupSupabase.from("plan_monthly_followups")
+        .select("id,plan_id,procedure_id,month_no,execution_status,non_completion_reason,followup_notes,updated_at")
+        .eq("month_no",monthNo).in("procedure_id",batch);
+      if(error)throw error; saved.push(...(data||[]));
     }
+    const latest=new Map();
+    saved.forEach(f=>{const k=String(f.procedure_id);const old=latest.get(k);if(!old||String(f.updated_at||"")>=String(old.updated_at||""))latest.set(k,f)});
 
-
-    let plans =
-      rawPlans ||
-      [];
-
-
-    if(
-      !plans.length
-    ){
-
-      hideStatus();
-
-
-      emptyState.style.display =
-        "block";
-
-
-      return;
-
+    /* نجلب قاموس الأقسام كاملًا حتى نستطيع توحيد الخطط القديمة للحاسوب/الفن/التقانة/الأسرية
+       تحت «المواد الإثرائية» حتى لو لم توجد بعد خطة مستقلة باسم القسم الموحد. */
+    let departments=[];
+    {
+      const {data,error}=await followupSupabase.from("departments").select("id,name");
+      if(error)throw error; departments=data||[];
     }
-
-
-    /*
-      تطبيق صلاحية المنسقة.
-      admin = جميع الخطط.
-    */
-
-    if(
-      currentUserProfile
-        .role ===
-      "coordinator"
-    ){
-
-      const allowedIds =
-        new Set(
-          allowedPlanDepartmentIds
-            .map(
-              value =>
-                String(
-                  value
-                )
-            )
-        );
-
-
-      plans =
-        plans.filter(
-          plan =>
-            allowedIds.has(
-              String(
-                plan.department_id
-              )
-            )
-        );
-
+    const departmentMap=new Map(departments.map(d=>[d.id,d.name]));
+    const enrichmentDepartment=departments.find(item=>normalizeText(item.name)===ENRICHMENT_PLAN_NAME);
+    if(enrichmentDepartment){
+      /* لا نحذف بيانات الخطط القديمة؛ نوحّد اسم القسم في العرض والمتابعة. */
+      plans=plans.map(plan=>ENRICHMENT_SUBJECTS.has(normalizeText(departmentMap.get(plan.department_id)))
+        ? {...plan,department_id:enrichmentDepartment.id} : plan);
     }
-
-
-    if(
-      !plans.length
-    ){
-
-      hideStatus();
-
-
-      emptyState.style.display =
-        "block";
-
-
-      return;
-
-    }
-
-
-    const allowedPlanIds =
-      new Set(
-        plans.map(
-          item =>
-            item.id
-        )
-      );
-
-
-    const validFollowups =
-      followups.filter(
-        item =>
-          allowedPlanIds.has(
-            item.plan_id
-          )
-      );
-
-
-    if(
-      !validFollowups.length
-    ){
-
-      hideStatus();
-
-
-      emptyState.style.display =
-        "block";
-
-
-      return;
-
-    }
-
-
-    const procedureIds = [
-      ...new Set(
-        validFollowups.map(
-          item =>
-            item.procedure_id
-        )
-      )
-    ];
-
-
-    const {
-      data: procedures,
-      error: proceduresError
-    } =
-      await followupSupabase
-
-        .from(
-          "plan_procedures"
-        )
-
-        .select(
-          `
-          id,
-          plan_id,
-          sequence_no,
-          path_code,
-          domain_name,
-          general_goal,
-          specific_goal,
-          success_criterion,
-          program_name,
-          procedure_text,
-          target_group,
-          implementers,
-          execution_follower
-          `
-        )
-
-        .in(
-          "id",
-          procedureIds
-        );
-
-
-    if(
-      proceduresError
-    ){
-
-      throw proceduresError;
-
-    }
-
-
-    const departmentIds = [
-      ...new Set(
-        plans
-          .map(
-            item =>
-              item.department_id
-          )
-          .filter(
-            Boolean
-          )
-      )
-    ];
-
-
-    let departments =
-      [];
-
-
-    if(
-      departmentIds.length
-    ){
-
-      const {
-        data,
-        error
-      } =
-        await followupSupabase
-
-          .from(
-            "departments"
-          )
-
-          .select(
-            "id, name"
-          )
-
-          .in(
-            "id",
-            departmentIds
-          );
-
-
-      if(
-        error
-      ){
-
-        throw error;
-
-      }
-
-
-      departments =
-        data ||
-        [];
-
-    }
-
-
-    const departmentMap =
-      new Map(
-        departments.map(
-          item => [
-            item.id,
-            item.name
-          ]
-        )
-      );
-
-
-    const planMap =
-      new Map(
-        plans.map(
-          item => [
-            item.id,
-            item
-          ]
-        )
-      );
-
-
-    const procedureMap =
-      new Map(
-        (
-          procedures ||
-          []
-        ).map(
-          item => [
-            item.id,
-            item
-          ]
-        )
-      );
-
-
-    const rows =
-      validFollowups
-
-        .map(
-          item => ({
-
-            ...item,
-
-            procedure:
-              procedureMap.get(
-                item.procedure_id
-              ),
-
-            plan:
-              planMap.get(
-                item.plan_id
-              )
-
-          })
-        )
-
-        .filter(
-          item =>
-            item.procedure &&
-            item.plan
-        );
-
-
-    rows.sort(
-      (
-        a,
-        b
-      ) =>
-        (
-          a.procedure
-            .sequence_no ||
-          0
-        )
-        -
-        (
-          b.procedure
-            .sequence_no ||
-          0
-        )
-    );
-
-
-    renderRows(
-      rows,
-      departmentMap
-    );
-
-
-    updateSummary(
-      rows
-    );
-
-
-    showStatus(
-      `تم تحميل ${rows.length} إجراء لشهر ${MONTH_NAMES[monthNo]}.`,
-      "success"
-    );
-
-
-  }catch(error){
-
-
-    console.error(
-      "Monthly followups load error:",
-      error
-    );
-
-
-    showStatus(
-      `تعذر تحميل المتابعة الشهرية: ${
-        error.message ||
-        "حدث خطأ غير متوقع."
-      }`,
-      "error"
-    );
-
-  }
-
+    const allowedPlanIds=new Set(plans.map(p=>String(p.id)));
+    const procedureMap=new Map(procedures.map(p=>[String(p.id),p]));
+    const planMap=new Map(plans.map(p=>[String(p.id),p]));
+    const rows=plannedForMonth.filter(pr=>allowedPlanIds.has(String(pr.plan_id))).map(pr=>{
+      const f=latest.get(String(pr.id));
+      const row=f?{...f}:{id:`new:${pr.id}`,plan_id:pr.plan_id,procedure_id:pr.id,month_no:monthNo,execution_status:"pending",non_completion_reason:null,followup_notes:null,updated_at:null,_virtual:true};
+      return {...row,procedure:procedureMap.get(String(pr.id))||pr,plan:planMap.get(String(pr.plan_id))};
+    }).filter(x=>x.procedure&&x.plan);
+    rows.sort((a,b)=>(a.procedure.sequence_no||0)-(b.procedure.sequence_no||0));
+    renderRows(rows,departmentMap); updateSummary(rows);
+    showStatus(`تم تحميل ${rows.length} إجراء مخطط لشهر ${MONTH_NAMES[monthNo]}.`,"success");
+  }catch(error){console.error("Monthly followups load error:",error);showStatus(`تعذر تحميل المتابعة الشهرية: ${error.message||"حدث خطأ غير متوقع."}`,"error");}
 }
-
 
 /* =========================================================
    عرض الصفوف
@@ -1975,42 +1570,23 @@ async function saveFollowup(
   try{
 
 
-    const {
-      error
-    } =
-      await followupSupabase
-
-        .from(
-          "plan_monthly_followups"
-        )
-
-        .update({
-
-          execution_status:
-            executionStatus,
-
-          non_completion_reason:
-            executionStatus ===
-            "not_completed"
-
-              ? reason
-
-              : null,
-
-          followup_notes:
-            followupNotes ||
-            null,
-
-          updated_at:
-            new Date()
-              .toISOString()
-
-        })
-
-        .eq(
-          "id",
-          followupId
-        );
+    const payload={
+      execution_status:executionStatus,
+      non_completion_reason:executionStatus==="not_completed"?reason:null,
+      followup_notes:followupNotes||null,
+      updated_at:new Date().toISOString()
+    };
+    let result;
+    if(String(followupId).startsWith("new:")){
+      const procedureId=String(followupId).slice(4);
+      const monthNo=Number(monthSelect.value);
+      const {data:pr,error:prError}=await followupSupabase.from("plan_procedures").select("id,plan_id").eq("id",procedureId).maybeSingle();
+      if(prError)throw prError;
+      result=await followupSupabase.from("plan_monthly_followups").insert({...payload,plan_id:pr.plan_id,procedure_id:procedureId,month_no:monthNo});
+    }else{
+      result=await followupSupabase.from("plan_monthly_followups").update(payload).eq("id",followupId);
+    }
+    const {error}=result;
 
 
     if(

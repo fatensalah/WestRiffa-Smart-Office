@@ -1934,6 +1934,32 @@ async function loadSubjectOptions(){
 
   availableSubjects = data || [];
 
+  /*
+    دعم المعلمات اللاتي يدرسن أكثر من مادة حتى لو كان ربط الحساب بالقسم
+    لا يغطي كل موادهن بعد. فاطمة البشير تدرس المواطنة + التربية الأسرية.
+    هذا لا يمنحها مواد قسم المواد الإثرائية الأخرى؛ نضيف المادة المطلوبة فقط.
+  */
+  const normalizedTeacherName = String(currentProfile?.full_name || "")
+    .replace(/\s+/g," ").trim();
+  if(!isAdminUser && /فاطمة\s+البشير/.test(normalizedTeacherName)){
+    const hasFamily = availableSubjects.some(x =>
+      /التربية\s*الأسرية|تربية\s*أسرية/.test(String(x.name || ""))
+    );
+    if(!hasFamily){
+      const { data: familySubjects, error: familyError } = await sb
+        .from("subjects")
+        .select("id,name,active")
+        .eq("active",true);
+      if(familyError) throw familyError;
+      const extra = (familySubjects || []).filter(x =>
+        /التربية\s*الأسرية|تربية\s*أسرية/.test(String(x.name || ""))
+      );
+      availableSubjects = [...availableSubjects, ...extra.filter(x =>
+        !availableSubjects.some(y => String(y.id) === String(x.id))
+      )].sort((a,b)=>String(a.name||"").localeCompare(String(b.name||""),"ar"));
+    }
+  }
+
   select.innerHTML =
     '<option value="">— اختاري المادة —</option>' +
     availableSubjects.map(item =>
@@ -2418,6 +2444,10 @@ async function savePlan(status){
       planId = data.id;
     }
 
+    // بمجرد نجاح حفظ السجل الرئيسي نثبّت معرفه فورًا؛ حتى لو تعذر حفظ
+    // تفصيل فرعي لاحقًا لا يبدو للمعلمة أن التحضير كله ضاع.
+    byId("editingPlanId").value = planId;
+
     /*
       نستبدل أهداف التحضير بالكامل عند الحفظ
       لتسهيل التعديل بدون تعقيد.
@@ -2492,12 +2522,16 @@ async function savePlan(status){
   }catch(error){
     console.error("Save lesson plan:",error);
 
-    state.textContent =
-      "تعذر حفظ التحضير: " +
-      (error.message || "خطأ غير متوقع");
-
-    state.className =
-      "save-state error";
+    const persistedId = byId("editingPlanId").value || null;
+    if(persistedId){
+      state.textContent = "تم حفظ بيانات التحضير الأساسية، لكن تعذر حفظ جزء من التفاصيل: " +
+        (error.message || "خطأ غير متوقع") + ". أعيدي المحاولة لإكمال التفاصيل.";
+      state.className = "save-state error";
+      try{ await loadPlans(); }catch(_){ }
+    }else{
+      state.textContent = "تعذر حفظ التحضير: " + (error.message || "خطأ غير متوقع");
+      state.className = "save-state error";
+    }
 
   }finally{
     button.disabled = false;
@@ -3443,6 +3477,16 @@ function buildOfficialReviewHtml(review){
   </div>`;
 }
 
+function printHtmlDocument(html,title="طباعة",orientation="portrait"){
+  const w = window.open("","_blank","width=1100,height=800");
+  if(!w) throw new Error("تعذر فتح نافذة الطباعة. اسمحي بالنوافذ المنبثقة لهذا الموقع.");
+  const css = Array.from(document.querySelectorAll('style,link[rel="stylesheet"]'))
+    .map(el => el.outerHTML).join("\n");
+  w.document.open();
+  w.document.write(`<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>${esc(title)}</title>${css}<style>@page{size:A4 ${orientation};margin:8mm}body{background:#fff!important;margin:0!important;padding:0!important}.no-print,button{display:none!important}#pdfSheet{display:block!important;position:static!important;width:auto!important}</style></head><body>${html}<script>window.onload=()=>setTimeout(()=>window.print(),350)<\/script></body></html>`);
+  w.document.close();
+}
+
 async function printReview(reviewId){
   try{
     if(!reviewId){alert("لا يوجد تقرير معتمد للطباعة.");return;}
@@ -3463,6 +3507,13 @@ async function printReview(reviewId){
     pdf.innerHTML=`<section id="officialReviewPdfPage" style="width:210mm;min-height:297mm;box-sizing:border-box;background:#fff;padding:10mm;direction:rtl;">${buildOfficialReviewHtml(review)}</section>`;
     pdf.style.width="210mm";
     pdf.classList.add("pdf-visible");
+
+    // طباعة HTML مباشرة: تتجنب خطأ Tainted canvas الناتج عن html2canvas/toDataURL.
+    printHtmlDocument(pdf.innerHTML,"تقرير متابعة التحضير","portrait");
+    pdf.classList.remove("pdf-visible");
+    pdf.style.width="";
+    pdf.innerHTML="";
+    return;
 
     if(document.fonts?.ready){try{await document.fonts.ready;}catch(_){}}
     await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
@@ -4058,6 +4109,13 @@ async function downloadPlanPdf(planId){
     `;
 
     pdf.classList.add("pdf-visible");
+
+    // استخدمي نافذة الطباعة واختاري "Save as PDF" عند الحاجة.
+    // هذا المسار لا يحول الصور إلى Canvas ولذلك لا يتأثر بقيود CORS/Tainted canvas.
+    printHtmlDocument(pdf.innerHTML,"طباعة التحضير","landscape");
+    pdf.classList.remove("pdf-visible");
+    pdf.innerHTML="";
+    return;
 
     const fileName =
       "تحضير_" +

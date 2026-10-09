@@ -14,6 +14,7 @@
 .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:18px}.kpi{background:#f7faf9;border:1px solid #e3ece9;border-radius:13px;padding:14px;text-align:center}.kpi strong{display:block;color:#0f654f;font-size:25px}.kpi span{font-size:12px;color:#71847e}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}.table-wrap{overflow:auto;border:1px solid #e2ebe8;border-radius:13px}table{width:100%;border-collapse:collapse}th,td{padding:9px 8px;border-bottom:1px solid #e7eeeb;text-align:right;font-size:12px}th{background:#eef5f2;color:#214c41;white-space:nowrap}
 .comment-box textarea{width:100%;min-height:125px;border:1px solid #ccdcd7;border-radius:11px;padding:12px;font:inherit;line-height:1.8}.comment-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.print-head,.signatures{display:none}.section-title{color:#0f513f;margin:0 0 14px}
+.audit-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:12px 0}.audit-item{border:1px solid #e3ece9;border-radius:14px;padding:14px;background:#fbfdfc}.audit-item strong{display:block;font-size:1.5rem;color:#0f6b52}.detail-btn{border:0;background:#e9f6f1;color:#0f6b52;border-radius:8px;padding:5px 9px;font-weight:700;cursor:pointer}.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:9999;padding:4vh 3vw}.modal.open{display:block}.modal-box{background:#fff;max-width:1200px;max-height:92vh;overflow:auto;margin:auto;border-radius:18px;padding:20px}.modal-head{display:flex;justify-content:space-between;align-items:center;gap:12px}.modal-close{font-size:24px;border:0;background:transparent;cursor:pointer}@media(max-width:900px){.audit-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:1000px){.filters{grid-template-columns:repeat(2,1fr)}.kpis{grid-template-columns:repeat(3,1fr)}.two{grid-template-columns:1fr}}@media(max-width:600px){.filters,.kpis{grid-template-columns:1fr}}
 @media print{@page{size:A4 landscape;margin:9mm}body{background:#fff}.head,.top,.access,.filters-card,.tabs,.comment-actions,.status{display:none!important}.container{width:100%;margin:0}.card{box-shadow:none;border:0;padding:0;margin-bottom:12px}.print-head{display:block;text-align:center;margin-bottom:12px}.print-head img{width:100%;max-height:72px;object-fit:contain}.print-head h2{color:#0f513f;margin:7px 0 3px}.kpis{grid-template-columns:repeat(6,1fr)}.two{grid-template-columns:1fr 1fr}.table-wrap{overflow:visible}.signatures{display:flex;justify-content:space-between;border-top:1px solid #8db7aa;padding-top:10px;margin-top:16px;font-size:11px}.comment-box textarea{border:0;min-height:auto;resize:none}}
 </style>
@@ -43,6 +44,7 @@
 <div class="signatures"><span id="preparedBy"></span><span>المديرة المساعدة: خلود الكعبي</span><span>مديرة المدرسة: أحلام السويدي</span></div>
 </section>
 </main>
+<div id="detailModal" class="modal"><div class="modal-box"><div class="modal-head"><h3 id="detailTitle">تفاصيل</h3><button class="modal-close" onclick="closeDetails()">×</button></div><div id="detailBody"></div></div></div>
 
 <script src="../../js/config.js?v=20260914-reports-v4"></script>
 <script>
@@ -50,7 +52,73 @@
 const sb=window.supabase.createClient(window.WR_CONFIG.supabaseUrl,window.WR_CONFIG.supabaseKey);
 const MONTHS=[9,10,11,12,1,2,3,4,5,6],MN={1:"يناير",2:"فبراير",3:"مارس",4:"أبريل",5:"مايو",6:"يونيو",9:"سبتمبر",10:"أكتوبر",11:"نوفمبر",12:"ديسمبر"};
 const $=id=>document.getElementById(id),pct=(a,b)=>b?Math.round(a*100/b):0,esc=v=>String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
-let type="monthly",user=null,displayName="",plans=[],procedures=[],followups=[],departments=[],autoComment="",autoRecommendations="";
+let type="monthly",user=null,displayName="",plans=[],procedures=[],followups=[],reportRows=[],departments=[],autoComment="",autoRecommendations="";
+
+/* الزمن الأكاديمي: لا تُحسب الشهور المستقبلية كـ «غير محدث». */
+function schoolYearStart(y){const m=String(y||"").match(/(\d{4})/);return m?Number(m[1]):null}
+function dueMonthsForYear(y){
+  const sy=schoolYearStart(y), now=new Date(), cy=now.getFullYear(), cm=now.getMonth()+1;
+  if(!sy)return MONTHS.slice();
+  if(cy>sy+1 || (cy===sy+1 && cm>6))return MONTHS.slice();
+  if(cy<sy || (cy===sy && cm<9))return [];
+  if(cy===sy)return MONTHS.filter(m=>m>=9 && m<=cm);
+  if(cy===sy+1)return MONTHS.filter(m=>m>=9 || m<=cm);
+  return [];
+}
+function isMonthDue(monthNo){return dueMonthsForYear($("year").value).includes(Number(monthNo))}
+
+/* أقسام الخطة التدفقية: لا نستخدم كل أقسام المدرسة كأقسام خطة. */
+const PLAN_EXCLUDED_NAMES=new Set(["الإداريات","الاداريات"]);
+const ENRICHMENT_NAMES=new Set(["الحاسوب","الفن","التصميم والتقانة","التربية الأسرية","الاسرية","الأسرية"]);
+const ENRICHMENT_PLAN_NAME="المواد الإثرائية";
+const norm=v=>String(v||"").trim().replace(/\s+/g," ");
+function normalizePlanDepartments(){
+  const enrichment=departments.find(d=>norm(d.name)===ENRICHMENT_PLAN_NAME);
+  const depById=new Map(departments.map(d=>[String(d.id),d]));
+  /* الخطط القديمة للمواد الإثرائية المنفردة تُعرض تحت القسم الموحد فقط. */
+  if(enrichment){
+    plans=plans.map(p=>{const n=norm(depById.get(String(p.department_id))?.name);return ENRICHMENT_NAMES.has(n)?{...p,department_id:enrichment.id}:p});
+  }
+}
+
+function planDepartmentsForSelectedYear(){
+  const y=String($("year")?.value||"");
+  const used=new Set(plans.filter(p=>!y||String(p.school_year)===y).map(p=>String(p.department_id)));
+  return departments.filter(d=>{
+    const n=norm(d.name);
+    return !PLAN_EXCLUDED_NAMES.has(n) && !ENRICHMENT_NAMES.has(n) && used.has(String(d.id));
+  });
+}
+function refreshDepartmentFilter(){
+  const el=$("department"); if(!el)return;
+  const prev=el.value||"all", list=planDepartmentsForSelectedYear();
+  el.innerHTML='<option value="all">جميع الأقسام</option>'+list.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join("");
+  el.value=list.some(x=>String(x.id)===String(prev))?prev:"all";
+}
+
+function monthList(v){
+  if(Array.isArray(v))return [...new Set(v.map(Number).filter(m=>MONTHS.includes(m)))];
+  if(v==null||v==="")return [];
+  try{const a=JSON.parse(v);if(Array.isArray(a))return [...new Set(a.map(Number).filter(m=>MONTHS.includes(m)))];}catch(_){}
+  return [...new Set(String(v).split(/[,،;\s]+/).map(Number).filter(m=>MONTHS.includes(m)))];
+}
+function buildReportRows(){
+  /* مصدر الحقيقة للتقارير = الإجراء + أشهر تنفيذه. سجل المتابعة يضيف الحالة فقط.
+     بذلك لا يختفي إجراء مخطط لمجرد أن سجل المتابعة لم يُنشأ بعد. */
+  const latest=new Map();
+  for(const f of followups){
+    const k=String(f.procedure_id)+"|"+Number(f.month_no);
+    const old=latest.get(k);
+    if(!old || String(f.updated_at||"")>=String(old.updated_at||""))latest.set(k,f);
+  }
+  reportRows=[];
+  for(const pr of procedures){
+    for(const m of monthList(pr.planned_months)){
+      const f=latest.get(String(pr.id)+"|"+m);
+      reportRows.push(f?{...f,plan_id:pr.plan_id,procedure_id:pr.id,month_no:m}:{id:null,plan_id:pr.plan_id,procedure_id:pr.id,month_no:m,execution_status:"pending",non_completion_reason:null,followup_notes:null,updated_at:null,_virtual:true});
+    }
+  }
+}
 
 function status(m,t="info"){const x=$("pageStatus");x.className=`status ${t}`;x.textContent=m}
 function domainKey(p){const d=String(p.domain_name||p.program_name||"");if(d.includes("الإنجاز الأكاديمي")||d.includes("آفاق"))return"academic";if(d.includes("التطور الشخصي")||d.includes("رايات"))return"personal";if(d.includes("التعليم والتعلم")||d.includes("مداد"))return"teaching";if(d.includes("القيادة والإدارة")||d.includes("خطى"))return"leadership";return"unknown"}
@@ -77,7 +145,7 @@ async function bootstrap(){
     const q=new URLSearchParams(location.search).get("type");
     if(["monthly","comprehensive","tracking"].includes(q))type=q;
     await render();
-    status(`تم تحميل بيانات التقارير: ${plans.length} خطة، ${procedures.length} إجراء، ${followups.length} متابعة.`,"success");
+    status(`تم تحميل بيانات التقارير: ${plans.length} خطة، ${procedures.length} إجراء، ${reportRows.length} متابعة مخططة (${followups.length} سجل متابعة محفوظ).`,"success");
   }catch(e){
     console.error(e);
     status("تعذر تحميل التقارير: "+(e.message||e),"error");
@@ -91,34 +159,129 @@ async function loadData(){
   const p=await sb.from("plans").select("id,department_id,school_year,plan_title,status");
   if(p.error)throw p.error;plans=p.data||[];
 
+  normalizePlanDepartments();
+
   const ids=plans.map(x=>x.id);
   procedures=[];followups=[];
   if(ids.length){
-    const pr=await sb.from("plan_procedures").select("id,plan_id,sequence_no,path_code,domain_name,program_name,procedure_text,planned_months").in("plan_id",ids);
-    if(pr.error)throw pr.error;procedures=pr.data||[];
-    const fu=await sb.from("plan_monthly_followups").select("id,plan_id,procedure_id,month_no,execution_status,non_completion_reason,followup_notes,updated_at").in("plan_id",ids);
-    if(fu.error)throw fu.error;followups=fu.data||[];
+    const BATCH_SIZE=150;
+    for(let i=0;i<ids.length;i+=BATCH_SIZE){
+      const batch=ids.slice(i,i+BATCH_SIZE);
+      const pr=await sb.from("plan_procedures").select("id,plan_id,sequence_no,path_code,domain_name,program_name,procedure_text,planned_months").in("plan_id",batch);
+      if(pr.error)throw pr.error;
+      if(pr.data?.length)procedures.push(...pr.data);
+      const fu=await sb.from("plan_monthly_followups").select("id,plan_id,procedure_id,month_no,execution_status,non_completion_reason,followup_notes,updated_at").in("plan_id",batch);
+      if(fu.error)throw fu.error;
+      if(fu.data?.length)followups.push(...fu.data);
+    }
   }
 
-  const visible=new Set(plans.map(x=>x.department_id));
-  $("department").innerHTML='<option value="all">جميع الأقسام المتاحة</option>'+departments.filter(x=>visible.has(x.id)).map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join("");
+  buildReportRows();
+
+  /* الفلتر يتبع خطط السنة المختارة فقط؛ لا أقسام تاريخية ولا أقسام المدرسة العامة. */
+  refreshDepartmentFilter();
 }
 
 function bind(){
   document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",async()=>{type=b.dataset.type;await render()}));
-  ["year","month","department","domain"].forEach(id=>$(id).addEventListener("change",render));
+  ["month","department","domain"].forEach(id=>$(id).addEventListener("change",render));
+  $("year").addEventListener("change",async()=>{refreshDepartmentFilter();await render()});
   $("saveNote").addEventListener("click",saveNote);
   $("restoreAuto").addEventListener("click",()=>{$("commentary").value=autoComment;$("recommendations").value=autoRecommendations});
 }
-function selectedPlans(){const y=$("year").value,d=$("department").value;return plans.filter(p=>p.school_year===y&&(d==="all"||p.department_id===d))}
-function selectedProcedures(){const ids=new Set(selectedPlans().map(p=>p.id)),d=$("domain").value;return procedures.filter(p=>ids.has(p.plan_id)&&(d==="all"||domainKey(p)===d))}
-function selectedFollowups(allMonths=false){const ids=new Set(selectedProcedures().map(p=>p.id)),m=Number($("month").value);return followups.filter(f=>ids.has(f.procedure_id)&&(allMonths||f.month_no===m))}
-function counts(rows){return{total:rows.length,completed:rows.filter(x=>x.execution_status==="completed").length,progress:rows.filter(x=>x.execution_status==="in_progress").length,not:rows.filter(x=>x.execution_status==="not_completed").length,pending:rows.filter(x=>!x.execution_status||x.execution_status==="pending").length}}
-function kpis(c){$("kpis").innerHTML=[["إجمالي المتابعات",c.total],["نفذ",c.completed],["جاري التنفيذ",c.progress],["لم ينفذ",c.not],["لم يتم التحديث",c.pending],["نسبة التنفيذ",pct(c.completed,c.total)+"%"]].map(x=>`<div class="kpi"><strong>${x[1]}</strong><span>${x[0]}</span></div>`).join("")}
-function aggregate(rows,keyFn,labelFn){const map=new Map();for(const r of rows){const k=keyFn(r);const x=map.get(k)||{key:k,total:0,completed:0,progress:0,not:0,pending:0};x.total++;if(r.execution_status==="completed")x.completed++;else if(r.execution_status==="in_progress")x.progress++;else if(r.execution_status==="not_completed")x.not++;else x.pending++;map.set(k,x)}return[...map.values()].map(x=>({...x,label:labelFn(x.key),rate:pct(x.completed,x.total)})).sort((a,b)=>b.rate-a.rate)}
-function depOf(f){return plans.find(x=>x.id===f.plan_id)?.department_id||"unknown"}
-function procOf(f){return procedures.find(x=>x.id===f.procedure_id)}
-function table(title,rows){return`<section class="card"><h3 class="section-title">${title}</h3><div class="table-wrap"><table><thead><tr><th>البيان</th><th>الإجمالي</th><th>نفذ</th><th>جاري</th><th>لم ينفذ</th><th>غير محدث</th><th>نسبة التنفيذ</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.label)}</td><td>${r.total}</td><td>${r.completed}</td><td>${r.progress}</td><td>${r.not}</td><td>${r.pending}</td><td>${r.rate}%</td></tr>`).join("")||'<tr><td colspan="7">لا توجد بيانات</td></tr>'}</tbody></table></div></section>`}
+function selectedPlans(){
+  const y=$("year").value,d=$("department").value;
+  return plans.filter(p=>p.school_year===y&&(d==="all"||String(p.department_id)===String(d)));
+}
+function selectedProcedures(){
+  const ids=new Set(selectedPlans().map(p=>String(p.id))),d=$("domain").value;
+  return procedures.filter(p=>ids.has(String(p.plan_id))&&(d==="all"||domainKey(p)===d));
+}
+function selectedFollowups(allMonths=false){
+  const ids=new Set(selectedProcedures().map(p=>String(p.id))),m=Number($("month").value);
+  return reportRows.filter(f=>ids.has(String(f.procedure_id))&&(allMonths||Number(f.month_no)===m));
+}
+function counts(rows){
+  const due=rows.filter(x=>isMonthDue(x.month_no)),future=rows.filter(x=>!isMonthDue(x.month_no));
+  return{total:due.length,scheduled:rows.length,future:future.length,completed:due.filter(x=>x.execution_status==="completed").length,progress:due.filter(x=>x.execution_status==="in_progress").length,not:due.filter(x=>x.execution_status==="not_completed").length,pending:due.filter(x=>!x.execution_status||x.execution_status==="pending").length}
+}
+function kpis(c,meta=null){
+  if(meta){
+    $("kpis").innerHTML=[
+      ["أقسام لها خطط مرفوعة",meta.departmentsWithPlans],
+      ["الخطط المرفوعة",meta.plans],["إجراءات الخطة",meta.procedures],["متابعات مستحقة حتى الآن",c.total],["متابعات منفذة",c.completed],
+      ["جاري التنفيذ",c.progress],["لم ينفذ",c.not],["غير محدث حتى الآن",c.pending],["لم يحن موعدها",c.future],["نسبة التنفيذ حتى الآن",pct(c.completed,c.total)+"%"]
+    ].map(x=>`<div class="kpi"><strong>${x[1]}</strong><span>${x[0]}</span></div>`).join("");
+    return;
+  }
+  $("kpis").innerHTML=[["المتابعات المستحقة",c.total],["نفذ",c.completed],["جاري التنفيذ",c.progress],["لم ينفذ",c.not],["لم يتم التحديث",c.pending],["لم يحن موعدها",c.future],["نسبة التنفيذ",pct(c.completed,c.total)+"%"]].map(x=>`<div class="kpi"><strong>${x[1]}</strong><span>${x[0]}</span></div>`).join("")
+}
+function aggregate(rows,keyFn,labelFn){const map=new Map();for(const r of rows){const k=keyFn(r);const x=map.get(k)||{key:k,total:0,scheduled:0,future:0,completed:0,progress:0,not:0,pending:0};x.scheduled++;if(!isMonthDue(r.month_no)){x.future++;map.set(k,x);continue}x.total++;if(r.execution_status==="completed")x.completed++;else if(r.execution_status==="in_progress")x.progress++;else if(r.execution_status==="not_completed")x.not++;else x.pending++;map.set(k,x)}return[...map.values()].map(x=>({...x,label:labelFn(x.key),rate:pct(x.completed,x.total)})).sort((a,b)=>b.rate-a.rate)}
+function depOf(f){return plans.find(x=>String(x.id)===String(f.plan_id))?.department_id||"unknown"}
+function procOf(f){return procedures.find(x=>String(x.id)===String(f.procedure_id))}
+function table(title,rows){return`<section class="card"><h3 class="section-title">${title}</h3><div class="table-wrap"><table><thead><tr><th>البيان</th><th>المستحق حتى الآن</th><th>نفذ</th><th>جاري</th><th>لم ينفذ</th><th>غير محدث</th><th>لم يحن موعده</th><th>نسبة التنفيذ</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.label)}</td><td>${r.total}</td><td>${r.completed}</td><td>${r.progress}</td><td>${r.not}</td><td>${r.pending}</td><td>${r.future||0}</td><td>${r.total?r.rate+"%":"—"}</td></tr>`).join("")||'<tr><td colspan="8">لا توجد بيانات</td></tr>'}</tbody></table></div></section>`}
+function planStatusLabel(v){const s=String(v||"").toLowerCase();if(["approved","active","published","completed"].includes(s))return"مرفوعة";if(["draft"].includes(s))return"مسودة";return v?String(v):"مرفوعة"}
+function departmentSummary(){
+  const year=$("year").value, depFilter=$("department").value, dom=$("domain").value;
+  const yearPlans=plans.filter(p=>p.school_year===year&&(depFilter==="all"||String(p.department_id)===String(depFilter)));
+  const allDeptRows=planDepartmentsForSelectedYear().filter(d=>depFilter==="all"||String(d.id)===String(depFilter));
+  return allDeptRows.map(d=>{
+    const dp=yearPlans.filter(p=>String(p.department_id)===String(d.id));
+    const pids=new Set(dp.map(p=>String(p.id)));
+    const dprocs=procedures.filter(pr=>pids.has(String(pr.plan_id))&&(dom==="all"||domainKey(pr)===dom));
+    const procids=new Set(dprocs.map(pr=>String(pr.id)));
+    const dfu=reportRows.filter(f=>procids.has(String(f.procedure_id)));
+    const c=counts(dfu);
+    return {name:d.name,plans:dp.length,procedures:dprocs.length,...c,rate:pct(c.completed,c.total),status:dp.length?(dp.some(p=>String(p.status).toLowerCase()==="draft")?"مرفوعة / بها مسودة":"مرفوعة"):"لم ترفع"};
+  });
+}
+function auditData(){
+  const prs=selectedProcedures();
+  const noMonths=prs.filter(p=>monthList(p.planned_months).length===0);
+  const noDomain=prs.filter(p=>domainKey(p)==="unknown");
+  const planIds=new Set(selectedPlans().map(p=>String(p.id)));
+  const orphan=procedures.filter(p=>!plans.some(x=>String(x.id)===String(p.plan_id)));
+  const dup=new Map();
+  for(const p of prs){const k=String(p.plan_id)+"|"+norm(p.procedure_text);dup.set(k,(dup.get(k)||0)+1)}
+  const duplicates=[...dup.values()].filter(n=>n>1).reduce((a,n)=>a+n,0);
+  return {noMonths,noDomain,orphan,duplicates};
+}
+function auditCard(){
+ const a=auditData();
+ return `<section class="card"><h3 class="section-title">تدقيق جودة بيانات الخطة</h3><div class="audit-grid">
+ <div class="audit-item"><strong>${a.noMonths.length}</strong><span>إجراءات بدون شهر تنفيذ</span></div>
+ <div class="audit-item"><strong>${a.noDomain.length}</strong><span>إجراءات بدون مجال واضح</span></div>
+ <div class="audit-item"><strong>${a.orphan.length}</strong><span>إجراءات غير مرتبطة بخطة</span></div>
+ <div class="audit-item"><strong>${a.duplicates}</strong><span>إجراءات مكررة محتملة</span></div></div>
+ <p style="color:#667">أي قيمة أكبر من صفر تستحق المراجعة قبل اعتماد مؤشرات التنفيذ.</p></section>`;
+}
+function detailRows(depId,monthNo=null){
+ const pids=new Set(selectedPlans().filter(p=>String(p.department_id)===String(depId)).map(p=>String(p.id)));
+ const prs=selectedProcedures().filter(p=>pids.has(String(p.plan_id)));
+ const pmap=new Map(prs.map(p=>[String(p.id),p]));
+ return reportRows.filter(r=>pmap.has(String(r.procedure_id))&&(monthNo==null||Number(r.month_no)===Number(monthNo))).map(r=>({r,p:pmap.get(String(r.procedure_id))}));
+}
+function statusAr(s){return s==="completed"?"منفذ":s==="in_progress"?"جاري التنفيذ":s==="not_completed"?"لم ينفذ":"غير محدث"}
+function openDetails(depId,monthNo=null){
+ const d=departments.find(x=>String(x.id)===String(depId)); const rows=detailRows(depId,monthNo);
+ $("detailTitle").textContent=`تفاصيل ${d?.name||"القسم"}${monthNo?" — "+MN[monthNo]:""}`;
+ $("detailBody").innerHTML=`<div class="table-wrap"><table><thead><tr><th>الإجراء</th><th>المجال</th><th>الشهر</th><th>الحالة</th><th>سبب عدم الإنجاز</th><th>ملاحظات المتابعة</th></tr></thead><tbody>${rows.map(({r,p})=>`<tr><td>${esc(p.procedure_text||"—")}</td><td>${esc(domainName(domainKey(p)))}</td><td>${esc(MN[r.month_no]||r.month_no)}</td><td>${esc(isMonthDue(r.month_no)?statusAr(r.execution_status):"لم يحن موعده")}</td><td>${esc(r.non_completion_reason||"—")}</td><td>${esc(r.followup_notes||"—")}</td></tr>`).join("")||'<tr><td colspan="6">لا توجد إجراءات ضمن هذا النطاق</td></tr>'}</tbody></table></div>`;
+ $("detailModal").classList.add("open");
+}
+function closeDetails(){$("detailModal").classList.remove("open")}
+function departmentPlanTable(rows){
+ return `<section class="card"><h3 class="section-title">حالة رفع الخطط والتنفيذ حسب الأقسام</h3><div class="table-wrap"><table><thead><tr><th>القسم</th><th>حالة رفع الخطة</th><th>عدد الخطط</th><th>الإجراءات</th><th>المتابعات</th><th>نفذ</th><th>جاري</th><th>لم ينفذ</th><th>غير محدث</th><th>لم يحن موعده</th><th>نسبة التنفيذ</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.name)} <button class="detail-btn" onclick="openDetails('${departments.find(d=>norm(d.name)===norm(r.name))?.id||""}')">تفاصيل</button></td><td>${esc(r.status)}</td><td>${r.plans}</td><td>${r.procedures}</td><td>${r.total}</td><td>${r.completed}</td><td>${r.progress}</td><td>${r.not}</td><td>${r.pending}</td><td>${r.future||0}</td><td>${r.total?r.rate+"%":"—"}</td></tr>`).join("")||'<tr><td colspan="11">لا توجد أقسام</td></tr>'}</tbody></table></div><p style="margin:10px 4px 0;color:#667;font-size:.92rem">ملاحظة: «المتابعات» تعني سجلات المتابعة الشهرية للإجراءات، وليست عدد الخطط. القسم الذي رفع خطة يظهر حتى لو لم تُحدَّث متابعاته بعد.</p></section>`;
+}
+function planDetailsTable(){
+ const sp=selectedPlans(), dom=$("domain").value;
+ const rows=sp.map(p=>{
+   const d=departments.find(x=>String(x.id)===String(p.department_id));
+   const prs=procedures.filter(x=>String(x.plan_id)===String(p.id)&&(dom==="all"||domainKey(x)===dom));
+   const ids=new Set(prs.map(x=>String(x.id))); const fs=reportRows.filter(x=>ids.has(String(x.procedure_id))); const c=counts(fs);
+   return {dep:d?.name||"غير معروف",title:p.plan_title||"خطة بدون عنوان",status:planStatusLabel(p.status),procedures:prs.length,...c,rate:pct(c.completed,c.total)};
+ }).filter(r=>dom==="all"||r.procedures>0);
+ return `<section class="card"><h3 class="section-title">تفصيل الخطط المرفوعة</h3><div class="table-wrap"><table><thead><tr><th>القسم</th><th>عنوان الخطة</th><th>حالة الخطة</th><th>الإجراءات</th><th>المتابعات</th><th>نفذ</th><th>جاري</th><th>لم ينفذ</th><th>غير محدث</th><th>لم يحن موعده</th><th>نسبة التنفيذ</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.dep)}</td><td>${esc(r.title)}</td><td>${esc(r.status)}</td><td>${r.procedures}</td><td>${r.total}</td><td>${r.completed}</td><td>${r.progress}</td><td>${r.not}</td><td>${r.pending}</td><td>${r.future||0}</td><td>${r.total?r.rate+"%":"—"}</td></tr>`).join("")||'<tr><td colspan="11">لا توجد خطط ضمن الفلاتر الحالية</td></tr>'}</tbody></table></div></section>`;
+}
 
 async function render(){
   document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.type===type));
@@ -126,33 +289,35 @@ async function render(){
   const titles={monthly:"التقرير الشهري",comprehensive:"التقرير الشامل",tracking:"التقرير التتبعي"};
   $("reportTitle").textContent=titles[type];$("printTitle").textContent=titles[type]+" للخطة التدفقية";
   $("printScope").textContent=`${$("year").value}${type==="monthly"?" — "+MN[$("month").value]:""} — ${$("department").selectedOptions[0]?.textContent||""} — ${$("domain").selectedOptions[0]?.textContent||""}`;
-
-  const rows=selectedFollowups(type!=="monthly"),c=counts(rows);kpis(c);
-  if(type==="monthly")renderMonthly(rows,c);else if(type==="comprehensive")renderComprehensive(rows,c);else renderTracking(rows);
+  const rows=selectedFollowups(type!=="monthly"),c=counts(rows);
+  if(type==="comprehensive"){
+    const ds=departmentSummary(), meta={departmentsTotal:ds.length,departmentsWithPlans:ds.filter(x=>x.plans>0).length,departmentsWithoutPlans:ds.filter(x=>x.plans===0).length,plans:selectedPlans().length,procedures:selectedProcedures().length};
+    kpis(c,meta); renderComprehensive(rows,c,ds);
+  }else{kpis(c);if(type==="monthly")renderMonthly(rows,c);else renderTracking(rows)}
   await loadNote();
 }
+function departmentDrilldown(depRows){return `<section class="card"><h3 class="section-title">تفاصيل الأقسام لهذا الشهر</h3><div class="table-wrap"><table><thead><tr><th>القسم</th><th>المستحق</th><th>الحالة</th><th>التدقيق</th></tr></thead><tbody>${depRows.map(r=>`<tr><td>${esc(r.label)}</td><td>${r.total}</td><td>${r.completed} منفذ، ${r.pending} غير محدث، ${r.progress} جاري، ${r.not} لم ينفذ</td><td><button class="detail-btn" onclick="openDetails('${r.key}',${Number($("month").value)})">عرض الإجراءات</button></td></tr>`).join("")||'<tr><td colspan="4">لا توجد بيانات</td></tr>'}</tbody></table></div></section>`}
 function renderMonthly(rows,c){
-  const dep=aggregate(rows,depOf,k=>departments.find(x=>x.id===k)?.name||"غير معروف");
+  const dep=aggregate(rows,depOf,k=>departments.find(x=>String(x.id)===String(k))?.name||"غير معروف");
   const dom=aggregate(rows,f=>domainKey(procOf(f)||{}),domainName);
-  $("reportBody").innerHTML=`<div class="two">${table("النتائج حسب الأقسام",dep)}${table("النتائج حسب المجالات",dom)}</div>`;
-  autoComment=`خلال شهر ${MN[$("month").value]} بلغ إجمالي إجراءات المتابعة ${c.total} إجراء، نُفذ منها ${c.completed} بنسبة ${pct(c.completed,c.total)}%، وبلغ الجاري تنفيذه ${c.progress}، بينما لم ينفذ ${c.not}، ولم يتم تحديث ${c.pending} إجراء.`;
+  $("reportBody").innerHTML=`<div class="two">${table("النتائج حسب الأقسام",dep)}${table("النتائج حسب المجالات",dom)}</div>`+departmentDrilldown(dep);
+  autoComment=`خلال شهر ${MN[$("month").value]} بلغ عدد المتابعات المستحقة ${c.total} سجلًا، نُفذ منها ${c.completed} بنسبة ${pct(c.completed,c.total)}%، وبلغ الجاري تنفيذه ${c.progress}، بينما لم ينفذ ${c.not}، ولم يتم تحديث ${c.pending} سجل متابعة.${c.future?` ويوجد ${c.future} سجلًا لم يحن موعده بعد ولا يدخل في نسبة التنفيذ.`:""}`;
   autoRecommendations=`الاستمرار في متابعة الإجراءات الجاري تنفيذها، والتركيز على الإجراءات غير المنفذة وغير المحدثة، ومراجعة أسباب التعثر مع الأقسام والمجالات الأقل تنفيذًا.`;
 }
-function renderComprehensive(rows,c){
-  const dep=aggregate(rows,depOf,k=>departments.find(x=>x.id===k)?.name||"غير معروف");
+function renderComprehensive(rows,c,ds){
   const dom=aggregate(rows,f=>domainKey(procOf(f)||{}),domainName);
-  const mon=aggregate(rows,f=>f.month_no,k=>MN[k]||k).sort((a,b)=>MONTHS.indexOf(a.key)-MONTHS.indexOf(b.key));
-  $("reportBody").innerHTML=`<div class="two">${table("الأداء السنوي حسب الأقسام",dep)}${table("الأداء السنوي حسب المجالات",dom)}</div>${table("الأداء حسب الشهور",mon)}`;
-  autoComment=`بلغ إجمالي متابعات الخطة خلال العام ${c.total} متابعة، منها ${c.completed} منفذة بنسبة ${pct(c.completed,c.total)}%، و${c.progress} جاري تنفيذها، و${c.not} لم تنفذ، و${c.pending} لم يتم تحديثها.`;
-  autoRecommendations=`توجيه المتابعة نحو الإجراءات المتعثرة وغير المحدثة، ووضع إجراءات دعم للأقسام والمجالات الأقل تنفيذًا، ومراجعة أسباب عدم التنفيذ دوريًا.`;
+  const mon=aggregate(rows,f=>Number(f.month_no),k=>MN[k]||k).sort((a,b)=>MONTHS.indexOf(a.key)-MONTHS.indexOf(b.key));
+  $("reportBody").innerHTML=`${auditCard()}${departmentPlanTable(ds)}${planDetailsTable()}<div class="two">${table("التنفيذ السنوي حسب المجالات",dom)}${table("التنفيذ حسب الشهور",mon)}</div>`;
+  const withPlans=ds.filter(x=>x.plans>0).length, withoutPlans=ds.filter(x=>x.plans===0).length;
+  autoComment=`خلال العام الدراسي ${$("year").value} توجد خطط مرفوعة لـ ${withPlans} قسمًا ضمن نطاق التقرير. بلغ عدد الخطط المرفوعة ${selectedPlans().length}، وتضمنت ${selectedProcedures().length} إجراء. أما المتابعات المستحقة حتى تاريخ التقرير فبلغت ${c.total} سجلًا، منها ${c.completed} منفذ و${c.progress} جارٍ و${c.not} غير منفذ و${c.pending} غير محدث. ويوجد ${c.future} متابعة مستقبلية لم يحن موعدها ولا تدخل في الحساب. نسبة التنفيذ الحالية محسوبة على المتابعات المستحقة فقط وتبلغ ${pct(c.completed,c.total)}%.`;
+  autoRecommendations=`فصل متابعة رفع الخطة عن متابعة تنفيذ إجراءاتها. توجيه الدعم للأقسام ذات المتابعات غير المحدثة أو المتعثرة، مع مراجعة التنفيذ شهريًا وفق الإجراءات والمجالات.`;
 }
 function renderTracking(rows){
-  const mon=aggregate(rows,f=>f.month_no,k=>MN[k]||k).sort((a,b)=>MONTHS.indexOf(a.key)-MONTHS.indexOf(b.key));
-  $("reportBody").innerHTML=table("التطور الشهري",mon);
+  const mon=aggregate(rows,f=>Number(f.month_no),k=>MN[k]||k).sort((a,b)=>MONTHS.indexOf(a.key)-MONTHS.indexOf(b.key));
+  $("reportBody").innerHTML=table("التطور الشهري لسجلات المتابعة",mon);
   const first=mon.find(x=>x.total>0),last=[...mon].reverse().find(x=>x.total>0);
-  const delta=first&&last?last.rate-first.rate:0;
-  const trend=delta>3?"تحسن":delta<-3?"تراجع":"استقرار";
-  autoComment=`يظهر التتبع الزمني للخطة اتجاهًا عامًا نحو «${trend}»${first&&last?` من ${first.rate}% في ${first.label} إلى ${last.rate}% في ${last.label}.`:"."}`;
+  const delta=first&&last?last.rate-first.rate:0; const trend=delta>3?"تحسن":delta<-3?"تراجع":"استقرار";
+  autoComment=`يظهر التتبع الزمني لسجلات متابعة الخطة اتجاهًا عامًا نحو «${trend}»${first&&last?` من ${first.rate}% في ${first.label} إلى ${last.rate}% في ${last.label}.`:"."}`;
   autoRecommendations=trend==="تراجع"?"تحديد أسباب التراجع ومراجعة الإجراءات المتعثرة ووضع مواعيد تصحيحية واضحة ومتابعتها شهريًا.":trend==="تحسن"?"الحفاظ على وتيرة التحسن وتوجيه الدعم إلى الأقسام أو المجالات الأقل إنجازًا.":"معالجة الإجراءات غير المحدثة والمتعثرة وتحديد أولويات شهرية واضحة للإنجاز.";
 }
 function reportKey(){return[type,$("year").value,type==="monthly"?$("month").value:"all",$("department").value,$("domain").value].join("|")}

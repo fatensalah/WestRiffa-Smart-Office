@@ -476,6 +476,34 @@
         role ===
         "coordinator",
 
+      /* مركز مصادر التعلم */
+      resource_center_access:
+        Boolean(role),
+
+      resource_center_create_own:
+        Boolean(role),
+
+      resource_center_view_own:
+        Boolean(role),
+
+      resource_center_view_department:
+        role === "coordinator",
+
+      resource_center_view_all:
+        role === "admin",
+
+      resource_center_view_reports:
+        role === "admin",
+
+      resource_center_view_satisfaction:
+        role === "admin",
+
+      resource_center_manage_content:
+        role === "admin",
+
+      resource_center_browse_content:
+        Boolean(role),
+
       classroom_visits:
         role ===
           "admin" ||

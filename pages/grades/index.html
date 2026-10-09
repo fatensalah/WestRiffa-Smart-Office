@@ -1106,33 +1106,33 @@
       </article>
 
       <article class="stat">
-        <span>نسبة الإتقان ≥ 80%</span>
+        <span>نسبة النتائج المتقنة ≥ 80%</span>
         <strong id="adminMasteryRate">—</strong>
       </article>
 
       <article class="stat">
-        <span>يحتاجون دعم &lt; 60%</span>
+        <span>نسبة النتائج التي تحتاج دعم &lt; 60%</span>
         <strong id="adminSupportRate">—</strong>
       </article>
 
 
       <article class="stat">
-        <span>عدد الناجحين</span>
+        <span>نتائج ناجحة</span>
         <strong id="adminPassedCount">0</strong>
       </article>
 
       <article class="stat">
-        <span>عدد الراسبين</span>
+        <span>نتائج راسبة</span>
         <strong id="adminFailedCount">0</strong>
       </article>
 
       <article class="stat">
-        <span>عدد المتقنين</span>
+        <span>نتائج متقنة</span>
         <strong id="adminMasteredCount">0</strong>
       </article>
 
       <article class="stat">
-        <span>عدد غير المتقنين</span>
+        <span>نتائج غير متقنة</span>
         <strong id="adminNotMasteredCount">0</strong>
       </article>
     </div>
@@ -1154,6 +1154,11 @@
           <option>الثالث</option>
           <option>الرابع</option>
           <option>الخامس</option>
+        </select>
+
+        <select id="adminSection">
+          <option value="">كل الشعب</option>
+          <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
         </select>
 
         <select id="adminTerm">
@@ -1305,6 +1310,19 @@
       <div id="examGrowthTable"></div>
     </section>
 
+    <section class="card">
+      <h2>🔄 تتبع مقارن بين الاختبارات</h2>
+      <div class="sub">اختاري المادة والصف والشعبة، ثم أي اختبارين أو أكثر للمقارنة. يعرض التحصيل والإتقان والكفايات لنفس النطاق.</div>
+      <div class="form-grid">
+        <div class="field"><label>المادة</label><select id="compareSubject"><option value="">كل المواد</option></select></div>
+        <div class="field"><label>الصف</label><select id="compareGrade"><option value="">كل الصفوف</option><option>الأول</option><option>الثاني</option><option>الثالث</option><option>الرابع</option><option>الخامس</option></select></div>
+        <div class="field"><label>الشعبة</label><select id="compareSection"><option value="">كل الشعب</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+        <div class="field"><label>الاختبارات للمقارنة</label><select id="compareExams" multiple size="4"><option value="تشخيصي" selected>تشخيصي</option><option value="الاختبار الأول" selected>الاختبار الأول</option><option value="الاختبار الثاني">الاختبار الثاني</option><option value="الاختبار الثالث">الاختبار الثالث</option></select></div>
+      </div>
+      <div class="report-toolbar"><button id="refreshExamComparisonBtn" class="btn btn-primary" type="button">عرض المقارنة</button><button id="printExamComparisonBtn" class="btn btn-gold" type="button">🖨️ طباعة المقارنة</button></div>
+      <div id="examComparisonPanel" style="margin-top:14px"></div>
+    </section>
+
     </div>
 
     <div id="adminViewStudent" class="admin-subpanel">
@@ -1356,6 +1374,7 @@
             <option value="">كل الصفوف</option>
             <option>الأول</option><option>الثاني</option><option>الثالث</option><option>الرابع</option><option>الخامس</option>
           </select>
+          <select id="reportsSection"><option value="">كل الشعب</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
           <div class="field" style="min-width:150px"><label for="excellenceThreshold">حد التفوق %</label><input id="excellenceThreshold" type="number" min="60" max="100" value="90"></div>
           <button id="refreshReportsCenterBtn" class="btn btn-primary" type="button">تحديث الكشوف</button>
         </div>
@@ -2320,6 +2339,8 @@ function filteredSheets(prefix){
   const grade =
     byId(prefix + "Grade").value;
 
+  const section = prefix === "admin" ? (byId("adminSection")?.value || "") : "";
+
   const examType =
     byId(prefix + "ExamType").value;
 
@@ -2356,6 +2377,10 @@ function filteredSheets(prefix){
     }
 
     if(grade && sheet.grade !== grade){
+      return false;
+    }
+
+    if(section && String(sheet.class_section) !== String(section)){
       return false;
     }
 
@@ -2608,85 +2633,21 @@ async function deleteSheet(sheetId){
 
 async function viewSheet(sheetId){
   try{
-    const sheet =
-      allSheets.find(
-        item => item.id === sheetId
-      );
-
-    if(!sheet) return;
-
-    const grades =
-      await getSheetGrades(sheetId);
-
-    const rows =
-      grades
-        .sort(
-          (a,b) =>
-            String(a.students?.student_name || "")
-              .localeCompare(
-                String(b.students?.student_name || ""),
-                "ar"
-              )
-        );
-
-    const html = `
-      <div style="direction:rtl;font-family:Tahoma,Arial;padding:10px">
-        <h3 style="color:#075c40">
-          ${esc(sheet.subject)} — ${esc(sheet.exam_type)}
-        </h3>
-
-        <p>
-          ${canViewDepartmentOverview ? "المعلمة: " + esc(sheet.teacher_name) + "<br>" : ""}
-          الصف: ${esc(sheet.grade)}
-          — الشعبة: ${esc(sheet.class_section)}
-          — الدرجة العظمى: ${esc(sheet.max_score)}
-        </p>
-
-        ${
-          rows.length
-            ? `
-              <table style="width:100%;border-collapse:collapse">
-                <thead>
-                  <tr>
-                    <th style="border:1px solid #ddd;padding:8px">الطالب</th>
-                    <th style="border:1px solid #ddd;padding:8px">الدرجة</th>
-                    <th style="border:1px solid #ddd;padding:8px">النسبة</th>
-                    <th style="border:1px solid #ddd;padding:8px">المستوى</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${
-                    rows.map(item => `
-                      <tr>
-                        <td style="border:1px solid #ddd;padding:8px">${esc(item.students?.student_name || "—")}</td>
-                        <td style="border:1px solid #ddd;padding:8px">${esc(item.score ?? "—")}</td>
-                        <td style="border:1px solid #ddd;padding:8px">${item.percentage != null ? esc(item.percentage + "%") : "—"}</td>
-                        <td style="border:1px solid #ddd;padding:8px">${esc(item.performance_level || "—")}</td>
-                      </tr>
-                    `).join("")
-                  }
-                </tbody>
-              </table>
-            `
-            : "<p>لا توجد درجات طلاب محفوظة داخل هذا السجل.</p>"
-        }
-      </div>
-    `;
-
-    const win =
-      window.open(
-        "",
-        "_blank",
-        "width=900,height=700"
-      );
-
-    win.document.write(html);
-    win.document.close();
-
-  }catch(error){
-    console.error("View sheet:",error);
-    alert("تعذر عرض الدرجات.");
-  }
+    const sheet=allSheets.find(item=>item.id===sheetId); if(!sheet) return;
+    const grades=await getSheetGrades(sheetId); const gradeMap=new Map(grades.map(x=>[x.student_id,x]));
+    const roster=allStudents.filter(st=>st.grade===sheet.grade&&st.class_section===sheet.class_section)
+      .sort((a,b)=>String(a.student_name||'').localeCompare(String(b.student_name||''),'ar'));
+    const rows=roster.map(st=>({student:st,grade:gradeMap.get(st.id)||null}));
+    const html=`<div style="direction:rtl;font-family:Tahoma,Arial;padding:10px">
+      <div class="no-print" style="margin-bottom:12px"><button onclick="window.print()" style="background:#075c40;color:#fff;border:0;border-radius:8px;padding:10px 18px;font-weight:bold;cursor:pointer">🖨️ طباعة درجات الشعبة</button></div>
+      <style>@media print{.no-print{display:none!important} body{margin:0} table{font-size:11px}} table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:7px}</style>
+      <h3 style="color:#075c40">${esc(sheet.subject)} — ${esc(sheet.exam_type)}</h3>
+      <p>${canViewDepartmentOverview?"المعلمة: "+esc(sheet.teacher_name)+"<br>":""}الصف: ${esc(sheet.grade)} — الشعبة: ${esc(sheet.class_section)} — الدرجة العظمى: ${esc(sheet.max_score)}</p>
+      <table><thead><tr><th>#</th><th>الطالب</th><th>الدرجة</th><th>النسبة</th><th>المستوى</th><th>الحالة</th><th>ملاحظة المعلمة</th></tr></thead><tbody>
+      ${rows.map((x,i)=>{const g=x.grade,abs=isAbsentGrade(g),has=g&&!abs&&g.score!=null;return `<tr><td>${i+1}</td><td>${esc(x.student.student_name||'—')}</td><td>${has?esc(g.score):'—'}</td><td>${has&&g.percentage!=null?esc(g.percentage+'%'):'—'}</td><td>${has?esc(g.performance_level||'—'):'—'}</td><td><strong>${abs?'غائب':has?'أدى الاختبار':'لم تُسجل النتيجة'}</strong></td><td>${esc(cleanStudentNote(g?.student_note)||'—')}</td></tr>`}).join('')}
+      </tbody></table></div>`;
+    const win=window.open('','_blank','width=1000,height=750'); win.document.write(html); win.document.close();
+  }catch(error){console.error('View sheet:',error);alert('تعذر عرض الدرجات.');}
 }
 
 function resetEntry(){
@@ -2767,8 +2728,7 @@ function adminFilteredGrades(){
     );
 
   return adminGradeRows.filter(
-    row =>
-      sheetIds.has(row.grade_sheet_id)
+    row => sheetIds.has(row.grade_sheet_id) && !isAbsentGrade(row)
   );
 }
 
@@ -3403,6 +3363,10 @@ function levelByThresholds(value,pass,mastery){
   return "متعثر";
 }
 
+const ABSENT_MARKER = "[[ABSENT]]";
+function isAbsentGrade(row){ return String(row?.student_note||"").includes(ABSENT_MARKER); }
+function cleanStudentNote(note){ return String(note||"").replace(ABSENT_MARKER,"").trim(); }
+
 function renderStudentsTable(existingGrades = new Map(), existingCompScores = new Map()){
   const maxScore = Number(byId("maxScore").value) || 0;
   const pass = Number(byId("passPercentage")?.value || 60);
@@ -3419,7 +3383,7 @@ function renderStudentsTable(existingGrades = new Map(), existingCompScores = ne
           <th>#</th><th>اسم الطالب</th>
           ${compHeaders}
           <th>المجموع من ${esc(maxScore)}</th>
-          <th>النسبة</th><th>النجاح</th><th>الإتقان</th><th>ملاحظات الطالب</th>
+          <th>النسبة</th><th>النجاح</th><th>الإتقان</th><th>الحالة</th><th>ملاحظات الطالب</th>
         </tr></thead>
         <tbody>
           ${currentStudents.map((student,index) => {
@@ -3436,7 +3400,8 @@ function renderStudentsTable(existingGrades = new Map(), existingCompScores = ne
               <td class="preview-percentage">${overall?.percentage != null ? esc(overall.percentage + "%") : "—"}</td>
               <td class="preview-pass">—</td>
               <td class="preview-mastery">—</td>
-              <td><textarea class="student-note-input" placeholder="ملاحظة خاصة بهذا الطالب في هذا الاختبار...">${esc(overall?.student_note || "")}</textarea></td>
+              <td><label style="display:flex;gap:6px;align-items:center;justify-content:center;white-space:nowrap"><input class="absent-check" type="checkbox" ${isAbsentGrade(overall)?"checked":""}> غائب</label><div class="row-status" style="font-size:12px;margin-top:4px">${isAbsentGrade(overall)?"غائب":(overall?.score!=null?"أدى الاختبار":"لم تُسجل النتيجة")}</div></td>
+              <td><textarea class="student-note-input" placeholder="ملاحظة خاصة بهذا الطالب في هذا الاختبار...">${esc(cleanStudentNote(overall?.student_note || ""))}</textarea></td>
             </tr>`;
           }).join("")}
         </tbody>
@@ -3446,12 +3411,27 @@ function renderStudentsTable(existingGrades = new Map(), existingCompScores = ne
   document.querySelectorAll("#studentsArea .competency-score").forEach(input => {
     input.addEventListener("input",()=>previewCompetencyRow(input.closest("tr")));
   });
+  document.querySelectorAll("#studentsArea .absent-check").forEach(chk=>{
+    chk.addEventListener("change",()=>{
+      const row=chk.closest("tr");
+      row.querySelectorAll(".competency-score").forEach(inp=>{ inp.disabled=chk.checked; if(chk.checked) inp.value=""; });
+      previewCompetencyRow(row);
+    });
+  });
   document.querySelectorAll("#studentsArea tbody tr").forEach(row=>previewCompetencyRow(row));
   byId("gradeActions").classList.remove("hidden");
 }
 
 function previewCompetencyRow(row){
   const inputs=[...row.querySelectorAll(".competency-score")];
+  const absent=!!row.querySelector(".absent-check")?.checked;
+  inputs.forEach(inp=>inp.disabled=absent);
+  const statusEl=row.querySelector(".row-status");
+  if(absent){
+    row.querySelector(".row-total").textContent="—"; row.querySelector(".preview-percentage").textContent="—";
+    row.querySelector(".preview-pass").textContent="—"; row.querySelector(".preview-mastery").textContent="—";
+    if(statusEl) statusEl.textContent="غائب"; return;
+  }
   const maxScore=Number(byId("maxScore").value)||0;
   const pass=Number(byId("passPercentage")?.value||60);
   const mastery=Number(byId("masteryPercentage")?.value||80);
@@ -3476,8 +3456,10 @@ function previewCompetencyRow(row){
     row.querySelector(".preview-percentage").textContent="—";
     row.querySelector(".preview-pass").textContent="—";
     row.querySelector(".preview-mastery").textContent="—";
+    if(statusEl) statusEl.textContent="لم تُسجل النتيجة";
     return;
   }
+  if(statusEl) statusEl.textContent="أدى الاختبار";
   const pct=maxScore ? Math.round((total/maxScore)*10000)/100 : 0;
   row.querySelector(".row-total").textContent=total;
   row.querySelector(".preview-percentage").textContent=pct+"%";
@@ -3525,8 +3507,10 @@ async function saveSheet(status){
     });
     const nonNull=compScores.filter(x=>x.score!=null);
     const total=nonNull.length?nonNull.reduce((s,x)=>s+x.score,0):null;
-    const student_note=row.querySelector(".student-note-input")?.value.trim() || null;
-    studentPayload.push({student_id:row.dataset.studentId,total,compScores,student_note});
+    const absent=!!row.querySelector(".absent-check")?.checked;
+    let student_note=row.querySelector(".student-note-input")?.value.trim() || null;
+    if(absent){ total=null; compScores.forEach(x=>x.score=null); student_note=ABSENT_MARKER+(student_note?" "+student_note:""); }
+    studentPayload.push({student_id:row.dataset.studentId,total,compScores,student_note,absent});
   });
   if(invalid){ state.textContent="توجد درجة كفاية غير صحيحة أو أعلى من درجتها العظمى."; state.className="save-state error"; return; }
 
@@ -3548,7 +3532,7 @@ async function saveSheet(status){
     }
 
     let del=await sb.from("student_grades").delete().eq("grade_sheet_id",sheetId); if(del.error) throw del.error;
-    const gradeRows=studentPayload.filter(x=>x.total!=null).map(x=>({grade_sheet_id:sheetId,student_id:x.student_id,score:x.total,student_note:x.student_note}));
+    const gradeRows=studentPayload.filter(x=>x.total!=null||x.absent).map(x=>({grade_sheet_id:sheetId,student_id:x.student_id,score:x.absent?0:x.total,student_note:x.student_note}));
     if(gradeRows.length){ const r=await sb.from("student_grades").insert(gradeRows); if(r.error) throw r.error; }
 
     const oldComp=await sb.from("grade_competencies").delete().eq("grade_sheet_id",sheetId); if(oldComp.error) throw oldComp.error;
@@ -3604,13 +3588,29 @@ function resetEntry(){
 
 async function loadAdminGradeRows(){
   if(!canViewDepartmentOverview) return;
-  const {data,error}=await sb.from("student_grades").select(`id,score,percentage,performance_level,student_note,student_id,grade_sheet_id,students(student_name,grade,class_section),grade_sheets(teacher_id,teacher_name,subject,grade,class_section,exam_type,academic_term,exam_date,status,max_score,pass_percentage,mastery_percentage)`);
-  if(error) throw error;
-  adminGradeRows=(data||[]).filter(row=>{const t=row.grade_sheets?.teacher_id; return isAdminUser?true:isCoordinatorUser?coordinatorTeacherIds.includes(t):t===currentUser.id;});
+  const gradeSelect=`id,score,percentage,performance_level,student_note,student_id,grade_sheet_id,students(student_name,grade,class_section),grade_sheets(teacher_id,teacher_name,subject,grade,class_section,exam_type,academic_term,exam_date,status,max_score,pass_percentage,mastery_percentage)`;
+  let gradeData=[], gradeFrom=0; const GRADE_PAGE=1000;
+  while(true){
+    const {data:page,error}=await sb.from("student_grades").select(gradeSelect).range(gradeFrom,gradeFrom+GRADE_PAGE-1);
+    if(error) throw error;
+    const batch=page||[]; gradeData.push(...batch);
+    if(batch.length<GRADE_PAGE) break;
+    gradeFrom+=GRADE_PAGE;
+  }
+  adminGradeRows=gradeData.filter(row=>{const t=row.grade_sheets?.teacher_id; return isAdminUser?true:isCoordinatorUser?coordinatorTeacherIds.includes(t):t===currentUser.id;});
 
-  const {data:compData,error:compError}=await sb.from("student_competency_scores").select(`id,score,student_id,grade_sheet_id,competency_id,students(student_name,grade,class_section),grade_competencies(competency_name,max_score,sort_order),grade_sheets(teacher_id,teacher_name,subject,grade,class_section,exam_type,academic_term,exam_date,status,pass_percentage,mastery_percentage)`);
-  if(compError) throw compError;
-  adminCompetencyRows=(compData||[]).filter(row=>{const t=row.grade_sheets?.teacher_id; return isAdminUser?true:isCoordinatorUser?coordinatorTeacherIds.includes(t):t===currentUser.id;});
+  // جلب كل درجات الكفايات على دفعات؛ Supabase يعيد عادةً 1000 سجل فقط في الطلب الواحد.
+  // بدون التقسيم كانت شاشة القيادة تعرض أول جزء من الكفايات فقط، فتختفي مواد/صفوف كاملة.
+  const compSelect=`id,score,student_id,grade_sheet_id,competency_id,students(student_name,grade,class_section),grade_competencies(competency_name,max_score,sort_order),grade_sheets(teacher_id,teacher_name,subject,grade,class_section,exam_type,academic_term,exam_date,status,pass_percentage,mastery_percentage)`;
+  let compData=[], compFrom=0; const COMP_PAGE=1000;
+  while(true){
+    const {data:page,error:compError}=await sb.from("student_competency_scores").select(compSelect).range(compFrom,compFrom+COMP_PAGE-1);
+    if(compError) throw compError;
+    const batch=page||[]; compData.push(...batch);
+    if(batch.length<COMP_PAGE) break;
+    compFrom+=COMP_PAGE;
+  }
+  adminCompetencyRows=compData.filter(row=>{const t=row.grade_sheets?.teacher_id; return isAdminUser?true:isCoordinatorUser?coordinatorTeacherIds.includes(t):t===currentUser.id;});
   fillAdvancedAnalysisSelectors(); renderAdmin();
 }
 
@@ -3632,7 +3632,7 @@ function renderAdmin(){
   renderAverageBars("subjectAnalysis",grades,row=>row.grade_sheets?.subject||"غير محدد"); renderAverageBars("gradeAnalysis",grades,row=>row.grade_sheets?.grade||"غير محدد");
   renderAverageBars("examAnalysis",grades,row=>row.grade_sheets?.exam_type||"غير محدد"); renderPerformanceBars("performanceAnalysis",grades);
   byId("adminSheetList").innerHTML=sheets.length?sheets.map(s=>renderSheetCard(s,true)).join(""):'<div class="empty">لا توجد سجلات مطابقة.</div>';
-  renderSubjectGradeMatrix(); renderGradeSubjectMatrix(); renderCompetencyAnalysis(); renderExamGrowth(); fillStudentTrackingSelect(); const adv=byId("advancedRelationships"); if(adv) adv.innerHTML=advancedRelationshipsHtml(grades,{showTeacher:false}); if(isAdminUser && byId("adminViewLeadership")?.classList.contains("active")) renderLeadershipComprehensiveReport();
+  renderSubjectGradeMatrix(); renderGradeSubjectMatrix(); renderCompetencyAnalysis(); renderExamGrowth(); fillExamComparisonSubjects(); renderExamComparison(); fillStudentTrackingSelect(); const adv=byId("advancedRelationships"); if(adv) adv.innerHTML=advancedRelationshipsHtml(grades,{showTeacher:false}); if(isAdminUser && byId("adminViewLeadership")?.classList.contains("active")) renderLeadershipComprehensiveReport();
 }
 
 function fillAdvancedAnalysisSelectors(){
@@ -3668,21 +3668,82 @@ function rowsForCurrentAdminFilters(){ return adminFilteredGrades().filter(r=>r.
 
 function analysisTableHtml(titleKey,items){
   if(!items.length) return '<div class="empty">لا توجد بيانات مطابقة.</div>';
-  return `<div class="students-wrapper"><table class="analysis-table"><thead><tr><th>${titleKey}</th><th>المقيمون</th><th>الناجحون</th><th>نسبة النجاح</th><th>الراسبون</th><th>المتقنون</th><th>نسبة الإتقان</th><th>غير المتقنين</th><th>المتوسط</th></tr></thead><tbody>${items.map(([name,m])=>`<tr><td><strong>${esc(name)}</strong></td><td>${m.total}</td><td>${m.passed}</td><td>${m.passRate.toFixed(1)}%</td><td>${m.failed}</td><td>${m.mastered}</td><td>${m.masteryRate.toFixed(1)}%</td><td>${m.notMastered}</td><td>${m.avg.toFixed(1)}%</td></tr>`).join("")}</tbody></table></div>`;
+  return `<div class="students-wrapper"><table class="analysis-table"><thead><tr><th>${titleKey}</th><th>المقيمون</th><th>نتائج ناجحة</th><th>نسبة النجاح</th><th>نتائج راسبة</th><th>نتائج متقنة</th><th>نسبة الإتقان</th><th>نتائج غير متقنة</th><th>المتوسط</th></tr></thead><tbody>${items.map(([name,m])=>`<tr><td><strong>${esc(name)}</strong></td><td>${m.total}</td><td>${m.passed}</td><td>${m.passRate.toFixed(1)}%</td><td>${m.failed}</td><td>${m.mastered}</td><td>${m.masteryRate.toFixed(1)}%</td><td>${m.notMastered}</td><td>${m.avg.toFixed(1)}%</td></tr>`).join("")}</tbody></table></div>`;
 }
 
 
 
-function coverageMetrics(rows){
-  const sheetIds=[...new Set(rows.map(r=>r.grade_sheet_id).filter(Boolean))];
-  const sheets=adminFilteredSheets().filter(s=>sheetIds.includes(s.id));
-  let expected=0, actual=0;
-  sheets.forEach(s=>{
-    const exp=allStudents.filter(st=>st.grade===s.grade&&st.class_section===s.class_section).length;
-    const act=new Set(rows.filter(r=>r.grade_sheet_id===s.id&&r.percentage!=null).map(r=>r.student_id)).size;
-    expected+=exp; actual+=act;
+function assessmentCoverageGroups(rows){
+  // نجمع أوراق الاختبار المتطابقة في تقييم واحد حتى لا تُحسب الشعبة مرتين
+  // إذا وُجدت ورقة اختبار بلا أي نتيجة، لا نعتبر جميع طلابها غائبين تلقائياً؛ نعرضها كحالة تحتاج تحقق.
+  const filteredSheets=adminFilteredSheets();
+  const rowBySheet=new Map();
+  const relevantSheetIds=new Set(filteredSheets.map(s=>s.id));
+  adminGradeRows.filter(r=>relevantSheetIds.has(r.grade_sheet_id)).forEach(r=>{
+    if(!rowBySheet.has(r.grade_sheet_id)) rowBySheet.set(r.grade_sheet_id,[]);
+    rowBySheet.get(r.grade_sheet_id).push(r);
   });
-  return {expected,actual,missing:Math.max(0,expected-actual),rate:expected?actual/expected*100:0,sheets:sheets.length};
+  const groups=new Map();
+  filteredSheets.forEach(sheet=>{
+    const key=[sheet.exam_type||'',sheet.subject||'',sheet.grade||'',sheet.class_section||'',sheet.term||sheet.semester||''].join('||');
+    const g=groups.get(key)||{key,exam_type:sheet.exam_type,subject:sheet.subject,grade:sheet.grade,class_section:sheet.class_section,term:sheet.term||sheet.semester||'',sheetIds:[],rows:[]};
+    g.sheetIds.push(sheet.id); g.rows.push(...(rowBySheet.get(sheet.id)||[])); groups.set(key,g);
+  });
+  return [...groups.values()].map(g=>{
+    const roster=allStudents.filter(st=>st.grade===g.grade&&st.class_section===g.class_section);
+    const submittedIds=new Set(g.rows.filter(r=>!isAbsentGrade(r)).map(r=>r.student_id).filter(Boolean));
+    const absentIds=new Set(g.rows.filter(r=>isAbsentGrade(r)).map(r=>r.student_id).filter(Boolean));
+    const absent=roster.filter(st=>absentIds.has(st.id));
+    const missing=roster.filter(st=>!submittedIds.has(st.id)&&!absentIds.has(st.id));
+    return {...g,roster,submittedIds,absentIds,absent,missing,expected:roster.length,actual:submittedIds.size,hasResults:(submittedIds.size+absentIds.size)>0};
+  });
+}
+
+function coverageMetrics(rows){
+  const groups=assessmentCoverageGroups(rows).filter(g=>g.hasResults);
+  const expected=groups.reduce((n,g)=>n+g.expected,0), actual=groups.reduce((n,g)=>n+g.actual,0);
+  return {expected,actual,missing:Math.max(0,expected-actual),rate:expected?actual/expected*100:0,sheets:groups.length,
+    unresolved:assessmentCoverageGroups(rows).filter(g=>!g.hasResults&&g.expected>0).length};
+}
+
+function missingExamStudentsData(rows){
+  return assessmentCoverageGroups(rows).filter(g=>g.hasResults&&g.missing.length).sort((a,b)=>{
+    const ka=`${a.subject||''}|${a.grade||''}|${a.class_section||''}|${a.exam_type||''}`;
+    const kb=`${b.subject||''}|${b.grade||''}|${b.class_section||''}|${b.exam_type||''}`;
+    return ka.localeCompare(kb,'ar');
+  });
+}
+
+function missingExamStudentsHtml(rows){
+  const allGroups=assessmentCoverageGroups(rows), items=allGroups.filter(g=>g.hasResults&&(g.missing.length||g.absent.length));
+  const unresolved=allGroups.filter(g=>!g.hasResults&&g.expected>0);
+  const totalMissing=items.reduce((n,x)=>n+x.missing.length,0);
+  const uniqueMissing=new Set(items.flatMap(x=>x.missing.map(st=>st.id))).size;
+  const totalAbsent=items.reduce((n,x)=>n+x.absent.length,0);
+  const groups=allGroups.filter(g=>g.hasResults&&(g.missing.length||g.absent.length)).map(x=>`<div class="target-box" style="min-width:280px"><h4>${esc(x.subject||'—')} — ${esc(x.grade||'—')} / ${esc(x.class_section||'—')}</h4><div class="sub">${esc(x.exam_type||'—')} • أدوا: <strong>${x.actual}</strong> من ${x.expected} • غياب مسجل: <strong>${x.absent.length}</strong> • لم تُسجل نتيجة: <strong>${x.missing.length}</strong></div>${x.absent.length?`<div style="margin-top:8px"><strong>🔴 غياب مسجل:</strong><ul>${x.absent.map(st=>`<li>${esc(st.student_name||'—')}</li>`).join('')}</ul></div>`:''}${x.missing.length?`<div style="margin-top:8px"><strong>🟡 لم تُسجل النتيجة:</strong><ul>${x.missing.map(st=>`<li>${esc(st.student_name||'—')}</li>`).join('')}</ul></div>`:''}</div>`).join('');
+  const unresolvedHtml=unresolved.length?`<div class="data-note" style="margin-top:12px"><strong>تنبيه دقة:</strong> توجد ${unresolved.length} شعبة/تقييم لها ورقة اختبار ولكن بلا أي نتيجة مسجلة. لم تُحسب أسماء طلابها كغياب تلقائيًا حتى لا نعتبر صفًا كاملًا غائبًا بالخطأ: ${unresolved.map(x=>`${esc(x.subject||'—')} — ${esc(x.grade||'—')}/${esc(x.class_section||'—')}`).join('، ')}.</div>`:'';
+  if(!items.length) return `<div class="analytics-section"><h3>📋 تغطية الاختبار: الغياب والنتائج غير المكتملة</h3><div class="empty">لا توجد حالات غياب مسجلة أو نتائج غير مكتملة ضمن التقييمات الحالية.</div>${unresolvedHtml}</div>`;
+  return `<div class="analytics-section"><h3>📋 تغطية الاختبار: الغياب والنتائج غير المكتملة <span class="muted">(${totalAbsent} غياب مسجل • ${totalMissing} نتيجة غير مكتملة)</span></h3><div class="data-note">الغياب لا يُستنتج من عدم وجود درجة. «غائب» يظهر فقط إذا سجلته المعلمة صراحةً، أما الطالب بلا درجة ولا علامة غياب فيظهر «لم تُسجل النتيجة».</div><div class="target-list">${groups}</div>${unresolvedHtml}</div>`;
+}
+
+function competencyOverviewHtml(){
+  const sheetIds=new Set(adminFilteredSheets().map(x=>x.id));
+  const rows=adminCompetencyRows.filter(r=>sheetIds.has(r.grade_sheet_id)&&r.score!=null&&Number(r.grade_competencies?.max_score)>0);
+  if(!rows.length) return '<div class="empty">لا توجد درجات كفايات مسجلة ضمن الفلاتر الحالية.</div>';
+  const gradeOrder={"الأول":1,"الثاني":2,"الثالث":3,"الرابع":4,"الخامس":5,"1":1,"2":2,"3":3,"4":4,"5":5};
+  const map=new Map();
+  rows.forEach(r=>{
+    const subject=r.grade_sheets?.subject||'—', grade=r.grade_sheets?.grade||r.students?.grade||'غير محدد', name=r.grade_competencies?.competency_name||'غير محدد';
+    const max=Number(r.grade_competencies?.max_score), pct=Number(r.score)/max*100, mastery=Number(r.grade_sheets?.mastery_percentage??80);
+    const key=`${subject}||${grade}||${name}`, v=map.get(key)||{subject,grade,name,sum:0,count:0,mastered:0,sortOrder:Number(r.grade_competencies?.sort_order??9999)};
+    v.sum+=pct; v.count++; if(pct>=mastery)v.mastered++; map.set(key,v);
+  });
+  const items=[...map.values()].map(v=>({...v,avg:v.sum/v.count,rate:v.mastered/v.count*100})).sort((a,b)=>a.subject.localeCompare(b.subject,'ar')||(gradeOrder[a.grade]??99)-(gradeOrder[b.grade]??99)||a.sortOrder-b.sortOrder);
+  const subjects=[...new Set(items.map(x=>x.subject))];
+  return subjects.map(subject=>{
+    const si=items.filter(x=>x.subject===subject), grades=[...new Set(si.map(x=>x.grade))].sort((a,b)=>(gradeOrder[a]??99)-(gradeOrder[b]??99));
+    return `<div style="margin:0 0 18px"><h4 style="color:#075f45;margin:0 0 8px">${esc(subject)}</h4>${grades.map(grade=>{const rr=si.filter(x=>x.grade===grade);return `<div class="students-wrapper"><table class="analysis-table"><thead><tr><th colspan="6">الصف ${esc(grade)}</th></tr><tr><th>الكفاية</th><th>النتائج</th><th>المتوسط</th><th>متقنة</th><th>غير متقنة</th><th>نسبة الإتقان</th></tr></thead><tbody>${rr.map(v=>`<tr><td>${esc(v.name)}</td><td>${v.count}</td><td>${v.avg.toFixed(1)}%</td><td>${v.mastered}</td><td>${v.count-v.mastered}</td><td>${v.rate.toFixed(1)}%</td></tr>`).join('')}</tbody></table></div>`}).join('')}</div>`;
+  }).join('');
 }
 
 function successMasteryCategories(rows){
@@ -3813,6 +3874,7 @@ function advancedRelationshipsHtml(rows,{showTeacher=false}={}){
       <div class="target-box"><h4>🟡 متابعة وتعزيز (${g.followup.length})</h4>${nameListHtml(g.followup)}</div>
       <div class="target-box"><h4>🔴 دعم علاجي (${g.remedial.length})</h4>${nameListHtml(g.remedial)}</div>
     </div></div>
+    ${missingExamStudentsHtml(rows)}
     <div class="analytics-section"><h3>الفجوات بين الصفوف والمواد</h3><div class="insight-grid">
       <div class="insight-kpi"><span>أعلى مادة</span><strong style="font-size:15px">${esc(gaps.bestSubject?.[0]||"—")}</strong><small>${gaps.bestSubject?gaps.bestSubject[1].avg.toFixed(1)+"%":"—"}</small></div>
       <div class="insight-kpi"><span>أقل مادة</span><strong style="font-size:15px">${esc(gaps.worstSubject?.[0]||"—")}</strong><small>${gaps.worstSubject?gaps.worstSubject[1].avg.toFixed(1)+"%":"—"}</small></div>
@@ -3821,7 +3883,8 @@ function advancedRelationshipsHtml(rows,{showTeacher=false}={}){
     </div></div>
     <div class="analytics-section"><h3>تطور الاختبارات</h3>${exams.length?`<div class="students-wrapper"><table class="analysis-table"><thead><tr><th>الاختبار</th><th>المتوسط</th><th>النجاح</th><th>الإتقان</th><th>Δ المتوسط</th><th>Δ الإتقان</th></tr></thead><tbody>${exams.map(x=>`<tr><td>${esc(x.exam)}</td><td>${x.m.avg.toFixed(1)}%</td><td>${x.m.passRate.toFixed(1)}%</td><td>${x.m.masteryRate.toFixed(1)}%</td><td>${x.prev?((x.m.avg-x.prev.avg)>=0?"+":"")+(x.m.avg-x.prev.avg).toFixed(1):"—"}</td><td>${x.prev?((x.m.masteryRate-x.prev.masteryRate)>=0?"+":"")+(x.m.masteryRate-x.prev.masteryRate).toFixed(1):"—"}</td></tr>`).join("")}</tbody></table></div>`:'<div class="empty">لا توجد اختبارات متعددة للمقارنة.</div>'}</div>
     <div class="analytics-section"><h3>التعثر المتكرر</h3>${rep.length?`<div class="students-wrapper"><table class="analysis-table"><thead><tr><th>الطالب</th><th>المادة</th><th>مرات الرسوب</th><th>مرات عدم الإتقان</th><th>عدد النتائج</th></tr></thead><tbody>${rep.slice(0,30).map(x=>`<tr><td>${esc(x.student?.student_name||"—")}</td><td>${esc(x.subject)}</td><td>${x.fails}</td><td>${x.nonMastery}</td><td>${x.count}</td></tr>`).join("")}</tbody></table></div>`:'<div class="empty">لا توجد حالات تعثر متكرر.</div>'}</div>
-    <div class="analytics-section"><h3>الكفايات غير المتقنة المتكررة</h3>${weak.length?`<div class="students-wrapper"><table class="analysis-table"><thead><tr><th>الطالب</th><th>المادة</th><th>الكفاية</th><th>مرات عدم الإتقان</th></tr></thead><tbody>${weak.slice(0,30).map(x=>`<tr><td>${esc(x.student?.student_name||"—")}</td><td>${esc(x.subject)}</td><td>${esc(x.name)}</td><td>${x.count}</td></tr>`).join("")}</tbody></table></div>`:'<div class="empty">لا توجد كفايات ضعيفة متكررة.</div>'}</div>
+    <div class="analytics-section"><h3>🎯 تحليل الكفايات التعليمية حسب المادة والصف</h3>${competencyOverviewHtml()}</div>
+    <div class="analytics-section"><h3>الكفايات غير المتقنة المتكررة</h3>${weak.length?`<div class="students-wrapper"><table class="analysis-table"><thead><tr><th>الطالب</th><th>المادة</th><th>الكفاية</th><th>مرات عدم الإتقان</th></tr></thead><tbody>${weak.slice(0,30).map(x=>`<tr><td>${esc(x.student?.student_name||"—")}</td><td>${esc(x.subject)}</td><td>${esc(x.name)}</td><td>${x.count}</td></tr>`).join("")}</tbody></table></div>`:'<div class="data-note">لا توجد كفاية تكررت كغير متقنة لنفس الطالب في أكثر من تقييم ضمن الفلاتر الحالية. هذا لا يعني عدم وجود كفايات تحتاج دعمًا؛ راجعي تحليل الكفايات أعلاه.</div>'}</div>
     ${teacherHtml}
   </div>`;
 }
@@ -3886,14 +3949,63 @@ function renderGradeSubjectMatrix(){
 
 function renderCompetencyAnalysis(){
   const container=byId("competencyAnalysisTable"); if(!container) return;
-  const sheetIds=new Set(adminFilteredSheets().map(x=>x.id)); const rows=adminCompetencyRows.filter(r=>sheetIds.has(r.grade_sheet_id)&&r.score!=null&&Number(r.grade_competencies?.max_score)>0);
-  const map=new Map(); rows.forEach(r=>{const name=r.grade_competencies?.competency_name||"غير محدد", key=(r.grade_sheets?.subject||"")+"||"+name, pct=Number(r.score)/Number(r.grade_competencies.max_score)*100, mastery=Number(r.grade_sheets?.mastery_percentage??80); const v=map.get(key)||{subject:r.grade_sheets?.subject||"—",name,total:0,count:0,mastered:0}; v.total+=pct;v.count++;if(pct>=mastery)v.mastered++;map.set(key,v);});
-  const items=[...map.values()].map(v=>({...v,avg:v.total/v.count})).sort((a,b)=>b.avg-a.avg);
-  if(!items.length){container.innerHTML='<div class="empty">لا توجد درجات كفايات حتى الآن.</div>';return;}
-  container.innerHTML=`<div class="students-wrapper"><table class="analysis-table"><thead><tr><th>المادة</th><th>الكفاية</th><th>عدد النتائج</th><th>متوسط الكفاية</th><th>متقنون</th><th>غير متقنين</th><th>نسبة الإتقان</th></tr></thead><tbody>${items.map(v=>`<tr><td>${esc(v.subject)}</td><td>${esc(v.name)}</td><td>${v.count}</td><td>${v.avg.toFixed(1)}%</td><td>${v.mastered}</td><td>${v.count-v.mastered}</td><td>${(v.mastered/v.count*100).toFixed(1)}%</td></tr>`).join("")}</tbody></table></div>`;
+  const sheetIds=new Set(adminFilteredSheets().map(x=>x.id));
+  const rows=adminCompetencyRows.filter(r=>sheetIds.has(r.grade_sheet_id)&&r.score!=null&&Number(r.grade_competencies?.max_score)>0);
+  if(!rows.length){container.innerHTML='<div class="empty">لا توجد درجات كفايات حتى الآن ضمن النطاق المختار.</div>';return;}
+
+  const gradeOrder={"الأول":1,"الثاني":2,"الثالث":3,"الرابع":4,"الخامس":5,"1":1,"2":2,"3":3,"4":4,"5":5};
+  const map=new Map();
+  rows.forEach(r=>{
+    const subject=r.grade_sheets?.subject||"—", grade=r.grade_sheets?.grade||r.students?.grade||"غير محدد";
+    const name=r.grade_competencies?.competency_name||"غير محدد";
+    const key=`${subject}||${grade}||${name}`;
+    const pct=Number(r.score)/Number(r.grade_competencies.max_score)*100;
+    const mastery=Number(r.grade_sheets?.mastery_percentage??80);
+    const v=map.get(key)||{subject,grade,name,total:0,count:0,mastered:0,sortOrder:Number(r.grade_competencies?.sort_order??9999)};
+    v.total+=pct; v.count++; if(pct>=mastery)v.mastered++;
+    v.sortOrder=Math.min(v.sortOrder,Number(r.grade_competencies?.sort_order??9999));
+    map.set(key,v);
+  });
+  const items=[...map.values()].map(v=>({...v,avg:v.total/v.count,masteryRate:v.mastered/v.count*100})).sort((a,b)=>
+    a.subject.localeCompare(b.subject,'ar') ||
+    (gradeOrder[a.grade]??99)-(gradeOrder[b.grade]??99) ||
+    a.sortOrder-b.sortOrder || a.name.localeCompare(b.name,'ar')
+  );
+  const subjects=[...new Set(items.map(x=>x.subject))];
+  container.innerHTML=subjects.map(subject=>{
+    const subItems=items.filter(x=>x.subject===subject);
+    const grades=[...new Set(subItems.map(x=>x.grade))].sort((a,b)=>(gradeOrder[a]??99)-(gradeOrder[b]??99)||String(a).localeCompare(String(b),'ar'));
+    return `<section class="competency-subject-block" style="margin:0 0 24px"><h3 style="margin:0 0 10px;color:#075f45">${esc(subject)}</h3>${grades.map(grade=>{
+      const rr=subItems.filter(x=>x.grade===grade);
+      return `<h4 style="margin:14px 0 8px;color:#355f53">الصف ${esc(grade)}</h4><div class="students-wrapper"><table class="analysis-table"><thead><tr><th>الكفاية</th><th>عدد النتائج</th><th>متوسط الكفاية</th><th>متقنون</th><th>غير متقنين</th><th>نسبة الإتقان</th></tr></thead><tbody>${rr.map(v=>`<tr><td>${esc(v.name)}</td><td>${v.count}</td><td>${v.avg.toFixed(1)}%</td><td>${v.mastered}</td><td>${v.count-v.mastered}</td><td>${v.masteryRate.toFixed(1)}%</td></tr>`).join("")}</tbody></table></div>`;
+    }).join("")}</section>`;
+  }).join("");
+}
+const EXAM_ORDER={"تشخيصي":0,"الاختبار الأول":1,"الاختبار الثاني":2,"الاختبار الثالث":3};
+function selectedValues(id){ return [...(byId(id)?.selectedOptions||[])].map(o=>o.value).filter(Boolean); }
+function fillExamComparisonSubjects(){
+  const sel=byId("compareSubject"); if(!sel)return; const old=sel.value;
+  const subjects=[...new Set(adminGradeRows.map(r=>r.grade_sheets?.subject).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),"ar"));
+  sel.innerHTML='<option value="">كل المواد</option>'+subjects.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join(""); if(subjects.includes(old))sel.value=old;
+}
+function renderExamComparison(){
+  const box=byId("examComparisonPanel"); if(!box)return;
+  const subject=byId("compareSubject")?.value||"", grade=byId("compareGrade")?.value||"", section=byId("compareSection")?.value||"", exams=selectedValues("compareExams");
+  if(exams.length<2){box.innerHTML='<div class="warning">اختاري اختبارين على الأقل للمقارنة.</div>';return;}
+  let rows=adminGradeRows.filter(r=>r.percentage!=null&&exams.includes(r.grade_sheets?.exam_type));
+  if(subject)rows=rows.filter(r=>r.grade_sheets?.subject===subject); if(grade)rows=rows.filter(r=>r.grade_sheets?.grade===grade); if(section)rows=rows.filter(r=>String(r.grade_sheets?.class_section)===String(section));
+  const summaries=exams.map(ex=>({ex,m:metricSummary(rows.filter(r=>r.grade_sheets?.exam_type===ex))}));
+  const first=summaries[0]?.m;
+  const summaryTable=`<div class="students-wrapper"><table class="analysis-table"><thead><tr><th>الاختبار</th><th>النتائج</th><th>المتوسط</th><th>النجاح</th><th>الإتقان</th><th>Δ المتوسط من الأول</th><th>Δ الإتقان من الأول</th></tr></thead><tbody>${summaries.map((x,i)=>`<tr><td>${esc(x.ex)}</td><td>${x.m.total}</td><td>${x.m.avg.toFixed(1)}%</td><td>${x.m.passRate.toFixed(1)}%</td><td>${x.m.masteryRate.toFixed(1)}%</td><td>${i?((x.m.avg-first.avg)>=0?'+':'')+(x.m.avg-first.avg).toFixed(1)+'%':'—'}</td><td>${i?((x.m.masteryRate-first.masteryRate)>=0?'+':'')+(x.m.masteryRate-first.masteryRate).toFixed(1)+'%':'—'}</td></tr>`).join('')}</tbody></table></div>`;
+  const studentMap=new Map(); rows.forEach(r=>{const k=r.student_id; if(!studentMap.has(k))studentMap.set(k,{student:r.students||allStudents.find(s=>s.id===k),byExam:new Map()}); const v=studentMap.get(k); const a=v.byExam.get(r.grade_sheets?.exam_type)||[]; a.push(r); v.byExam.set(r.grade_sheets?.exam_type,a);});
+  const studentRows=[...studentMap.values()].map(v=>{const vals=exams.map(ex=>{const rr=v.byExam.get(ex)||[];return rr.length?rr.reduce((a,r)=>a+Number(r.percentage),0)/rr.length:null});return {student:v.student,vals};}).filter(x=>x.vals.some(v=>v!=null));
+  const studentTable=`<h3 style="margin-top:18px">تتبع الطلاب بين الاختبارات</h3><div class="students-wrapper"><table class="analysis-table"><thead><tr><th>الطالب</th><th>الصف/الشعبة</th>${exams.map(e=>`<th>${esc(e)}</th>`).join('')}<th>التغير من الأول للأخير</th></tr></thead><tbody>${studentRows.map(x=>{const a=x.vals.find(v=>v!=null), b=[...x.vals].reverse().find(v=>v!=null);const d=(a!=null&&b!=null)?b-a:null;return `<tr><td>${esc(x.student?.student_name||'—')}</td><td>${esc(x.student?.grade||grade||'—')} / ${esc(x.student?.class_section||section||'—')}</td>${x.vals.map(v=>`<td>${v==null?'—':v.toFixed(1)+'%'}</td>`).join('')}<td>${d==null?'—':(d>=0?'+':'')+d.toFixed(1)+'%'}</td></tr>`;}).join('')}</tbody></table></div>`;
+  let comps=adminCompetencyRows.filter(r=>exams.includes(r.grade_sheets?.exam_type)); if(subject)comps=comps.filter(r=>r.grade_sheets?.subject===subject); if(grade)comps=comps.filter(r=>r.grade_sheets?.grade===grade); if(section)comps=comps.filter(r=>String(r.grade_sheets?.class_section)===String(section));
+  const cmap=new Map(); comps.forEach(r=>{const name=r.grade_competencies?.competency_name||'كفاية';const key=[r.grade_sheets?.subject,name].join('||');if(!cmap.has(key))cmap.set(key,{subject:r.grade_sheets?.subject,name,byExam:new Map()});const o=cmap.get(key),ex=r.grade_sheets?.exam_type,a=o.byExam.get(ex)||[];a.push(r);o.byExam.set(ex,a);});
+  const compRows=[...cmap.values()]; const compTable=`<h3 style="margin-top:18px">تتبع الكفايات بين الاختبارات</h3>${compRows.length?`<div class="students-wrapper"><table class="analysis-table"><thead><tr><th>المادة</th><th>الكفاية</th>${exams.map(e=>`<th>${esc(e)} — متوسط/إتقان</th>`).join('')}</tr></thead><tbody>${compRows.map(x=>`<tr><td>${esc(x.subject||'—')}</td><td>${esc(x.name)}</td>${exams.map(ex=>{const rr=x.byExam.get(ex)||[];if(!rr.length)return '<td>—</td>';const vals=rr.map(r=>{const max=Number(r.grade_competencies?.max_score||1);return max?Number(r.score||0)/max*100:0});const avg=vals.reduce((a,b)=>a+b,0)/vals.length;const mast=vals.filter(v=>v>=Number(rr[0]?.grade_sheets?.mastery_percentage??80)).length/vals.length*100;return `<td>${avg.toFixed(1)}% / ${mast.toFixed(1)}%</td>`;}).join('')}</tr>`).join('')}</tbody></table></div>`:'<div class="empty">لا توجد درجات كفايات للاختبارات المختارة ضمن هذا النطاق.</div>'}`;
+  box.innerHTML=`<div class="data-note"><strong>النطاق:</strong> ${esc(subject||'كل المواد')} • ${esc(grade||'كل الصفوف')} • ${section?'الشعبة '+esc(section):'كل الشعب'} • ${exams.map(esc).join(' ↔ ')}</div>${summaryTable}${studentTable}${compTable}`;
 }
 
-const EXAM_ORDER={"تشخيصي":0,"الاختبار الأول":1,"الاختبار الثاني":2,"الاختبار الثالث":3};
 function renderExamGrowth(){
   const container=byId("examGrowthTable"); if(!container)return; const rows=rowsForCurrentAdminFilters();
   const subjects=[...new Set(rows.map(r=>r.grade_sheets?.subject).filter(Boolean))].sort(); const out=[];
@@ -3985,11 +4097,12 @@ async function saveStudentTrackingNote(){
 
 function reportsFilteredRows(){
   let rows=adminGradeRows.filter(r=>r.percentage!=null);
-  const term=byId("reportsTerm")?.value||"الفصل الدراسي الأول", mode=byId("reportsMode")?.value||"exam", exam=byId("reportsExamType")?.value||"الاختبار الأول", subject=byId("reportsSubject")?.value||"", grade=byId("reportsGrade")?.value||"";
+  const term=byId("reportsTerm")?.value||"الفصل الدراسي الأول", mode=byId("reportsMode")?.value||"exam", exam=byId("reportsExamType")?.value||"الاختبار الأول", subject=byId("reportsSubject")?.value||"", grade=byId("reportsGrade")?.value||"", section=byId("reportsSection")?.value||"";
   if(term) rows=rows.filter(r=>(r.grade_sheets?.academic_term||"الفصل الدراسي الأول")===term);
   if(mode==="exam" && exam) rows=rows.filter(r=>r.grade_sheets?.exam_type===exam);
   if(subject) rows=rows.filter(r=>r.grade_sheets?.subject===subject);
   if(grade) rows=rows.filter(r=>r.grade_sheets?.grade===grade);
+  if(section) rows=rows.filter(r=>String(r.grade_sheets?.class_section)===String(section));
   return rows;
 }
 
@@ -4028,7 +4141,7 @@ function renderExcellenceReport(){
 
 function renderGradeScoresReport(){
   const box=byId("gradeScoresReport"); if(!box)return;
-  const grade=byId("reportsGrade")?.value||"";
+  const grade=byId("reportsGrade")?.value||"", section=byId("reportsSection")?.value||"";
   if(!grade){box.innerHTML='<div class="empty">اختاري صفًا من الفلتر لعرض كشف الدرجات.</div>';return;}
   const rows=reportsFilteredRows();
   const subjects=[...new Set(rows.map(r=>r.grade_sheets?.subject).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),"ar"));
@@ -4036,7 +4149,7 @@ function renderGradeScoresReport(){
   const students=studentAverages(rows);
   const term=byId("reportsTerm")?.value||"الفصل الدراسي الأول", mode=byId("reportsMode")?.value||"exam", exam=byId("reportsExamType")?.value||"الاختبار الأول";
   const scope=mode==="term"?`حصيلة ${term}`:`${exam} • ${term}`;
-  box.innerHTML=`${reportHeaderHtml("كشف درجات الصف "+grade,scope)}
+  box.innerHTML=`${reportHeaderHtml("كشف درجات الصف "+grade+(section?" — الشعبة "+section:""),scope)}
     ${students.length?`<div class="students-wrapper"><table class="analysis-table"><thead><tr><th>#</th><th>اسم الطالب</th><th>الشعبة</th>${subjects.map(s=>`<th>${esc(s)}</th>`).join("")}<th>المتوسط</th><th>الحالة</th></tr></thead><tbody>
     ${students.map((x,i)=>{
       const cells=subjects.map(s=>{
@@ -4206,6 +4319,9 @@ byId("saveGradeReportBtn")?.addEventListener("click",()=>saveReportNote("grade")
 byId("saveStudentTrackingBtn")?.addEventListener("click",saveStudentTrackingNote);
 byId("printSubjectReportBtn")?.addEventListener("click",()=>printCombinedReport(["subjectGradeMatrix","subjectReportEditor"],"تقرير تحليل المادة — "+(byId("matrixSubject")?.value||"")));
 byId("printGradeReportBtn")?.addEventListener("click",()=>printCombinedReport(["gradeSubjectMatrix","gradeReportEditor"],"تقرير تحليل الصف — "+(byId("matrixGrade")?.value||"")));
+["compareSubject","compareGrade","compareSection","compareExams"].forEach(id=>byId(id)?.addEventListener("change",renderExamComparison));
+byId("refreshExamComparisonBtn")?.addEventListener("click",renderExamComparison);
+byId("printExamComparisonBtn")?.addEventListener("click",()=>printElementReport("examComparisonPanel","تتبع مقارن بين الاختبارات"));
 byId("printStudentTrackingBtn")?.addEventListener("click",()=>printElementReport("studentTrackingCard","بطاقة تتبع أداء الطالب"));
 
 byId("printStrategicAnalysisBtn")?.addEventListener("click",()=>printElementReport("advancedRelationships","لوحة التحليل الاستراتيجي للتحصيل"));
@@ -4317,6 +4433,7 @@ byId("refreshRecordsBtn")
   "adminSearch",
   "adminSubject",
   "adminGrade",
+  "adminSection",
   "adminExamType",
   "adminFrom",
   "adminTo"
@@ -4414,17 +4531,17 @@ function renderLeadershipComprehensiveReport(){
       <div class="mini-stat">نسبة الإتقان<strong>${overall.masteryRate.toFixed(1)}%</strong></div>
     </div>
     <h3 style="margin-top:18px">التحليل حسب المادة</h3>
-    <div class="students-wrapper"><table class="analysis-table"><thead><tr><th>المادة</th><th>المقيمون</th><th>الناجحون</th><th>الراسبون</th><th>نسبة النجاح</th><th>المتقنون</th><th>غير المتقنين</th><th>نسبة الإتقان</th><th>المتوسط</th></tr></thead><tbody>
+    <div class="students-wrapper"><table class="analysis-table"><thead><tr><th>المادة</th><th>المقيمون</th><th>نتائج ناجحة</th><th>نتائج راسبة</th><th>نسبة النجاح</th><th>نتائج متقنة</th><th>نتائج غير متقنة</th><th>نسبة الإتقان</th><th>المتوسط</th></tr></thead><tbody>
       ${subjects.map(s=>leadershipMetricRow(s,metricSummary(rows.filter(r=>r.grade_sheets?.subject===s)))).join("")}
     </tbody></table></div>
     <h3 style="margin-top:18px">التحليل حسب الصف</h3>
-    <div class="students-wrapper"><table class="analysis-table"><thead><tr><th>الصف</th><th>المقيمون</th><th>الناجحون</th><th>الراسبون</th><th>نسبة النجاح</th><th>المتقنون</th><th>غير المتقنين</th><th>نسبة الإتقان</th><th>المتوسط</th></tr></thead><tbody>
+    <div class="students-wrapper"><table class="analysis-table"><thead><tr><th>الصف</th><th>المقيمون</th><th>نتائج ناجحة</th><th>نتائج راسبة</th><th>نسبة النجاح</th><th>نتائج متقنة</th><th>نتائج غير متقنة</th><th>نسبة الإتقان</th><th>المتوسط</th></tr></thead><tbody>
       ${grades.map(g=>leadershipMetricRow(g,metricSummary(rows.filter(r=>r.grade_sheets?.grade===g)))).join("")}
     </tbody></table></div>
     <h3 style="margin-top:18px">تفصيل المواد حسب الصفوف</h3>
     ${subjects.map(s=>{
       const sr=rows.filter(r=>r.grade_sheets?.subject===s);
-      return `<h4>${esc(s)}</h4><div class="students-wrapper"><table class="analysis-table"><thead><tr><th>الصف</th><th>المقيمون</th><th>الناجحون</th><th>الراسبون</th><th>نسبة النجاح</th><th>المتقنون</th><th>غير المتقنين</th><th>نسبة الإتقان</th><th>المتوسط</th></tr></thead><tbody>${grades.filter(g=>sr.some(r=>r.grade_sheets?.grade===g)).map(g=>leadershipMetricRow(g,metricSummary(sr.filter(r=>r.grade_sheets?.grade===g)))).join("")}</tbody></table></div>`;
+      return `<h4>${esc(s)}</h4><div class="students-wrapper"><table class="analysis-table"><thead><tr><th>الصف</th><th>المقيمون</th><th>نتائج ناجحة</th><th>نتائج راسبة</th><th>نسبة النجاح</th><th>نتائج متقنة</th><th>نتائج غير متقنة</th><th>نسبة الإتقان</th><th>المتوسط</th></tr></thead><tbody>${grades.filter(g=>sr.some(r=>r.grade_sheets?.grade===g)).map(g=>leadershipMetricRow(g,metricSummary(sr.filter(r=>r.grade_sheets?.grade===g)))).join("")}</tbody></table></div>`;
     }).join("")}
   `;
 }
@@ -4547,22 +4664,22 @@ function dashboardKpisHtml(m,students=null){
     ${students!=null?kpiHtml("الطلاب المقيمون",students,"neutral"):kpiHtml("النتائج المسجلة",m.total,"neutral")}
     ${students!=null?kpiHtml("النتائج المسجلة",m.total,"neutral"):""}
     ${kpiHtml("متوسط التحصيل",m.avg.toFixed(1)+"%",qualityClass(m.avg))}
-    ${kpiHtml("نسبة النجاح",m.passRate.toFixed(1)+"%",qualityClass(m.passRate))}
-    ${kpiHtml("نسبة الإتقان",m.masteryRate.toFixed(1)+"%",qualityClass(m.masteryRate))}
+    ${kpiHtml("نسبة النتائج الناجحة",m.passRate.toFixed(1)+"%",qualityClass(m.passRate))}
+    ${kpiHtml("نسبة النتائج المتقنة",m.masteryRate.toFixed(1)+"%",qualityClass(m.masteryRate))}
   </div>`;
 }
 function distributionChartsHtml(m,items=[],label="الفئات"){
   const pass=m.total?m.passRate:0, mastery=m.total?m.masteryRate:0;
   const bars=items.slice(0,8).map(([name,x])=>`<div class="metric-bar-row"><span>${esc(name)}</span><div class="metric-bar-track"><div class="metric-bar-fill ${qualityClass(x.avg)}" style="width:${Math.max(0,Math.min(100,x.avg))}%"></div></div><strong>${x.avg.toFixed(1)}%</strong></div>`).join("");
   return `<div class="report-charts">
-    <div class="report-chart-card"><h4>توزيع النجاح والرسوب</h4><div class="stackbar"><span class="ok" style="width:${pass}%"></span><span class="bad" style="width:${100-pass}%"></span></div><div class="chart-legend"><span><i class="dot ok"></i>ناجحون <b>${m.passed}</b></span><span><i class="dot bad"></i>راسبون <b>${m.failed}</b></span></div>
-      <h4 style="margin-top:15px">توزيع الإتقان</h4><div class="stackbar"><span class="ok" style="width:${mastery}%"></span><span class="mid" style="width:${100-mastery}%"></span></div><div class="chart-legend"><span><i class="dot ok"></i>متقنون <b>${m.mastered}</b></span><span><i class="dot mid"></i>غير متقنين <b>${m.notMastered}</b></span></div></div>
+    <div class="report-chart-card"><h4>توزيع النجاح والرسوب</h4><div class="stackbar"><span class="ok" style="width:${pass}%"></span><span class="bad" style="width:${100-pass}%"></span></div><div class="chart-legend"><span><i class="dot ok"></i>نتائج ناجحة <b>${m.passed}</b></span><span><i class="dot bad"></i>نتائج راسبة <b>${m.failed}</b></span></div>
+      <h4 style="margin-top:15px">توزيع الإتقان</h4><div class="stackbar"><span class="ok" style="width:${mastery}%"></span><span class="mid" style="width:${100-mastery}%"></span></div><div class="chart-legend"><span><i class="dot ok"></i>نتائج متقنة <b>${m.mastered}</b></span><span><i class="dot mid"></i>نتائج غير متقنة <b>${m.notMastered}</b></span></div></div>
     <div class="report-chart-card"><h4>قراءة بصرية لمتوسط ${esc(label)}</h4><div class="metric-bars">${bars||'<div class="empty">لا توجد بيانات تفصيلية.</div>'}</div></div>
   </div>`;
 }
 function analysisTableHtml(titleKey,items){
   if(!items.length) return '<div class="empty">لا توجد بيانات مطابقة.</div>';
-  return `<div class="students-wrapper"><table class="analysis-table"><thead><tr><th>${titleKey}</th><th>المقيمون</th><th>الناجحون</th><th>نسبة النجاح</th><th>الراسبون</th><th>المتقنون</th><th>نسبة الإتقان</th><th>غير المتقنين</th><th>المتوسط</th></tr></thead><tbody>${items.map(([name,m])=>`<tr><td><strong>${esc(name)}</strong></td><td>${m.total}</td><td class="result-good">${m.passed}</td><td class="${m.passRate>=80?'result-good':m.passRate>=60?'result-warn':'result-bad'}">${m.passRate.toFixed(1)}%</td><td class="${m.failed?'result-bad':'result-good'}">${m.failed}</td><td class="result-good">${m.mastered}</td><td class="${m.masteryRate>=80?'result-good':m.masteryRate>=60?'result-warn':'result-bad'}">${m.masteryRate.toFixed(1)}%</td><td class="${m.notMastered?'result-warn':'result-good'}">${m.notMastered}</td><td class="${m.avg>=80?'result-good':m.avg>=60?'result-warn':'result-bad'}">${m.avg.toFixed(1)}%</td></tr>`).join("")}</tbody></table></div>`;
+  return `<div class="students-wrapper"><table class="analysis-table"><thead><tr><th>${titleKey}</th><th>المقيمون</th><th>نتائج ناجحة</th><th>نسبة النجاح</th><th>نتائج راسبة</th><th>نتائج متقنة</th><th>نسبة الإتقان</th><th>نتائج غير متقنة</th><th>المتوسط</th></tr></thead><tbody>${items.map(([name,m])=>`<tr><td><strong>${esc(name)}</strong></td><td>${m.total}</td><td class="result-good">${m.passed}</td><td class="${m.passRate>=80?'result-good':m.passRate>=60?'result-warn':'result-bad'}">${m.passRate.toFixed(1)}%</td><td class="${m.failed?'result-bad':'result-good'}">${m.failed}</td><td class="result-good">${m.mastered}</td><td class="${m.masteryRate>=80?'result-good':m.masteryRate>=60?'result-warn':'result-bad'}">${m.masteryRate.toFixed(1)}%</td><td class="${m.notMastered?'result-warn':'result-good'}">${m.notMastered}</td><td class="${m.avg>=80?'result-good':m.avg>=60?'result-warn':'result-bad'}">${m.avg.toFixed(1)}%</td></tr>`).join("")}</tbody></table></div>`;
 }
 function strongestWeakest(items){
   const nonempty=items.filter(([,m])=>m.total).sort((a,b)=>b[1].avg-a[1].avg);
@@ -4570,7 +4687,7 @@ function strongestWeakest(items){
 }
 function autoNarrative(title,m,items=[],kind=""){
   const sw=strongestWeakest(items);
-  let t=`تشير نتائج ${title} إلى أن متوسط التحصيل بلغ ${m.avg.toFixed(1)}%، وهو مستوى ${qualityText(m.avg)}. بلغت نسبة النجاح ${m.passRate.toFixed(1)}% (${m.passed} ناجحًا مقابل ${m.failed} راسبًا)، بينما بلغت نسبة الإتقان ${m.masteryRate.toFixed(1)}% (${m.mastered} متقنًا و${m.notMastered} غير متقن).`;
+  let t=`تشير نتائج ${title} إلى أن متوسط التحصيل بلغ ${m.avg.toFixed(1)}%، وهو مستوى ${qualityText(m.avg)}. بلغت نسبة النجاح ${m.passRate.toFixed(1)}% (${m.passed} نتيجة ناجحة مقابل ${m.failed} نتيجة راسبة)، بينما بلغت نسبة الإتقان ${m.masteryRate.toFixed(1)}% (${m.mastered} نتيجة متقنة و${m.notMastered} نتيجة غير متقنة).`;
   if(sw.best&&sw.worst&&sw.best[0]!==sw.worst[0]) t+=` أعلى ${kind||"فئة"} من حيث المتوسط: ${sw.best[0]} بمتوسط ${sw.best[1].avg.toFixed(1)}%، وأقلها: ${sw.worst[0]} بمتوسط ${sw.worst[1].avg.toFixed(1)}%.`;
   if(m.failRate>=30) t+=` وتوضح النتائج وجود حاجة واضحة لخطة علاجية مركزة للمتعثرين مع متابعة أثر التدخل في الاختبار التالي.`;
   else if(m.masteryRate<80) t+=` ويوصى بالتركيز على رفع نسبة الإتقان من خلال أنشطة علاجية وإثرائية موجهة للكفايات الأقل أداءً.`;
@@ -4579,8 +4696,8 @@ function autoNarrative(title,m,items=[],kind=""){
 }
 function autoActionsText(m){
   const a=[];
-  if(m.failed) a.push(`إعداد خطة دعم للطلاب الراسبين وعددهم ${m.failed} مع قياس تقدّمهم في التقييم التالي.`);
-  if(m.notMastered) a.push(`استهداف الطلاب غير المتقنين وعددهم ${m.notMastered} بأنشطة مرتبطة بالكفايات الأقل إتقانًا.`);
+  if(m.failed) a.push(`إعداد خطة دعم للحالات ذات النتائج الراسبة وعددها ${m.failed} مع قياس تقدّمهم في التقييم التالي.`);
+  if(m.notMastered) a.push(`استهداف الحالات ذات النتائج غير المتقنة وعددها ${m.notMastered} بأنشطة مرتبطة بالكفايات الأقل إتقانًا.`);
   if(m.masteryRate>=80) a.push("تقديم أنشطة إثرائية للطلاب المتقنين والمحافظة على مستوى الأداء المرتفع.");
   a.push("مقارنة النتائج بالاختبار التالي وقياس أثر الإجراءات المتخذة.");
   return a.join("\n");
@@ -4806,8 +4923,8 @@ function renderLeadershipComprehensiveReport(){
   box.innerHTML=`${reportHeaderHtml("التقرير الشامل للتحصيل والدرجات",`الاختبار: ${exam} • المادة: ${subject} • الصف: ${grade}`)}
     ${dashboardKpisHtml(overall,studentIds.size)}${distributionChartsHtml(overall,subjectItems,"المواد")}
     <div class="auto-analysis"><h3>التحليل التنفيذي التلقائي — قابل للتعديل قبل الطباعة</h3><textarea id="leadershipAutoAnalysis">${esc(narrative)}</textarea></div>
-    <h3 class="report-section-title">التحليل حسب المادة</h3><div class="students-wrapper"><table class="analysis-table"><thead><tr><th>المادة</th><th>المقيمون</th><th>الناجحون</th><th>الراسبون</th><th>نسبة النجاح</th><th>المتقنون</th><th>غير المتقنين</th><th>نسبة الإتقان</th><th>المتوسط</th></tr></thead><tbody>${subjectItems.map(([s,m])=>leadershipMetricRow(s,m)).join("")}</tbody></table></div>
-    <h3 class="report-section-title">التحليل حسب الصف</h3><div class="students-wrapper"><table class="analysis-table"><thead><tr><th>الصف</th><th>المقيمون</th><th>الناجحون</th><th>الراسبون</th><th>نسبة النجاح</th><th>المتقنون</th><th>غير المتقنين</th><th>نسبة الإتقان</th><th>المتوسط</th></tr></thead><tbody>${gradeItems.map(([g,m])=>leadershipMetricRow(g,m)).join("")}</tbody></table></div>
+    <h3 class="report-section-title">التحليل حسب المادة</h3><div class="students-wrapper"><table class="analysis-table"><thead><tr><th>المادة</th><th>المقيمون</th><th>نتائج ناجحة</th><th>نتائج راسبة</th><th>نسبة النجاح</th><th>نتائج متقنة</th><th>نتائج غير متقنة</th><th>نسبة الإتقان</th><th>المتوسط</th></tr></thead><tbody>${subjectItems.map(([s,m])=>leadershipMetricRow(s,m)).join("")}</tbody></table></div>
+    <h3 class="report-section-title">التحليل حسب الصف</h3><div class="students-wrapper"><table class="analysis-table"><thead><tr><th>الصف</th><th>المقيمون</th><th>نتائج ناجحة</th><th>نتائج راسبة</th><th>نسبة النجاح</th><th>نتائج متقنة</th><th>نتائج غير متقنة</th><th>نسبة الإتقان</th><th>المتوسط</th></tr></thead><tbody>${gradeItems.map(([g,m])=>leadershipMetricRow(g,m)).join("")}</tbody></table></div>
     <div class="executive-auto"><h3>الملخص التنفيذي التلقائي</h3>${esc(executiveSummary(rows,"المدرسة ضمن الفلاتر المحددة"))}</div>
     <div class="report-editor" style="margin-top:12px"><div class="report-editor-grid">
       <div class="field"><label>القراءة التنفيذية — قابلة للتعديل قبل الطباعة</label><textarea id="leadershipAnalysisText">${esc(executiveSummary(rows,"المدرسة ضمن الفلاتر المحددة"))}</textarea></div>
@@ -4954,7 +5071,7 @@ function scopedTrackingCardHtml(student,rows,notes=null,title="بطاقة متا
   const auto=scopedAutomaticFollowup(student,rows),prog=progressionText(rows);
   return `${reportHeaderHtml(title,`${student.grade||""} — الشعبة ${student.class_section||""} • ${exams.join(" + ")}`)}
     <div class="student-card-head"><div><h3 style="margin:0">${esc(student.student_name||"الطالب")}</h3><div class="sheet-meta">المواد: ${subjects.map(esc).join("، ")}</div></div></div>
-    <div class="report-dashboard">${kpiHtml("النتائج",m.total,"neutral")}${kpiHtml("المتوسط",m.avg.toFixed(1)+"%",qualityClass(m.avg))}${kpiHtml("نسبة النجاح",m.passRate.toFixed(1)+"%",m.passRate>=80?"good":m.passRate>=60?"warn":"bad")}${kpiHtml("نسبة الإتقان",m.masteryRate.toFixed(1)+"%",m.masteryRate>=80?"good":m.masteryRate>=60?"warn":"bad")}</div>
+    <div class="report-dashboard">${kpiHtml("النتائج",m.total,"neutral")}${kpiHtml("المتوسط",m.avg.toFixed(1)+"%",qualityClass(m.avg))}${kpiHtml("نسبة النتائج الناجحة",m.passRate.toFixed(1)+"%",m.passRate>=80?"good":m.passRate>=60?"warn":"bad")}${kpiHtml("نسبة النتائج المتقنة",m.masteryRate.toFixed(1)+"%",m.masteryRate>=80?"good":m.masteryRate>=60?"warn":"bad")}</div>
     <div class="executive-auto"><h3>قراءة التطور</h3>${esc(prog)}</div>
     <div class="students-wrapper"><table class="analysis-table"><thead><tr><th>المادة</th><th>الاختبار</th><th>الدرجة</th><th>النسبة</th><th>المستوى</th><th>ملاحظة المعلمة</th></tr></thead><tbody>${rows.sort((a,b)=>(EXAM_ORDER[a.grade_sheets?.exam_type]??99)-(EXAM_ORDER[b.grade_sheets?.exam_type]??99)).map(r=>`<tr><td>${esc(r.grade_sheets?.subject||"—")}</td><td>${esc(r.grade_sheets?.exam_type||"—")}</td><td>${esc(r.score??"—")} / ${esc(r.grade_sheets?.max_score??"—")}</td><td>${Number(r.percentage).toFixed(1)}%</td><td>${esc(r.performance_level||qualityText(Number(r.percentage)))}</td><td>${esc(r.student_note||"—")}</td></tr>`).join("")}</tbody></table></div>
     <div class="student-followup"><h3>متابعة الطالب</h3><div class="student-followup-grid"><div class="field"><label>نقاط القوة</label><textarea id="teacherStudentStrengths">${esc(notes?.strengths||auto.strengths)}</textarea></div><div class="field"><label>جوانب التحسين / المشكلة</label><textarea id="teacherStudentImprovements">${esc(notes?.improvements||auto.improvements)}</textarea></div><div class="field"><label>الإجراء / التدخل</label><textarea id="teacherStudentIntervention">${esc(notes?.intervention||auto.intervention)}</textarea></div><div class="field"><label>الأثر / نتيجة المتابعة</label><textarea id="teacherStudentImpact">${esc(notes?.impact||auto.impact)}</textarea></div><div class="field full"><label>ملاحظات وتوصيات</label><textarea id="teacherStudentGeneralNotes">${esc(notes?.general_notes||auto.general)}</textarea></div></div></div>${reportFooterHtml()}`;
@@ -5066,7 +5183,7 @@ async function saveReportNote(reportType){const isSubject=reportType==="subject"
 // إضافة عدد الطلاب الفعليين إلى المقاييس دون تغيير total الذي يمثل عدد النتائج
 const _metricSummaryV1=metricSummary;
 metricSummary=function(rows){const m=_metricSummaryV1(rows);return {...m,uniqueStudents:new Set(rows.filter(x=>x.percentage!=null).map(x=>x.student_id).filter(Boolean)).size,resultRecords:m.total};};
-analysisTableHtml=function(titleKey,items){if(!items.length)return '<div class="empty">لا توجد بيانات مطابقة.</div>';return `<div class="students-wrapper"><table class="analysis-table"><thead><tr><th>${titleKey}</th><th>الطلاب الفعليون</th><th>النتائج المسجلة</th><th>الناجحون</th><th>نسبة النجاح</th><th>الراسبون</th><th>المتقنون</th><th>نسبة الإتقان</th><th>غير المتقنين</th><th>المتوسط</th></tr></thead><tbody>${items.map(([name,m])=>`<tr><td><strong>${esc(name)}</strong></td><td>${m.uniqueStudents??new Set().size}</td><td>${m.total}</td><td>${m.passed}</td><td>${m.passRate.toFixed(1)}%</td><td>${m.failed}</td><td>${m.mastered}</td><td>${m.masteryRate.toFixed(1)}%</td><td>${m.notMastered}</td><td>${m.avg.toFixed(1)}%</td></tr>`).join("")}</tbody></table></div>`;};
+analysisTableHtml=function(titleKey,items){if(!items.length)return '<div class="empty">لا توجد بيانات مطابقة.</div>';return `<div class="students-wrapper"><table class="analysis-table"><thead><tr><th>${titleKey}</th><th>الطلاب الفعليون</th><th>النتائج المسجلة</th><th>نتائج ناجحة</th><th>نسبة النجاح</th><th>نتائج راسبة</th><th>نتائج متقنة</th><th>نسبة الإتقان</th><th>نتائج غير متقنة</th><th>المتوسط</th></tr></thead><tbody>${items.map(([name,m])=>`<tr><td><strong>${esc(name)}</strong></td><td>${m.uniqueStudents??new Set().size}</td><td>${m.total}</td><td>${m.passed}</td><td>${m.passRate.toFixed(1)}%</td><td>${m.failed}</td><td>${m.mastered}</td><td>${m.masteryRate.toFixed(1)}%</td><td>${m.notMastered}</td><td>${m.avg.toFixed(1)}%</td></tr>`).join("")}</tbody></table></div>`;};
 
 // ربط واجهات الإضافات الجديدة
 byId("teacherAnalysisMode")?.addEventListener("change",()=>{updateTeacherAnalysisModeUI();renderTeacherAnalysis();});
