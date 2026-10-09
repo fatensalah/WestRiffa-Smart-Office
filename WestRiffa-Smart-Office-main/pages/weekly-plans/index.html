@@ -1,0 +1,2788 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>الخطة الأسبوعية للقيادة العليا | WestRiffa Smart Office</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../../js/config.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Tahoma, Arial, sans-serif;
+      background: #f4f7f6;
+      color: #173c34;
+    }
+
+    .page-header {
+      background: linear-gradient(135deg, #075c40, #087451);
+      color: #fff;
+      padding: 28px 20px;
+    }
+
+    .header-inner,
+    .container {
+      width: min(1500px, 96%);
+      margin: auto;
+    }
+
+    .page-header h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+    }
+
+    .page-header p {
+      margin: 0;
+      opacity: .92;
+      line-height: 1.8;
+    }
+
+    .container {
+      margin-top: 24px;
+      margin-bottom: 50px;
+    }
+
+    .topbar,
+    .top-actions,
+    .save-bar,
+    .archive-head,
+    .tabs {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .topbar,
+    .save-bar,
+    .archive-head {
+      justify-content: space-between;
+    }
+
+    .topbar {
+      margin-bottom: 20px;
+    }
+
+    .btn,
+    .tab-btn {
+      border: 0;
+      border-radius: 11px;
+      padding: 11px 17px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: #075c40;
+      color: #fff;
+    }
+
+    .btn-soft {
+      background: #fff;
+      color: #075c40;
+      border: 1px solid #dce7e2;
+    }
+
+    .btn-danger {
+      background: #fff1f0;
+      color: #b42318;
+      border: 1px solid #f1d0cd;
+    }
+
+    .btn:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    .user-card,
+    .form-card {
+      background: #fff;
+      border: 1px solid #e0e9e5;
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 5px 18px rgba(0,0,0,.04);
+    }
+
+    .user-card {
+      line-height: 1.8;
+    }
+
+    .user-card strong {
+      color: #075c40;
+    }
+
+    .access-error {
+      display: none;
+      background: #fff1f0;
+      color: #b42318;
+      border: 1px solid #f1d0cd;
+      padding: 18px;
+      border-radius: 14px;
+      margin-bottom: 20px;
+      font-weight: 700;
+    }
+
+    .tabs {
+      margin-bottom: 20px;
+    }
+
+    .tab-btn {
+      background: #fff;
+      border: 1px solid #dce7e2;
+      color: #52685f;
+    }
+
+    .tab-btn.active {
+      background: #075c40;
+      color: #fff;
+    }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 13px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .field label {
+      color: #52685f;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .field input {
+      width: 100%;
+      border: 1px solid #d8e2de;
+      border-radius: 10px;
+      padding: 11px 12px;
+      font-family: inherit;
+      font-size: 14px;
+      background: #fff;
+    }
+
+    .auto-info {
+      margin-top: 14px;
+      background: #f5f8f6;
+      border-radius: 12px;
+      padding: 12px 15px;
+      color: #52685f;
+    }
+
+    .auto-info strong {
+      color: #075c40;
+    }
+
+    .plan-owner {
+      margin-bottom: 15px;
+      background: #fff8e6;
+      border: 1px solid #f0dfac;
+      color: #76570b;
+      padding: 12px 15px;
+      border-radius: 12px;
+      font-weight: 700;
+    }
+
+    .view-banner {
+      display: none;
+      background: #fff8e6;
+      color: #76570b;
+      border: 1px solid #f0dfac;
+      border-radius: 12px;
+      padding: 11px 14px;
+      margin-bottom: 14px;
+      font-weight: 700;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      background: #fff;
+      border: 1px solid #dfe8e4;
+      border-radius: 16px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1450px;
+    }
+
+    th,
+    td {
+      border: 1px solid #dfe8e4;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    th {
+      background: #075c40;
+      color: #fff;
+      padding: 12px 7px;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    td.day-cell {
+      background: #f4f8f6;
+      color: #075c40;
+      font-weight: 700;
+      min-width: 105px;
+      padding: 10px;
+    }
+
+    td.date-cell {
+      background: #fafcfb;
+      min-width: 100px;
+      padding: 8px;
+      color: #596c63;
+      font-size: 12px;
+    }
+
+    textarea.plan-cell {
+      width: 100%;
+      min-width: 125px;
+      min-height: 88px;
+      border: 0;
+      resize: vertical;
+      padding: 9px;
+      font-family: inherit;
+      font-size: 13px;
+      line-height: 1.6;
+      outline: none;
+      color: #173c34;
+      background: #fff;
+    }
+
+    textarea.plan-cell:focus {
+      background: #f7fbf9;
+      box-shadow: inset 0 0 0 2px #087451;
+    }
+
+    textarea.plan-cell:disabled {
+      background: #f7f8f8;
+      color: #52685f;
+    }
+
+    .save-bar {
+      margin-top: 18px;
+    }
+
+    .save-message {
+      font-weight: 700;
+      min-height: 22px;
+    }
+
+    .save-message.success {
+      color: #087451;
+    }
+
+    .save-message.error {
+      color: #b42318;
+    }
+
+    .archive-head {
+      margin-bottom: 18px;
+    }
+
+    .archive-head h2 {
+      margin: 0;
+      color: #075c40;
+    }
+
+    .archive-list {
+      display: grid;
+      gap: 20px;
+    }
+
+    .leader-folder {
+      background: #fff;
+      border: 1px solid #e0e9e5;
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    .leader-title {
+      padding: 16px 18px;
+      background: #eef5f2;
+      color: #075c40;
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .month-folder {
+      padding: 16px 18px;
+      border-top: 1px solid #edf1ef;
+    }
+
+    .month-title {
+      font-weight: 700;
+      color: #76570b;
+      margin-bottom: 12px;
+    }
+
+    .week-cards {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .week-card {
+      border: 1px solid #dce7e2;
+      background: #fff;
+      border-radius: 12px;
+      padding: 11px 14px;
+      cursor: pointer;
+      font-family: inherit;
+      min-width: 175px;
+      text-align: right;
+    }
+
+    .week-card strong {
+      display: block;
+      color: #075c40;
+      margin-bottom: 5px;
+    }
+
+    .week-card span {
+      font-size: 12px;
+      color: #6b7a72;
+    }
+
+    .empty-state {
+      background: #fff;
+      border: 1px dashed #ccd9d4;
+      border-radius: 15px;
+      padding: 35px 20px;
+      text-align: center;
+      color: #718078;
+    }
+
+    .print-document,
+    .print-footer {
+      display: none;
+    }
+
+    @media (max-width: 900px) {
+      .form-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+
+    /* =============================================
+       الطباعة الرسمية - ورقة واحدة A4 أفقي
+       ============================================= */
+
+    @media print {
+
+      @page {
+        size: A4 landscape;
+        margin: 5mm;
+      }
+
+      html,
+      body {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        background: #fff !important;
+      }
+
+      body {
+        overflow: hidden !important;
+      }
+
+      .page-header,
+      .topbar,
+      .tabs,
+      .form-card,
+      .save-bar,
+      .view-banner,
+      .user-card,
+      .access-error {
+        display: none !important;
+      }
+
+      .container {
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      .panel {
+        display: none !important;
+      }
+
+      #createPanel {
+        display: block !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      .print-document {
+        display: block !important;
+        width: 100%;
+        margin: 0 0 2.5mm 0;
+        padding: 0;
+      }
+
+      .print-school-header {
+        width: 100%;
+        text-align: center;
+        padding: 0 0 1.5mm 0;
+        margin: 0 0 2mm 0;
+        border-bottom: 1.5px solid #075c40;
+      }
+
+      .print-school-header img {
+        display: block;
+        width: 100%;
+        height: 19mm;
+        object-fit: contain;
+        margin: 0 auto 1mm;
+      }
+
+      .print-title {
+        margin: 0;
+        padding: 0;
+        text-align: center;
+        color: #075c40;
+        font-size: 15pt;
+        font-weight: 800;
+        line-height: 1.2;
+      }
+
+      .print-info {
+        width: 100%;
+        min-width: 0 !important;
+        table-layout: fixed;
+        border-collapse: collapse;
+        margin: 0 0 2.5mm 0;
+      }
+
+      .print-info td {
+        border: 1px solid #557d6d !important;
+        padding: 1.3mm 1mm;
+        font-size: 8pt;
+        text-align: center;
+        background: #fff !important;
+        height: auto !important;
+      }
+
+      .print-info strong {
+        color: #075c40;
+      }
+
+      .plan-owner {
+        display: none !important;
+      }
+
+      .table-wrap {
+        display: block !important;
+        overflow: visible !important;
+        width: 100% !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      .table-wrap > table {
+        width: 100% !important;
+        min-width: 0 !important;
+        table-layout: fixed !important;
+        border-collapse: collapse !important;
+        margin: 0 !important;
+      }
+
+      .table-wrap th,
+      .table-wrap td {
+        border: 1px solid #557d6d !important;
+        padding: 0 !important;
+      }
+
+      .table-wrap th {
+        background: #e6f0eb !important;
+        color: #173c34 !important;
+        font-size: 7pt !important;
+        line-height: 1.1 !important;
+        height: 7mm !important;
+        padding: .7mm .4mm !important;
+        font-weight: 800 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .table-wrap td.day-cell {
+        background: #edf5f1 !important;
+        color: #075c40 !important;
+        font-size: 7pt !important;
+        font-weight: 800 !important;
+        min-width: 0 !important;
+        width: 6.5% !important;
+        padding: .5mm !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .table-wrap td.date-cell {
+        background: #f8faf9 !important;
+        color: #333 !important;
+        font-size: 6.5pt !important;
+        min-width: 0 !important;
+        width: 8% !important;
+        padding: .5mm !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      textarea.plan-cell {
+        display: block !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        height: 16mm !important;
+        min-height: 16mm !important;
+        max-height: 16mm !important;
+        margin: 0 !important;
+        padding: 1mm !important;
+        border: 0 !important;
+        resize: none !important;
+        overflow: hidden !important;
+        font-family: Tahoma, Arial, sans-serif !important;
+        font-size: 6.5pt !important;
+        line-height: 1.25 !important;
+        color: #000 !important;
+        background: #fff !important;
+      }
+
+      textarea.plan-cell::placeholder {
+        color: transparent !important;
+      }
+
+      .print-footer {
+        display: flex !important;
+        width: 100% !important;
+        justify-content: flex-end !important;
+        align-items: flex-start !important;
+        margin: 3mm 0 0 0 !important;
+        padding: 0 7mm !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+
+      .print-signature {
+        width: 65mm;
+        text-align: center;
+        font-size: 8.5pt;
+        color: #173c34;
+        line-height: 1.5;
+      }
+
+      .print-role {
+        font-weight: 800;
+        color: #075c40;
+      }
+
+      .print-person-name {
+        font-weight: 800;
+        margin-top: .5mm;
+      }
+
+      .print-sign-line {
+        width: 35mm;
+        border-top: 1px solid #555;
+        margin: 5mm auto 0;
+        padding-top: .8mm;
+        font-size: 7pt;
+      }
+
+      tr,
+      td,
+      th {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+    }
+  </style>
+</head>
+
+
+<body>
+
+<header class="page-header">
+
+  <div class="header-inner">
+
+    <h1>
+      📅 الخطة الأسبوعية للقيادة العليا
+    </h1>
+
+    <p>
+      إعداد ومتابعة الخطط الأسبوعية للقيادة العليا مع الأرشفة حسب الشهر والأسبوع.
+    </p>
+
+  </div>
+
+</header>
+
+
+<main class="container">
+
+  <div class="topbar">
+
+    <div class="top-actions">
+
+      <a href="../../index.html" class="btn btn-soft">
+        🏠 الرئيسية
+      </a>
+
+      <button
+        id="newPlanBtn"
+        class="btn btn-primary"
+        type="button"
+      >
+        ➕ خطة أسبوعية جديدة
+      </button>
+
+    </div>
+
+    <button
+      id="printBtn"
+      class="btn btn-soft"
+      type="button"
+    >
+      🖨️ طباعة / PDF
+    </button>
+
+  </div>
+
+
+  <div id="accessError" class="access-error">
+    هذه الصفحة مخصصة للقيادة العليا فقط.
+  </div>
+
+
+  <div
+    id="userCard"
+    class="user-card"
+    style="display:none"
+  >
+
+    المستخدم:
+    <strong id="userName">—</strong>
+
+    <br>
+
+    <span id="userEmail"></span>
+
+  </div>
+
+
+  <div id="appContent" style="display:none">
+
+
+    <div class="tabs">
+
+      <button
+        class="tab-btn active"
+        data-panel="createPanel"
+        type="button"
+      >
+        ✍️ إعداد خطتي
+      </button>
+
+      <button
+        class="tab-btn"
+        data-panel="myPlansPanel"
+        type="button"
+      >
+        📂 خططي السابقة
+      </button>
+
+      <button
+        class="tab-btn"
+        data-panel="allPlansPanel"
+        type="button"
+      >
+        👥 خطط القيادة العليا
+      </button>
+
+    </div>
+
+
+    <section
+      id="createPanel"
+      class="panel active"
+    >
+
+
+      <!-- الجزء الرسمي أعلى الطباعة -->
+
+      <div class="print-document">
+
+        <div class="print-school-header">
+
+          <img
+            src="../../assets/school-header.jpg"
+            alt="مدرسة الرفاع الغربي الابتدائية للبنين"
+          >
+
+          <div class="print-title">
+            الخطة الأسبوعية للقيادة العليا
+          </div>
+
+        </div>
+
+
+        <table class="print-info">
+
+          <tr>
+
+            <td>
+              <strong>اسم صاحبة الخطة:</strong>
+              <span id="printOwner">—</span>
+            </td>
+
+            <td>
+              <strong>المسمى الوظيفي:</strong>
+              <span id="printRole">—</span>
+            </td>
+
+            <td>
+              <strong>العام الدراسي:</strong>
+              <span id="printSchoolYear">—</span>
+            </td>
+
+            <td>
+              <strong>الشهر:</strong>
+              <span id="printMonth">—</span>
+            </td>
+
+            <td>
+              <strong>الأسبوع:</strong>
+              <span id="printWeek">—</span>
+            </td>
+
+          </tr>
+
+          <tr>
+
+            <td colspan="5">
+
+              <strong>الفترة:</strong>
+
+              من الأحد
+              <span id="printStartDate">—</span>
+
+              إلى الخميس
+              <span id="printEndDate">—</span>
+
+            </td>
+
+          </tr>
+
+        </table>
+
+      </div>
+
+
+      <div
+        id="viewBanner"
+        class="view-banner"
+      ></div>
+
+
+      <div class="form-card">
+
+        <div class="form-grid">
+
+          <div class="field">
+
+            <label>
+              العام الدراسي
+            </label>
+
+            <input
+              id="schoolYear"
+              type="text"
+              value="2026/2027"
+              readonly
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label>
+              بداية الأسبوع – الأحد
+            </label>
+
+            <input
+              id="weekStart"
+              type="date"
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label>
+              الشهر
+            </label>
+
+            <input
+              id="monthName"
+              type="text"
+              readonly
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label>
+              الأسبوع
+            </label>
+
+            <input
+              id="weekLabel"
+              type="text"
+              readonly
+            >
+
+          </div>
+
+        </div>
+
+
+        <div class="auto-info">
+
+          يتم تحديد
+          <strong>
+            الشهر والأسبوع وتواريخ الأيام تلقائيًا
+          </strong>
+          بمجرد اختيار تاريخ يوم الأحد.
+
+        </div>
+
+      </div>
+
+
+      <div
+        id="planOwner"
+        class="plan-owner"
+      >
+        خطة: —
+      </div>
+
+
+      <div class="table-wrap">
+
+        <table>
+
+          <thead>
+
+            <tr>
+              <th>اليوم</th>
+              <th>التاريخ</th>
+              <th>قبل الطابور</th>
+              <th>الأولى</th>
+              <th>الثانية</th>
+              <th>الثالثة</th>
+              <th>الفسحة</th>
+              <th>الرابعة</th>
+              <th>الخامسة</th>
+              <th>السادسة</th>
+              <th>الانصراف الآمن</th>
+            </tr>
+
+          </thead>
+
+          <tbody id="planBody"></tbody>
+
+        </table>
+
+      </div>
+
+
+      <!-- التوقيع الرسمي -->
+
+      <div class="print-footer">
+
+        <div class="print-signature">
+
+          <div
+            id="printFooterRole"
+            class="print-role"
+          >
+            —
+          </div>
+
+          <div
+            id="printOwnerFooter"
+            class="print-person-name"
+          >
+            —
+          </div>
+
+          <div class="print-sign-line">
+            التوقيع
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="save-bar">
+
+        <div
+          id="saveMessage"
+          class="save-message"
+        ></div>
+
+
+        <div class="top-actions">
+
+          <button
+            id="deleteBtn"
+            class="btn btn-danger"
+            type="button"
+            style="display:none"
+          >
+            🗑️ حذف الخطة
+          </button>
+
+          <button
+            id="saveBtn"
+            class="btn btn-primary"
+            type="button"
+          >
+            💾 حفظ الخطة
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <section
+      id="myPlansPanel"
+      class="panel"
+    >
+
+      <div class="archive-head">
+
+        <h2>
+          📂 خططي السابقة
+        </h2>
+
+        <button
+          id="refreshMyPlans"
+          class="btn btn-soft"
+          type="button"
+        >
+          🔄 تحديث
+        </button>
+
+      </div>
+
+      <div
+        id="myPlansList"
+        class="archive-list"
+      ></div>
+
+    </section>
+
+
+    <section
+      id="allPlansPanel"
+      class="panel"
+    >
+
+      <div class="archive-head">
+
+        <h2>
+          👥 خطط القيادة العليا
+        </h2>
+
+        <button
+          id="refreshAllPlans"
+          class="btn btn-soft"
+          type="button"
+        >
+          🔄 تحديث
+        </button>
+
+      </div>
+
+      <div
+        id="allPlansList"
+        class="archive-list"
+      ></div>
+
+    </section>
+
+  </div>
+
+</main>
+
+
+<script>
+
+"use strict";
+
+
+const MONTHS_AR = [
+  "يناير",
+  "فبراير",
+  "مارس",
+  "أبريل",
+  "مايو",
+  "يونيو",
+  "يوليو",
+  "أغسطس",
+  "سبتمبر",
+  "أكتوبر",
+  "نوفمبر",
+  "ديسمبر"
+];
+
+
+const DAYS = [
+  { name: "الأحد", offset: 0 },
+  { name: "الاثنين", offset: 1 },
+  { name: "الثلاثاء", offset: 2 },
+  { name: "الأربعاء", offset: 3 },
+  { name: "الخميس", offset: 4 }
+];
+
+
+const SLOTS = [
+
+  {
+    key: "before_assembly",
+    label: "قبل الطابور"
+  },
+
+  {
+    key: "period_1",
+    label: "الأولى"
+  },
+
+  {
+    key: "period_2",
+    label: "الثانية"
+  },
+
+  {
+    key: "period_3",
+    label: "الثالثة"
+  },
+
+  {
+    key: "break",
+    label: "الفسحة"
+  },
+
+  {
+    key: "period_4",
+    label: "الرابعة"
+  },
+
+  {
+    key: "period_5",
+    label: "الخامسة"
+  },
+
+  {
+    key: "period_6",
+    label: "السادسة"
+  },
+
+  {
+    key: "safe_dismissal",
+    label: "الانصراف الآمن"
+  }
+
+];
+
+
+let sb = null;
+
+let currentUser = null;
+
+let currentProfile = null;
+
+let currentPlanId = null;
+
+let currentPlanOwnerId = null;
+
+let currentPlanOwnerName = "";
+
+let profilesMap = {};
+
+
+const accessError =
+  document.getElementById("accessError");
+
+const userCard =
+  document.getElementById("userCard");
+
+const userName =
+  document.getElementById("userName");
+
+const userEmail =
+  document.getElementById("userEmail");
+
+const appContent =
+  document.getElementById("appContent");
+
+const schoolYear =
+  document.getElementById("schoolYear");
+
+const weekStart =
+  document.getElementById("weekStart");
+
+const monthName =
+  document.getElementById("monthName");
+
+const weekLabel =
+  document.getElementById("weekLabel");
+
+const planBody =
+  document.getElementById("planBody");
+
+const planOwner =
+  document.getElementById("planOwner");
+
+const saveBtn =
+  document.getElementById("saveBtn");
+
+const deleteBtn =
+  document.getElementById("deleteBtn");
+
+const saveMessage =
+  document.getElementById("saveMessage");
+
+const viewBanner =
+  document.getElementById("viewBanner");
+
+const myPlansList =
+  document.getElementById("myPlansList");
+
+const allPlansList =
+  document.getElementById("allPlansList");
+
+
+function dateToISO(date) {
+
+  const y =
+    date.getFullYear();
+
+  const m =
+    String(
+      date.getMonth() + 1
+    ).padStart(2,"0");
+
+  const d =
+    String(
+      date.getDate()
+    ).padStart(2,"0");
+
+  return `${y}-${m}-${d}`;
+}
+
+
+function parseISO(value) {
+
+  const p =
+    String(value)
+      .split("-")
+      .map(Number);
+
+  return new Date(
+    p[0],
+    p[1] - 1,
+    p[2]
+  );
+}
+
+
+function addDays(date,count) {
+
+  const result =
+    new Date(date);
+
+  result.setDate(
+    result.getDate() + count
+  );
+
+  return result;
+}
+
+
+function formatDate(date) {
+
+  return date.toLocaleDateString(
+    "ar-BH",
+    {
+      day:"2-digit",
+      month:"2-digit",
+      year:"numeric"
+    }
+  );
+}
+
+
+function getCurrentSunday() {
+
+  const today =
+    new Date();
+
+  const result =
+    new Date(today);
+
+  result.setHours(0,0,0,0);
+
+  result.setDate(
+    result.getDate() -
+    result.getDay()
+  );
+
+  return result;
+}
+
+
+function getWeekNumberInMonth(date) {
+
+  return Math.ceil(
+    date.getDate() / 7
+  );
+}
+
+
+function getWeekText(number) {
+
+  const names = {
+    1:"الأسبوع الأول",
+    2:"الأسبوع الثاني",
+    3:"الأسبوع الثالث",
+    4:"الأسبوع الرابع",
+    5:"الأسبوع الخامس",
+    6:"الأسبوع السادس"
+  };
+
+  return names[number] ||
+    `الأسبوع ${number}`;
+}
+
+
+/* تحديد المسمى الوظيفي حسب صاحبة الخطة */
+
+function getLeadershipJobTitle(name) {
+
+  const cleanName =
+    String(name || "")
+      .trim();
+
+
+  if (
+    cleanName.includes("أحلام") &&
+    cleanName.includes("السويدي")
+  ) {
+    return "مديرة المدرسة";
+  }
+
+
+  if (
+    (
+      cleanName.includes("خلود") &&
+      cleanName.includes("الكعبي")
+    )
+    ||
+    (
+      cleanName.includes("زينب") &&
+      cleanName.includes("عبدالسلام")
+    )
+  ) {
+    return "المديرة المساعدة";
+  }
+
+
+  return "القيادة العليا";
+}
+
+
+function createSupabaseClient() {
+
+  if (
+    !window.WR_CONFIG ||
+    !window.WR_CONFIG.supabaseUrl ||
+    !window.WR_CONFIG.supabaseKey
+  ) {
+
+    throw new Error(
+      "إعدادات Supabase غير مكتملة"
+    );
+  }
+
+  return window.supabase.createClient(
+    window.WR_CONFIG.supabaseUrl,
+    window.WR_CONFIG.supabaseKey
+  );
+}
+
+
+async function initializePage() {
+
+  try {
+
+    sb =
+      createSupabaseClient();
+
+
+    const {
+      data:userData,
+      error:userError
+    } =
+      await sb.auth.getUser();
+
+
+    if (
+      userError ||
+      !userData?.user
+    ) {
+
+      window.location.href =
+        "../../index.html";
+
+      return;
+    }
+
+
+    currentUser =
+      userData.user;
+
+
+    const {
+      data:profile,
+      error:profileError
+    } =
+      await sb
+        .from("user_profiles")
+        .select(
+          "user_id, full_name, role"
+        )
+        .eq(
+          "user_id",
+          currentUser.id
+        )
+        .maybeSingle();
+
+
+    if (profileError) {
+      throw profileError;
+    }
+
+
+    currentProfile =
+      profile;
+
+
+    if (
+      !currentProfile ||
+      String(
+        currentProfile.role
+      ).toLowerCase() !== "admin"
+    ) {
+
+      accessError.style.display =
+        "block";
+
+      return;
+    }
+
+
+    userName.textContent =
+      currentProfile.full_name ||
+      "القيادة العليا";
+
+
+    userEmail.textContent =
+      currentUser.email || "";
+
+
+    userCard.style.display =
+      "block";
+
+
+    appContent.style.display =
+      "block";
+
+
+    await loadLeadershipProfiles();
+
+
+    newPlan();
+
+
+    await Promise.all([
+      loadMyPlans(),
+      loadAllPlans()
+    ]);
+
+
+  } catch(error) {
+
+    console.error(error);
+
+
+    accessError.textContent =
+      "تعذر تحميل الخطة الأسبوعية. " +
+      (
+        error?.message ||
+        ""
+      );
+
+
+    accessError.style.display =
+      "block";
+  }
+}
+
+
+async function loadLeadershipProfiles() {
+
+  const {
+    data,
+    error
+  } =
+    await sb
+      .from("user_profiles")
+      .select(
+        "user_id, full_name, role"
+      )
+      .eq(
+        "role",
+        "admin"
+      );
+
+
+  if (error) {
+    throw error;
+  }
+
+
+  profilesMap = {};
+
+
+  (data || []).forEach(
+    profile => {
+
+      profilesMap[
+        profile.user_id
+      ] =
+        profile.full_name ||
+        "القيادة العليا";
+
+    }
+  );
+}
+
+
+function renderPlanTable(
+  startDate,
+  entries=[],
+  editable=true
+) {
+
+  planBody.innerHTML =
+    "";
+
+
+  const entryMap = {};
+
+
+  entries.forEach(
+    item => {
+
+      entryMap[
+        `${item.plan_date}|${item.slot}`
+      ] =
+        item.content || "";
+
+    }
+  );
+
+
+  DAYS.forEach(
+    day => {
+
+      const date =
+        addDays(
+          startDate,
+          day.offset
+        );
+
+
+      const iso =
+        dateToISO(date);
+
+
+      const tr =
+        document.createElement("tr");
+
+
+      const dayTd =
+        document.createElement("td");
+
+      dayTd.className =
+        "day-cell";
+
+      dayTd.textContent =
+        day.name;
+
+      tr.appendChild(dayTd);
+
+
+      const dateTd =
+        document.createElement("td");
+
+      dateTd.className =
+        "date-cell";
+
+      dateTd.textContent =
+        formatDate(date);
+
+      tr.appendChild(dateTd);
+
+
+      SLOTS.forEach(
+        slot => {
+
+          const td =
+            document.createElement("td");
+
+
+          const textarea =
+            document.createElement(
+              "textarea"
+            );
+
+
+          textarea.className =
+            "plan-cell";
+
+
+          textarea.dataset.date =
+            iso;
+
+
+          textarea.dataset.day =
+            day.name;
+
+
+          textarea.dataset.slot =
+            slot.key;
+
+
+          textarea.placeholder =
+            "اكتبي المهمة...";
+
+
+          textarea.value =
+            entryMap[
+              `${iso}|${slot.key}`
+            ] || "";
+
+
+          textarea.disabled =
+            !editable;
+
+
+          td.appendChild(
+            textarea
+          );
+
+
+          tr.appendChild(td);
+
+        }
+      );
+
+
+      planBody.appendChild(tr);
+
+    }
+  );
+}
+
+
+function updateWeekInfo() {
+
+  if (!weekStart.value) {
+    return;
+  }
+
+
+  const start =
+    parseISO(
+      weekStart.value
+    );
+
+
+  monthName.value =
+    MONTHS_AR[
+      start.getMonth()
+    ];
+
+
+  weekLabel.value =
+    getWeekText(
+      getWeekNumberInMonth(
+        start
+      )
+    );
+
+
+  if (
+    !currentPlanId ||
+    currentPlanOwnerId ===
+      currentUser.id
+  ) {
+
+    renderPlanTable(
+      start,
+      [],
+      true
+    );
+  }
+
+
+  updatePrintInfo();
+}
+
+
+function updatePrintInfo() {
+
+  if (!weekStart.value) {
+    return;
+  }
+
+
+  const start =
+    parseISO(
+      weekStart.value
+    );
+
+
+  const end =
+    addDays(
+      start,
+      4
+    );
+
+
+  const owner =
+    currentPlanOwnerName ||
+    currentProfile?.full_name ||
+    "—";
+
+
+  const role =
+    getLeadershipJobTitle(
+      owner
+    );
+
+
+  document.getElementById(
+    "printOwner"
+  ).textContent =
+    owner;
+
+
+  document.getElementById(
+    "printRole"
+  ).textContent =
+    role;
+
+
+  document.getElementById(
+    "printOwnerFooter"
+  ).textContent =
+    owner;
+
+
+  document.getElementById(
+    "printFooterRole"
+  ).textContent =
+    role;
+
+
+  document.getElementById(
+    "printSchoolYear"
+  ).textContent =
+    schoolYear.value;
+
+
+  document.getElementById(
+    "printMonth"
+  ).textContent =
+    monthName.value;
+
+
+  document.getElementById(
+    "printWeek"
+  ).textContent =
+    weekLabel.value;
+
+
+  document.getElementById(
+    "printStartDate"
+  ).textContent =
+    formatDate(start);
+
+
+  document.getElementById(
+    "printEndDate"
+  ).textContent =
+    formatDate(end);
+}
+
+
+function newPlan() {
+
+  currentPlanId =
+    null;
+
+
+  currentPlanOwnerId =
+    currentUser.id;
+
+
+  currentPlanOwnerName =
+    currentProfile?.full_name ||
+    "القيادة العليا";
+
+
+  const sunday =
+    getCurrentSunday();
+
+
+  weekStart.value =
+    dateToISO(sunday);
+
+
+  monthName.value =
+    MONTHS_AR[
+      sunday.getMonth()
+    ];
+
+
+  weekLabel.value =
+    getWeekText(
+      getWeekNumberInMonth(
+        sunday
+      )
+    );
+
+
+  planOwner.textContent =
+    `خطة: ${currentPlanOwnerName}`;
+
+
+  viewBanner.style.display =
+    "none";
+
+
+  saveBtn.style.display =
+    "";
+
+
+  deleteBtn.style.display =
+    "none";
+
+
+  weekStart.disabled =
+    false;
+
+
+  clearSaveMessage();
+
+
+  renderPlanTable(
+    sunday,
+    [],
+    true
+  );
+
+
+  updatePrintInfo();
+
+
+  openPanel(
+    "createPanel"
+  );
+}
+
+
+async function savePlan() {
+
+  clearSaveMessage();
+
+
+  if (!weekStart.value) {
+
+    showMessage(
+      "يرجى اختيار بداية الأسبوع.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if (
+    currentPlanOwnerId !==
+    currentUser.id
+  ) {
+
+    showMessage(
+      "لا يمكن تعديل خطة مستخدمة أخرى.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  saveBtn.disabled =
+    true;
+
+
+  saveBtn.textContent =
+    "جاري الحفظ...";
+
+
+  try {
+
+    const start =
+      parseISO(
+        weekStart.value
+      );
+
+
+    const end =
+      addDays(
+        start,
+        4
+      );
+
+
+    const planPayload = {
+
+      owner_id:
+        currentUser.id,
+
+      school_year:
+        schoolYear.value,
+
+      week_start:
+        dateToISO(start),
+
+      week_end:
+        dateToISO(end),
+
+      month_number:
+        start.getMonth()+1,
+
+      week_number:
+        getWeekNumberInMonth(
+          start
+        ),
+
+      updated_at:
+        new Date().toISOString()
+
+    };
+
+
+    let plan;
+
+
+    if (currentPlanId) {
+
+      const {
+        data,
+        error
+      } =
+        await sb
+          .from(
+            "leadership_weekly_plans"
+          )
+          .update(
+            planPayload
+          )
+          .eq(
+            "id",
+            currentPlanId
+          )
+          .select()
+          .single();
+
+
+      if (error) {
+        throw error;
+      }
+
+
+      plan =
+        data;
+
+    } else {
+
+      const {
+        data,
+        error
+      } =
+        await sb
+          .from(
+            "leadership_weekly_plans"
+          )
+          .upsert(
+            planPayload,
+            {
+              onConflict:
+                "owner_id,week_start"
+            }
+          )
+          .select()
+          .single();
+
+
+      if (error) {
+        throw error;
+      }
+
+
+      plan =
+        data;
+    }
+
+
+    currentPlanId =
+      plan.id;
+
+
+    const textareas =
+      Array.from(
+        document.querySelectorAll(
+          "textarea.plan-cell"
+        )
+      );
+
+
+    const entries =
+      textareas.map(
+        textarea => ({
+
+          plan_id:
+            currentPlanId,
+
+          plan_date:
+            textarea.dataset.date,
+
+          day_name:
+            textarea.dataset.day,
+
+          slot:
+            textarea.dataset.slot,
+
+          content:
+            textarea.value.trim(),
+
+          updated_at:
+            new Date().toISOString()
+
+        })
+      );
+
+
+    const {
+      error:entriesError
+    } =
+      await sb
+        .from(
+          "leadership_weekly_plan_entries"
+        )
+        .upsert(
+          entries,
+          {
+            onConflict:
+              "plan_id,plan_date,slot"
+          }
+        );
+
+
+    if (entriesError) {
+      throw entriesError;
+    }
+
+
+    deleteBtn.style.display =
+      "";
+
+
+    showMessage(
+      "تم حفظ الخطة الأسبوعية بنجاح ✓",
+      "success"
+    );
+
+
+    await Promise.all([
+      loadMyPlans(),
+      loadAllPlans()
+    ]);
+
+
+  } catch(error) {
+
+    console.error(error);
+
+
+    showMessage(
+      "تعذر حفظ الخطة: " +
+      (
+        error?.message ||
+        "حدث خطأ"
+      ),
+      "error"
+    );
+
+
+  } finally {
+
+    saveBtn.disabled =
+      false;
+
+
+    saveBtn.textContent =
+      "💾 حفظ الخطة";
+  }
+}
+
+
+async function openPlan(planId) {
+
+  try {
+
+    const {
+      data:plan,
+      error:planError
+    } =
+      await sb
+        .from(
+          "leadership_weekly_plans"
+        )
+        .select("*")
+        .eq(
+          "id",
+          planId
+        )
+        .single();
+
+
+    if (planError) {
+      throw planError;
+    }
+
+
+    const {
+      data:entries,
+      error:entriesError
+    } =
+      await sb
+        .from(
+          "leadership_weekly_plan_entries"
+        )
+        .select("*")
+        .eq(
+          "plan_id",
+          planId
+        );
+
+
+    if (entriesError) {
+      throw entriesError;
+    }
+
+
+    currentPlanId =
+      plan.id;
+
+
+    currentPlanOwnerId =
+      plan.owner_id;
+
+
+    currentPlanOwnerName =
+      profilesMap[
+        plan.owner_id
+      ] ||
+      "القيادة العليا";
+
+
+    schoolYear.value =
+      plan.school_year;
+
+
+    weekStart.value =
+      plan.week_start;
+
+
+    monthName.value =
+      MONTHS_AR[
+        plan.month_number-1
+      ];
+
+
+    weekLabel.value =
+      getWeekText(
+        plan.week_number
+      );
+
+
+    planOwner.textContent =
+      `خطة: ${currentPlanOwnerName}`;
+
+
+    const isOwn =
+      plan.owner_id ===
+      currentUser.id;
+
+
+    weekStart.disabled =
+      !isOwn;
+
+
+    saveBtn.style.display =
+      isOwn ? "" : "none";
+
+
+    deleteBtn.style.display =
+      isOwn ? "" : "none";
+
+
+    if (isOwn) {
+
+      viewBanner.style.display =
+        "none";
+
+    } else {
+
+      viewBanner.textContent =
+        `وضع العرض فقط — هذه خطة ${currentPlanOwnerName} ولا يمكن تعديلها.`;
+
+
+      viewBanner.style.display =
+        "block";
+    }
+
+
+    renderPlanTable(
+      parseISO(
+        plan.week_start
+      ),
+      entries || [],
+      isOwn
+    );
+
+
+    updatePrintInfo();
+
+
+    openPanel(
+      "createPanel"
+    );
+
+
+    window.scrollTo({
+      top:0,
+      behavior:"smooth"
+    });
+
+
+  } catch(error) {
+
+    console.error(error);
+
+    alert(
+      "تعذر فتح الخطة."
+    );
+  }
+}
+
+
+async function deleteCurrentPlan() {
+
+  if (
+    !currentPlanId ||
+    currentPlanOwnerId !==
+      currentUser.id
+  ) {
+    return;
+  }
+
+
+  if (
+    !confirm(
+      "هل أنتِ متأكدة من حذف هذه الخطة الأسبوعية؟"
+    )
+  ) {
+    return;
+  }
+
+
+  try {
+
+    const {
+      error
+    } =
+      await sb
+        .from(
+          "leadership_weekly_plans"
+        )
+        .delete()
+        .eq(
+          "id",
+          currentPlanId
+        );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    await Promise.all([
+      loadMyPlans(),
+      loadAllPlans()
+    ]);
+
+
+    newPlan();
+
+
+    showMessage(
+      "تم حذف الخطة.",
+      "success"
+    );
+
+
+  } catch(error) {
+
+    console.error(error);
+
+
+    showMessage(
+      "تعذر حذف الخطة.",
+      "error"
+    );
+  }
+}
+
+
+async function loadMyPlans() {
+
+  const {
+    data,
+    error
+  } =
+    await sb
+      .from(
+        "leadership_weekly_plans"
+      )
+      .select("*")
+      .eq(
+        "owner_id",
+        currentUser.id
+      )
+      .order(
+        "week_start",
+        {
+          ascending:false
+        }
+      );
+
+
+  if (error) {
+
+    myPlansList.innerHTML =
+      `<div class="empty-state">
+        تعذر تحميل الخطط.
+      </div>`;
+
+    return;
+  }
+
+
+  renderArchive(
+    myPlansList,
+    data || [],
+    false
+  );
+}
+
+
+async function loadAllPlans() {
+
+  const {
+    data,
+    error
+  } =
+    await sb
+      .from(
+        "leadership_weekly_plans"
+      )
+      .select("*")
+      .order(
+        "week_start",
+        {
+          ascending:false
+        }
+      );
+
+
+  if (error) {
+
+    allPlansList.innerHTML =
+      `<div class="empty-state">
+        تعذر تحميل خطط القيادة العليا.
+      </div>`;
+
+    return;
+  }
+
+
+  renderArchive(
+    allPlansList,
+    data || [],
+    true
+  );
+}
+
+
+function renderArchive(
+  container,
+  plans,
+  groupByLeader
+) {
+
+  if (!plans.length) {
+
+    container.innerHTML =
+      `<div class="empty-state">
+        لا توجد خطط أسبوعية محفوظة حتى الآن.
+      </div>`;
+
+    return;
+  }
+
+
+  const groups = {};
+
+
+  plans.forEach(
+    plan => {
+
+      const leader =
+        groupByLeader
+          ?
+          (
+            profilesMap[
+              plan.owner_id
+            ] ||
+            "القيادة العليا"
+          )
+          :
+          (
+            currentProfile.full_name ||
+            "خططي"
+          );
+
+
+      if (!groups[leader]) {
+        groups[leader] = {};
+      }
+
+
+      const month =
+        MONTHS_AR[
+          plan.month_number-1
+        ];
+
+
+      if (!groups[leader][month]) {
+        groups[leader][month] = [];
+      }
+
+
+      groups[leader][month].push(
+        plan
+      );
+
+    }
+  );
+
+
+  container.innerHTML =
+    "";
+
+
+  Object.entries(
+    groups
+  ).forEach(
+    ([leader,months]) => {
+
+      const leaderFolder =
+        document.createElement(
+          "div"
+        );
+
+
+      leaderFolder.className =
+        "leader-folder";
+
+
+      const title =
+        document.createElement(
+          "div"
+        );
+
+
+      title.className =
+        "leader-title";
+
+
+      title.textContent =
+        `📁 ${leader}`;
+
+
+      leaderFolder.appendChild(
+        title
+      );
+
+
+      Object.entries(
+        months
+      ).forEach(
+        ([month,monthPlans]) => {
+
+          const monthFolder =
+            document.createElement(
+              "div"
+            );
+
+
+          monthFolder.className =
+            "month-folder";
+
+
+          const monthTitle =
+            document.createElement(
+              "div"
+            );
+
+
+          monthTitle.className =
+            "month-title";
+
+
+          monthTitle.textContent =
+            `📂 ${month}`;
+
+
+          monthFolder.appendChild(
+            monthTitle
+          );
+
+
+          const weekCards =
+            document.createElement(
+              "div"
+            );
+
+
+          weekCards.className =
+            "week-cards";
+
+
+          monthPlans.forEach(
+            plan => {
+
+              const card =
+                document.createElement(
+                  "button"
+                );
+
+
+              card.type =
+                "button";
+
+
+              card.className =
+                "week-card";
+
+
+              const start =
+                parseISO(
+                  plan.week_start
+                );
+
+
+              const end =
+                parseISO(
+                  plan.week_end
+                );
+
+
+              card.innerHTML =
+                `
+                  <strong>
+                    📅 ${getWeekText(plan.week_number)}
+                  </strong>
+
+                  <span>
+                    ${formatDate(start)}
+                    —
+                    ${formatDate(end)}
+                  </span>
+                `;
+
+
+              card.addEventListener(
+                "click",
+                () =>
+                  openPlan(
+                    plan.id
+                  )
+              );
+
+
+              weekCards.appendChild(
+                card
+              );
+
+            }
+          );
+
+
+          monthFolder.appendChild(
+            weekCards
+          );
+
+
+          leaderFolder.appendChild(
+            monthFolder
+          );
+
+        }
+      );
+
+
+      container.appendChild(
+        leaderFolder
+      );
+
+    }
+  );
+}
+
+
+function openPanel(panelId) {
+
+  document
+    .querySelectorAll(
+      ".panel"
+    )
+    .forEach(
+      panel => {
+
+        panel.classList.toggle(
+          "active",
+          panel.id === panelId
+        );
+
+      }
+    );
+
+
+  document
+    .querySelectorAll(
+      ".tab-btn"
+    )
+    .forEach(
+      button => {
+
+        button.classList.toggle(
+          "active",
+          button.dataset.panel === panelId
+        );
+
+      }
+    );
+}
+
+
+function clearSaveMessage() {
+
+  saveMessage.textContent =
+    "";
+
+  saveMessage.className =
+    "save-message";
+}
+
+
+function showMessage(
+  text,
+  type
+) {
+
+  saveMessage.textContent =
+    text;
+
+  saveMessage.className =
+    `save-message ${type}`;
+}
+
+
+weekStart.addEventListener(
+  "change",
+  updateWeekInfo
+);
+
+
+saveBtn.addEventListener(
+  "click",
+  savePlan
+);
+
+
+deleteBtn.addEventListener(
+  "click",
+  deleteCurrentPlan
+);
+
+
+document
+  .getElementById(
+    "newPlanBtn"
+  )
+  .addEventListener(
+    "click",
+    newPlan
+  );
+
+
+document
+  .getElementById(
+    "printBtn"
+  )
+  .addEventListener(
+    "click",
+    () => {
+
+      updatePrintInfo();
+
+      window.print();
+
+    }
+  );
+
+
+document
+  .getElementById(
+    "refreshMyPlans"
+  )
+  .addEventListener(
+    "click",
+    loadMyPlans
+  );
+
+
+document
+  .getElementById(
+    "refreshAllPlans"
+  )
+  .addEventListener(
+    "click",
+    loadAllPlans
+  );
+
+
+document
+  .querySelectorAll(
+    ".tab-btn"
+  )
+  .forEach(
+    button => {
+
+      button.addEventListener(
+        "click",
+        () =>
+          openPanel(
+            button.dataset.panel
+          )
+      );
+
+    }
+  );
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  initializePage
+);
+
+</script>
+
+</body>
+</html>

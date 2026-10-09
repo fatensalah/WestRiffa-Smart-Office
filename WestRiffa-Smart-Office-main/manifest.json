@@ -1,0 +1,18 @@
+{
+  "name": "WestRiffa Smart Office v1.0 Full Edition",
+  "pages": [
+    "index.html",
+    "pages/meetings/index.html",
+    "pages/meetings/invitation.html",
+    "pages/meetings/minutes.html",
+    "pages/meetings/attendance.html",
+    "pages/meetings/recommendations.html",
+    "pages/activities/index.html",
+    "pages/activities/report.html",
+    "pages/activities/invitation.html",
+    "pages/certificates/index.html",
+    "pages/certificates/create.html",
+    "pages/archive/index.html",
+    "pages/settings/index.html"
+  ]
+}

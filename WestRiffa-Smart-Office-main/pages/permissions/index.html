@@ -1,0 +1,2864 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#075c40">
+
+<title>
+  طلبات الاستئذان | WestRiffa Smart Office
+</title>
+
+<link
+  rel="stylesheet"
+  href="../../css/app.css?v=20260816-permissions2"
+>
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Tahoma,Arial,sans-serif;
+  background:#f4f7f6;
+  color:#173c34;
+}
+
+.page-header{
+  background:linear-gradient(
+    135deg,
+    #0f513f,
+    #18705a
+  );
+
+  color:#fff;
+  padding:30px 24px;
+}
+
+.page-header-inner,
+.container{
+  width:min(1300px,94%);
+  margin:auto;
+}
+
+.page-header h1{
+  margin:0 0 8px;
+  font-size:30px;
+}
+
+.page-header p{
+  margin:0;
+  opacity:.92;
+  line-height:1.8;
+}
+
+.container{
+  margin-top:26px;
+  margin-bottom:55px;
+}
+
+.top-actions{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:20px;
+}
+
+.btn-link{
+  display:inline-block;
+  text-decoration:none;
+  padding:11px 18px;
+  border-radius:12px;
+  background:#fff;
+  color:#0f513f;
+  border:1px solid #dce9e5;
+  font-weight:bold;
+}
+
+.user-scope{
+  padding:13px 16px;
+  background:#edf8f3;
+  border:1px solid #d3eadf;
+  color:#075c40;
+  border-radius:12px;
+  margin-bottom:20px;
+  line-height:1.7;
+  font-weight:700;
+}
+
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:14px;
+  margin-bottom:22px;
+}
+
+.stat{
+  background:#fff;
+  border:1px solid #e1e9e5;
+  border-top:4px solid #087451;
+  border-radius:15px;
+  padding:18px;
+  text-align:center;
+}
+
+.stat span{
+  display:block;
+  color:#6b7a72;
+  font-size:13px;
+  margin-bottom:8px;
+}
+
+.stat strong{
+  display:block;
+  color:#075c40;
+  font-size:31px;
+}
+
+.card{
+  background:#fff;
+  border:1px solid #e1e9e5;
+  border-radius:18px;
+  padding:24px;
+  margin-bottom:22px;
+  box-shadow:0 8px 25px rgba(15,81,63,.05);
+}
+
+.card h2{
+  margin:0 0 7px;
+  color:#075c40;
+}
+
+.sub{
+  color:#6b7a72;
+  font-size:13px;
+  line-height:1.8;
+  margin-bottom:20px;
+}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:16px;
+}
+
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+
+.field.full{
+  grid-column:1/-1;
+}
+
+.field label{
+  font-weight:700;
+  color:#334d42;
+}
+
+.field input,
+.field textarea{
+  width:100%;
+  border:1px solid #cfdad4;
+  border-radius:10px;
+  padding:11px 12px;
+  background:#fff;
+  font-family:inherit;
+  font-size:14px;
+}
+
+.field textarea{
+  min-height:100px;
+  resize:vertical;
+  line-height:1.8;
+}
+
+.auto-value,
+.duration-box{
+  background:#f5f8f6 !important;
+  color:#075c40;
+  font-weight:700;
+}
+
+.duration-box{
+  border:1px solid #d9e7e1 !important;
+}
+
+.btn{
+  border:0;
+  border-radius:11px;
+  padding:11px 17px;
+  cursor:pointer;
+  font-family:inherit;
+  font-weight:700;
+}
+
+.btn-primary{
+  background:#075c40;
+  color:#fff;
+}
+
+.btn-primary:hover{
+  background:#064a34;
+}
+
+.btn-primary:disabled{
+  opacity:.55;
+  cursor:wait;
+}
+
+.btn-soft{
+  background:#eef4f2;
+  color:#075c40;
+  border:1px solid #d7e4e0;
+}
+
+.btn-approve{
+  background:#087451;
+  color:#fff;
+}
+
+.btn-reject{
+  background:#b42318;
+  color:#fff;
+}
+
+.btn-wide{
+  width:100%;
+  margin-top:18px;
+  padding:13px;
+}
+
+.save-state{
+  min-height:24px;
+  margin-top:12px;
+  font-size:13px;
+  font-weight:700;
+}
+
+.save-state.ok{
+  color:#087451;
+}
+
+.save-state.error{
+  color:#b42318;
+}
+
+.filters{
+  display:grid;
+  grid-template-columns:
+    1fr
+    180px
+    170px
+    170px
+    auto;
+
+  gap:9px;
+  margin:18px 0;
+}
+
+.filters input,
+.filters select{
+  width:100%;
+  padding:10px 11px;
+  border:1px solid #d4ded9;
+  border-radius:9px;
+  background:#fff;
+  font-family:inherit;
+}
+
+.requests-list{
+  display:grid;
+  gap:13px;
+}
+
+.request-card{
+  border:1px solid #e1e9e5;
+  border-radius:15px;
+  padding:18px;
+  background:#fff;
+}
+
+.request-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:13px;
+}
+
+.teacher-name{
+  color:#075c40;
+  font-size:17px;
+  font-weight:700;
+}
+
+.request-meta{
+  color:#6b7a72;
+  font-size:13px;
+  line-height:1.9;
+  margin-top:5px;
+}
+
+.status-chip{
+  display:inline-block;
+  padding:7px 11px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700;
+}
+
+.status-pending{
+  background:#fff5dd;
+  color:#896511;
+}
+
+.status-approved{
+  background:#e9f7ef;
+  color:#087451;
+}
+
+.status-rejected{
+  background:#fff0ef;
+  color:#b42318;
+}
+
+.details-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  margin-top:12px;
+}
+
+.detail{
+  background:#f8faf9;
+  border:1px solid #e8eeeb;
+  border-radius:11px;
+  padding:12px;
+}
+
+.detail strong{
+  display:block;
+  color:#075c40;
+  font-size:12px;
+  margin-bottom:5px;
+}
+
+.detail div{
+  color:#52665d;
+  line-height:1.7;
+  white-space:pre-wrap;
+}
+
+.detail.full{
+  grid-column:1/-1;
+}
+
+.admin-review{
+  margin-top:13px;
+  padding-top:13px;
+  border-top:1px solid #e7eeea;
+}
+
+.admin-review textarea{
+  width:100%;
+  min-height:70px;
+  padding:10px;
+  border:1px solid #d4ded9;
+  border-radius:9px;
+  font-family:inherit;
+  resize:vertical;
+  margin-bottom:9px;
+}
+
+.admin-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.admin-note{
+  margin-top:10px;
+  padding:10px 12px;
+  background:#f7f9f8;
+  border-radius:10px;
+  color:#596c63;
+  line-height:1.7;
+  font-size:13px;
+}
+
+.empty{
+  text-align:center;
+  padding:35px;
+  color:#6b7a72;
+  border:1px dashed #d6e0db;
+  border-radius:14px;
+  background:#fafcfb;
+}
+
+.hidden{
+  display:none !important;
+}
+
+@media(max-width:950px){
+
+  .stats-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .filters,
+  .details-grid{
+    grid-template-columns:1fr 1fr;
+  }
+
+}
+
+@media(max-width:650px){
+
+  .form-grid,
+  .stats-grid,
+  .filters,
+  .details-grid{
+    grid-template-columns:1fr;
+  }
+
+  .field.full,
+  .detail.full{
+    grid-column:auto;
+  }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<header class="page-header">
+
+  <div class="page-header-inner">
+
+    <h1>
+      🕒 طلبات الاستئذان
+    </h1>
+
+    <p>
+      تقديم ومتابعة طلبات الاستئذان واعتمادها من القيادة العليا.
+    </p>
+
+  </div>
+
+</header>
+
+
+<main class="container">
+
+
+<div class="top-actions">
+
+  <a
+    class="btn-link"
+    href="../../index.html"
+  >
+    🏠 لوحة التحكم
+  </a>
+
+  <a
+    class="btn-link"
+    href="../archive/index.html"
+  >
+    📂 الأرشيف الذكي
+  </a>
+
+</div>
+
+
+<div
+  id="userScope"
+  class="user-scope"
+>
+  جارٍ تحميل بيانات الحساب...
+</div>
+
+
+<section class="stats-grid">
+
+  <article class="stat">
+
+    <span id="totalLabel">
+      إجمالي طلباتي
+    </span>
+
+    <strong id="totalRequests">
+      0
+    </strong>
+
+  </article>
+
+
+  <article class="stat">
+
+    <span>
+      قيد المراجعة
+    </span>
+
+    <strong id="pendingRequests">
+      0
+    </strong>
+
+  </article>
+
+
+  <article class="stat">
+
+    <span>
+      تمت الموافقة
+    </span>
+
+    <strong id="approvedRequests">
+      0
+    </strong>
+
+  </article>
+
+
+  <article class="stat">
+
+    <span>
+      مرفوض
+    </span>
+
+    <strong id="rejectedRequests">
+      0
+    </strong>
+
+  </article>
+
+</section>
+
+
+<section
+  id="requestFormCard"
+  class="card"
+>
+
+  <h2>
+    تقديم طلب استئذان
+  </h2>
+
+  <div class="sub">
+    بعد إرسال الطلب سيظهر بحالة «قيد المراجعة»
+    إلى أن تقوم القيادة العليا بالموافقة أو الرفض.
+  </div>
+
+
+  <div class="form-grid">
+
+
+    <div class="field">
+
+      <label>
+        اسم المعلمة
+      </label>
+
+      <input
+        id="teacherName"
+        class="auto-value"
+        type="text"
+        readonly
+      >
+
+    </div>
+
+
+    <div class="field">
+
+      <label for="requestDate">
+        التاريخ *
+      </label>
+
+      <input
+        id="requestDate"
+        type="date"
+      >
+
+    </div>
+
+
+    <div class="field">
+
+      <label for="requestDay">
+        اليوم
+      </label>
+
+      <input
+        id="requestDay"
+        class="auto-value"
+        type="text"
+        readonly
+      >
+
+    </div>
+
+
+    <div class="field">
+
+      <label for="fromTime">
+        وقت بداية الاستئذان *
+      </label>
+
+      <input
+        id="fromTime"
+        type="time"
+      >
+
+    </div>
+
+
+    <div class="field">
+
+      <label for="toTime">
+        وقت العودة *
+      </label>
+
+      <input
+        id="toTime"
+        type="time"
+      >
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        مدة الاستئذان
+      </label>
+
+      <input
+        id="durationText"
+        class="duration-box"
+        type="text"
+        value="—"
+        readonly
+      >
+
+    </div>
+
+
+    <div class="field full">
+
+      <label for="reason">
+        سبب الاستئذان *
+      </label>
+
+      <textarea
+        id="reason"
+        placeholder="اكتبي سبب طلب الاستئذان..."
+      ></textarea>
+
+    </div>
+
+
+  </div>
+
+
+  <button
+    id="submitRequestBtn"
+    class="btn btn-primary btn-wide"
+    type="button"
+  >
+    📤 إرسال طلب الاستئذان
+  </button>
+
+
+  <div
+    id="saveState"
+    class="save-state"
+  ></div>
+
+</section>
+
+
+<section class="card">
+
+  <h2 id="recordsTitle">
+    طلباتي
+  </h2>
+
+
+  <div class="filters">
+
+    <input
+      id="searchTeacher"
+      type="search"
+      placeholder="بحث باسم المعلمة..."
+    >
+
+
+    <select id="statusFilter">
+
+      <option value="">
+        كل الحالات
+      </option>
+
+      <option value="pending">
+        قيد المراجعة
+      </option>
+
+      <option value="approved">
+        موافق
+      </option>
+
+      <option value="rejected">
+        مرفوض
+      </option>
+
+    </select>
+
+
+    <input
+      id="fromDateFilter"
+      type="date"
+      title="من تاريخ"
+    >
+
+
+    <input
+      id="toDateFilter"
+      type="date"
+      title="إلى تاريخ"
+    >
+
+
+    <button
+      id="refreshBtn"
+      class="btn btn-soft"
+      type="button"
+    >
+      تحديث
+    </button>
+
+  </div>
+
+
+  <div
+    id="requestsList"
+    class="requests-list"
+  >
+
+    <div class="empty">
+      جارٍ تحميل طلبات الاستئذان...
+    </div>
+
+  </div>
+
+</section>
+
+
+</main>
+
+
+<script
+  src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+<script
+  src="../../js/config.js?v=20260816-permissions2"
+></script>
+
+<script
+  src="../../js/graph.js?v=20260816-permissions2"
+></script>
+
+<script
+  src="../../js/common.js?v=20260816-permissions2"
+></script>
+
+
+<script>
+
+"use strict";
+
+
+let sb =
+  null;
+
+let currentUser =
+  null;
+
+let currentProfile =
+  null;
+
+let isAdminUser =
+  false;
+
+let isCoordinatorUser =
+  false;
+
+let canViewDepartmentRequests =
+  false;
+
+let coordinatorDepartmentIds =
+  [];
+
+let coordinatorTeacherIds =
+  [];
+
+let requests =
+  [];
+
+
+const byId =
+  id =>
+    document.getElementById(
+      id
+    );
+
+
+/* =========================================================
+   Escape
+   ========================================================= */
+
+function esc(
+  value
+){
+
+  return String(
+    value ?? ""
+  )
+
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+
+}
+
+
+/* =========================================================
+   تنسيق التاريخ
+   ========================================================= */
+
+function formatDate(
+  value
+){
+
+  if(
+    !value
+  ){
+
+    return "—";
+
+  }
+
+
+  const parts =
+    String(
+      value
+    ).split(
+      "-"
+    );
+
+
+  if(
+    parts.length !== 3
+  ){
+
+    return value;
+
+  }
+
+
+  const date =
+    new Date(
+
+      Number(
+        parts[0]
+      ),
+
+      Number(
+        parts[1]
+      ) - 1,
+
+      Number(
+        parts[2]
+      )
+
+    );
+
+
+  if(
+    Number.isNaN(
+      date.getTime()
+    )
+  ){
+
+    return value;
+
+  }
+
+
+  return date
+    .toLocaleDateString(
+      "ar-BH",
+      {
+
+        year:
+          "numeric",
+
+        month:
+          "long",
+
+        day:
+          "numeric"
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   حالة الطلب
+   ========================================================= */
+
+function formatStatus(
+  status
+){
+
+  if(
+    status === "approved"
+  ){
+
+    return "موافق";
+
+  }
+
+
+  if(
+    status === "rejected"
+  ){
+
+    return "مرفوض";
+
+  }
+
+
+  return "قيد المراجعة";
+
+}
+
+
+function statusClass(
+  status
+){
+
+  if(
+    status === "approved"
+  ){
+
+    return "status-approved";
+
+  }
+
+
+  if(
+    status === "rejected"
+  ){
+
+    return "status-rejected";
+
+  }
+
+
+  return "status-pending";
+
+}
+
+
+/* =========================================================
+   تاريخ اليوم المحلي
+   ========================================================= */
+
+function getLocalToday(){
+
+  const now =
+    new Date();
+
+
+  return (
+    now.getFullYear() +
+    "-" +
+    String(
+      now.getMonth() + 1
+    ).padStart(
+      2,
+      "0"
+    ) +
+    "-" +
+    String(
+      now.getDate()
+    ).padStart(
+      2,
+      "0"
+    )
+  );
+
+}
+
+
+/* =========================================================
+   اليوم
+   ========================================================= */
+
+function updateDay(){
+
+  const value =
+    byId(
+      "requestDate"
+    ).value;
+
+
+  if(
+    !value
+  ){
+
+    byId(
+      "requestDay"
+    ).value =
+      "";
+
+    return;
+
+  }
+
+
+  const [
+    year,
+    month,
+    day
+  ] =
+    value
+      .split(
+        "-"
+      )
+      .map(
+        Number
+      );
+
+
+  const date =
+    new Date(
+      year,
+      month - 1,
+      day
+    );
+
+
+  const days = [
+
+    "الأحد",
+
+    "الاثنين",
+
+    "الثلاثاء",
+
+    "الأربعاء",
+
+    "الخميس",
+
+    "الجمعة",
+
+    "السبت"
+
+  ];
+
+
+  byId(
+    "requestDay"
+  ).value =
+    days[
+      date.getDay()
+    ] ||
+    "";
+
+}
+
+
+/* =========================================================
+   حساب المدة
+   ========================================================= */
+
+function calculateDuration(){
+
+  const from =
+    byId(
+      "fromTime"
+    ).value;
+
+
+  const to =
+    byId(
+      "toTime"
+    ).value;
+
+
+  if(
+    !from ||
+    !to
+  ){
+
+    byId(
+      "durationText"
+    ).value =
+      "—";
+
+    return null;
+
+  }
+
+
+  const [
+    fromHour,
+    fromMinute
+  ] =
+    from
+      .split(
+        ":"
+      )
+      .map(
+        Number
+      );
+
+
+  const [
+    toHour,
+    toMinute
+  ] =
+    to
+      .split(
+        ":"
+      )
+      .map(
+        Number
+      );
+
+
+  const minutes =
+    (
+      toHour * 60 +
+      toMinute
+    )
+    -
+    (
+      fromHour * 60 +
+      fromMinute
+    );
+
+
+  if(
+    minutes <= 0
+  ){
+
+    byId(
+      "durationText"
+    ).value =
+      "وقت العودة يجب أن يكون بعد وقت الخروج";
+
+    return null;
+
+  }
+
+
+  const hours =
+    Math.floor(
+      minutes / 60
+    );
+
+
+  const mins =
+    minutes % 60;
+
+
+  let text =
+    "";
+
+
+  if(
+    hours
+  ){
+
+    text +=
+      hours +
+      (
+        hours === 1
+          ? " ساعة"
+          : " ساعات"
+      );
+
+  }
+
+
+  if(
+    mins
+  ){
+
+    text +=
+      (
+        text
+          ? " و"
+          : ""
+      ) +
+      mins +
+      " دقيقة";
+
+  }
+
+
+  byId(
+    "durationText"
+  ).value =
+    text;
+
+
+  return {
+
+    minutes,
+
+    text
+
+  };
+
+}
+
+
+/* =========================================================
+   تحميل معلمات أقسام المنسقة
+   ========================================================= */
+
+async function loadCoordinatorTeacherIds(){
+
+  coordinatorDepartmentIds =
+    [];
+
+  coordinatorTeacherIds =
+    [];
+
+
+  if(
+    !isCoordinatorUser
+  ){
+
+    return [];
+
+  }
+
+
+  try{
+
+
+    const scope =
+      typeof WRAccess?.getScope ===
+      "function"
+
+        ? await WRAccess
+            .getScope()
+
+        : null;
+
+
+    coordinatorDepartmentIds =
+
+      Array.isArray(
+        scope?.department_ids
+      )
+
+        ? scope
+            .department_ids
+            .filter(
+              Boolean
+            )
+
+        : Array.isArray(
+            currentProfile
+              ?.department_ids
+          )
+
+          ? currentProfile
+              .department_ids
+              .filter(
+                Boolean
+              )
+
+          : currentProfile
+              ?.department_id
+
+            ? [
+                currentProfile
+                  .department_id
+              ]
+
+            : [];
+
+
+    if(
+      !coordinatorDepartmentIds.length
+    ){
+
+      coordinatorTeacherIds = [
+        currentUser.id
+      ];
+
+      return coordinatorTeacherIds;
+
+    }
+
+
+    const teacherIds =
+      new Set(
+        [
+          String(
+            currentUser.id
+          )
+        ]
+      );
+
+
+    /*
+      المصدر الرئيسي:
+      profile_departments
+    */
+
+    const {
+      data:assignments,
+      error:assignmentsError
+    } =
+      await sb
+
+        .from(
+          "profile_departments"
+        )
+
+        .select(
+          `
+          profile_id,
+          department_id,
+          assignment_type
+          `
+        )
+
+        .in(
+          "department_id",
+          coordinatorDepartmentIds
+        );
+
+
+    if(
+      assignmentsError
+    ){
+
+      console.warn(
+        "profile_departments:",
+        assignmentsError
+      );
+
+
+    }else{
+
+
+      (
+        assignments ||
+        []
+      )
+        .forEach(
+          item => {
+
+
+            const assignmentType =
+              String(
+                item.assignment_type ||
+                ""
+              )
+                .trim()
+                .toLowerCase();
+
+
+            if(
+              item.profile_id &&
+              (
+                !assignmentType ||
+                assignmentType ===
+                "teacher"
+              )
+            ){
+
+              teacherIds.add(
+                String(
+                  item.profile_id
+                )
+              );
+
+            }
+
+          }
+        );
+
+    }
+
+
+    /*
+      fallback للحسابات القديمة
+      التي لها department_id واحد
+    */
+
+    const {
+      data:legacyTeachers,
+      error:legacyError
+    } =
+      await sb
+
+        .from(
+          "user_profiles"
+        )
+
+        .select(
+          `
+          user_id,
+          role,
+          department_id
+          `
+        )
+
+        .eq(
+          "role",
+          "teacher"
+        )
+
+        .in(
+          "department_id",
+          coordinatorDepartmentIds
+        );
+
+
+    if(
+      legacyError
+    ){
+
+      console.warn(
+        "user_profiles:",
+        legacyError
+      );
+
+
+    }else{
+
+
+      (
+        legacyTeachers ||
+        []
+      )
+        .forEach(
+          item => {
+
+
+            if(
+              item.user_id
+            ){
+
+              teacherIds.add(
+                String(
+                  item.user_id
+                )
+              );
+
+            }
+
+          }
+        );
+
+    }
+
+
+    coordinatorTeacherIds =
+      [
+        ...teacherIds
+      ];
+
+
+    return coordinatorTeacherIds;
+
+
+  }catch(error){
+
+
+    console.error(
+      "Coordinator scope:",
+      error
+    );
+
+
+    coordinatorTeacherIds = [
+      currentUser.id
+    ];
+
+
+    return coordinatorTeacherIds;
+
+  }
+
+}
+
+
+/* =========================================================
+   تشغيل الصفحة
+   ========================================================= */
+
+async function init(){
+
+  try{
+
+
+    sb =
+      window.supabase
+        .createClient(
+
+          window.WR_CONFIG.supabaseUrl,
+
+          window.WR_CONFIG.supabaseKey
+
+        );
+
+
+    currentUser =
+      await WRGraph
+        .getAccount();
+
+
+    if(
+      !currentUser
+    ){
+
+      location.href =
+        "../../index.html";
+
+      return;
+
+    }
+
+
+    currentProfile =
+      await WRGraph
+        .getUserProfile();
+
+
+    if(
+      !currentProfile
+    ){
+
+      throw new Error(
+        "تعذر قراءة بيانات المستخدم"
+      );
+
+    }
+
+
+    const role =
+      String(
+        currentProfile.role ||
+        ""
+      )
+        .trim()
+        .toLowerCase();
+
+
+    isAdminUser =
+      role ===
+      "admin";
+
+
+    isCoordinatorUser =
+      role ===
+      "coordinator";
+
+
+    canViewDepartmentRequests =
+      isAdminUser ||
+      isCoordinatorUser;
+
+
+    if(
+      isCoordinatorUser
+    ){
+
+      await loadCoordinatorTeacherIds();
+
+    }
+
+
+    byId(
+      "teacherName"
+    ).value =
+      currentProfile.full_name ||
+      currentUser.email ||
+      "";
+
+
+    byId(
+      "requestDate"
+    ).value =
+      getLocalToday();
+
+
+    updateDay();
+
+
+    /* ==========================================
+       قيادة عليا
+       ========================================== */
+
+    if(
+      isAdminUser
+    ){
+
+      byId(
+        "userScope"
+      ).textContent =
+        "صلاحية القيادة العليا — يتم عرض جميع طلبات الاستئذان ويمكن اعتمادها أو رفضها.";
+
+
+      byId(
+        "totalLabel"
+      ).textContent =
+        "إجمالي الاستئذانات";
+
+
+      byId(
+        "recordsTitle"
+      ).textContent =
+        "طلبات استئذان المعلمات";
+
+
+      byId(
+        "requestFormCard"
+      )
+        .classList
+        .add(
+          "hidden"
+        );
+
+    }
+
+
+    /* ==========================================
+       منسقة
+       ========================================== */
+
+    else if(
+      isCoordinatorUser
+    ){
+
+
+      const departmentText =
+
+        Array.isArray(
+          currentProfile
+            .department_names
+        )
+        &&
+        currentProfile
+          .department_names
+          .length
+
+          ? currentProfile
+              .department_names
+              .join(
+                "، "
+              )
+
+          : "الأقسام المرتبطة بحسابك";
+
+
+      byId(
+        "userScope"
+      ).textContent =
+
+        "صلاحية المنسقة — يمكنكِ تقديم طلب استئذانكِ ومتابعة طلبات معلمات أقسامك فقط للقراءة. الأقسام: " +
+
+        departmentText +
+
+        ". الاعتماد والرفض للقيادة العليا فقط.";
+
+
+      byId(
+        "totalLabel"
+      ).textContent =
+        "إجمالي الطلبات الظاهرة";
+
+
+      byId(
+        "recordsTitle"
+      ).textContent =
+        "طلباتي + طلبات معلمات أقسامي";
+
+
+      byId(
+        "searchTeacher"
+      ).style.display =
+        "";
+
+
+      byId(
+        "requestFormCard"
+      )
+        .classList
+        .remove(
+          "hidden"
+        );
+
+    }
+
+
+    /* ==========================================
+       معلمة
+       ========================================== */
+
+    else{
+
+
+      byId(
+        "userScope"
+      ).textContent =
+        "يعرض النظام طلبات الاستئذان الخاصة بكِ فقط وحالة كل طلب.";
+
+
+      byId(
+        "searchTeacher"
+      ).style.display =
+        "none";
+
+
+      byId(
+        "requestFormCard"
+      )
+        .classList
+        .remove(
+          "hidden"
+        );
+
+    }
+
+
+    await loadRequests();
+
+
+  }catch(error){
+
+
+    console.error(
+      "Permissions init:",
+      error
+    );
+
+
+    alert(
+      "تعذر تحميل نظام طلبات الاستئذان."
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   إرسال الطلب
+   ========================================================= */
+
+async function submitRequest(){
+
+  const date =
+    byId(
+      "requestDate"
+    ).value;
+
+
+  updateDay();
+
+
+  const day =
+    byId(
+      "requestDay"
+    ).value;
+
+
+  const fromTime =
+    byId(
+      "fromTime"
+    ).value;
+
+
+  const toTime =
+    byId(
+      "toTime"
+    ).value;
+
+
+  const reason =
+    byId(
+      "reason"
+    )
+      .value
+      .trim();
+
+
+  const duration =
+    calculateDuration();
+
+
+  const state =
+    byId(
+      "saveState"
+    );
+
+
+  state.textContent =
+    "";
+
+
+  state.className =
+    "save-state";
+
+
+  if(
+    !date ||
+    !day ||
+    !fromTime ||
+    !toTime ||
+    !reason ||
+    !duration
+  ){
+
+    state.textContent =
+      "أكملي جميع بيانات طلب الاستئذان بصورة صحيحة.";
+
+
+    state.className =
+      "save-state error";
+
+
+    return;
+
+  }
+
+
+  const button =
+    byId(
+      "submitRequestBtn"
+    );
+
+
+  button.disabled =
+    true;
+
+
+  button.textContent =
+    "جاري إرسال الطلب...";
+
+
+  try{
+
+
+    const {
+      error
+    } =
+      await sb
+
+        .from(
+          "permission_requests"
+        )
+
+        .insert({
+
+          teacher_id:
+            currentUser.id,
+
+          teacher_name:
+            currentProfile.full_name ||
+            currentUser.email,
+
+          request_date:
+            date,
+
+          request_day:
+            day,
+
+          from_time:
+            fromTime,
+
+          to_time:
+            toTime,
+
+          duration_minutes:
+            duration.minutes,
+
+          duration_text:
+            duration.text,
+
+          reason,
+
+          status:
+            "pending"
+
+        });
+
+
+    if(
+      error
+    ){
+
+      throw error;
+
+    }
+
+
+    state.textContent =
+      "✓ تم إرسال طلب الاستئذان للقيادة العليا.";
+
+
+    state.className =
+      "save-state ok";
+
+
+    byId(
+      "fromTime"
+    ).value =
+      "";
+
+
+    byId(
+      "toTime"
+    ).value =
+      "";
+
+
+    byId(
+      "durationText"
+    ).value =
+      "—";
+
+
+    byId(
+      "reason"
+    ).value =
+      "";
+
+
+    await loadRequests();
+
+
+  }catch(error){
+
+
+    console.error(
+      "Submit permission:",
+      error
+    );
+
+
+    state.textContent =
+      "تعذر إرسال طلب الاستئذان.";
+
+
+    state.className =
+      "save-state error";
+
+
+  }finally{
+
+
+    button.disabled =
+      false;
+
+
+    button.textContent =
+      "📤 إرسال طلب الاستئذان";
+
+  }
+
+}
+
+
+/* =========================================================
+   تحميل الطلبات
+   ========================================================= */
+
+async function loadRequests(){
+
+  try{
+
+
+    let query =
+      sb
+
+        .from(
+          "permission_requests"
+        )
+
+        .select(
+          "*"
+        )
+
+        .order(
+          "request_date",
+          {
+            ascending:false
+          }
+        )
+
+        .order(
+          "created_at",
+          {
+            ascending:false
+          }
+        );
+
+
+    /* ==========================================
+       الإدارة: الجميع
+       ========================================== */
+
+    if(
+      isAdminUser
+    ){
+
+      /*
+        بدون فلترة
+      */
+
+    }
+
+
+    /* ==========================================
+       المنسقة:
+       طلبها + معلمات أقسامها
+       ========================================== */
+
+    else if(
+      isCoordinatorUser
+    ){
+
+
+      if(
+        !coordinatorTeacherIds.length
+      ){
+
+        await loadCoordinatorTeacherIds();
+
+      }
+
+
+      const visibleIds =
+
+        coordinatorTeacherIds.length
+
+          ? coordinatorTeacherIds
+
+          : [
+              currentUser.id
+            ];
+
+
+      query =
+        query.in(
+          "teacher_id",
+          visibleIds
+        );
+
+    }
+
+
+    /* ==========================================
+       المعلمة:
+       طلباتها فقط
+       ========================================== */
+
+    else{
+
+
+      query =
+        query.eq(
+          "teacher_id",
+          currentUser.id
+        );
+
+    }
+
+
+    const {
+      data,
+      error
+    } =
+      await query;
+
+
+    if(
+      error
+    ){
+
+      throw error;
+
+    }
+
+
+    requests =
+      data ||
+      [];
+
+
+    updateStats();
+
+    renderRequests();
+
+
+  }catch(error){
+
+
+    console.error(
+      "Load permissions:",
+      error
+    );
+
+
+    byId(
+      "requestsList"
+    ).innerHTML =
+      `
+        <div class="empty">
+          تعذر تحميل طلبات الاستئذان.
+        </div>
+      `;
+
+  }
+
+}
+
+
+/* =========================================================
+   الفلاتر
+   ========================================================= */
+
+function getFilteredRequests(){
+
+  const search =
+    byId(
+      "searchTeacher"
+    )
+      .value
+      .trim()
+      .toLowerCase();
+
+
+  const status =
+    byId(
+      "statusFilter"
+    ).value;
+
+
+  const from =
+    byId(
+      "fromDateFilter"
+    ).value;
+
+
+  const to =
+    byId(
+      "toDateFilter"
+    ).value;
+
+
+  return requests
+    .filter(
+      request => {
+
+
+        if(
+          canViewDepartmentRequests &&
+          search
+        ){
+
+
+          const name =
+            String(
+              request.teacher_name ||
+              ""
+            )
+              .toLowerCase();
+
+
+          if(
+            !name.includes(
+              search
+            )
+          ){
+
+            return false;
+
+          }
+
+        }
+
+
+        if(
+          status &&
+          request.status !==
+            status
+        ){
+
+          return false;
+
+        }
+
+
+        if(
+          from &&
+          request.request_date <
+            from
+        ){
+
+          return false;
+
+        }
+
+
+        if(
+          to &&
+          request.request_date >
+            to
+        ){
+
+          return false;
+
+        }
+
+
+        return true;
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   المؤشرات
+   ========================================================= */
+
+function updateStats(){
+
+  byId(
+    "totalRequests"
+  ).textContent =
+    requests.length;
+
+
+  byId(
+    "pendingRequests"
+  ).textContent =
+    requests
+      .filter(
+        item =>
+          item.status ===
+          "pending"
+      )
+      .length;
+
+
+  byId(
+    "approvedRequests"
+  ).textContent =
+    requests
+      .filter(
+        item =>
+          item.status ===
+          "approved"
+      )
+      .length;
+
+
+  byId(
+    "rejectedRequests"
+  ).textContent =
+    requests
+      .filter(
+        item =>
+          item.status ===
+          "rejected"
+      )
+      .length;
+
+}
+
+
+/* =========================================================
+   عرض الطلبات
+   ========================================================= */
+
+function renderRequests(){
+
+  const rows =
+    getFilteredRequests();
+
+
+  const container =
+    byId(
+      "requestsList"
+    );
+
+
+  if(
+    !rows.length
+  ){
+
+    container.innerHTML =
+      `
+        <div class="empty">
+          لا توجد طلبات استئذان مطابقة.
+        </div>
+      `;
+
+
+    return;
+
+  }
+
+
+  container.innerHTML =
+    rows
+      .map(
+        request => {
+
+
+          return `
+
+            <article class="request-card">
+
+
+              <div class="request-head">
+
+
+                <div>
+
+
+                  <div class="teacher-name">
+
+                    ${
+                      canViewDepartmentRequests
+
+                        ? esc(
+                            request.teacher_name ||
+                            "معلمة"
+                          )
+
+                        : "طلب استئذان"
+                    }
+
+                  </div>
+
+
+                  <div class="request-meta">
+
+                    ${esc(
+                      request.request_day ||
+                      "—"
+                    )}
+
+                    •
+
+                    ${esc(
+                      formatDate(
+                        request.request_date
+                      )
+                    )}
+
+                  </div>
+
+
+                </div>
+
+
+                <span
+                  class="
+                    status-chip
+                    ${statusClass(
+                      request.status
+                    )}
+                  "
+                >
+
+                  ${esc(
+                    formatStatus(
+                      request.status
+                    )
+                  )}
+
+                </span>
+
+
+              </div>
+
+
+              <div class="details-grid">
+
+
+                <div class="detail">
+
+                  <strong>
+                    وقت الخروج
+                  </strong>
+
+                  <div>
+
+                    ${esc(
+                      request.from_time ||
+                      "—"
+                    )}
+
+                  </div>
+
+                </div>
+
+
+                <div class="detail">
+
+                  <strong>
+                    وقت العودة
+                  </strong>
+
+                  <div>
+
+                    ${esc(
+                      request.to_time ||
+                      "—"
+                    )}
+
+                  </div>
+
+                </div>
+
+
+                <div class="detail">
+
+                  <strong>
+                    مدة الاستئذان
+                  </strong>
+
+                  <div>
+
+                    ${esc(
+                      request.duration_text ||
+                      "—"
+                    )}
+
+                  </div>
+
+                </div>
+
+
+                <div class="detail full">
+
+                  <strong>
+                    سبب الاستئذان
+                  </strong>
+
+                  <div>
+
+                    ${esc(
+                      request.reason ||
+                      "—"
+                    )}
+
+                  </div>
+
+                </div>
+
+
+              </div>
+
+
+              ${
+                request.admin_note
+
+                  ? `
+
+                    <div class="admin-note">
+
+                      <strong>
+                        ملاحظة الإدارة:
+                      </strong>
+
+                      ${esc(
+                        request.admin_note
+                      )}
+
+                    </div>
+
+                  `
+
+                  : ""
+              }
+
+
+              ${
+                isAdminUser &&
+                request.status ===
+                  "pending"
+
+                  ? `
+
+                    <div class="admin-review">
+
+
+                      <textarea
+                        id="admin-note-${request.id}"
+                        placeholder="ملاحظة الإدارة أو سبب الرفض — اختياري عند الموافقة"
+                      ></textarea>
+
+
+                      <div class="admin-actions">
+
+
+                        <button
+                          class="btn btn-approve"
+                          type="button"
+                          onclick="
+                            reviewRequest(
+                              '${request.id}',
+                              'approved'
+                            )
+                          "
+                        >
+                          ✓ موافقة
+                        </button>
+
+
+                        <button
+                          class="btn btn-reject"
+                          type="button"
+                          onclick="
+                            reviewRequest(
+                              '${request.id}',
+                              'rejected'
+                            )
+                          "
+                        >
+                          ✕ رفض
+                        </button>
+
+
+                      </div>
+
+
+                    </div>
+
+                  `
+
+                  : ""
+              }
+
+
+            </article>
+
+          `;
+
+        }
+      )
+      .join(
+        ""
+      );
+
+}
+
+
+/* =========================================================
+   مراجعة القيادة العليا
+   ========================================================= */
+
+async function reviewRequest(
+  requestId,
+  newStatus
+){
+
+  if(
+    !isAdminUser
+  ){
+
+    return;
+
+  }
+
+
+  const noteElement =
+    byId(
+      `admin-note-${requestId}`
+    );
+
+
+  const note =
+    noteElement
+      ? noteElement
+          .value
+          .trim()
+      : "";
+
+
+  if(
+    newStatus ===
+      "rejected" &&
+    !note
+  ){
+
+    alert(
+      "اكتبي سبب رفض الطلب."
+    );
+
+
+    noteElement
+      ?.focus();
+
+
+    return;
+
+  }
+
+
+  try{
+
+
+    const {
+      error
+    } =
+      await sb
+
+        .from(
+          "permission_requests"
+        )
+
+        .update({
+
+          status:
+            newStatus,
+
+          admin_note:
+            note ||
+            null,
+
+          reviewed_by:
+            currentUser.id,
+
+          reviewed_at:
+            new Date()
+              .toISOString(),
+
+          updated_at:
+            new Date()
+              .toISOString()
+
+        })
+
+        .eq(
+          "id",
+          requestId
+        );
+
+
+    if(
+      error
+    ){
+
+      throw error;
+
+    }
+
+
+    await loadRequests();
+
+
+  }catch(error){
+
+
+    console.error(
+      "Review permission:",
+      error
+    );
+
+
+    alert(
+      "تعذر تحديث حالة الطلب."
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   تحديث العرض
+   ========================================================= */
+
+function refreshView(){
+
+  renderRequests();
+
+}
+
+
+/* =========================================================
+   الأحداث
+   ========================================================= */
+
+byId(
+  "requestDate"
+)
+  .addEventListener(
+    "input",
+    updateDay
+  );
+
+
+byId(
+  "requestDate"
+)
+  .addEventListener(
+    "change",
+    updateDay
+  );
+
+
+byId(
+  "fromTime"
+)
+  .addEventListener(
+    "input",
+    calculateDuration
+  );
+
+
+byId(
+  "fromTime"
+)
+  .addEventListener(
+    "change",
+    calculateDuration
+  );
+
+
+byId(
+  "toTime"
+)
+  .addEventListener(
+    "input",
+    calculateDuration
+  );
+
+
+byId(
+  "toTime"
+)
+  .addEventListener(
+    "change",
+    calculateDuration
+  );
+
+
+byId(
+  "submitRequestBtn"
+)
+  .addEventListener(
+    "click",
+    submitRequest
+  );
+
+
+byId(
+  "searchTeacher"
+)
+  .addEventListener(
+    "input",
+    refreshView
+  );
+
+
+byId(
+  "statusFilter"
+)
+  .addEventListener(
+    "change",
+    refreshView
+  );
+
+
+byId(
+  "fromDateFilter"
+)
+  .addEventListener(
+    "change",
+    refreshView
+  );
+
+
+byId(
+  "toDateFilter"
+)
+  .addEventListener(
+    "change",
+    refreshView
+  );
+
+
+byId(
+  "refreshBtn"
+)
+  .addEventListener(
+    "click",
+    loadRequests
+  );
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  init
+);
+
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,2679 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1"
+>
+
+<title>
+  الزيارات الصفية | WestRiffa Smart Office
+</title>
+
+<link
+  rel="stylesheet"
+  href="../../css/app.css"
+>
+
+<style>
+
+.visits-layout{
+  display:grid;
+  grid-template-columns:
+    minmax(340px,420px)
+    minmax(0,1fr);
+  gap:20px;
+  align-items:start;
+}
+
+.visit-panel{
+  background:#fff;
+  border:1px solid #e1e9e5;
+  border-radius:18px;
+  padding:20px;
+  box-shadow:
+    0 8px 25px rgba(0,0,0,.05);
+}
+
+.visit-panel h3{
+  margin:0 0 6px;
+  color:#075c40;
+}
+
+.visit-panel .sub{
+  color:#6b7a72;
+  font-size:13px;
+  line-height:1.7;
+  margin-bottom:18px;
+}
+
+.form-field{
+  margin-bottom:14px;
+}
+
+.form-field label{
+  display:block;
+  margin-bottom:7px;
+  color:#334d42;
+  font-weight:700;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea{
+  width:100%;
+  padding:11px 12px;
+  border:1px solid #cfdad4;
+  border-radius:10px;
+  background:#fff;
+  font-family:inherit;
+  box-sizing:border-box;
+}
+
+.form-field textarea{
+  min-height:90px;
+  resize:vertical;
+}
+
+.auto-value{
+  background:#f5f8f6 !important;
+  color:#075c40;
+  font-weight:700;
+}
+
+.save-state{
+  margin-top:10px;
+  min-height:22px;
+  font-size:13px;
+  font-weight:700;
+}
+
+.save-state.ok{
+  color:#087451;
+}
+
+.save-state.error{
+  color:#b42318;
+}
+
+.visit-stats{
+  display:grid;
+  grid-template-columns:
+    repeat(3,minmax(0,1fr));
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.visit-stat{
+  background:#fff;
+  border:1px solid #e1e9e5;
+  border-top:4px solid #087451;
+  border-radius:15px;
+  padding:15px;
+}
+
+.visit-stat span{
+  display:block;
+  color:#6b7a72;
+  font-size:12px;
+  margin-bottom:6px;
+}
+
+.visit-stat strong{
+  color:#075c40;
+  font-size:29px;
+}
+
+.section-title{
+  color:#075c40;
+  margin-top:22px;
+  margin-bottom:12px;
+}
+
+.judgement-grid{
+  display:grid;
+  grid-template-columns:
+    repeat(4,minmax(0,1fr));
+  gap:10px;
+  margin-bottom:20px;
+}
+
+.judgement-card{
+  background:#f8faf9;
+  border:1px solid #e1e9e5;
+  border-radius:14px;
+  padding:14px;
+}
+
+.judgement-card span{
+  display:block;
+  min-height:38px;
+  color:#596c63;
+  font-size:12px;
+  line-height:1.5;
+}
+
+.judgement-card strong{
+  display:block;
+  margin-top:7px;
+  color:#075c40;
+  font-size:25px;
+}
+
+.department-grid{
+  display:grid;
+  grid-template-columns:
+    repeat(4,minmax(0,1fr));
+  gap:10px;
+  margin-bottom:20px;
+}
+
+.department-card{
+  background:#fff;
+  border:1px solid #e2e9e5;
+  border-radius:13px;
+  padding:13px;
+}
+
+.department-card span{
+  color:#596c63;
+  font-size:12px;
+  line-height:1.5;
+}
+
+.department-card strong{
+  display:block;
+  color:#075c40;
+  font-size:24px;
+  margin-top:6px;
+}
+
+.filters{
+  display:grid;
+  grid-template-columns:
+    1fr 1fr 1fr 1fr auto;
+  gap:8px;
+  margin-bottom:15px;
+}
+
+.filters input,
+.filters select{
+  width:100%;
+  padding:9px;
+  border:1px solid #d4ded9;
+  border-radius:9px;
+  background:#fff;
+  box-sizing:border-box;
+}
+
+.visit-card{
+  background:#fff;
+  border:1px solid #e1e9e5;
+  border-radius:14px;
+  padding:15px;
+  margin-bottom:10px;
+}
+
+.visit-card-head{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.visit-teacher{
+  color:#075c40;
+  font-weight:700;
+  font-size:16px;
+}
+
+.visit-meta{
+  margin-top:5px;
+  color:#6b7a72;
+  font-size:12px;
+  line-height:1.7;
+}
+
+.judge-chip{
+  display:inline-block;
+  background:#eaf3ef;
+  color:#075c40;
+  border-radius:999px;
+  padding:5px 9px;
+  font-size:11px;
+  font-weight:700;
+}
+
+.lead-chip{
+  display:inline-block;
+  background:#fff7e8;
+  color:#8a682a;
+  border-radius:999px;
+  padding:5px 9px;
+  font-size:11px;
+  font-weight:700;
+}
+
+.empty{
+  text-align:center;
+  padding:30px;
+  color:#6b7a72;
+  border:1px dashed #d6e0db;
+  border-radius:14px;
+  background:#fff;
+}
+
+.access-denied{
+  max-width:650px;
+  margin:70px auto;
+  padding:35px;
+  background:#fff;
+  border-radius:18px;
+  text-align:center;
+}
+
+.scope-badge{
+  display:inline-block;
+  margin-top:6px;
+  padding:5px 10px;
+  border-radius:999px;
+  background:#edf6f2;
+  color:#075c40;
+  font-size:12px;
+  font-weight:700;
+}
+
+@media(max-width:1100px){
+
+  .visits-layout{
+    grid-template-columns:1fr;
+  }
+
+  .judgement-grid,
+  .department-grid{
+    grid-template-columns:
+      repeat(2,1fr);
+  }
+
+}
+
+@media(max-width:700px){
+
+  .visit-stats{
+    grid-template-columns:1fr;
+  }
+
+  .judgement-grid,
+  .department-grid,
+  .filters{
+    grid-template-columns:1fr;
+  }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+  <div class="brand">
+
+    <img
+      src="../../assets/school-header.jpg"
+      alt="شعار المدرسة"
+    >
+
+    <div>
+
+      <h1>
+        الزيارات الصفية
+      </h1>
+
+      <p>
+        متابعة الزيارات والأحكام ومؤشرات الأقسام
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <div class="header-actions">
+
+    <a
+      class="btn btn-soft"
+      href="../../index.html"
+    >
+      🏠 الرئيسية
+    </a>
+
+  </div>
+
+</header>
+
+
+
+<div
+  id="appArea"
+  class="shell hidden"
+>
+
+
+<aside class="sidebar">
+
+  <h3 class="sidebar-title">
+    القائمة الرئيسية
+  </h3>
+
+  <a
+    class="nav-link"
+    href="../../index.html"
+  >
+    🏠 لوحة التحكم
+  </a>
+
+  <a
+    class="nav-link active"
+    href="index.html"
+  >
+    👁 الزيارات الصفية
+  </a>
+
+  <a
+    class="nav-link"
+    href="../meetings/index.html"
+  >
+    📅 الاجتماعات
+  </a>
+
+  <a
+    class="nav-link"
+    href="../activities/index.html"
+  >
+    🎯 الفعاليات
+  </a>
+
+  <a
+    class="nav-link"
+    href="../archive/index.html"
+  >
+    📂 الأرشيف الذكي
+  </a>
+
+</aside>
+
+
+
+<main class="content">
+
+
+<div class="page-head">
+
+  <div>
+
+    <h2>
+      👁 الزيارات الصفية
+    </h2>
+
+    <p id="scopeText">
+      جارٍ تحديد نطاق الصلاحيات...
+    </p>
+
+    <span
+      id="scopeBadge"
+      class="scope-badge"
+    ></span>
+
+  </div>
+
+</div>
+
+
+
+<div class="visits-layout">
+
+
+<!-- =====================================================
+     نموذج تسجيل الزيارة
+     ===================================================== -->
+
+<section class="visit-panel">
+
+  <h3>
+    تسجيل زيارة صفية
+  </h3>
+
+  <div class="sub">
+    يتم تحديد نوع القيادة ونطاق الأقسام تلقائيًا
+    حسب صلاحية الحساب.
+  </div>
+
+
+  <div class="form-field">
+
+    <label>
+      اسم المقيم
+    </label>
+
+    <input
+      id="evaluatorName"
+      class="auto-value"
+      type="text"
+      readonly
+    >
+
+  </div>
+
+
+  <div class="form-field">
+
+    <label>
+      مستوى القيادة
+    </label>
+
+    <input
+      id="leadershipLevel"
+      class="auto-value"
+      type="text"
+      readonly
+    >
+
+  </div>
+
+
+  <div class="form-field">
+
+    <label for="departmentSelect">
+      القسم *
+    </label>
+
+    <select id="departmentSelect">
+
+      <option value="">
+        — اختاري القسم —
+      </option>
+
+    </select>
+
+  </div>
+
+
+  <div class="form-field">
+
+    <label for="teacherSelect">
+      اسم المعلمة *
+    </label>
+
+    <select id="teacherSelect">
+
+      <option value="">
+        — اختاري المعلمة —
+      </option>
+
+    </select>
+
+  </div>
+
+
+  <div class="form-field">
+
+    <label for="visitDate">
+      تاريخ الزيارة *
+    </label>
+
+    <input
+      id="visitDate"
+      type="date"
+    >
+
+  </div>
+
+
+  <div class="form-field">
+
+    <label for="judgementSelect">
+      حكم الزيارة *
+    </label>
+
+    <select id="judgementSelect">
+
+      <option value="">
+        — اختاري الحكم —
+      </option>
+
+      <option value="يتجاوز التوقعات كثيرا">
+        يتجاوز التوقعات كثيرًا
+      </option>
+
+      <option value="يتجاوز التوقعات">
+        يتجاوز التوقعات
+      </option>
+
+      <option value="يفي بالتوقعات">
+        يفي بالتوقعات
+      </option>
+
+      <option value="يحتاج إلى تحسين">
+        يحتاج إلى تحسين
+      </option>
+
+    </select>
+
+  </div>
+
+
+  <div class="form-field">
+
+    <label for="visitNotes">
+      ملاحظات إضافية
+    </label>
+
+    <textarea
+      id="visitNotes"
+      placeholder="اختياري..."
+    ></textarea>
+
+  </div>
+
+
+  <button
+    id="saveVisitBtn"
+    class="btn btn-primary btn-wide"
+    type="button"
+  >
+    💾 حفظ الزيارة
+  </button>
+
+
+  <div
+    id="saveState"
+    class="save-state"
+  ></div>
+
+</section>
+
+
+
+<!-- =====================================================
+     Dashboard
+     ===================================================== -->
+
+<section>
+
+
+<div class="visit-stats">
+
+  <div class="visit-stat">
+
+    <span>
+      إجمالي الزيارات
+    </span>
+
+    <strong id="totalVisits">
+      0
+    </strong>
+
+  </div>
+
+
+  <div class="visit-stat">
+
+    <span>
+      قيادة عليا
+    </span>
+
+    <strong id="seniorVisits">
+      0
+    </strong>
+
+  </div>
+
+
+  <div class="visit-stat">
+
+    <span>
+      قيادة وسطى
+    </span>
+
+    <strong id="middleVisits">
+      0
+    </strong>
+
+  </div>
+
+</div>
+
+
+
+<h3 class="section-title">
+  أحكام الزيارات
+</h3>
+
+
+<div class="judgement-grid">
+
+  <div class="judgement-card">
+
+    <span>
+      يتجاوز التوقعات كثيرًا
+    </span>
+
+    <strong id="j1">
+      0
+    </strong>
+
+  </div>
+
+
+  <div class="judgement-card">
+
+    <span>
+      يتجاوز التوقعات
+    </span>
+
+    <strong id="j2">
+      0
+    </strong>
+
+  </div>
+
+
+  <div class="judgement-card">
+
+    <span>
+      يفي بالتوقعات
+    </span>
+
+    <strong id="j3">
+      0
+    </strong>
+
+  </div>
+
+
+  <div class="judgement-card">
+
+    <span>
+      يحتاج إلى تحسين
+    </span>
+
+    <strong id="j4">
+      0
+    </strong>
+
+  </div>
+
+</div>
+
+
+
+<h3 class="section-title">
+  الزيارات حسب القسم
+</h3>
+
+
+<div
+  id="departmentStats"
+  class="department-grid"
+></div>
+
+
+
+<h3 class="section-title">
+  سجل الزيارات
+</h3>
+
+
+<div class="filters">
+
+  <select id="filterDepartment">
+
+    <option value="">
+      كل الأقسام
+    </option>
+
+  </select>
+
+
+  <select id="filterJudgement">
+
+    <option value="">
+      كل الأحكام
+    </option>
+
+    <option value="يتجاوز التوقعات كثيرا">
+      يتجاوز التوقعات كثيرًا
+    </option>
+
+    <option value="يتجاوز التوقعات">
+      يتجاوز التوقعات
+    </option>
+
+    <option value="يفي بالتوقعات">
+      يفي بالتوقعات
+    </option>
+
+    <option value="يحتاج إلى تحسين">
+      يحتاج إلى تحسين
+    </option>
+
+  </select>
+
+
+  <input
+    id="filterFrom"
+    type="date"
+    title="من تاريخ"
+  >
+
+
+  <input
+    id="filterTo"
+    type="date"
+    title="إلى تاريخ"
+  >
+
+
+  <button
+    id="refreshBtn"
+    class="btn btn-soft"
+    type="button"
+  >
+    تحديث
+  </button>
+
+</div>
+
+
+<div id="visitsList">
+
+  <div class="empty">
+    جاري تحميل الزيارات...
+  </div>
+
+</div>
+
+
+</section>
+
+
+</div>
+
+
+</main>
+
+</div>
+
+
+
+<!-- =====================================================
+     عدم السماح
+     ===================================================== -->
+
+<div
+  id="deniedArea"
+  class="access-denied hidden"
+>
+
+  <h2>
+    غير مصرح بالدخول
+  </h2>
+
+  <p>
+    الزيارات الصفية متاحة للإدارة
+    ومنسقات الأقسام فقط.
+  </p>
+
+  <a
+    class="btn btn-primary"
+    href="../../index.html"
+  >
+    العودة للرئيسية
+  </a>
+
+</div>
+
+
+
+<script
+  src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+<script src="../../js/config.js"></script>
+<script src="../../js/graph.js"></script>
+<script src="../../js/common.js"></script>
+
+
+
+<script>
+
+"use strict";
+
+
+let sb = null;
+
+let currentUser = null;
+
+let currentProfile = null;
+
+let allowedDepartments = [];
+
+let departmentAssignments = [];
+
+let teachers = [];
+
+let visits = [];
+
+
+/* =========================================================
+   Helpers
+   ========================================================= */
+
+function byId(id){
+
+  return document.getElementById(id);
+
+}
+
+
+function esc(value){
+
+  return String(value ?? "")
+
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+
+}
+
+
+function formatDate(value){
+
+  if(!value){
+    return "—";
+  }
+
+  const date =
+    new Date(
+      value + "T00:00:00"
+    );
+
+  if(
+    Number.isNaN(
+      date.getTime()
+    )
+  ){
+
+    return value;
+
+  }
+
+  return date.toLocaleDateString(
+    "ar-BH",
+    {
+      year:"numeric",
+      month:"short",
+      day:"numeric"
+    }
+  );
+
+}
+
+
+/* =========================================================
+   تشغيل النظام
+   ========================================================= */
+
+async function init(){
+
+  try{
+
+
+    if(
+      !window.WR_CONFIG?.supabaseUrl ||
+      !window.WR_CONFIG?.supabaseKey
+    ){
+
+      throw new Error(
+        "إعدادات Supabase غير مكتملة"
+      );
+
+    }
+
+
+    sb =
+      window.supabase.createClient(
+        window.WR_CONFIG.supabaseUrl,
+        window.WR_CONFIG.supabaseKey
+      );
+
+
+    currentUser =
+      await WRGraph.getAccount();
+
+
+    if(!currentUser){
+
+      location.href =
+        "../../index.html";
+
+      return;
+
+    }
+
+
+    const allowed =
+      await WRAccess.requireLeadership({
+        showDenied: false
+      });
+
+
+    if(!allowed){
+
+      byId("deniedArea")
+        .classList
+        .remove(
+          "hidden"
+        );
+
+      return;
+
+    }
+
+
+    currentProfile =
+      await WRAccess.getProfile(true);
+
+
+    byId("appArea")
+      .classList
+      .remove(
+        "hidden"
+      );
+
+
+    byId("evaluatorName").value =
+      currentProfile.full_name ||
+      currentUser.email ||
+      "";
+
+
+    byId("leadershipLevel").value =
+      await WRAccess.leadershipLevel();
+
+
+    const today =
+      new Date();
+
+
+    const year =
+      today.getFullYear();
+
+
+    const month =
+      String(
+        today.getMonth() + 1
+      ).padStart(
+        2,
+        "0"
+      );
+
+
+    const day =
+      String(
+        today.getDate()
+      ).padStart(
+        2,
+        "0"
+      );
+
+
+    byId("visitDate").value =
+      `${year}-${month}-${day}`;
+
+
+    await loadDepartments();
+
+    await loadTeachers();
+
+    await loadVisits();
+
+
+  }catch(error){
+
+
+    console.error(
+      "Classroom visits init:",
+      error
+    );
+
+
+    alert(
+      "تعذر تحميل نظام الزيارات الصفية."
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   الحساب الحالي
+   ========================================================= */
+
+async function loadCurrentProfile(){
+
+  let profile = null;
+
+
+  /* نحاول أولًا user_profiles لأنه يحتوي role */
+
+  const {
+    data:newProfile,
+    error:newProfileError
+  } =
+    await sb
+      .from("user_profiles")
+      .select(
+        "user_id, full_name, role, department_id"
+      )
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .maybeSingle();
+
+
+  if(newProfileError){
+
+    console.warn(
+      "user_profiles:",
+      newProfileError
+    );
+
+  }
+
+
+  if(
+    newProfile?.role
+  ){
+
+    profile = {
+
+      id:
+        currentUser.id,
+
+      user_id:
+        currentUser.id,
+
+      full_name:
+        newProfile.full_name ||
+        currentUser.email ||
+        "",
+
+      role:
+        String(
+          newProfile.role
+        )
+          .trim()
+          .toLowerCase(),
+
+      department_id:
+        newProfile.department_id ||
+        null
+
+    };
+
+  }
+
+
+  /* fallback إلى profiles */
+
+  if(!profile){
+
+    const {
+      data:legacyProfile,
+      error:legacyProfileError
+    } =
+      await sb
+        .from("profiles")
+        .select(
+          "id, full_name, role"
+        )
+        .eq(
+          "id",
+          currentUser.id
+        )
+        .maybeSingle();
+
+
+    if(legacyProfileError){
+
+      throw legacyProfileError;
+
+    }
+
+
+    profile = {
+
+      id:
+        currentUser.id,
+
+      user_id:
+        currentUser.id,
+
+      full_name:
+        legacyProfile?.full_name ||
+        currentUser.email ||
+        "",
+
+      role:
+        String(
+          legacyProfile?.role ||
+          "teacher"
+        )
+          .trim()
+          .toLowerCase(),
+
+      department_id:
+        null
+
+    };
+
+  }
+
+
+  currentProfile =
+    profile;
+
+}
+
+
+/* =========================================================
+   الأقسام المسموح بها
+
+   الإدارة:
+   كل الأقسام
+
+   المنسقة:
+   profile_departments
+   assignment_type = coordinator
+   ========================================================= */
+
+async function loadDepartments(){
+
+  const {
+    data:allDepartments,
+    error:departmentsError
+  } =
+    await sb
+      .from("departments")
+      .select(
+        "id, name"
+      )
+      .order(
+        "name"
+      );
+
+
+  if(departmentsError){
+
+    throw departmentsError;
+
+  }
+
+
+  if(
+    currentProfile.role ===
+    "admin"
+  ){
+
+    allowedDepartments =
+      allDepartments ||
+      [];
+
+
+    byId("scopeText").textContent =
+      "عرض جميع الأقسام والمعلمات والزيارات — صلاحية الإدارة.";
+
+
+    byId("scopeBadge").textContent =
+      "قيادة عليا • جميع الأقسام";
+
+
+  }else{
+
+
+    /*
+      المصدر الأساسي:
+      profile_departments
+    */
+
+    const {
+      data:profileDepartments,
+      error:profileDepartmentError
+    } =
+      await sb
+        .from(
+          "profile_departments"
+        )
+        .select(
+          "department_id"
+        )
+        .eq(
+          "profile_id",
+          currentUser.id
+        )
+        .eq(
+          "assignment_type",
+          "coordinator"
+        );
+
+
+    if(profileDepartmentError){
+
+      throw profileDepartmentError;
+
+    }
+
+
+    const allowedIds =
+      new Set(
+        (
+          profileDepartments ||
+          []
+        ).map(
+          item =>
+            String(
+              item.department_id
+            )
+        )
+      );
+
+
+    allowedDepartments =
+      (
+        allDepartments ||
+        []
+      ).filter(
+        department =>
+          allowedIds.has(
+            String(
+              department.id
+            )
+          )
+      );
+
+
+    /*
+      fallback للجدول القديم
+      لو المنسقة لم تُربط بعد في profile_departments
+    */
+
+    if(
+      !allowedDepartments.length
+    ){
+
+      const {
+        data:oldAssignments,
+        error:oldAssignmentError
+      } =
+        await sb
+          .from(
+            "coordinator_departments"
+          )
+          .select(
+            "department"
+          )
+          .eq(
+            "coordinator_id",
+            currentUser.id
+          );
+
+
+      if(oldAssignmentError){
+
+        console.warn(
+          "coordinator_departments:",
+          oldAssignmentError
+        );
+
+      }
+
+
+      const oldNames =
+        new Set(
+          (
+            oldAssignments ||
+            []
+          ).map(
+            item =>
+              String(
+                item.department ||
+                ""
+              ).trim()
+          )
+        );
+
+
+      allowedDepartments =
+        (
+          allDepartments ||
+          []
+        ).filter(
+          department =>
+            oldNames.has(
+              String(
+                department.name ||
+                ""
+              ).trim()
+            )
+        );
+
+    }
+
+
+    byId("scopeText").textContent =
+      "صلاحية المنسقة — تظهر معلمات القسم أو الأقسام التابعة لكِ فقط.";
+
+
+    byId("scopeBadge").textContent =
+      allowedDepartments.length
+        ? `قيادة وسطى • ${allowedDepartments.map(d => d.name).join(" • ")}`
+        : "قيادة وسطى • لا توجد أقسام مرتبطة";
+
+  }
+
+
+  renderDepartmentSelectors();
+
+}
+
+
+/* =========================================================
+   عرض الأقسام
+   ========================================================= */
+
+function renderDepartmentSelectors(){
+
+  const formSelect =
+    byId(
+      "departmentSelect"
+    );
+
+
+  const filterSelect =
+    byId(
+      "filterDepartment"
+    );
+
+
+  formSelect.innerHTML =
+    '<option value="">— اختاري القسم —</option>';
+
+
+  filterSelect.innerHTML =
+    currentProfile.role === "admin"
+      ? '<option value="">كل الأقسام</option>'
+      : '<option value="">كل أقسامي</option>';
+
+
+  allowedDepartments.forEach(
+    department => {
+
+
+      formSelect.insertAdjacentHTML(
+        "beforeend",
+        `
+          <option value="${esc(department.id)}">
+            ${esc(department.name)}
+          </option>
+        `
+      );
+
+
+      filterSelect.insertAdjacentHTML(
+        "beforeend",
+        `
+          <option value="${esc(department.id)}">
+            ${esc(department.name)}
+          </option>
+        `
+      );
+
+    }
+  );
+
+
+  /*
+    لو المنسقة عندها قسم واحد
+    نختاره تلقائيًا
+  */
+
+  if(
+    currentProfile.role ===
+      "coordinator" &&
+    allowedDepartments.length ===
+      1
+  ){
+
+    formSelect.value =
+      allowedDepartments[0].id;
+
+
+    formSelect.disabled =
+      true;
+
+  }
+
+}
+
+
+/* =========================================================
+   تحميل معلمات الأقسام
+
+   المصدر:
+   profile_departments
+   assignment_type = teacher
+
+   ثم profiles للحصول على الاسم العربي
+   ========================================================= */
+
+async function loadTeachers(){
+
+  const allowedIds =
+    allowedDepartments.map(
+      department =>
+        String(
+          department.id
+        )
+    );
+
+
+  if(
+    !allowedIds.length
+  ){
+
+    departmentAssignments = [];
+
+    teachers = [];
+
+    renderTeachers();
+
+    return;
+
+  }
+
+
+  const {
+    data:assignments,
+    error:assignmentError
+  } =
+    await sb
+      .from(
+        "profile_departments"
+      )
+      .select(
+        "profile_id, department_id, assignment_type"
+      )
+      .in(
+        "department_id",
+        allowedIds
+      )
+      .eq(
+        "assignment_type",
+        "teacher"
+      );
+
+
+  if(assignmentError){
+
+    throw assignmentError;
+
+  }
+
+
+  departmentAssignments =
+    assignments ||
+    [];
+
+
+  const profileIds =
+    [
+      ...new Set(
+        departmentAssignments.map(
+          item =>
+            String(
+              item.profile_id
+            )
+        )
+      )
+    ];
+
+
+  if(
+    !profileIds.length
+  ){
+
+    teachers = [];
+
+    renderTeachers();
+
+    return;
+
+  }
+
+
+  const {
+    data:profiles,
+    error:profilesError
+  } =
+    await sb
+      .from(
+        "profiles"
+      )
+      .select(
+        "id, full_name"
+      )
+      .in(
+        "id",
+        profileIds
+      );
+
+
+  if(profilesError){
+
+    throw profilesError;
+
+  }
+
+
+  teachers =
+    (
+      profiles ||
+      []
+    )
+    .map(
+      profile => ({
+
+        id:
+          profile.id,
+
+        full_name:
+          profile.full_name ||
+          "معلمة"
+
+      })
+    )
+    .sort(
+      (a,b) =>
+        String(
+          a.full_name
+        ).localeCompare(
+          String(
+            b.full_name
+          ),
+          "ar"
+        )
+    );
+
+
+  renderTeachers();
+
+}
+
+
+/* =========================================================
+   عرض أسماء المعلمات للقسم المختار
+   ========================================================= */
+
+function renderTeachers(){
+
+  const depId =
+    byId(
+      "departmentSelect"
+    ).value;
+
+
+  const select =
+    byId(
+      "teacherSelect"
+    );
+
+
+  select.innerHTML =
+    '<option value="">— اختاري المعلمة —</option>';
+
+
+  if(!depId){
+
+    return;
+
+  }
+
+
+  const teacherIds =
+    new Set(
+
+      departmentAssignments
+
+        .filter(
+          item =>
+            String(
+              item.department_id
+            ) ===
+            String(
+              depId
+            )
+        )
+
+        .map(
+          item =>
+            String(
+              item.profile_id
+            )
+        )
+
+    );
+
+
+  const departmentTeachers =
+    teachers.filter(
+      teacher =>
+        teacherIds.has(
+          String(
+            teacher.id
+          )
+        )
+    );
+
+
+  departmentTeachers.forEach(
+    teacher => {
+
+
+      select.insertAdjacentHTML(
+        "beforeend",
+        `
+          <option value="${esc(teacher.id)}">
+            ${esc(
+              teacher.full_name ||
+              "معلمة"
+            )}
+          </option>
+        `
+      );
+
+    }
+  );
+
+
+  if(
+    !departmentTeachers.length
+  ){
+
+    select.insertAdjacentHTML(
+      "beforeend",
+      `
+        <option value="" disabled>
+          لا توجد معلمات مربوطة بهذا القسم
+        </option>
+      `
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   حفظ زيارة
+   ========================================================= */
+
+async function saveVisit(){
+
+  const departmentId =
+    byId(
+      "departmentSelect"
+    ).value;
+
+
+  const teacherId =
+    byId(
+      "teacherSelect"
+    ).value;
+
+
+  const date =
+    byId(
+      "visitDate"
+    ).value;
+
+
+  const judgement =
+    byId(
+      "judgementSelect"
+    ).value;
+
+
+  const notes =
+    byId(
+      "visitNotes"
+    ).value.trim();
+
+
+  const state =
+    byId(
+      "saveState"
+    );
+
+
+  state.textContent =
+    "";
+
+
+  state.className =
+    "save-state";
+
+
+  if(
+    !departmentId ||
+    !teacherId ||
+    !date ||
+    !judgement
+  ){
+
+    state.textContent =
+      "أكملي جميع الحقول المطلوبة.";
+
+
+    state.className =
+      "save-state error";
+
+
+    return;
+
+  }
+
+
+  /*
+    حماية إضافية:
+    لا يسمح للمنسقة بحفظ زيارة
+    لقسم خارج نطاقها
+  */
+
+  const departmentAllowed =
+    allowedDepartments.some(
+      department =>
+        String(
+          department.id
+        ) ===
+        String(
+          departmentId
+        )
+    );
+
+
+  if(
+    !departmentAllowed
+  ){
+
+    state.textContent =
+      "هذا القسم خارج نطاق صلاحيتك.";
+
+
+    state.className =
+      "save-state error";
+
+
+    return;
+
+  }
+
+
+  /*
+    نتأكد أن المعلمة بالفعل
+    مربوطة بالقسم المختار
+  */
+
+  const teacherAllowed =
+    departmentAssignments.some(
+      item =>
+        String(
+          item.department_id
+        ) ===
+        String(
+          departmentId
+        ) &&
+        String(
+          item.profile_id
+        ) ===
+        String(
+          teacherId
+        )
+    );
+
+
+  if(
+    !teacherAllowed
+  ){
+
+    state.textContent =
+      "المعلمة غير مرتبطة بالقسم المختار.";
+
+
+    state.className =
+      "save-state error";
+
+
+    return;
+
+  }
+
+
+  const leadership =
+    currentProfile.role ===
+    "admin"
+      ? "قيادة عليا"
+      : "قيادة وسطى";
+
+
+  const btn =
+    byId(
+      "saveVisitBtn"
+    );
+
+
+  btn.disabled =
+    true;
+
+
+  btn.textContent =
+    "جاري الحفظ...";
+
+
+  try{
+
+
+    const {
+      error
+    } =
+      await sb
+        .from(
+          "classroom_visits"
+        )
+        .insert({
+
+          teacher_id:
+            teacherId,
+
+          evaluator_id:
+            currentUser.id,
+
+          department_id:
+            departmentId,
+
+          visit_date:
+            date,
+
+          judgement:
+            judgement,
+
+          leadership_level:
+            leadership,
+
+          notes:
+            notes ||
+            null
+
+        });
+
+
+    if(error){
+
+      throw error;
+
+    }
+
+
+    state.textContent =
+      "✓ تم حفظ الزيارة بنجاح.";
+
+
+    state.className =
+      "save-state ok";
+
+
+    byId(
+      "judgementSelect"
+    ).value =
+      "";
+
+
+    byId(
+      "visitNotes"
+    ).value =
+      "";
+
+
+    await loadVisits();
+
+
+  }catch(error){
+
+
+    console.error(
+      "Save visit:",
+      error
+    );
+
+
+    state.textContent =
+      "تعذر حفظ الزيارة.";
+
+
+    state.className =
+      "save-state error";
+
+
+  }finally{
+
+
+    btn.disabled =
+      false;
+
+
+    btn.textContent =
+      "💾 حفظ الزيارة";
+
+  }
+
+}
+
+
+/* =========================================================
+   تحميل الزيارات
+
+   الإدارة:
+   كل الزيارات
+
+   المنسقة:
+   زيارات أقسامها فقط
+   ========================================================= */
+
+async function loadVisits(){
+
+  let query =
+    sb
+      .from(
+        "classroom_visits"
+      )
+      .select(
+        `
+        id,
+        teacher_id,
+        evaluator_id,
+        department_id,
+        visit_date,
+        judgement,
+        leadership_level,
+        notes,
+        created_at
+        `
+      );
+
+
+  /*
+    أهم جزء في الصلاحيات:
+    المنسقة لا تحمل زيارات
+    خارج أقسامها أصلًا
+  */
+
+  if(
+    currentProfile.role ===
+    "coordinator"
+  ){
+
+    const ids =
+      allowedDepartments.map(
+        department =>
+          department.id
+      );
+
+
+    if(
+      !ids.length
+    ){
+
+      visits = [];
+
+      renderDashboard();
+
+      renderVisits();
+
+      return;
+
+    }
+
+
+    query =
+      query.in(
+        "department_id",
+        ids
+      );
+
+  }
+
+
+  query =
+    query.order(
+      "visit_date",
+      {
+        ascending:false
+      }
+    );
+
+
+  const {
+    data,
+    error
+  } =
+    await query;
+
+
+  if(error){
+
+    throw error;
+
+  }
+
+
+  visits =
+    data ||
+    [];
+
+
+  await enrichVisitProfiles();
+
+
+  renderDashboard();
+
+  renderVisits();
+
+}
+
+
+/* =========================================================
+   جلب أسماء المعلمة والمقيم
+
+   تم إصلاح الخطأ القديم:
+   profiles.id وليس profile.user_id
+   ========================================================= */
+
+async function enrichVisitProfiles(){
+
+  const ids =
+    [
+      ...new Set(
+        visits.flatMap(
+          visit => [
+
+            String(
+              visit.teacher_id
+            ),
+
+            String(
+              visit.evaluator_id
+            )
+
+          ]
+        )
+      )
+    ]
+    .filter(
+      Boolean
+    );
+
+
+  if(
+    !ids.length
+  ){
+
+    return;
+
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await sb
+      .from(
+        "profiles"
+      )
+      .select(
+        "id, full_name"
+      )
+      .in(
+        "id",
+        ids
+      );
+
+
+  if(error){
+
+    console.warn(
+      "Visit profile names:",
+      error
+    );
+
+  }
+
+
+  const map =
+    new Map(
+      (
+        data ||
+        []
+      ).map(
+        profile => [
+
+          String(
+            profile.id
+          ),
+
+          profile.full_name
+
+        ]
+      )
+    );
+
+
+  visits =
+    visits.map(
+      visit => ({
+
+        ...visit,
+
+        teacher_name:
+          map.get(
+            String(
+              visit.teacher_id
+            )
+          ) ||
+          "معلمة",
+
+        evaluator_name:
+          map.get(
+            String(
+              visit.evaluator_id
+            )
+          ) ||
+          "مقيم"
+
+      })
+    );
+
+}
+
+
+/* =========================================================
+   فلترة السجل
+   ========================================================= */
+
+function filteredVisits(){
+
+  const dep =
+    byId(
+      "filterDepartment"
+    ).value;
+
+
+  const judgement =
+    byId(
+      "filterJudgement"
+    ).value;
+
+
+  const from =
+    byId(
+      "filterFrom"
+    ).value;
+
+
+  const to =
+    byId(
+      "filterTo"
+    ).value;
+
+
+  return visits.filter(
+    visit => {
+
+
+      if(
+        dep &&
+        String(
+          visit.department_id
+        ) !==
+        String(
+          dep
+        )
+      ){
+
+        return false;
+
+      }
+
+
+      if(
+        judgement &&
+        visit.judgement !==
+        judgement
+      ){
+
+        return false;
+
+      }
+
+
+      if(
+        from &&
+        visit.visit_date <
+        from
+      ){
+
+        return false;
+
+      }
+
+
+      if(
+        to &&
+        visit.visit_date >
+        to
+      ){
+
+        return false;
+
+      }
+
+
+      return true;
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   Dashboard
+   ========================================================= */
+
+function renderDashboard(){
+
+  const rows =
+    filteredVisits();
+
+
+  byId(
+    "totalVisits"
+  ).textContent =
+    rows.length;
+
+
+  byId(
+    "seniorVisits"
+  ).textContent =
+    rows.filter(
+      item =>
+        item.leadership_level ===
+        "قيادة عليا"
+    ).length;
+
+
+  byId(
+    "middleVisits"
+  ).textContent =
+    rows.filter(
+      item =>
+        item.leadership_level ===
+        "قيادة وسطى"
+    ).length;
+
+
+  byId("j1").textContent =
+    rows.filter(
+      item =>
+        item.judgement ===
+        "يتجاوز التوقعات كثيرا"
+    ).length;
+
+
+  byId("j2").textContent =
+    rows.filter(
+      item =>
+        item.judgement ===
+        "يتجاوز التوقعات"
+    ).length;
+
+
+  byId("j3").textContent =
+    rows.filter(
+      item =>
+        item.judgement ===
+        "يفي بالتوقعات"
+    ).length;
+
+
+  byId("j4").textContent =
+    rows.filter(
+      item =>
+        item.judgement ===
+        "يحتاج إلى تحسين"
+    ).length;
+
+
+  const container =
+    byId(
+      "departmentStats"
+    );
+
+
+  container.innerHTML =
+    allowedDepartments.map(
+      department => {
+
+
+        const count =
+          rows.filter(
+            item =>
+              String(
+                item.department_id
+              ) ===
+              String(
+                department.id
+              )
+          ).length;
+
+
+        return `
+          <div class="department-card">
+
+            <span>
+              ${esc(department.name)}
+            </span>
+
+            <strong>
+              ${count}
+            </strong>
+
+          </div>
+        `;
+
+      }
+    ).join("");
+
+}
+
+
+/* =========================================================
+   سجل الزيارات
+   ========================================================= */
+
+function renderVisits(){
+
+  const rows =
+    filteredVisits();
+
+
+  const container =
+    byId(
+      "visitsList"
+    );
+
+
+  if(
+    !rows.length
+  ){
+
+    container.innerHTML =
+      `
+        <div class="empty">
+          لا توجد زيارات مطابقة.
+        </div>
+      `;
+
+    return;
+
+  }
+
+
+  container.innerHTML =
+    rows.map(
+      visit => {
+
+
+        const department =
+          allowedDepartments.find(
+            dep =>
+              String(
+                dep.id
+              ) ===
+              String(
+                visit.department_id
+              )
+          );
+
+
+        return `
+          <article class="visit-card">
+
+            <div class="visit-card-head">
+
+              <div>
+
+                <div class="visit-teacher">
+
+                  ${esc(
+                    visit.teacher_name
+                  )}
+
+                </div>
+
+                <div class="visit-meta">
+
+                  القسم:
+                  ${esc(
+                    department?.name ||
+                    "—"
+                  )}
+
+                  <br>
+
+                  المقيم:
+                  ${esc(
+                    visit.evaluator_name
+                  )}
+
+                  <br>
+
+                  التاريخ:
+                  ${esc(
+                    formatDate(
+                      visit.visit_date
+                    )
+                  )}
+
+                </div>
+
+              </div>
+
+
+              <div>
+
+                <span class="lead-chip">
+
+                  ${esc(
+                    visit.leadership_level
+                  )}
+
+                </span>
+
+                <span class="judge-chip">
+
+                  ${esc(
+                    visit.judgement
+                  )}
+
+                </span>
+
+              </div>
+
+            </div>
+
+
+            ${
+              visit.notes
+              ? `
+                <div class="visit-meta">
+
+                  ملاحظات:
+                  ${esc(
+                    visit.notes
+                  )}
+
+                </div>
+              `
+              : ""
+            }
+
+          </article>
+        `;
+
+      }
+    ).join("");
+
+}
+
+
+/* =========================================================
+   Refresh
+   ========================================================= */
+
+function refreshView(){
+
+  renderDashboard();
+
+  renderVisits();
+
+}
+
+
+/* =========================================================
+   Events
+   ========================================================= */
+
+byId(
+  "departmentSelect"
+).addEventListener(
+  "change",
+  renderTeachers
+);
+
+
+byId(
+  "saveVisitBtn"
+).addEventListener(
+  "click",
+  saveVisit
+);
+
+
+byId(
+  "filterDepartment"
+).addEventListener(
+  "change",
+  refreshView
+);
+
+
+byId(
+  "filterJudgement"
+).addEventListener(
+  "change",
+  refreshView
+);
+
+
+byId(
+  "filterFrom"
+).addEventListener(
+  "change",
+  refreshView
+);
+
+
+byId(
+  "filterTo"
+).addEventListener(
+  "change",
+  refreshView
+);
+
+
+byId(
+  "refreshBtn"
+).addEventListener(
+  "click",
+  loadVisits
+);
+
+
+/* =========================================================
+   Start
+   ========================================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  init
+);
+
+</script>
+
+
+</body>
+
+</html>

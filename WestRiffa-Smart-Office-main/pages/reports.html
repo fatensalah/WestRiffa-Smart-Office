@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>تقارير الخطة التدفقية | WestRiffa Smart Office</title>
+<link rel="stylesheet" href="../../css/app.css?v=20260914-reports-v4">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+:root{--green:#0f654f;--green-dark:#0f513f;--green-soft:#eef7f3;--text:#173c34;--muted:#6c7f79;--line:#d9e7e2}
+body{margin:0;font-family:Tahoma,Arial,sans-serif;background:#f4f7f6;color:var(--text)}
+.head{background:linear-gradient(135deg,#0f513f,#18705a);color:#fff;padding:28px 24px}
+.inner,.container{width:min(1450px,95%);margin:auto}.head h1{margin:0 0 8px;font-size:30px}.head p{margin:0;opacity:.93;line-height:1.8}
+.container{margin-top:24px;margin-bottom:55px}.top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.btn,a.btn{border:0;border-radius:11px;padding:11px 16px;font-weight:700;cursor:pointer;text-decoration:none;font-family:inherit;display:inline-block}
+.soft{background:#fff;color:var(--green-dark);border:1px solid #dce9e5}.main{background:var(--green);color:#fff}
+.card{background:#fff;border:1px solid #e3ece9;border-radius:18px;padding:22px;box-shadow:0 8px 24px rgba(15,81,63,.05);margin-bottom:18px}
+.access,.status{padding:13px 15px;border-radius:12px;margin-bottom:16px;font-weight:700}.access{background:#eaf8ef;border:1px solid #c7e8d1;color:#166534}
+.status{display:none}.status.info{display:block;background:#eef7ff;color:#214f72}.status.success{display:block;background:#eaf8ef;color:#166534}.status.error{display:block;background:#fff0f0;color:#9b1c1c}
+.filters{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.field label{display:block;font-weight:700;margin-bottom:6px}
+.field select{width:100%;min-height:44px;border:1px solid #ccdcd7;border-radius:10px;padding:0 10px;font:inherit;background:#fff}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:17px}.tab{background:#edf5f2;color:#194b3f;border:1px solid #d8e6e1}.tab.active{background:var(--green);color:#fff}
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:18px}
+.kpi{background:#f8fbfa;border:1px solid #dfeae6;border-radius:13px;padding:14px;text-align:center}.kpi strong{display:block;color:var(--green);font-size:25px;line-height:1.15}.kpi span{font-size:12px;color:var(--muted)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}.table-wrap{overflow:auto;border:1px solid #e2ebe8;border-radius:13px}table{width:100%;border-collapse:collapse}
+th,td{padding:9px 8px;border-bottom:1px solid #e7eeeb;text-align:right;font-size:12px;vertical-align:middle}th{background:#eef5f2;color:#214c41;white-space:nowrap;font-weight:800}
+tbody tr:nth-child(even){background:#fbfdfc}.comment-box textarea{width:100%;min-height:125px;border:1px solid #ccdcd7;border-radius:11px;padding:12px;font:inherit;line-height:1.8;background:#fcfefd}
+.comment-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.print-head,.signatures,.official-note{display:none}.section-title{color:var(--green-dark);margin:0 0 14px}
+@media(max-width:1000px){.filters{grid-template-columns:repeat(2,1fr)}.kpis{grid-template-columns:repeat(3,1fr)}.two{grid-template-columns:1fr}}
+@media(max-width:600px){.filters,.kpis{grid-template-columns:1fr}}
+@media print{
+@page{size:A4 landscape;margin:8mm}
+html,body{background:#fff!important}body{font-family:Tahoma,Arial,sans-serif;color:#1e342f}
+.head,.top,.access,.filters-card,.tabs,.comment-actions,.status{display:none!important}
+.container{width:100%;margin:0}#reportArea.card{border:0!important;box-shadow:none!important;padding:0!important;margin:0!important}
+.print-head{display:block;text-align:center;margin:0 0 7mm;padding-bottom:4mm;border-bottom:2px solid var(--green-dark)}
+.print-head img{width:100%;max-height:24mm;object-fit:contain;display:block;margin:0 auto 2mm}
+.print-head h2{color:var(--green-dark);margin:2mm 0 1mm;font-size:20px;font-weight:800}
+.print-head #printScope{font-size:11px;color:#445f57;font-weight:700;line-height:1.7}
+#reportTitle{text-align:center;font-size:17px;color:var(--green-dark);margin:0 0 4mm;padding:2.5mm 0;background:var(--green-soft);border:1px solid #cfe2db;border-radius:8px}
+.kpis{grid-template-columns:repeat(6,1fr)!important;gap:2mm;margin:0 0 4mm}
+.kpi{min-height:20mm;padding:3mm 1.5mm;border:1px solid #cddfd9;border-radius:6px;background:#fff}
+.kpi strong{font-size:18px;color:var(--green-dark)}.kpi span{font-size:9px;color:#526b64;line-height:1.4}
+.two{grid-template-columns:1fr 1fr!important;gap:4mm;align-items:start}.two .card,.card{border:0!important;box-shadow:none!important;padding:0!important;margin:0!important}
+.section-title{font-size:13px;margin:0 0 2mm;padding:2mm 2.5mm;background:#f2f7f5;border-right:4px solid var(--green-dark);color:var(--green-dark)}
+.table-wrap{overflow:visible!important;border:1px solid #ccdcd7;border-radius:5px}table{table-layout:fixed;width:100%}
+th,td{font-size:8.5px;padding:1.7mm 1.2mm;line-height:1.35;border:1px solid #d9e6e2;word-break:break-word}
+th{background:#eaf3ef!important;color:#173c34!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+tbody tr:nth-child(even){background:#fafcfb!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.comment-box{margin-top:5mm!important;page-break-inside:avoid;border:1px solid #cddfd9;border-radius:7px;padding:4mm;background:#fbfdfc}
+.comment-box h3{font-size:12px;color:var(--green-dark);margin:0 0 1.5mm}
+.comment-box textarea{border:0!important;background:transparent!important;min-height:auto!important;height:auto!important;resize:none!important;padding:0!important;font-size:9.5px;line-height:1.7;overflow:visible!important}
+.official-note{display:block;font-size:8.5px;color:#61766f;margin-top:3mm;text-align:center}
+.signatures{display:flex!important;justify-content:space-between;gap:8mm;border-top:1px solid #8db7aa;padding-top:3mm;margin-top:5mm;font-size:9.5px;font-weight:700;page-break-inside:avoid}
+.kpis,.two,.comment-box{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<header class="head"><div class="inner"><h1>📑 مركز تقارير الخطة التدفقية</h1><p>تقارير شهرية وشاملة وتتبع تطور التنفيذ مع تعليق وتوصيات قابلة للتعديل والحفظ والطباعة.</p></div></header>
+<main class="container">
+<div class="top"><a class="btn soft" href="index.html">← العودة إلى الخطة التدفقية</a><div><a class="btn soft" href="manage.html">🗂️ إدارة الخطة</a> <button class="btn main" onclick="window.print()">🖨️ طباعة التقرير</button></div></div>
+<div id="accessBox" class="access">جاري تحميل حسابك وبيانات التقارير...</div>
+<div id="pageStatus" class="status info">جاري الاتصال بقاعدة البيانات...</div>
+
+<section class="card filters-card">
+<div class="tabs"><button class="btn tab active" data-type="monthly">التقرير الشهري</button><button class="btn tab" data-type="comprehensive">التقرير الشامل</button><button class="btn tab" data-type="tracking">التقرير التتبعي</button></div>
+<div class="filters">
+<div class="field"><label>السنة الدراسية</label><select id="year"><option value="2026-2027">2026 / 2027</option><option value="2027-2028">2027 / 2028</option></select></div>
+<div class="field" id="monthField"><label>الشهر</label><select id="month"><option value="9">سبتمبر</option><option value="10">أكتوبر</option><option value="11">نوفمبر</option><option value="12">ديسمبر</option><option value="1">يناير</option><option value="2">فبراير</option><option value="3">مارس</option><option value="4">أبريل</option><option value="5">مايو</option><option value="6">يونيو</option></select></div>
+<div class="field"><label>القسم</label><select id="department"><option value="all">جميع الأقسام المتاحة</option></select></div>
+<div class="field"><label>المجال</label><select id="domain"><option value="all">جميع المجالات</option><option value="academic">مجال الإنجاز الأكاديمي</option><option value="personal">مجال التطور الشخصي للطلبة ورعايتهم</option><option value="teaching">مجال التعليم والتعلم والتقويم</option><option value="leadership">مجال القيادة والإدارة</option></select></div>
+</div></section>
+
+<section id="reportArea" class="card">
+<div class="print-head"><img src="../../assets/school-header.jpg"><h2 id="printTitle">تقرير الخطة التدفقية</h2><div id="printScope"></div></div>
+<h2 id="reportTitle" class="section-title">التقرير الشهري</h2>
+<div id="kpis" class="kpis"></div>
+<div id="reportBody"></div>
+<section class="comment-box" style="margin-top:18px"><h3>التعليق الإداري</h3><textarea id="commentary"></textarea><h3>التوصيات</h3><textarea id="recommendations"></textarea><div class="comment-actions"><button class="btn main" id="saveNote">حفظ التعليق والتوصيات</button><button class="btn soft" id="restoreAuto">استعادة الصياغة التلقائية</button></div></section>
+<div class="official-note">تقرير آلي مستخرج من منظومة متابعة الخطة التدفقية ويعتمد على بيانات المتابعة المسجلة في المنصة.</div>\n<div class="signatures"><span id="preparedBy"></span><span>المديرة المساعدة: خلود الكعبي</span><span>مديرة المدرسة: أحلام السويدي</span></div>
+</section>
+</main>
+
+<script src="../../js/config.js?v=20260914-reports-v4"></script>
+<script>
+"use strict";
+const sb=window.supabase.createClient(window.WR_CONFIG.supabaseUrl,window.WR_CONFIG.supabaseKey);
+const MONTHS=[9,10,11,12,1,2,3,4,5,6],MN={1:"يناير",2:"فبراير",3:"مارس",4:"أبريل",5:"مايو",6:"يونيو",9:"سبتمبر",10:"أكتوبر",11:"نوفمبر",12:"ديسمبر"};
+const $=id=>document.getElementById(id),pct=(a,b)=>b?Math.round(a*100/b):0,esc=v=>String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+let type="monthly",user=null,displayName="",plans=[],procedures=[],followups=[],departments=[],autoComment="",autoRecommendations="";
+
+function status(m,t="info"){const x=$("pageStatus");x.className=`status ${t}`;x.textContent=m}
+function domainKey(p){const d=String(p.domain_name||p.program_name||"");if(d.includes("الإنجاز الأكاديمي")||d.includes("آفاق"))return"academic";if(d.includes("التطور الشخصي")||d.includes("رايات"))return"personal";if(d.includes("التعليم والتعلم")||d.includes("مداد"))return"teaching";if(d.includes("القيادة والإدارة")||d.includes("خطى"))return"leadership";return"unknown"}
+function domainName(k){return{academic:"مجال الإنجاز الأكاديمي",personal:"مجال التطور الشخصي للطلبة ورعايتهم",teaching:"مجال التعليم والتعلم والتقويم",leadership:"مجال القيادة والإدارة",unknown:"غير مصنف"}[k]||k}
+
+async function bootstrap(){
+  try{
+    const {data:{session},error}=await sb.auth.getSession();
+    if(error)throw error;
+    user=session?.user||null;
+    if(!user){status("لم يتم العثور على جلسة دخول. سيتم تحويلك إلى تسجيل الدخول.","error");setTimeout(()=>location.href="../../index.html",1200);return}
+
+    displayName=user.email||"";
+    try{
+      const pr=await sb.from("user_profiles").select("full_name").eq("user_id",user.id).maybeSingle();
+      if(!pr.error && pr.data?.full_name)displayName=pr.data.full_name;
+    }catch(_){}
+
+    $("accessBox").textContent=`الحساب: ${displayName} — يتم عرض التقارير المسموح بها لحسابك.`;
+    $("preparedBy").textContent=`إعداد ومتابعة: ${displayName}`;
+
+    await loadData();
+    bind();
+    const q=new URLSearchParams(location.search).get("type");
+    if(["monthly","comprehensive","tracking"].includes(q))type=q;
+    await render();
+    status(`تم تحميل بيانات التقارير: ${plans.length} خطة، ${procedures.length} إجراء، ${followups.length} متابعة.`,"success");
+  }catch(e){
+    console.error(e);
+    status("تعذر تحميل التقارير: "+(e.message||e),"error");
+  }
+}
+
+async function loadData(){
+  const d=await sb.from("departments").select("id,name").order("name");
+  if(d.error)throw d.error;departments=d.data||[];
+
+  const p=await sb.from("plans").select("id,department_id,school_year,plan_title,status");
+  if(p.error)throw p.error;plans=p.data||[];
+
+  const ids=plans.map(x=>x.id);
+  procedures=[];followups=[];
+  if(ids.length){
+    const pr=await sb.from("plan_procedures").select("id,plan_id,sequence_no,path_code,domain_name,program_name,procedure_text,planned_months").in("plan_id",ids);
+    if(pr.error)throw pr.error;procedures=pr.data||[];
+    const fu=await sb.from("plan_monthly_followups").select("id,plan_id,procedure_id,month_no,execution_status,non_completion_reason,followup_notes,updated_at").in("plan_id",ids);
+    if(fu.error)throw fu.error;followups=fu.data||[];
+  }
+
+  const visible=new Set(plans.map(x=>x.department_id));
+  $("department").innerHTML='<option value="all">جميع الأقسام المتاحة</option>'+departments.filter(x=>visible.has(x.id)).map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join("");
+}
+
+function bind(){
+  document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",async()=>{type=b.dataset.type;await render()}));
+  ["year","month","department","domain"].forEach(id=>$(id).addEventListener("change",render));
+  $("saveNote").addEventListener("click",saveNote);
+  $("restoreAuto").addEventListener("click",()=>{$("commentary").value=autoComment;$("recommendations").value=autoRecommendations});
+}
+function selectedPlans(){const y=$("year").value,d=$("department").value;return plans.filter(p=>p.school_year===y&&(d==="all"||p.department_id===d))}
+function selectedProcedures(){const ids=new Set(selectedPlans().map(p=>p.id)),d=$("domain").value;return procedures.filter(p=>ids.has(p.plan_id)&&(d==="all"||domainKey(p)===d))}
+function selectedFollowups(allMonths=false){const ids=new Set(selectedProcedures().map(p=>p.id)),m=Number($("month").value);return followups.filter(f=>ids.has(f.procedure_id)&&(allMonths||f.month_no===m))}
+function counts(rows){return{total:rows.length,completed:rows.filter(x=>x.execution_status==="completed").length,progress:rows.filter(x=>x.execution_status==="in_progress").length,not:rows.filter(x=>x.execution_status==="not_completed").length,pending:rows.filter(x=>!x.execution_status||x.execution_status==="pending").length}}
+function kpis(c){$("kpis").innerHTML=[["إجمالي المتابعات",c.total],["نفذ",c.completed],["جاري التنفيذ",c.progress],["لم ينفذ",c.not],["لم يتم التحديث",c.pending],["نسبة التنفيذ",pct(c.completed,c.total)+"%"]].map(x=>`<div class="kpi"><strong>${x[1]}</strong><span>${x[0]}</span></div>`).join("")}
+function aggregate(rows,keyFn,labelFn){const map=new Map();for(const r of rows){const k=keyFn(r);const x=map.get(k)||{key:k,total:0,completed:0,progress:0,not:0,pending:0};x.total++;if(r.execution_status==="completed")x.completed++;else if(r.execution_status==="in_progress")x.progress++;else if(r.execution_status==="not_completed")x.not++;else x.pending++;map.set(k,x)}return[...map.values()].map(x=>({...x,label:labelFn(x.key),rate:pct(x.completed,x.total)})).sort((a,b)=>b.rate-a.rate)}
+function depOf(f){return plans.find(x=>x.id===f.plan_id)?.department_id||"unknown"}
+function procOf(f){return procedures.find(x=>x.id===f.procedure_id)}
+function table(title,rows){return`<section class="card"><h3 class="section-title">${title}</h3><div class="table-wrap"><table><thead><tr><th>البيان</th><th>الإجمالي</th><th>نفذ</th><th>جاري</th><th>لم ينفذ</th><th>غير محدث</th><th>نسبة التنفيذ</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.label)}</td><td>${r.total}</td><td>${r.completed}</td><td>${r.progress}</td><td>${r.not}</td><td>${r.pending}</td><td>${r.rate}%</td></tr>`).join("")||'<tr><td colspan="7">لا توجد بيانات</td></tr>'}</tbody></table></div></section>`}
+
+async function render(){
+  document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.type===type));
+  $("monthField").style.display=type==="monthly"?"block":"none";
+  const titles={monthly:"التقرير الشهري",comprehensive:"التقرير الشامل",tracking:"التقرير التتبعي"};
+  $("reportTitle").textContent=titles[type];$("printTitle").textContent=titles[type]+" للخطة التدفقية";
+  $("printScope").textContent=`${$("year").value}${type==="monthly"?" — "+MN[$("month").value]:""} — ${$("department").selectedOptions[0]?.textContent||""} — ${$("domain").selectedOptions[0]?.textContent||""}`;
+
+  const rows=selectedFollowups(type!=="monthly"),c=counts(rows);kpis(c);
+  if(type==="monthly")renderMonthly(rows,c);else if(type==="comprehensive")renderComprehensive(rows,c);else renderTracking(rows);
+  await loadNote();
+}
+function renderMonthly(rows,c){
+  const dep=aggregate(rows,depOf,k=>departments.find(x=>x.id===k)?.name||"غير معروف");
+  const dom=aggregate(rows,f=>domainKey(procOf(f)||{}),domainName);
+  $("reportBody").innerHTML=`<div class="two">${table("النتائج حسب الأقسام",dep)}${table("النتائج حسب المجالات",dom)}</div>`;
+  autoComment=`خلال شهر ${MN[$("month").value]} بلغ إجمالي إجراءات المتابعة ${c.total} إجراء، نُفذ منها ${c.completed} بنسبة ${pct(c.completed,c.total)}%، وبلغ الجاري تنفيذه ${c.progress}، بينما لم ينفذ ${c.not}، ولم يتم تحديث ${c.pending} إجراء.`;
+  autoRecommendations=`الاستمرار في متابعة الإجراءات الجاري تنفيذها، والتركيز على الإجراءات غير المنفذة وغير المحدثة، ومراجعة أسباب التعثر مع الأقسام والمجالات الأقل تنفيذًا.`;
+}
+function renderComprehensive(rows,c){
+  const dep=aggregate(rows,depOf,k=>departments.find(x=>x.id===k)?.name||"غير معروف");
+  const dom=aggregate(rows,f=>domainKey(procOf(f)||{}),domainName);
+  const mon=aggregate(rows,f=>f.month_no,k=>MN[k]||k).sort((a,b)=>MONTHS.indexOf(a.key)-MONTHS.indexOf(b.key));
+  $("reportBody").innerHTML=`<div class="two">${table("الأداء السنوي حسب الأقسام",dep)}${table("الأداء السنوي حسب المجالات",dom)}</div>${table("الأداء حسب الشهور",mon)}`;
+  autoComment=`بلغ إجمالي متابعات الخطة خلال العام ${c.total} متابعة، منها ${c.completed} منفذة بنسبة ${pct(c.completed,c.total)}%، و${c.progress} جاري تنفيذها، و${c.not} لم تنفذ، و${c.pending} لم يتم تحديثها.`;
+  autoRecommendations=`توجيه المتابعة نحو الإجراءات المتعثرة وغير المحدثة، ووضع إجراءات دعم للأقسام والمجالات الأقل تنفيذًا، ومراجعة أسباب عدم التنفيذ دوريًا.`;
+}
+function renderTracking(rows){
+  const mon=aggregate(rows,f=>f.month_no,k=>MN[k]||k).sort((a,b)=>MONTHS.indexOf(a.key)-MONTHS.indexOf(b.key));
+  $("reportBody").innerHTML=table("التطور الشهري",mon);
+  const first=mon.find(x=>x.total>0),last=[...mon].reverse().find(x=>x.total>0);
+  const delta=first&&last?last.rate-first.rate:0;
+  const trend=delta>3?"تحسن":delta<-3?"تراجع":"استقرار";
+  autoComment=`يظهر التتبع الزمني للخطة اتجاهًا عامًا نحو «${trend}»${first&&last?` من ${first.rate}% في ${first.label} إلى ${last.rate}% في ${last.label}.`:"."}`;
+  autoRecommendations=trend==="تراجع"?"تحديد أسباب التراجع ومراجعة الإجراءات المتعثرة ووضع مواعيد تصحيحية واضحة ومتابعتها شهريًا.":trend==="تحسن"?"الحفاظ على وتيرة التحسن وتوجيه الدعم إلى الأقسام أو المجالات الأقل إنجازًا.":"معالجة الإجراءات غير المحدثة والمتعثرة وتحديد أولويات شهرية واضحة للإنجاز.";
+}
+function reportKey(){return[type,$("year").value,type==="monthly"?$("month").value:"all",$("department").value,$("domain").value].join("|")}
+async function loadNote(){
+  const r=await sb.from("plan_report_notes").select("commentary,recommendations").eq("owner_id",user.id).eq("report_key",reportKey()).maybeSingle();
+  if(r.error){console.warn(r.error);$("commentary").value=autoComment;$("recommendations").value=autoRecommendations;return}
+  $("commentary").value=r.data?.commentary||autoComment;$("recommendations").value=r.data?.recommendations||autoRecommendations;
+}
+async function saveNote(){
+  const row={owner_id:user.id,report_key:reportKey(),school_year:$("year").value,report_type:type,month_no:type==="monthly"?Number($("month").value):null,department_scope:$("department").value,domain_scope:$("domain").value,commentary:$("commentary").value,recommendations:$("recommendations").value,updated_at:new Date().toISOString()};
+  const r=await sb.from("plan_report_notes").upsert(row,{onConflict:"owner_id,report_key"});
+  if(r.error){status("تعذر حفظ التعليق: "+r.error.message,"error");return}
+  status("تم حفظ التعليق والتوصيات لهذا التقرير.","success");
+}
+document.addEventListener("DOMContentLoaded",bootstrap);
+</script>
+</body></html>

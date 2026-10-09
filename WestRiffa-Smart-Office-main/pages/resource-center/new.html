@@ -1,0 +1,2236 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>توثيق خدمات وتفعيلات مركز مصادر التعلم</title>
+
+<link rel="stylesheet" href="../../css/app.css">
+<link rel="stylesheet" href="../../css/resource-center.css">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:#f4f7f6;
+  color:#173c34;
+  font-family:Tahoma,Arial,sans-serif
+}
+
+.hero{
+  background:linear-gradient(135deg,#075c40,#16805e);
+  color:#fff;
+  padding:26px
+}
+
+.wrap{
+  width:min(1180px,94%);
+  margin:auto
+}
+
+.hero h1{margin:0 0 7px}
+.hero p{margin:0;opacity:.92}
+
+.top{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+  margin:20px 0;
+  flex-wrap:wrap
+}
+
+.btn,.back{
+  border:0;
+  border-radius:11px;
+  padding:10px 15px;
+  text-decoration:none;
+  font:inherit;
+  font-weight:700;
+  cursor:pointer
+}
+
+.btn{
+  background:#075c40;
+  color:#fff
+}
+
+.btn:disabled{
+  opacity:.65;
+  cursor:not-allowed
+}
+
+.back{
+  background:#fff;
+  border:1px solid #dfe9e5;
+  color:#075c40
+}
+
+.card{
+  background:#fff;
+  border:1px solid #e0ebe6;
+  border-radius:18px;
+  padding:20px;
+  box-shadow:0 7px 20px rgba(7,92,64,.06);
+  margin-bottom:16px
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px
+}
+
+.field label{
+  display:block;
+  font-weight:700;
+  margin:0 0 7px
+}
+
+.field input,
+.field select,
+.field textarea{
+  width:100%;
+  padding:11px;
+  border:1px solid #cfded8;
+  border-radius:10px;
+  font:inherit;
+  background:#fff
+}
+
+.field textarea{
+  resize:vertical;
+  min-height:100px;
+  line-height:1.8
+}
+
+.muted{
+  color:#6a7d76;
+  line-height:1.7
+}
+
+.auto{
+  background:#f1f8f5;
+  border:1px solid #d6e9e1;
+  border-radius:12px;
+  padding:13px;
+  line-height:1.8
+}
+
+.notice{
+  padding:12px 15px;
+  border-radius:12px;
+  margin:12px 0;
+  background:#fff8e7;
+  border:1px solid #f1dfad;
+  color:#74580b
+}
+
+.ok{
+  background:#eaf8ef;
+  border-color:#c7e8d1;
+  color:#166534
+}
+
+.photos{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px
+}
+
+.photos img{
+  width:100%;
+  height:180px;
+  object-fit:cover;
+  border-radius:12px;
+  border:1px solid #ddd
+}
+
+.actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:16px
+}
+
+.hidden{
+  display:none!important
+}
+
+.type-note{
+  margin-top:10px;
+  padding:11px 13px;
+  border-radius:11px;
+  background:#f8fbfa;
+  border:1px solid #e0ebe6;
+  color:#587069;
+  font-size:13px;
+  line-height:1.7
+}
+
+.edit-banner{
+  display:none;
+  margin:0 0 16px;
+  padding:13px 15px;
+  border-radius:12px;
+  background:#eef7ff;
+  border:1px solid #cfe5f5;
+  color:#155b8a;
+  font-weight:700
+}
+
+.edit-banner.show{
+  display:block
+}
+
+@media(max-width:760px){
+  .grid{grid-template-columns:1fr}
+  .photos{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<header class="hero">
+  <div class="wrap" style="display:flex;align-items:center;gap:16px">
+
+    <div class="rc-school-mark">
+      <img src="../../assets/school-header.jpg" alt="شعار المدرسة">
+    </div>
+
+    <div>
+      <h1 id="pageTitle">📸 توثيق خدمات وتفعيلات مركز مصادر التعلم</h1>
+      <p id="pageSub">
+        وثّقي التفعيل أو الخدمة بخطوات بسيطة،
+        ويُنشئ النظام الهدف والوصف والتقرير تلقائيًا.
+      </p>
+    </div>
+
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="top">
+
+    <a class="back" href="index.html">
+      ← مركز مصادر التعلم
+    </a>
+
+    <div id="who"></div>
+
+  </div>
+
+  <div id="editBanner" class="edit-banner">
+    ✏️ أنتِ الآن تعدلين سجلًا محفوظًا. سيتم تحديث نفس السجل ولن يتم إنشاء سجل جديد.
+  </div>
+
+  <div id="msg"></div>
+
+  <form id="f" class="card">
+
+    <div class="grid">
+
+      <div class="field">
+        <label>اسم المعلمة / المستفيدة</label>
+        <input id="teacher" readonly>
+      </div>
+
+      <div class="field">
+
+        <label>نوع الخدمة / التفعيل</label>
+
+        <select id="type" required>
+
+          <option value="">اختاري…</option>
+
+          <optgroup label="تفعيلات طلابية">
+
+            <option value="reading">حصة قراءة</option>
+
+            <option value="reserve">حصة احتياط</option>
+
+            <option value="resource">حصة مصادر تعلم</option>
+
+            <option value="subject">تفعيل مادة دراسية</option>
+
+            <option value="special">تربية خاصة / دمج</option>
+
+            <option value="activity">نشاط تعليمي</option>
+
+            <option value="break_activity">تفعيل الفسحة</option>
+
+          </optgroup>
+
+          <optgroup label="خدمات دعم المعلمات">
+
+            <option value="loan">
+              إعارة قصة / كتاب / مورد للتفعيل
+            </option>
+
+            <option value="lamination">
+              تغليف حراري
+            </option>
+
+            <option value="material_prep">
+              طباعة / تجهيز مواد تعليمية
+            </option>
+
+            <option value="resource_support">
+              مساعدة في إعداد مورد أو نشاط
+            </option>
+
+            <option value="equipment">
+              استخدام تجهيزات المركز
+            </option>
+
+            <option value="other_service">
+              خدمة أخرى
+            </option>
+
+          </optgroup>
+
+        </select>
+
+        <div id="typeNote" class="type-note hidden"></div>
+
+      </div>
+
+      <div class="field studentField">
+
+        <label>الصف</label>
+
+        <select id="grade">
+          <option value="">اختاري…</option>
+          <option>الأول</option>
+          <option>الثاني</option>
+          <option>الثالث</option>
+          <option>الرابع</option>
+          <option>الخامس</option>
+        </select>
+
+      </div>
+
+      <div class="field studentField">
+
+        <label>الشعبة</label>
+
+        <select id="section">
+          <option value="">اختاري…</option>
+          <option>1</option>
+          <option>2</option>
+          <option>3</option>
+          <option>4</option>
+          <option>5</option>
+        </select>
+
+      </div>
+
+      <div class="field studentField">
+
+        <label>عدد الطلاب الحاضرين</label>
+
+        <input
+          id="count"
+          type="number"
+          min="1"
+          max="100"
+        >
+
+      </div>
+
+      <div class="field hidden" id="subjectBox">
+
+        <label>المادة</label>
+
+        <input
+          id="subject"
+          placeholder="اسم المادة"
+        >
+
+      </div>
+
+      <div class="field hidden" id="resourceTypeBox">
+
+        <label>نوع المورد المعار</label>
+
+        <select id="resourceType">
+
+          <option value="">اختاري…</option>
+          <option value="قصة">قصة</option>
+          <option value="كتاب">كتاب</option>
+          <option value="وسيلة تعليمية">وسيلة تعليمية</option>
+          <option value="مورد تعليمي">مورد تعليمي</option>
+          <option value="أخرى">أخرى</option>
+
+        </select>
+
+      </div>
+
+      <div class="field hidden" id="resourceNameBox">
+
+        <label>اسم المورد / القصة</label>
+
+        <input
+          id="resourceName"
+          placeholder="مثال: قصة الأسد والفأر"
+        >
+
+      </div>
+
+      <div class="field hidden" id="quantityBox">
+
+        <label>الكمية</label>
+
+        <input
+          id="quantity"
+          type="number"
+          min="1"
+          max="100"
+          value="1"
+        >
+
+      </div>
+
+      <div class="field hidden" id="serviceDetailsBox">
+
+        <label>تفاصيل مختصرة</label>
+
+        <input
+          id="serviceDetails"
+          maxlength="150"
+          placeholder="اكتبي وصفًا مختصرًا عند الحاجة"
+        >
+
+      </div>
+
+    </div>
+
+    <h3>الهدف والوصف</h3>
+
+    <div class="auto">
+      <b>الهدف:</b>
+      <span id="goal">
+        يظهر بعد اختيار نوع الخدمة / التفعيل.
+      </span>
+    </div>
+
+    <div class="field" style="margin-top:14px">
+
+      <label>
+        الوصف
+        <span class="muted" style="font-weight:400">
+          — يُكتب تلقائيًا ويمكنكِ الإضافة عليه أو تعديله
+        </span>
+      </label>
+
+      <textarea
+        id="description"
+        placeholder="سيظهر الوصف تلقائيًا بعد اختيار نوع الخدمة / التفعيل."
+      ></textarea>
+
+    </div>
+
+    <div
+      class="field"
+      id="photosBox"
+      style="margin-top:16px"
+    >
+
+      <label id="photosLabel">
+        شواهد التفعيل (1–3 صور)
+      </label>
+
+      <input
+        id="photos"
+        type="file"
+        accept="image/*"
+        multiple
+      >
+
+      <div id="photosHelp" class="muted">
+        يمكن رفع صورة أو صورتين أو ثلاث صور. الحد الأقصى 3.
+      </div>
+
+    </div>
+
+    <div
+      id="preview"
+      class="photos"
+      style="margin-top:12px"
+    ></div>
+
+    <div class="actions">
+
+      <button
+        id="saveBtn"
+        class="btn"
+        type="submit"
+      >
+        💾 حفظ واعتماد التوثيق
+      </button>
+
+    </div>
+
+  </form>
+
+</main>
+
+<script src="../../js/config.js"></script>
+<script src="../../js/graph.js"></script>
+<script src="../../js/common.js"></script>
+<script src="../../js/resource-center.js"></script>
+
+<script>
+(function(){
+
+  let RC = null;
+
+  let editId = null;
+
+  let editingRow = null;
+
+  let existingEvidencePaths = [];
+
+  let loadingExistingRecord = false;
+
+
+  const byId = function(id){
+    return document.getElementById(id);
+  };
+
+
+  const activationTexts = {
+
+    reading:{
+      label:'حصة قراءة',
+      group:'student',
+
+      goal:
+        'تنمية مهارات القراءة والفهم وتعزيز اتجاهات الطلبة الإيجابية نحو القراءة.',
+
+      desc:
+        'تم تفعيل مركز مصادر التعلم من خلال حصة قراءة تفاعلية هدفت إلى تشجيع الطلبة على القراءة والفهم والمشاركة في مناقشة المحتوى.'
+    },
+
+
+    reserve:{
+      label:'حصة احتياط',
+      group:'student',
+
+      goal:
+        'استثمار وقت حصة الاحتياط في تعلم هادف وجاذب داخل مركز مصادر التعلم.',
+
+      desc:
+        'تم استثمار حصة الاحتياط في مركز مصادر التعلم من خلال نشاط تعليمي هادف أسهم في تعزيز مشاركة الطلبة والاستفادة من مصادر التعلم المتاحة.'
+    },
+
+
+    resource:{
+      label:'حصة مصادر تعلم',
+      group:'student',
+
+      goal:
+        'توظيف مصادر التعلم المتنوعة لدعم تعلم الطلبة وتنمية مهارات البحث والاستكشاف.',
+
+      desc:
+        'تم تفعيل مركز مصادر التعلم من خلال توظيف موارده وأنشطته بما يدعم تعلم الطلبة ويعزز مشاركتهم الفاعلة.'
+    },
+
+
+    subject:{
+      label:'تفعيل مادة دراسية',
+      group:'student',
+
+      goal:
+        'دعم تعلم الطلبة من خلال توظيف مركز مصادر التعلم في تعزيز محتوى المادة الدراسية.',
+
+      desc:
+        'تم تفعيل مركز مصادر التعلم لدعم أحد موضوعات المادة الدراسية باستخدام مصادر وأنشطة تعليمية متنوعة تسهم في ترسيخ التعلم.'
+    },
+
+
+    special:{
+      label:'تربية خاصة / دمج',
+      group:'student',
+
+      goal:
+        'توفير خبرات تعلم متنوعة تراعي احتياجات الطلبة وفروقهم الفردية.',
+
+      desc:
+        'تم تفعيل مركز مصادر التعلم من خلال نشاط مناسب لاحتياجات الطلبة، مع توظيف الموارد بصورة تدعم المشاركة والتعلم وفق الفروق الفردية.'
+    },
+
+
+    activity:{
+      label:'نشاط تعليمي',
+      group:'student',
+
+      goal:
+        'تعزيز التعلم النشط وتنمية المشاركة والتفاعل لدى الطلبة.',
+
+      desc:
+        'تم تنفيذ نشاط تعليمي داخل مركز مصادر التعلم اعتمد على مشاركة الطلبة وتفاعلهم والاستفادة من البيئة التعليمية للمركز.'
+    },
+
+
+    break_activity:{
+      label:'تفعيل الفسحة',
+      group:'student',
+
+      goal:
+        'استثمار وقت الفسحة في أنشطة قرائية وتعليمية جاذبة وتعزيز ارتباط الطلبة بمركز مصادر التعلم.',
+
+      desc:
+        'تم تفعيل مركز مصادر التعلم خلال فترة الفسحة من خلال استقبال الطلبة وتنفيذ نشاط قرائي أو تعليمي جاذب أسهم في تعزيز المشاركة والاستفادة من بيئة المركز.'
+    },
+
+
+    loan:{
+      label:'إعارة قصة / كتاب / مورد للتفعيل',
+      group:'service',
+
+      goal:
+        'دعم المعلمات بالمصادر والموارد التعليمية المناسبة لتفعيل التعلم داخل الصف وخارجه.',
+
+      desc:
+        'تم تقديم خدمة إعارة مورد تعليمي من مركز مصادر التعلم لدعم تنفيذ نشاط أو تفعيل تعليمي.'
+    },
+
+
+    lamination:{
+      label:'تغليف حراري',
+      group:'service',
+
+      goal:
+        'دعم المعلمات في تجهيز وحفظ المواد والوسائل التعليمية المستخدمة في العملية التعليمية.',
+
+      desc:
+        'تم تقديم خدمة التغليف الحراري لإحدى المواد أو الوسائل التعليمية بما يدعم جاهزيتها للاستخدام ويحافظ عليها.'
+    },
+
+
+    material_prep:{
+      label:'طباعة / تجهيز مواد تعليمية',
+      group:'service',
+
+      goal:
+        'دعم تنفيذ الأنشطة والممارسات التعليمية من خلال المساعدة في تجهيز المواد والموارد المطلوبة.',
+
+      desc:
+        'تم تقديم خدمة طباعة أو تجهيز مواد تعليمية لدعم تنفيذ نشاط أو ممارسة تعليمية.'
+    },
+
+
+    resource_support:{
+      label:'مساعدة في إعداد مورد أو نشاط',
+      group:'service',
+
+      goal:
+        'تقديم الدعم الفني والتعليمي للمعلمات في إعداد موارد وأنشطة تعليمية مناسبة.',
+
+      desc:
+        'تم تقديم دعم للمعلمة في إعداد أو تطوير مورد أو نشاط تعليمي بما يسهم في تحسين جاهزية الممارسة التعليمية.'
+    },
+
+
+    equipment:{
+      label:'استخدام تجهيزات المركز',
+      group:'service',
+
+      goal:
+        'إتاحة تجهيزات مركز مصادر التعلم لدعم تنفيذ الأنشطة والممارسات التعليمية.',
+
+      desc:
+        'تمت الاستفادة من أحد تجهيزات مركز مصادر التعلم لدعم تنفيذ نشاط أو ممارسة تعليمية.'
+    },
+
+
+    other_service:{
+      label:'خدمة أخرى',
+      group:'service',
+
+      goal:
+        'تقديم خدمة مساندة تسهم في دعم العملية التعليمية وتلبية احتياجات المستفيدين من مركز مصادر التعلم.',
+
+      desc:
+        'تم تقديم خدمة مساندة من مركز مصادر التعلم وفق احتياج المستفيدة.'
+    }
+
+  };
+
+
+  function showMessage(text,success){
+
+    byId('msg').innerHTML =
+      '<div class="notice ' +
+      (success ? 'ok' : '') +
+      '">' +
+      text +
+      '</div>';
+
+  }
+
+
+  function isServiceType(typeValue){
+
+    const item =
+      activationTexts[typeValue];
+
+    return !!(
+      item &&
+      item.group === 'service'
+    );
+
+  }
+
+
+  function updateActivationFields(options){
+
+    options = options || {};
+
+    const preserveDescription =
+      !!options.preserveDescription;
+
+    const typeValue =
+      byId('type').value;
+
+    const data =
+      activationTexts[typeValue];
+
+
+    if(!data){
+
+      byId('goal').textContent =
+        'يظهر بعد اختيار نوع الخدمة / التفعيل.';
+
+      if(!preserveDescription){
+        byId('description').value = '';
+      }
+
+
+      document
+        .querySelectorAll('.studentField')
+        .forEach(function(el){
+          el.classList.remove('hidden');
+        });
+
+
+      byId('subjectBox')
+        .classList.add('hidden');
+
+      byId('resourceTypeBox')
+        .classList.add('hidden');
+
+      byId('resourceNameBox')
+        .classList.add('hidden');
+
+      byId('quantityBox')
+        .classList.add('hidden');
+
+      byId('serviceDetailsBox')
+        .classList.add('hidden');
+
+      byId('typeNote')
+        .classList.add('hidden');
+
+
+      byId('grade').required = true;
+      byId('section').required = true;
+      byId('count').required = true;
+
+      byId('subject').required = false;
+
+      byId('resourceType').required = false;
+      byId('resourceName').required = false;
+      byId('quantity').required = false;
+
+      byId('serviceDetails').required = false;
+
+      byId('photos').required =
+        !editId;
+
+      return;
+    }
+
+
+    byId('goal').textContent =
+      data.goal;
+
+
+    if(!preserveDescription){
+      byId('description').value =
+        data.desc;
+    }
+
+
+    const service =
+      data.group === 'service';
+
+
+    document
+      .querySelectorAll('.studentField')
+      .forEach(function(el){
+
+        el.classList.toggle(
+          'hidden',
+          service
+        );
+
+      });
+
+
+    byId('grade').required =
+      !service;
+
+    byId('section').required =
+      !service;
+
+    byId('count').required =
+      !service;
+
+
+    const subjectType =
+      typeValue === 'subject';
+
+
+    byId('subjectBox')
+      .classList.toggle(
+        'hidden',
+        !subjectType
+      );
+
+
+    byId('subject').required =
+      subjectType;
+
+
+    const loanType =
+      typeValue === 'loan';
+
+
+    byId('resourceTypeBox')
+      .classList.toggle(
+        'hidden',
+        !loanType
+      );
+
+
+    byId('resourceNameBox')
+      .classList.toggle(
+        'hidden',
+        !loanType
+      );
+
+
+    byId('quantityBox')
+      .classList.toggle(
+        'hidden',
+        !loanType
+      );
+
+
+    byId('resourceType').required =
+      loanType && !editId;
+
+    byId('resourceName').required =
+      loanType && !editId;
+
+    byId('quantity').required =
+      loanType && !editId;
+
+
+    const detailTypes = [
+      'lamination',
+      'material_prep',
+      'resource_support',
+      'equipment',
+      'other_service'
+    ];
+
+
+    const needsDetails =
+      detailTypes.includes(typeValue);
+
+
+    byId('serviceDetailsBox')
+      .classList.toggle(
+        'hidden',
+        !needsDetails
+      );
+
+
+    byId('serviceDetails').required =
+      typeValue === 'other_service' &&
+      !editId;
+
+
+    if(service){
+
+      byId('photosLabel').textContent =
+        'شاهد الخدمة (اختياري – حتى 3 صور)';
+
+
+      byId('photos').required =
+        false;
+
+
+      if(
+        editId &&
+        existingEvidencePaths.length
+      ){
+
+        byId('photosHelp').textContent =
+          'الشواهد الحالية محفوظة. ارفعي صورًا جديدة فقط إذا أردتِ استبدالها.';
+
+      }else{
+
+        byId('photosHelp').textContent =
+          'يمكن إرفاق صورة للخدمة عند الحاجة، ويمكن حفظ الخدمة بدون صورة.';
+
+      }
+
+
+      byId('typeNote').textContent =
+        'هذه خدمة دعم للمعلمات؛ لذلك لا يلزم إدخال الصف أو الشعبة أو عدد الطلاب.';
+
+
+      byId('typeNote')
+        .classList.remove('hidden');
+
+    }else{
+
+      byId('photosLabel').textContent =
+        'شواهد التفعيل (1–3 صور)';
+
+
+      if(
+        editId &&
+        existingEvidencePaths.length
+      ){
+
+        byId('photos').required =
+          false;
+
+        byId('photosHelp').textContent =
+          'الشواهد الحالية محفوظة. ارفعي صورًا جديدة فقط إذا أردتِ استبدالها.';
+
+      }else{
+
+        byId('photos').required =
+          true;
+
+        byId('photosHelp').textContent =
+          'يمكن رفع صورة أو صورتين أو ثلاث صور. الحد الأقصى 3.';
+
+      }
+
+
+      byId('typeNote').textContent =
+        'هذا تفعيل مباشر مع الطلبة، وسيُحتسب ضمن مؤشرات التفعيلات واستفادة الطلبة.';
+
+
+      byId('typeNote')
+        .classList.remove('hidden');
+
+    }
+
+  }
+
+
+  function extractServiceDetailsFromDescription(description){
+
+    const text =
+      String(description || '');
+
+
+    const marker =
+      'تفاصيل الخدمة:';
+
+
+    const index =
+      text.indexOf(marker);
+
+
+    if(index === -1){
+      return '';
+    }
+
+
+    return text
+      .slice(index + marker.length)
+      .replace(/\.$/,'')
+      .trim();
+
+  }
+
+
+  function extractLoanData(description){
+
+    const text =
+      String(description || '');
+
+
+    const result = {
+      type:'',
+      name:'',
+      quantity:'1'
+    };
+
+
+    const typeMatch =
+      text.match(/نوع المورد:\s*([^،.]+)/);
+
+
+    const nameMatch =
+      text.match(/اسم المورد:\s*([^،.]+)/);
+
+
+    const quantityMatch =
+      text.match(/الكمية:\s*(\d+)/);
+
+
+    if(typeMatch){
+      result.type =
+        typeMatch[1].trim();
+    }
+
+
+    if(nameMatch){
+      result.name =
+        nameMatch[1].trim();
+    }
+
+
+    if(quantityMatch){
+      result.quantity =
+        quantityMatch[1];
+    }
+
+
+    return result;
+
+  }
+
+
+  async function signedUrl(path){
+
+    if(!path){
+      return '';
+    }
+
+
+    try{
+
+      if(
+        RC &&
+        typeof RC.signed === 'function'
+      ){
+
+        return await RC.signed(path);
+
+      }
+
+
+      const result =
+        await RC.sb
+          .storage
+          .from('resource-center-evidence')
+          .createSignedUrl(path,3600);
+
+
+      if(result.error){
+        throw result.error;
+      }
+
+
+      return result.data.signedUrl;
+
+    }catch(error){
+
+      console.warn(
+        'تعذر إنشاء رابط الشاهد:',
+        error
+      );
+
+      return '';
+
+    }
+
+  }
+
+
+  async function renderExistingEvidence(){
+
+    const preview =
+      byId('preview');
+
+
+    preview.innerHTML = '';
+
+
+    if(!existingEvidencePaths.length){
+      return;
+    }
+
+
+    for(
+      const path of existingEvidencePaths
+    ){
+
+      const image =
+        new Image();
+
+
+      image.alt =
+        'شاهد محفوظ';
+
+
+      image.style.opacity =
+        '.7';
+
+
+      preview.appendChild(image);
+
+
+      const url =
+        await signedUrl(path);
+
+
+      if(url){
+        image.src = url;
+      }
+
+    }
+
+  }
+
+
+  async function initialisePage(){
+
+    byId('teacher').value =
+      'جاري قراءة الحساب…';
+
+
+    byId('who').textContent =
+      'جاري قراءة الحساب…';
+
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+
+    editId =
+      params.get('id');
+
+
+    const editMode =
+      params.get('edit') === '1' ||
+      !!editId;
+
+
+    try{
+
+      if(
+        typeof window.wrGetCurrentProfile ===
+        'function'
+      ){
+
+        const profile =
+          await window.wrGetCurrentProfile();
+
+
+        if(profile){
+
+          const name =
+            profile.full_name ||
+            profile.name ||
+            profile.email ||
+            '';
+
+
+          if(name){
+
+            byId('teacher').value =
+              name;
+
+            byId('who').textContent =
+              name;
+
+          }
+
+        }
+
+      }
+
+    }catch(error){
+
+      console.warn(
+        'تعذر قراءة الملف الشخصي بالطريقة الأساسية:',
+        error
+      );
+
+    }
+
+
+    try{
+
+      if(!window.WRRC){
+
+        throw new Error(
+          'لم يتم تحميل وحدة مركز مصادر التعلم.'
+        );
+
+      }
+
+
+      RC =
+        await window.WRRC.init();
+
+
+      if(!RC){
+
+        throw new Error(
+          'تعذر تهيئة وحدة مركز مصادر التعلم.'
+        );
+
+      }
+
+
+      if(
+        typeof RC.resolveIdentity ===
+        'function'
+      ){
+
+        const identity =
+          await RC.resolveIdentity();
+
+
+        const name =
+          identity &&
+          (
+            identity.name ||
+            identity.full_name ||
+            identity.email
+          );
+
+
+        if(name){
+
+          byId('teacher').value =
+            name;
+
+          byId('who').textContent =
+            name;
+
+        }
+
+      }
+
+
+      if(
+        !byId('teacher').value ||
+        byId('teacher').value ===
+        'جاري قراءة الحساب…'
+      ){
+
+        const p =
+          RC.profile || {};
+
+
+        const name =
+          p.full_name ||
+          p.name ||
+          p.email ||
+          '';
+
+
+        if(name){
+
+          byId('teacher').value =
+            name;
+
+          byId('who').textContent =
+            name;
+
+        }
+
+      }
+
+
+      if(
+        editMode &&
+        editId
+      ){
+
+        await loadExistingRecord();
+
+      }
+
+    }catch(error){
+
+      console.error(
+        'Resource Center initialization error:',
+        error
+      );
+
+
+      showMessage(
+        'تعذر ربط صفحة التوثيق بالحساب أو تحميل السجل: ' +
+        (
+          error &&
+          error.message
+            ? error.message
+            : String(error)
+        ),
+        false
+      );
+
+    }
+
+  }
+
+
+  async function loadExistingRecord(){
+
+    loadingExistingRecord =
+      true;
+
+
+    const result =
+      await RC.sb
+        .from('resource_center_activations')
+        .select('*')
+        .eq('id',editId)
+        .single();
+
+
+    if(result.error){
+      throw result.error;
+    }
+
+
+    if(!result.data){
+      throw new Error(
+        'لم يتم العثور على السجل المطلوب تعديله.'
+      );
+    }
+
+
+    editingRow =
+      result.data;
+
+
+    existingEvidencePaths =
+      Array.isArray(
+        editingRow.evidence_paths
+      )
+      ? editingRow.evidence_paths
+      : [];
+
+
+    byId('pageTitle').textContent =
+      '✏️ تعديل توثيق مركز مصادر التعلم';
+
+
+    byId('pageSub').textContent =
+      'تم تحميل بيانات السجل الحالي. عدّلي المطلوب ثم احفظي التعديلات.';
+
+
+    byId('editBanner')
+      .classList.add('show');
+
+
+    byId('saveBtn').textContent =
+      '💾 حفظ التعديلات';
+
+
+    byId('teacher').value =
+      editingRow.teacher_name ||
+      byId('teacher').value;
+
+
+    byId('who').textContent =
+      editingRow.teacher_name ||
+      byId('who').textContent;
+
+
+    byId('type').value =
+      editingRow.activation_type ||
+      '';
+
+
+    updateActivationFields({
+      preserveDescription:true
+    });
+
+
+    byId('grade').value =
+      editingRow.grade ||
+      '';
+
+
+    byId('section').value =
+      editingRow.section ||
+      '';
+
+
+    byId('count').value =
+      editingRow.student_count == null
+        ? ''
+        : editingRow.student_count;
+
+
+    byId('subject').value =
+      editingRow.subject ||
+      '';
+
+
+    byId('description').value =
+      editingRow.description ||
+      (
+        activationTexts[
+          editingRow.activation_type
+        ]
+        ? activationTexts[
+            editingRow.activation_type
+          ].desc
+        : ''
+      );
+
+
+    if(
+      editingRow.activation_type ===
+      'loan'
+    ){
+
+      const loan =
+        extractLoanData(
+          editingRow.description
+        );
+
+
+      byId('resourceType').value =
+        loan.type;
+
+
+      byId('resourceName').value =
+        loan.name;
+
+
+      byId('quantity').value =
+        loan.quantity || '1';
+
+    }
+
+
+    if(
+      [
+        'lamination',
+        'material_prep',
+        'resource_support',
+        'equipment',
+        'other_service'
+      ].includes(
+        editingRow.activation_type
+      )
+    ){
+
+      byId('serviceDetails').value =
+        extractServiceDetailsFromDescription(
+          editingRow.description
+        );
+
+    }
+
+
+    await renderExistingEvidence();
+
+
+    updateActivationFields({
+      preserveDescription:true
+    });
+
+
+    loadingExistingRecord =
+      false;
+
+  }
+
+
+  byId('type').addEventListener(
+    'change',
+    function(){
+
+      /*
+       * عند تغيير النوع يدويًا نضع الوصف
+       * الافتراضي الخاص بالنوع الجديد.
+       */
+
+      updateActivationFields({
+        preserveDescription:false
+      });
+
+    }
+  );
+
+
+  byId('photos').addEventListener(
+    'change',
+    function(){
+
+      let files =
+        Array.from(
+          byId('photos').files || []
+        );
+
+
+      if(files.length > 3){
+
+        alert(
+          'الحد الأقصى 3 صور'
+        );
+
+
+        byId('photos').value =
+          '';
+
+
+        files = [];
+
+      }
+
+
+      /*
+       * إذا اختارت صورًا جديدة نعرض الجديدة.
+       * الصور القديمة لا تُحذف من السجل إلا
+       * بعد نجاح رفع الجديدة وحفظ التعديل.
+       */
+
+      byId('preview').innerHTML =
+        '';
+
+
+      if(!files.length){
+
+        if(
+          editId &&
+          existingEvidencePaths.length
+        ){
+
+          renderExistingEvidence();
+
+        }
+
+        return;
+
+      }
+
+
+      files.forEach(function(file){
+
+        const image =
+          new Image();
+
+
+        image.src =
+          URL.createObjectURL(file);
+
+
+        image.onload =
+          function(){
+
+            URL.revokeObjectURL(
+              image.src
+            );
+
+          };
+
+
+        byId('preview')
+          .appendChild(image);
+
+      });
+
+    }
+  );
+
+
+  byId('f').addEventListener(
+    'submit',
+    async function(event){
+
+      event.preventDefault();
+
+
+      const button =
+        byId('saveBtn');
+
+
+      if(!RC){
+
+        alert(
+          'لم يكتمل الاتصال بالحساب وقاعدة البيانات بعد.'
+        );
+
+        return;
+
+      }
+
+
+      const typeValue =
+        byId('type').value;
+
+
+      const typeData =
+        activationTexts[typeValue];
+
+
+      if(!typeData){
+
+        alert(
+          'اختاري نوع الخدمة / التفعيل.'
+        );
+
+        return;
+
+      }
+
+
+      const service =
+        isServiceType(typeValue);
+
+
+      if(!service){
+
+        if(!byId('grade').value){
+
+          alert('اختاري الصف.');
+          return;
+
+        }
+
+
+        if(!byId('section').value){
+
+          alert('اختاري الشعبة.');
+          return;
+
+        }
+
+
+        if(
+          !Number(
+            byId('count').value
+          )
+        ){
+
+          alert(
+            'أدخلي عدد الطلاب الحاضرين.'
+          );
+
+          return;
+
+        }
+
+      }
+
+
+      if(
+        typeValue === 'subject' &&
+        !byId('subject')
+          .value
+          .trim()
+      ){
+
+        alert(
+          'اكتبي اسم المادة.'
+        );
+
+        return;
+
+      }
+
+
+      if(
+        typeValue === 'loan' &&
+        !editId
+      ){
+
+        if(
+          !byId('resourceType').value
+        ){
+
+          alert(
+            'اختاري نوع المورد المعار.'
+          );
+
+          return;
+
+        }
+
+
+        if(
+          !byId('resourceName')
+            .value
+            .trim()
+        ){
+
+          alert(
+            'اكتبي اسم المورد أو القصة.'
+          );
+
+          return;
+
+        }
+
+      }
+
+
+      if(
+        typeValue ===
+        'other_service' &&
+        !editId &&
+        !byId('serviceDetails')
+          .value
+          .trim()
+      ){
+
+        alert(
+          'اكتبي تفاصيل الخدمة.'
+        );
+
+        return;
+
+      }
+
+
+      const customDescription =
+        byId('description')
+          .value
+          .trim();
+
+
+      if(!customDescription){
+
+        alert(
+          'الوصف لا يمكن أن يكون فارغًا.'
+        );
+
+        return;
+
+      }
+
+
+      const files =
+        Array.from(
+          byId('photos').files || []
+        );
+
+
+      if(files.length > 3){
+
+        alert(
+          'الحد الأقصى 3 صور.'
+        );
+
+        return;
+
+      }
+
+
+      /*
+       * في التعديل:
+       * الصور القديمة تكفي ولا نطلب إعادة رفعها.
+       */
+
+      if(
+        !service &&
+        files.length < 1 &&
+        existingEvidencePaths.length < 1
+      ){
+
+        alert(
+          'ارفعي من صورة إلى 3 صور للتفعيل.'
+        );
+
+        return;
+
+      }
+
+
+      button.disabled =
+        true;
+
+
+      button.textContent =
+        editId
+          ? 'جاري حفظ التعديلات…'
+          : 'جاري الحفظ…';
+
+
+      try{
+
+        const user =
+          await RC.user();
+
+
+        if(
+          !user ||
+          !user.id
+        ){
+
+          throw new Error(
+            'تعذر تحديد المستخدم المسجل حاليًا.'
+          );
+
+        }
+
+
+        let identity = {};
+
+
+        if(
+          typeof RC.resolveIdentity ===
+          'function'
+        ){
+
+          identity =
+            await RC.resolveIdentity() ||
+            {};
+
+        }
+
+
+        const profile =
+          RC.profile || {};
+
+
+        /*
+         * عند التعديل نحافظ على صاحب السجل الأصلي.
+         * الإدارة لو عدلت سجل معلمة لا يتحول السجل باسم الإدارة.
+         */
+
+        const teacherUserId =
+          editId &&
+          editingRow &&
+          editingRow.teacher_user_id
+            ? editingRow.teacher_user_id
+            : user.id;
+
+
+        const teacherName =
+          editId &&
+          editingRow &&
+          editingRow.teacher_name
+            ? editingRow.teacher_name
+            : (
+                identity.name ||
+                identity.full_name ||
+                byId('teacher').value ||
+                profile.full_name ||
+                profile.name ||
+                ''
+              );
+
+
+        if(!teacherName){
+
+          throw new Error(
+            'تعذر تحديد اسم المعلمة.'
+          );
+
+        }
+
+
+        let finalDescription =
+          customDescription;
+
+
+        /*
+         * عند إنشاء إعارة جديدة فقط:
+         * نضيف بيانات المورد إذا لم تكن موجودة أصلًا
+         * في النص الذي عدلته المعلمة.
+         */
+
+        if(
+          typeValue === 'loan' &&
+          !editId
+        ){
+
+          const resourceType =
+            byId('resourceType').value;
+
+
+          const resourceName =
+            byId('resourceName')
+              .value
+              .trim();
+
+
+          const quantity =
+            Number(
+              byId('quantity').value
+            ) || 1;
+
+
+          finalDescription +=
+            ' نوع المورد: ' +
+            resourceType +
+            '، اسم المورد: ' +
+            resourceName +
+            '، الكمية: ' +
+            quantity +
+            '.';
+
+        }
+
+
+        /*
+         * في الخدمات الجديدة نضيف التفاصيل
+         * إذا كتبت ولم تكن موجودة داخل الوصف.
+         */
+
+        if(
+          service &&
+          typeValue !== 'loan' &&
+          !editId
+        ){
+
+          const details =
+            byId('serviceDetails')
+              .value
+              .trim();
+
+
+          if(details){
+
+            finalDescription +=
+              ' تفاصيل الخدمة: ' +
+              details +
+              '.';
+
+          }
+
+        }
+
+
+        const row = {
+
+          teacher_user_id:
+            teacherUserId,
+
+
+          teacher_name:
+            teacherName,
+
+
+          department_id:
+            editId &&
+            editingRow
+              ? (
+                  editingRow.department_id ||
+                  profile.department_id ||
+                  null
+                )
+              : (
+                  profile.department_id ||
+                  null
+                ),
+
+
+          department_name:
+            editId &&
+            editingRow &&
+            editingRow.department_name
+              ? editingRow.department_name
+              : (
+                  profile.department_name ||
+                  (
+                    Array.isArray(
+                      profile.department_names
+                    )
+                    ? profile.department_names.join(
+                        '، '
+                      )
+                    : null
+                  )
+                ),
+
+
+          activation_type:
+            typeValue,
+
+
+          activation_type_label:
+            typeData.label,
+
+
+          grade:
+            service
+              ? null
+              : byId('grade').value,
+
+
+          section:
+            service
+              ? null
+              : byId('section').value,
+
+
+          student_count:
+            service
+              ? null
+              : Number(
+                  byId('count').value
+                ),
+
+
+          subject:
+            typeValue === 'subject'
+              ? byId('subject')
+                  .value
+                  .trim()
+              : null,
+
+
+          goal:
+            typeData.goal,
+
+
+          description:
+            finalDescription,
+
+
+          status:
+            'completed',
+
+
+          /*
+           * نحافظ على تاريخ التنفيذ الأصلي عند التعديل.
+           */
+
+          completed_at:
+            editId &&
+            editingRow &&
+            editingRow.completed_at
+              ? editingRow.completed_at
+              : new Date().toISOString()
+
+        };
+
+
+        let result;
+
+
+        if(editId){
+
+          result =
+            await RC.sb
+              .from(
+                'resource_center_activations'
+              )
+              .update(row)
+              .eq(
+                'id',
+                editId
+              )
+              .select()
+              .single();
+
+        }else{
+
+          result =
+            await RC.sb
+              .from(
+                'resource_center_activations'
+              )
+              .insert(row)
+              .select()
+              .single();
+
+        }
+
+
+        if(result.error){
+
+          throw result.error;
+
+        }
+
+
+        const savedRow =
+          result.data;
+
+
+        /*
+         * لو تعديل بدون صور جديدة:
+         * نحافظ على الصور القديمة.
+         */
+
+        let evidencePaths =
+          editId
+            ? existingEvidencePaths.slice(
+                0,
+                3
+              )
+            : [];
+
+
+        /*
+         * لو رفعت صورًا جديدة:
+         * تصبح هي شواهد السجل الجديدة.
+         */
+
+        if(
+          files.length &&
+          typeof RC.uploadPhotos ===
+          'function'
+        ){
+
+          const uploaded =
+            await RC.uploadPhotos(
+              files,
+              savedRow.id
+            );
+
+
+          evidencePaths =
+            Array.isArray(uploaded)
+              ? uploaded.slice(0,3)
+              : [];
+
+        }
+
+
+        /*
+         * نحدّث evidence_paths حتى لو كانت
+         * الصور قديمة أو جديدة.
+         */
+
+        const evidenceUpdate =
+          await RC.sb
+            .from(
+              'resource_center_activations'
+            )
+            .update({
+              evidence_paths:
+                evidencePaths
+            })
+            .eq(
+              'id',
+              savedRow.id
+            );
+
+
+        if(evidenceUpdate.error){
+
+          throw evidenceUpdate.error;
+
+        }
+
+
+        const completedRecord = {
+
+          ...savedRow,
+          ...row,
+
+          evidence_paths:
+            evidencePaths
+
+        };
+
+
+        /*
+         * تحديث الكاش المحلي.
+         */
+
+        if(
+          typeof RC.cachePut ===
+          'function'
+        ){
+
+          RC.cachePut(
+            completedRecord
+          );
+
+        }
+
+
+        /*
+         * نفتح نفس التقرير.
+         * في التعديل لا ننشئ سجلًا جديدًا.
+         */
+
+        window.location.href =
+          'report.html?id=' +
+          encodeURIComponent(
+            savedRow.id
+          ) +
+          (
+            editId
+              ? '&updated=1'
+              : '&new=1'
+          );
+
+
+      }catch(error){
+
+        console.error(
+          'Activation/service save error:',
+          error
+        );
+
+
+        const message =
+          error &&
+          (
+            error.message ||
+            error.details ||
+            error.hint
+          )
+          ? (
+              error.message ||
+              error.details ||
+              error.hint
+            )
+          : String(error);
+
+
+        showMessage(
+          'تعذر حفظ الخدمة / التفعيل: ' +
+          message,
+          false
+        );
+
+
+        button.disabled =
+          false;
+
+
+        button.textContent =
+          editId
+            ? '💾 حفظ التعديلات'
+            : '💾 حفظ واعتماد التوثيق';
+
+      }
+
+    }
+  );
+
+
+  initialisePage();
+
+})();
+</script>
+
+</body>
+</html>

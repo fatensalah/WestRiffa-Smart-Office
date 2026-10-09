@@ -1,0 +1,4363 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>دفتر التحضير الإلكتروني | WestRiffa Smart Office</title>
+
+  <link rel="stylesheet" href="../../css/app.css?v=20260816-lessonplans2">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:Tahoma,Arial,sans-serif;
+      background:#f4f7f6;
+      color:#173c34;
+    }
+
+    .page-header{
+      background:linear-gradient(135deg,#0f513f,#18705a);
+      color:#fff;
+      padding:28px 24px;
+      box-shadow:0 4px 18px rgba(0,0,0,.08);
+    }
+
+    .page-header-inner{
+      width:min(1400px,95%);
+      margin:auto;
+    }
+
+    .page-header h1{
+      margin:0 0 8px;
+      font-size:30px;
+    }
+
+    .page-header p{
+      margin:0;
+      opacity:.92;
+      line-height:1.8;
+    }
+
+    .container{
+      width:min(1400px,95%);
+      margin:26px auto 60px;
+    }
+
+    .top-actions{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+
+    .btn-link{
+      display:inline-block;
+      text-decoration:none;
+      padding:11px 17px;
+      border-radius:11px;
+      background:#fff;
+      color:#075c40;
+      border:1px solid #dce9e5;
+      font-weight:700;
+    }
+
+    .scope-box{
+      background:#edf8f3;
+      color:#075c40;
+      border:1px solid #d3eadf;
+      border-radius:12px;
+      padding:13px 16px;
+      margin-bottom:18px;
+      line-height:1.7;
+      font-weight:700;
+    }
+
+    .tabs{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+
+    .tab-btn{
+      border:1px solid #d7e4e0;
+      background:#fff;
+      color:#075c40;
+      border-radius:11px;
+      padding:11px 16px;
+      font-family:inherit;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .tab-btn.active{
+      background:#075c40;
+      color:#fff;
+      border-color:#075c40;
+    }
+
+    .tab-panel{display:none}
+    .tab-panel.active{display:block}
+
+    .card{
+      background:#fff;
+      border:1px solid #e1e9e5;
+      border-radius:18px;
+      padding:23px;
+      margin-bottom:20px;
+      box-shadow:0 8px 24px rgba(15,81,63,.05);
+    }
+
+    .card h2,
+    .card h3{
+      color:#075c40;
+      margin-top:0;
+    }
+
+    .sub{
+      color:#6b7a72;
+      font-size:13px;
+      line-height:1.8;
+      margin-top:-2px;
+      margin-bottom:18px;
+    }
+
+    .section-title{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+
+    .form-grid{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:14px;
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:7px;
+    }
+
+    .field.span-2{grid-column:span 2}
+    .field.full{grid-column:1/-1}
+
+    .field label{
+      color:#334d42;
+      font-weight:700;
+      font-size:14px;
+    }
+
+    .field input,
+    .field select,
+    .field textarea{
+      width:100%;
+      border:1px solid #cfdad4;
+      border-radius:10px;
+      padding:11px 12px;
+      font-family:inherit;
+      background:#fff;
+      font-size:14px;
+    }
+
+    .field textarea{
+      min-height:105px;
+      resize:vertical;
+      line-height:1.8;
+    }
+
+    .auto-value{
+      background:#f5f8f6 !important;
+      color:#075c40;
+      font-weight:700;
+    }
+
+    .check-grid{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:9px;
+    }
+
+    .check-item{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 11px;
+      border:1px solid #e1e9e5;
+      border-radius:10px;
+      background:#f9fbfa;
+      cursor:pointer;
+      min-height:44px;
+      font-size:13px;
+    }
+
+    .check-item input{
+      width:auto;
+      margin:0;
+    }
+
+    .objectives-list,
+    .support-list{
+      display:grid;
+      gap:12px;
+    }
+
+    .objective-card,
+    .support-card{
+      background:#f8faf9;
+      border:1px solid #e2ebe7;
+      border-radius:14px;
+      padding:15px;
+    }
+
+    .objective-head,
+    .support-head{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+      margin-bottom:12px;
+    }
+
+    .objective-head strong,
+    .support-head strong{
+      color:#075c40;
+    }
+
+    .mini-btn{
+      border:0;
+      border-radius:9px;
+      padding:8px 11px;
+      cursor:pointer;
+      font-family:inherit;
+      font-weight:700;
+    }
+
+    .btn-add{
+      background:#eaf3ef;
+      color:#075c40;
+    }
+
+    .btn-remove{
+      background:#fff0ef;
+      color:#b42318;
+    }
+
+    .action-row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:18px;
+    }
+
+    .btn{
+      border:0;
+      border-radius:11px;
+      padding:11px 17px;
+      font-family:inherit;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .btn-primary{
+      background:#075c40;
+      color:#fff;
+    }
+
+    .btn-gold{
+      background:#9a7420;
+      color:#fff;
+    }
+
+    .btn-soft{
+      background:#eef4f2;
+      color:#075c40;
+      border:1px solid #d7e4e0;
+    }
+
+    .btn-danger{
+      background:#b42318;
+      color:#fff;
+    }
+
+    .btn:disabled{
+      opacity:.55;
+      cursor:wait;
+    }
+
+    .save-state{
+      min-height:24px;
+      margin-top:10px;
+      font-size:13px;
+      font-weight:700;
+    }
+
+    .save-state.ok{color:#087451}
+    .save-state.error{color:#b42318}
+
+    .stats-grid{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:14px;
+      margin-bottom:20px;
+    }
+
+    .stat{
+      background:#fff;
+      border:1px solid #e1e9e5;
+      border-top:4px solid #087451;
+      border-radius:15px;
+      padding:17px;
+      text-align:center;
+    }
+
+    .stat span{
+      display:block;
+      color:#6b7a72;
+      font-size:13px;
+      margin-bottom:7px;
+    }
+
+    .stat strong{
+      display:block;
+      color:#075c40;
+      font-size:30px;
+    }
+
+    .filters{
+      display:grid;
+      grid-template-columns:1fr 180px 180px 170px 170px auto;
+      gap:9px;
+      margin-bottom:16px;
+    }
+
+    .filters input,
+    .filters select{
+      width:100%;
+      padding:10px;
+      border:1px solid #d4ded9;
+      border-radius:9px;
+      background:#fff;
+      font-family:inherit;
+    }
+
+    .plan-list{
+      display:grid;
+      gap:12px;
+    }
+
+    .plan-card{
+      background:#fff;
+      border:1px solid #e1e9e5;
+      border-radius:15px;
+      padding:17px;
+    }
+
+    .plan-head{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:flex-start;
+    }
+
+    .plan-title{
+      color:#075c40;
+      font-size:17px;
+      font-weight:700;
+    }
+
+    .plan-meta{
+      color:#6b7a72;
+      font-size:13px;
+      line-height:1.8;
+      margin-top:5px;
+    }
+
+    .chip{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:700;
+    }
+
+    .chip-draft{
+      background:#fff4dc;
+      color:#896511;
+    }
+
+    .chip-completed{
+      background:#e9f7ef;
+      color:#087451;
+    }
+
+    .analysis-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:14px;
+      margin-bottom:18px;
+    }
+
+    .analysis-box{
+      background:#fff;
+      border:1px solid #e1e9e5;
+      border-radius:15px;
+      padding:16px;
+    }
+
+    .analysis-box h3{
+      margin:0 0 12px;
+      font-size:16px;
+    }
+
+    .frequency-list{
+      display:flex;
+      gap:7px;
+      flex-wrap:wrap;
+    }
+
+    .frequency-chip{
+      background:#f3f7f5;
+      color:#075c40;
+      border:1px solid #dce8e3;
+      border-radius:999px;
+      padding:7px 10px;
+      font-size:12px;
+      font-weight:700;
+    }
+
+    .empty{
+      text-align:center;
+      padding:34px;
+      color:#6b7a72;
+      border:1px dashed #d6e0db;
+      border-radius:14px;
+      background:#fafcfb;
+    }
+
+    .hidden{display:none !important}
+
+    /* PDF */
+    #pdfSheet{
+      display:none;
+      direction:rtl;
+      font-family:Tahoma,Arial,sans-serif;
+      color:#173c34;
+      background:#fff;
+      padding:0;
+    }
+
+    #pdfSheet.pdf-visible{
+      display:block;
+      position:absolute;
+      top:0;
+      left:0;
+      width:297mm;
+      z-index:2147483000;
+      pointer-events:none;
+      background:#fff;
+    }
+
+    #pdfSheet .pdf-page{
+      width:297mm;
+      height:210mm;
+      box-sizing:border-box;
+      background:#fff;
+      padding:7mm 9mm 7mm;
+      overflow:hidden;
+      direction:rtl;
+      color:#183b34;
+    }
+
+    #pdfSheet .lp-brand{
+      height:24mm;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-bottom:0.6mm solid #0b6d50;
+      margin-bottom:2mm;
+      overflow:hidden;
+    }
+
+    #pdfSheet .lp-brand img{
+      display:block;
+      max-width:100%;
+      width:auto;
+      height:21mm;
+      max-height:21mm;
+      object-fit:contain;
+      margin:0 auto;
+    }
+
+    #pdfSheet .lp-title{
+      text-align:center;
+      margin:1mm 0 2.5mm;
+    }
+
+    #pdfSheet .lp-title h1{
+      margin:0;
+      color:#0a654b;
+      font-size:22pt;
+      line-height:1.1;
+      font-weight:800;
+    }
+
+    #pdfSheet .lp-title .sub{
+      margin-top:1mm;
+      color:#627a72;
+      font-size:10.5pt;
+      font-weight:700;
+    }
+
+    #pdfSheet .lp-meta{
+      display:grid;
+      grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr;
+      gap:1.5mm;
+      margin-bottom:2mm;
+    }
+
+    #pdfSheet .lp-cell{
+      border:0.35mm solid #b9cdc5;
+      border-radius:1.7mm;
+      background:#fbfdfc;
+      padding:1.7mm 2.2mm;
+      min-height:10mm;
+      font-size:9.2pt;
+      line-height:1.45;
+    }
+
+    #pdfSheet .lp-cell strong{color:#0a654b}
+    #pdfSheet .lp-unit{grid-column:span 2}
+    #pdfSheet .lp-lesson{grid-column:span 4}
+
+    #pdfSheet .lp-grid3{
+      display:grid;
+      grid-template-columns:1.15fr 1fr 1fr;
+      gap:1.8mm;
+      margin:2mm 0;
+    }
+
+    #pdfSheet .lp-grid4{
+      display:grid;
+      grid-template-columns:1.2fr .9fr 1.15fr 1fr;
+      gap:1.8mm;
+      margin:2mm 0 0;
+    }
+
+    #pdfSheet .lp-panel{
+      border:0.35mm solid #b9cdc5;
+      border-radius:1.8mm;
+      overflow:hidden;
+      background:#fff;
+    }
+
+    #pdfSheet .lp-panel-title{
+      background:#087153;
+      color:#fff;
+      font-size:9.4pt;
+      font-weight:800;
+      padding:1.4mm 2.2mm;
+      line-height:1.25;
+    }
+
+    #pdfSheet .lp-panel-body{
+      padding:2mm 2.4mm;
+      font-size:8.5pt;
+      line-height:1.55;
+      min-height:13mm;
+      white-space:normal;
+    }
+
+    #pdfSheet .lp-page2-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:4mm;
+      padding-bottom:2mm;
+      margin-bottom:2mm;
+      border-bottom:0.6mm solid #0b6d50;
+    }
+
+    #pdfSheet .lp-page2-head img{
+      width:auto;
+      max-width:55%;
+      height:18mm;
+      object-fit:contain;
+    }
+
+    #pdfSheet .lp-page2-title{
+      flex:1;
+      text-align:center;
+    }
+
+    #pdfSheet .lp-page2-title h2{
+      margin:0;
+      color:#0a654b;
+      font-size:18pt;
+    }
+
+    #pdfSheet .lp-page2-title div{
+      margin-top:1mm;
+      color:#627a72;
+      font-size:9.5pt;
+      font-weight:700;
+    }
+
+    #pdfSheet .lp-objectives{
+      width:100%;
+      border-collapse:collapse;
+      table-layout:fixed;
+      margin:2mm 0 2.5mm;
+      font-size:8.8pt;
+    }
+
+    #pdfSheet .lp-objectives th{
+      background:#087153;
+      color:#fff;
+      border:0.35mm solid #0b664d;
+      padding:1.7mm 1.6mm;
+      font-size:9.2pt;
+      font-weight:800;
+      line-height:1.3;
+    }
+
+    #pdfSheet .lp-objectives td{
+      border:0.35mm solid #bfd1ca;
+      padding:2mm 2mm;
+      vertical-align:top;
+      line-height:1.5;
+      word-break:break-word;
+      background:#fff;
+    }
+
+    #pdfSheet .lp-objectives .n{width:4%;text-align:center}
+    #pdfSheet .lp-objectives .goal{width:29%}
+    #pdfSheet .lp-objectives .steps{width:42%}
+    #pdfSheet .lp-objectives .time{width:9%;text-align:center}
+    #pdfSheet .lp-objectives .assess{width:16%}
+
+    #pdfSheet .lp-bottom{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:1.8mm;
+      margin-top:2mm;
+    }
+
+    #pdfSheet .lp-bottom .lp-panel-body{
+      min-height:17mm;
+    }
+
+    #pdfSheet .lp-footer{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:8mm;
+      text-align:center;
+      margin-top:3mm;
+      padding-top:2mm;
+      border-top:0.5mm solid #0b6d50;
+      color:#294b42;
+      font-size:8.5pt;
+      line-height:1.3;
+    }
+
+    #pdfSheet .lp-footer strong{
+      display:block;
+      color:#0a654b;
+      font-size:9.2pt;
+      margin-top:1mm;
+    }
+
+    @media(max-width:1100px){
+      .form-grid{grid-template-columns:repeat(2,1fr)}
+      .check-grid{grid-template-columns:repeat(3,1fr)}
+      .filters{grid-template-columns:repeat(3,1fr)}
+      .analysis-grid{grid-template-columns:1fr}
+    }
+
+    @media(max-width:700px){
+      .form-grid,
+      .check-grid,
+      .stats-grid,
+      .filters{
+        grid-template-columns:1fr;
+      }
+
+      .field.span-2,
+      .field.full{
+        grid-column:auto;
+      }
+    }
+
+    /* ==========================================================
+       FINAL PDF DESIGN — A4 LANDSCAPE / TWO COMFORTABLE PAGES
+       Design-only override. PDF generation engine is unchanged.
+       ========================================================== */
+    #pdfSheet .pdf-page{
+      width:297mm !important;
+      height:210mm !important;
+      padding:8mm 10mm 7mm !important;
+      overflow:hidden !important;
+      background:#fff !important;
+    }
+
+    /* الصفحة الأولى */
+    #pdfSheet .lp-brand{
+      height:27mm !important;
+      margin-bottom:2.5mm !important;
+      border-bottom:.55mm solid #0b6d50 !important;
+    }
+    #pdfSheet .lp-brand img{
+      height:24mm !important;
+      max-height:24mm !important;
+      max-width:96% !important;
+    }
+    #pdfSheet .lp-title{
+      margin:1.5mm 0 3mm !important;
+    }
+    #pdfSheet .lp-title h1{
+      font-size:23pt !important;
+      line-height:1.15 !important;
+    }
+    #pdfSheet .lp-title .sub{
+      font-size:11pt !important;
+      margin-top:1.2mm !important;
+    }
+
+    #pdfSheet .lp-meta{
+      grid-template-columns:2.25fr 1fr 1fr 1fr 1fr 1fr !important;
+      gap:2mm !important;
+      margin-bottom:3mm !important;
+    }
+    #pdfSheet .lp-cell{
+      min-height:12mm !important;
+      padding:2.2mm 2.5mm !important;
+      font-size:10pt !important;
+      line-height:1.55 !important;
+      display:flex;
+      align-items:center;
+    }
+
+    #pdfSheet .lp-grid3{
+      gap:2.2mm !important;
+      margin:2.5mm 0 !important;
+      grid-template-columns:1.15fr 1fr 1fr !important;
+    }
+    #pdfSheet .lp-grid4{
+      gap:2.2mm !important;
+      margin:2.5mm 0 0 !important;
+      grid-template-columns:1.25fr 1fr 1.15fr 1fr !important;
+    }
+    #pdfSheet .lp-panel{
+      border:.4mm solid #b9cdc5 !important;
+      border-radius:2mm !important;
+    }
+    #pdfSheet .lp-panel-title{
+      font-size:10.4pt !important;
+      padding:1.8mm 2.5mm !important;
+      line-height:1.3 !important;
+      text-align:right;
+    }
+    #pdfSheet .lp-panel-body{
+      padding:3mm 3mm !important;
+      font-size:9.6pt !important;
+      line-height:1.7 !important;
+      min-height:23mm !important;
+      text-align:right;
+    }
+    #pdfSheet .lp-grid4 .lp-panel-body{
+      min-height:25mm !important;
+    }
+
+    /* الصفحة الثانية */
+    #pdfSheet .lp-page2-head{
+      min-height:25mm !important;
+      gap:6mm !important;
+      padding-bottom:2.5mm !important;
+      margin-bottom:3mm !important;
+    }
+    #pdfSheet .lp-page2-head img{
+      height:21mm !important;
+      max-width:48% !important;
+    }
+    #pdfSheet .lp-page2-title h2{
+      font-size:20pt !important;
+      line-height:1.2 !important;
+    }
+    #pdfSheet .lp-page2-title div{
+      font-size:10.5pt !important;
+      margin-top:1.5mm !important;
+    }
+
+    #pdfSheet .lp-objectives{
+      margin:2.5mm 0 3.5mm !important;
+      font-size:9.8pt !important;
+    }
+    #pdfSheet .lp-objectives th{
+      padding:2.2mm 2mm !important;
+      font-size:10.2pt !important;
+    }
+    #pdfSheet .lp-objectives td{
+      padding:3.2mm 2.7mm !important;
+      line-height:1.7 !important;
+      min-height:24mm !important;
+    }
+    #pdfSheet .lp-objectives tbody tr{
+      height:27mm;
+    }
+    #pdfSheet .lp-objectives .n{width:5% !important}
+    #pdfSheet .lp-objectives .goal{width:28% !important}
+    #pdfSheet .lp-objectives .steps{width:41% !important}
+    #pdfSheet .lp-objectives .time{width:9% !important}
+    #pdfSheet .lp-objectives .assess{width:17% !important}
+
+    #pdfSheet .lp-bottom{
+      gap:2.5mm !important;
+      margin-top:3mm !important;
+    }
+    #pdfSheet .lp-bottom .lp-panel-title{
+      font-size:10pt !important;
+      padding:1.8mm 2.5mm !important;
+    }
+    #pdfSheet .lp-bottom .lp-panel-body{
+      min-height:24mm !important;
+      padding:2.8mm 3mm !important;
+      font-size:9.5pt !important;
+      line-height:1.65 !important;
+    }
+
+    #pdfSheet .lp-footer{
+      gap:10mm !important;
+      margin-top:4mm !important;
+      padding-top:2.8mm !important;
+      font-size:9.2pt !important;
+      line-height:1.45 !important;
+    }
+    #pdfSheet .lp-footer strong{
+      font-size:10pt !important;
+      margin-top:1.2mm !important;
+    }
+
+
+
+    /* ======================================================
+       متابعة وتقييم التحضير اليومي
+       ====================================================== */
+    .review-modal{position:fixed;inset:0;z-index:12000;background:rgba(7,43,34,.72);display:flex;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(3px)}
+    .review-modal.hidden{display:none!important}
+    .review-dialog{width:min(1100px,100%);max-height:94vh;overflow:auto;background:#fff;border-radius:20px;box-shadow:0 24px 70px rgba(0,0,0,.28);padding:22px}
+    .review-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;border-bottom:1px solid #e1e9e5;padding-bottom:14px;margin-bottom:16px}
+    .review-head h2{margin:0;color:#075c40}.review-head p{margin:6px 0 0;color:#6b7a72;line-height:1.7}
+    .review-close{border:0;background:#eef4f2;color:#075c40;width:38px;height:38px;border-radius:10px;font-size:22px;cursor:pointer}
+    .review-meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px}
+    .review-meta-box{background:#f7faf8;border:1px solid #e0e9e5;border-radius:11px;padding:11px;font-size:13px;line-height:1.7}.review-meta-box strong{color:#075c40;display:block}
+    .review-domain{margin:18px 0 8px;padding:9px 12px;background:#edf8f3;color:#075c40;border-radius:10px;font-weight:800}
+    .review-criterion{border:1px solid #e0e9e5;border-radius:13px;padding:13px;margin-bottom:10px;background:#fff}
+    .review-criterion-title{font-weight:700;color:#27493d;line-height:1.7;margin-bottom:10px}
+    .review-rating{display:flex;gap:8px;flex-wrap:wrap}.review-rating label{display:flex;align-items:center;gap:6px;padding:8px 10px;border:1px solid #dce6e2;border-radius:9px;background:#fafcfb;cursor:pointer;font-size:13px}.review-rating input{margin:0}
+    .review-note{width:100%;margin-top:9px;border:1px solid #d6e0db;border-radius:9px;padding:9px 10px;font-family:inherit;resize:vertical;min-height:54px}
+    .review-general{width:100%;min-height:90px;border:1px solid #cfdad4;border-radius:10px;padding:11px;font-family:inherit;resize:vertical;line-height:1.7}
+    .review-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.review-message{min-height:22px;margin-top:10px;font-size:13px;font-weight:700}.review-message.ok{color:#087451}.review-message.error{color:#b42318}
+    .review-summary{margin-top:12px;padding:11px 13px;background:#f7faf8;border:1px solid #e0e9e5;border-radius:11px;color:#45645a;font-size:13px;line-height:1.8}
+    .chip-review{background:#eef2ff;color:#3949ab}.chip-reviewed{background:#e9f7ef;color:#087451}
+    .review-report{margin-top:22px;border-top:1px solid #e3ebe7;padding-top:18px}
+    .review-report-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+    .review-report-head h3{margin:0;color:#075c40}
+    .review-report-filters{display:flex;gap:8px;flex-wrap:wrap}
+    .review-report-filters select{min-width:180px}
+    .review-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:12px 0}
+    .review-kpi{border:1px solid #e0e9e5;border-radius:12px;background:#f8fbf9;padding:12px;text-align:center}
+    .review-kpi span{display:block;color:#687a72;font-size:12px;margin-bottom:5px}.review-kpi strong{font-size:22px;color:#075c40}
+    .review-table-wrap{overflow:auto;border:1px solid #e0e9e5;border-radius:12px;margin-top:12px}
+    .review-table{width:100%;border-collapse:collapse;min-width:780px;background:#fff}
+    .review-table th,.review-table td{padding:10px 12px;border-bottom:1px solid #edf1ef;text-align:right;vertical-align:middle}
+    .review-table th{background:#f2f8f5;color:#075c40;font-weight:800;position:sticky;top:0}
+    .review-table tr:last-child td{border-bottom:0}
+    .review-good{color:#087451;font-weight:800}.review-partial{color:#9a6a00;font-weight:800}.review-bad{color:#b42318;font-weight:800}
+    .review-empty{padding:18px;text-align:center;color:#718078}
+    .review-result-box{margin-top:12px;border:1px solid #dce7e2;border-radius:12px;padding:12px;background:#fbfdfc}
+    .review-result-row{display:grid;grid-template-columns:minmax(220px,1fr) 150px minmax(220px,1fr);gap:10px;padding:9px 0;border-bottom:1px solid #edf1ef;align-items:start}
+    .review-result-row:last-child{border-bottom:0}.review-result-row strong{color:#27493d}.review-result-note{color:#66776f;font-size:13px}
+    @media(max-width:900px){.review-kpis{grid-template-columns:repeat(2,1fr)}.review-result-row{grid-template-columns:1fr}}
+    .review-tools{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+    .archive-section{margin-top:24px;border-top:1px solid #e3ebe7;padding-top:18px}
+    .archive-filters{display:grid;grid-template-columns:repeat(5,minmax(150px,1fr));gap:8px;margin:12px 0}
+    .archive-card{border:1px solid #dfe9e4;border-radius:14px;padding:14px;background:#fff;margin:10px 0}
+    .archive-card-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+    .archive-card-title{font-weight:900;color:#075c40;font-size:16px}.archive-card-meta{color:#63766d;font-size:13px;line-height:1.8}
+    .plan-preview-dialog{width:min(1120px,96vw);max-height:94vh;overflow:auto}
+    .plan-preview-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .plan-preview-box{border:1px solid #dfe9e4;border-radius:12px;padding:12px;background:#fbfdfc}
+    .plan-preview-box strong{display:block;color:#075c40;margin-bottom:6px}
+    .plan-preview-wide{grid-column:1/-1}
+    .official-review-sheet{direction:rtl;font-family:Arial,Tahoma,sans-serif;background:#fff;color:#111;padding:22px}
+    .official-review-title{text-align:center;border-bottom:3px solid #075c40;padding-bottom:12px;margin-bottom:14px}
+    .official-review-title h1{font-size:21px;margin:0 0 6px;color:#075c40}.official-review-title p{margin:0;color:#555}
+    .official-review-meta{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0}
+    .official-review-meta div{border:1px solid #ccd9d3;padding:9px;border-radius:7px}
+    .official-review-table{width:100%;border-collapse:collapse;margin-top:12px}
+    .official-review-table th,.official-review-table td{border:1px solid #aebdb6;padding:8px;text-align:right;vertical-align:top}
+    .official-review-table th{background:#eef6f2;color:#075c40}
+    .official-review-footer{margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    @media(max-width:900px){.archive-filters{grid-template-columns:1fr 1fr}.plan-preview-grid{grid-template-columns:1fr}.plan-preview-wide{grid-column:auto}}
+    @media(max-width:760px){.review-meta{grid-template-columns:1fr 1fr}.review-dialog{padding:15px}.review-rating{display:grid;grid-template-columns:1fr}}
+
+  </style>
+</head>
+
+<body>
+
+<header class="page-header">
+  <div class="page-header-inner">
+    <h1>📚 دفتر التحضير الإلكتروني</h1>
+    <p>إعداد التحضير اليومي، حفظه، نسخه، تعديله، تنزيله PDF، وتحليل الممارسات التعليمية.</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <div class="top-actions">
+    <a class="btn-link" href="../../index.html">🏠 لوحة التحكم</a>
+    <a class="btn-link" href="../archive/index.html">📂 الأرشيف الذكي</a>
+  </div>
+
+  <div id="scopeBox" class="scope-box">
+    جارٍ تحميل بيانات الحساب...
+  </div>
+
+  <div class="tabs">
+    <button id="tabNewBtn" class="tab-btn active" data-tab="newTab">➕ تحضير جديد</button>
+    <button id="tabMineBtn" class="tab-btn" data-tab="mineTab">📘 تحضيراتي</button>
+    <button id="tabAdminBtn" class="tab-btn hidden" data-tab="adminTab">📊 مؤشرات الإدارة</button>
+  </div>
+
+  <!-- ======================================================
+       تحضير جديد
+       ====================================================== -->
+  <section id="newTab" class="tab-panel active">
+
+    <section class="card">
+      <div class="section-title">
+        <div>
+          <h2>بيانات التحضير</h2>
+          <div class="sub">الحقول الثابتة القابلة للحصر تظهر كاختيارات، والكتابة الحرة فقط للأجزاء الوصفية.</div>
+        </div>
+      </div>
+
+      <input id="editingPlanId" type="hidden">
+
+      <div class="form-grid">
+
+        <div class="field">
+          <label>اسم المعلمة</label>
+          <input id="teacherName" class="auto-value" type="text" readonly>
+        </div>
+
+        <div class="field">
+          <label for="lessonDate">التاريخ *</label>
+          <input id="lessonDate" type="date">
+        </div>
+
+        <div class="field">
+          <label for="lessonDay">اليوم *</label>
+          <select id="lessonDay">
+            <option value="">— اختاري اليوم —</option>
+            <option value="الأحد">الأحد</option>
+            <option value="الاثنين">الاثنين</option>
+            <option value="الثلاثاء">الثلاثاء</option>
+            <option value="الأربعاء">الأربعاء</option>
+            <option value="الخميس">الخميس</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="period">الحصة</label>
+          <select id="period">
+            <option value="">— اختاري —</option>
+            <option>الأولى</option>
+            <option>الثانية</option>
+            <option>الثالثة</option>
+            <option>الرابعة</option>
+            <option>الخامسة</option>
+            <option>السادسة</option>
+            <option>السابعة</option>
+            <option>الثامنة</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="subject">المادة *</label>
+          <select id="subject">
+            <option value="">— اختاري المادة —</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="grade">الصف *</label>
+          <select id="grade">
+            <option value="">— اختاري الصف —</option>
+            <option>الأول</option>
+            <option>الثاني</option>
+            <option>الثالث</option>
+            <option>الرابع</option>
+            <option>الخامس</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="classSection">الشعبة</label>
+          <input id="classSection" type="text" placeholder="مثال: 1">
+        </div>
+
+        <div class="field">
+          <label for="unitName">الوحدة</label>
+          <input id="unitName" type="text">
+        </div>
+
+        <div class="field span-2">
+          <label for="lessonTitle">عنوان الدرس *</label>
+          <input id="lessonTitle" type="text">
+        </div>
+
+        <div class="field">
+          <label for="subjectConnection">الربط بالمادة / المواد</label>
+          <input id="subjectConnection" type="text" placeholder="مثال: الرياضيات">
+        </div>
+
+        <div class="field">
+          <label for="valuesConnection">القيم</label>
+          <input id="valuesConnection" type="text" placeholder="مثال: الاحترام">
+        </div>
+
+        <div class="field">
+          <label for="introductionMinutes">زمن المقدمة بالدقائق</label>
+          <input id="introductionMinutes" type="number" min="0">
+        </div>
+
+        <div class="field full">
+          <label for="introduction">المقدمة / التمهيد</label>
+          <textarea id="introduction" placeholder="اكتبي المقدمة أو التهيئة للدرس..."></textarea>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- الموارد -->
+    <section class="card">
+      <h3>🧰 الموارد والمصادر</h3>
+      <div class="sub">اختاري كل ما تم استخدامه حتى يمكن حصر أكثر الموارد استخدامًا.</div>
+      <div id="resourcesChecks" class="check-grid"></div>
+    </section>
+
+    <!-- أنماط التعلم -->
+    <section class="card">
+      <h3>👁 أنماط التعلم</h3>
+      <div id="learningStylesChecks" class="check-grid"></div>
+    </section>
+
+    <!-- الاستراتيجيات -->
+    <section class="card">
+      <h3>🧠 استراتيجيات التدريس المستخدمة</h3>
+      <div class="sub">اختيارات متعددة قابلة للحصر في مؤشرات الإدارة.</div>
+      <div id="strategiesChecks" class="check-grid"></div>
+    </section>
+
+    <!-- التقييم -->
+    <section class="card">
+      <h3>✅ أساليب التقييم من أجل التعلم</h3>
+      <div id="assessmentChecks" class="check-grid"></div>
+    </section>
+
+    <!-- القرن 21 -->
+    <section class="card">
+      <h3>🌐 مهارات القرن الحادي والعشرين</h3>
+      <div class="sub">المهارات السبع الواردة في نموذج التحضير المعتمد.</div>
+      <div id="centuryChecks" class="check-grid"></div>
+    </section>
+
+    <!-- الأهداف -->
+    <section class="card">
+      <div class="section-title">
+        <div>
+          <h3>🎯 أهداف التعلم وإجراءات سير الدرس</h3>
+          <div class="sub">يمكن إضافة أكثر من هدف داخل التحضير نفسه.</div>
+        </div>
+
+        <button id="addObjectiveBtn" class="mini-btn btn-add" type="button">
+          + إضافة هدف
+        </button>
+      </div>
+
+      <div id="objectivesList" class="objectives-list"></div>
+    </section>
+
+    <!-- الإنتاج والتأمل -->
+    <section class="card">
+      <h3>📝 الإنتاج الطلابي والتأمل الذاتي</h3>
+
+      <div class="form-grid">
+
+        <div class="field span-2">
+          <label>نوع الإنتاج الطلابي</label>
+          <div id="productChecks" class="check-grid"></div>
+        </div>
+
+        <div class="field span-2">
+          <label for="productDescription">وصف الإنتاج الطلابي</label>
+          <textarea id="productDescription"></textarea>
+        </div>
+
+        <div class="field span-2">
+          <label for="reflectionStatus">التأمل الذاتي</label>
+          <select id="reflectionStatus">
+            <option value="">— اختاري —</option>
+            <option>تم الانتهاء من الدرس بنجاح</option>
+            <option>يحتاج إلى مزيد من الأنشطة</option>
+            <option>تم تأجيل جزء من الدرس</option>
+            <option>أخرى</option>
+          </select>
+        </div>
+
+        <div class="field span-2">
+          <label for="reflectionNotes">ملاحظات التأمل الذاتي</label>
+          <textarea id="reflectionNotes"></textarea>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- الدعم -->
+    <section class="card">
+      <div class="section-title">
+        <div>
+          <h3>🤲 الدعم والمساندة</h3>
+          <div class="sub">اختاري الفئات المستخدمة في التحضير، ويمكن إضافة تفاصيل الطلاب عند الحاجة.</div>
+        </div>
+
+        <button id="addSupportBtn" class="mini-btn btn-add" type="button">
+          + إضافة طالب / إجراء دعم
+        </button>
+      </div>
+
+      <div id="supportCategoryChecks" class="check-grid" style="margin-bottom:14px"></div>
+
+      <div id="supportList" class="support-list"></div>
+    </section>
+
+    <section class="card">
+      <div class="action-row">
+        <button id="saveDraftBtn" class="btn btn-soft" type="button">💾 حفظ كمسودة</button>
+        <button id="saveCompleteBtn" class="btn btn-primary" type="button">✅ اعتماد التحضير</button>
+        <button id="downloadCurrentPdfBtn" class="btn btn-gold hidden" type="button">⬇️ تنزيل التحضير PDF</button>
+        <button id="resetFormBtn" class="btn btn-soft" type="button">↺ تحضير جديد</button>
+      </div>
+
+      <div id="saveState" class="save-state"></div>
+    </section>
+
+  </section>
+
+  <!-- ======================================================
+       تحضيراتي
+       ====================================================== -->
+  <section id="mineTab" class="tab-panel">
+
+    <section class="card">
+      <h2 id="mineTitle">📘 تحضيراتي</h2>
+
+      <div class="filters">
+        <input id="mineSearch" type="search" placeholder="بحث بعنوان الدرس أو المادة...">
+
+        <select id="mineStatus">
+          <option value="">كل الحالات</option>
+          <option value="draft">مسودة</option>
+          <option value="completed">مكتمل</option>
+        </select>
+
+        <select id="mineSubject">
+          <option value="">كل المواد</option>
+        </select>
+
+        <input id="mineFrom" type="date" title="من تاريخ">
+        <input id="mineTo" type="date" title="إلى تاريخ">
+
+        <button id="refreshMineBtn" class="btn btn-soft" type="button">تحديث</button>
+      </div>
+
+      <div id="plansList" class="plan-list">
+        <div class="empty">جارٍ تحميل التحاضير...</div>
+      </div>
+    </section>
+
+  </section>
+
+  <!-- ======================================================
+       مؤشرات الإدارة
+       ====================================================== -->
+  <section id="adminTab" class="tab-panel">
+
+    <div class="stats-grid">
+      <article class="stat">
+        <span>إجمالي التحاضير</span>
+        <strong id="adminTotal">0</strong>
+      </article>
+
+      <article class="stat">
+        <span>تحاضير مكتملة</span>
+        <strong id="adminCompleted">0</strong>
+      </article>
+
+      <article class="stat">
+        <span>مسودات</span>
+        <strong id="adminDrafts">0</strong>
+      </article>
+
+      <article class="stat">
+        <span>عدد المعلمات</span>
+        <strong id="adminTeachers">0</strong>
+      </article>
+    </div>
+
+    <section class="card">
+      <h2>📊 تحليل ممارسات التحضير</h2>
+
+      <div class="filters">
+        <input id="adminSearch" type="search" placeholder="بحث باسم المعلمة أو المادة...">
+        <select id="adminSubject">
+          <option value="">كل المواد</option>
+        </select>
+        <select id="adminGrade">
+          <option value="">كل الصفوف</option>
+          <option>الأول</option>
+          <option>الثاني</option>
+          <option>الثالث</option>
+          <option>الرابع</option>
+          <option>الخامس</option>
+        </select>
+        <input id="adminFrom" type="date" title="من تاريخ">
+        <input id="adminTo" type="date" title="إلى تاريخ">
+        <button id="refreshAdminBtn" class="btn btn-soft" type="button">تحديث</button>
+      </div>
+
+      <div class="analysis-grid">
+
+        <div class="analysis-box">
+          <h3>🧠 أكثر الاستراتيجيات استخدامًا</h3>
+          <div id="strategiesAnalysis" class="frequency-list"></div>
+        </div>
+
+        <div class="analysis-box">
+          <h3>🌐 مهارات القرن 21</h3>
+          <div id="centuryAnalysis" class="frequency-list"></div>
+        </div>
+
+        <div class="analysis-box">
+          <h3>✅ أساليب التقييم</h3>
+          <div id="assessmentAnalysis" class="frequency-list"></div>
+        </div>
+
+        <div class="analysis-box">
+          <h3>🧰 الموارد والمصادر</h3>
+          <div id="resourcesAnalysis" class="frequency-list"></div>
+        </div>
+
+        <div class="analysis-box">
+          <h3>👁 أنماط التعلم</h3>
+          <div id="stylesAnalysis" class="frequency-list"></div>
+        </div>
+
+        <div class="analysis-box">
+          <h3>🤲 فئات الدعم</h3>
+          <div id="supportAnalysis" class="frequency-list"></div>
+        </div>
+
+      </div>
+
+      <section id="reviewReportsSection" class="review-report">
+        <div class="review-report-head">
+          <div>
+            <h3>📈 تقارير متابعة التحضير</h3>
+            <div class="muted" id="reviewReportScopeText">تحليل المتابعات المعتمدة فقط</div>
+          </div>
+          <div class="review-report-filters">
+            <select id="reviewReportDimension" aria-label="نوع التقرير">
+              <option value="department">حسب القسم</option>
+              <option value="subject">حسب المادة</option>
+              <option value="teacher">حسب المعلمة</option>
+              <option value="all">الجميع</option>
+            </select>
+            <select id="reviewReportValue" aria-label="تصفية التقرير">
+              <option value="">الكل</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="review-kpis">
+          <div class="review-kpi"><span>المتابعات المعتمدة</span><strong id="reviewKpiTotal">0</strong></div>
+          <div class="review-kpi"><span>المعلمات المتابعات</span><strong id="reviewKpiTeachers">0</strong></div>
+          <div class="review-kpi"><span>متحقق</span><strong id="reviewKpiMet">0%</strong></div>
+          <div class="review-kpi"><span>متحقق جزئيًا</span><strong id="reviewKpiPartial">0%</strong></div>
+          <div class="review-kpi"><span>غير متحقق</span><strong id="reviewKpiNotMet">0%</strong></div>
+        </div>
+
+        <div class="review-table-wrap">
+          <table class="review-table">
+            <thead>
+              <tr>
+                <th id="reviewGroupHeading">القسم</th>
+                <th>المتابعات</th>
+                <th>المعلمات</th>
+                <th>متحقق</th>
+                <th>متحقق جزئيًا</th>
+                <th>غير متحقق</th>
+                <th>آخر متابعة</th>
+              </tr>
+            </thead>
+            <tbody id="reviewSummaryBody"></tbody>
+          </table>
+        </div>
+
+        <h3 style="margin-top:18px">تحليل المعايير</h3>
+        <div class="review-table-wrap">
+          <table class="review-table">
+            <thead>
+              <tr>
+                <th>المعيار</th>
+                <th>متحقق</th>
+                <th>متحقق جزئيًا</th>
+                <th>غير متحقق</th>
+              </tr>
+            </thead>
+            <tbody id="reviewCriteriaReportBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+
+
+      <section id="aggregateReviewReportsSection" class="review-report">
+        <div class="review-report-head">
+          <div>
+            <h3>📊 التقرير التجميعي لمتابعة التحضير</h3>
+            <div class="muted" id="aggregateScopeText">يعتمد على المتابعات المعتمدة فقط.</div>
+          </div>
+          <div class="review-tools">
+            <button id="printAggregateReportBtn" class="btn btn-gold" type="button">🖨️ طباعة / PDF التقرير التجميعي</button>
+          </div>
+        </div>
+
+        <div class="archive-filters" style="grid-template-columns:repeat(4,minmax(160px,1fr));">
+          <select id="aggregateDepartment"><option value="">كل الأقسام</option></select>
+          <select id="aggregateSubject"><option value="">كل المواد</option></select>
+          <select id="aggregateTeacher"><option value="">كل المعلمات</option></select>
+          <select id="aggregateCycle"><option value="">كل المتابعات</option><option value="1">المتابعة الأولى</option><option value="2">المتابعة الثانية</option><option value="3">المتابعة الثالثة</option></select>
+        </div>
+
+        <div class="review-kpis">
+          <div class="review-kpi"><span>المتابعات المعتمدة</span><strong id="aggKpiReviews">0</strong></div>
+          <div class="review-kpi"><span>المعلمات</span><strong id="aggKpiTeachers">0</strong></div>
+          <div class="review-kpi"><span>متحقق</span><strong id="aggKpiMet">0%</strong></div>
+          <div class="review-kpi"><span>متحقق جزئيًا</span><strong id="aggKpiPartial">0%</strong></div>
+          <div class="review-kpi"><span>غير متحقق</span><strong id="aggKpiNotMet">0%</strong></div>
+        </div>
+
+        <div class="review-table-wrap">
+          <table class="review-table">
+            <thead><tr><th>المعلمة</th><th>القسم</th><th>المادة</th><th>المتابعات</th><th>متحقق</th><th>جزئيًا</th><th>غير متحقق</th><th>آخر متابعة</th></tr></thead>
+            <tbody id="aggregateTeachersBody"></tbody>
+          </table>
+        </div>
+
+        <h3 style="margin-top:18px">تحليل الأقسام</h3>
+        <div class="review-table-wrap">
+          <table class="review-table">
+            <thead><tr><th>القسم</th><th>المتابعات</th><th>المعلمات</th><th>متحقق</th><th>جزئيًا</th><th>غير متحقق</th></tr></thead>
+            <tbody id="aggregateDepartmentsBody"></tbody>
+          </table>
+        </div>
+
+        <h3 style="margin-top:18px">تحليل المواد</h3>
+        <div class="review-table-wrap">
+          <table class="review-table">
+            <thead><tr><th>المادة</th><th>المتابعات</th><th>المعلمات</th><th>متحقق</th><th>جزئيًا</th><th>غير متحقق</th></tr></thead>
+            <tbody id="aggregateSubjectsBody"></tbody>
+          </table>
+        </div>
+
+        <h3 style="margin-top:18px">تحليل المعايير الـ13</h3>
+        <div class="review-table-wrap">
+          <table class="review-table">
+            <thead><tr><th>المعيار</th><th>متحقق</th><th>متحقق جزئيًا</th><th>غير متحقق</th></tr></thead>
+            <tbody id="aggregateCriteriaBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="reviewArchiveSection" class="archive-section">
+        <div class="review-report-head">
+          <div>
+            <h3>🗂️ أرشيف متابعات التحضير المعتمدة</h3>
+            <div class="muted">كل متابعة معتمدة محفوظة كسجل رسمي مرتبط بالمعلمة والمادة وعنوان الدرس.</div>
+          </div>
+        </div>
+        <div class="archive-filters">
+          <input id="archiveTeacherSearch" type="search" placeholder="اسم المعلمة">
+          <select id="archiveDepartment"><option value="">كل الأقسام</option></select>
+          <select id="archiveSubject"><option value="">كل المواد</option></select>
+          <input id="archiveLessonSearch" type="search" placeholder="عنوان الدرس">
+          <select id="archiveCycle"><option value="">كل المتابعات</option><option value="1">المتابعة الأولى</option><option value="2">المتابعة الثانية</option><option value="3">المتابعة الثالثة</option></select>
+        </div>
+        <div id="reviewArchiveList"></div>
+      </section>
+
+      <h3>سجل التحاضير</h3>
+      <div id="adminPlansList" class="plan-list"></div>
+    </section>
+
+  </section>
+
+</main>
+
+
+
+<!-- متابعة وتقييم التحضير -->
+<div id="lessonReviewModal" class="review-modal hidden">
+  <div class="review-dialog" role="dialog" aria-modal="true" aria-labelledby="lessonReviewTitle">
+    <div class="review-head">
+      <div>
+        <h2 id="lessonReviewTitle">📝 متابعة وتقييم التحضير</h2>
+        <p>استمارة متابعة تخطيط الدروس اليومية — التقييم وفق المعايير المعتمدة.</p>
+      </div>
+      <button id="closeLessonReviewBtn" class="review-close" type="button" aria-label="إغلاق">×</button>
+    </div>
+    <input id="reviewPlanId" type="hidden">
+    <input id="reviewExistingId" type="hidden">
+    <div id="reviewMeta" class="review-meta"></div>
+    <div class="review-tools">
+      <button id="viewPlanDuringReviewBtn" class="btn btn-gold" type="button" onclick="window.openPlanPreview(document.getElementById('reviewPlanId').value)">📖 عرض التحضير</button>
+      <button id="printCurrentReviewBtn" class="btn btn-soft hidden" type="button" onclick="window.printReview(this.dataset.reviewId)">🖨️ طباعة التقرير</button>
+    </div>
+    <div id="reviewHistory" class="review-summary hidden"></div>
+    <div id="reviewCriteriaContainer"></div>
+    <div class="field full" style="margin-top:16px">
+      <label for="reviewGeneralNotes">الملاحظات العامة</label>
+      <textarea id="reviewGeneralNotes" class="review-general" placeholder="اكتبي الملاحظات العامة على التخطيط..."></textarea>
+    </div>
+    <div class="review-actions">
+      <button id="saveLessonReviewDraftBtn" class="btn btn-soft" type="button">💾 حفظ المتابعة</button>
+      <button id="approveLessonReviewBtn" class="btn btn-primary" type="button">✅ اعتماد المتابعة</button>
+      <button id="cancelLessonReviewBtn" class="btn btn-soft" type="button">إغلاق</button>
+    </div>
+    <div id="lessonReviewMessage" class="review-message"></div>
+  </div>
+</div>
+
+
+<!-- عرض التحضير أثناء المتابعة -->
+<div id="planPreviewModal" class="review-modal hidden">
+  <div class="review-dialog plan-preview-dialog" role="dialog" aria-modal="true">
+    <div class="review-head">
+      <div>
+        <h2>📖 التحضير محل المتابعة</h2>
+        <p>عرض للقراءة فقط — لن تفقدي اختيارات التقييم عند فتحه أو إغلاقه.</p>
+      </div>
+      <button id="closePlanPreviewBtn" class="review-close" type="button" aria-label="إغلاق" onclick="closePlanPreview()">×</button>
+    </div>
+    <div id="planPreviewContent"></div>
+    <div class="review-actions">
+      <button id="closePlanPreviewBottomBtn" class="btn btn-primary" type="button" onclick="closePlanPreview()">العودة للتقييم</button>
+    </div>
+  </div>
+</div>
+
+<!-- ورقة PDF المخفية -->
+<section id="pdfSheet"></section>
+
+<script src="../../js/config.js?v=20260816-lessonplans2"></script>
+<script src="../../js/graph.js?v=20260816-lessonplans2"></script>
+<script src="../../js/common.js?v=20260816-lessonplans2"></script>
+
+<script>
+"use strict";
+
+let sb = null;
+let currentUser = null;
+let currentProfile = null;
+let isAdminUser = false;
+let isCoordinatorUser = false;
+let canViewDepartmentOverview = false;
+
+/*
+  نطاق المنسقة: جميع الأقسام المرتبطة بها + معلمات هذه الأقسام.
+  نستخدمه كفلترة صريحة داخل الصفحة، بالإضافة إلى RLS في Supabase.
+*/
+let coordinatorDepartmentIds = [];
+let coordinatorVisibleTeacherIds = [];
+
+let allPlans = [];
+let availableSubjects = [];
+let objectiveCounter = 0;
+let supportCounter = 0;
+
+let reviewCriteria = [];
+let lessonPlanReviews = [];
+let lessonPlanReviewItems = [];
+let reviewDepartmentNames = {};
+let currentReviewPlan = null;
+
+const RESOURCES = [
+  "لابتوب",
+  "سبورات فردية صغيرة",
+  "الكتاب المدرسي",
+  "قرطاسية",
+  "الإنترنت",
+  "عارض شرائح",
+  "بوربوينت",
+  "سبورة ذكية",
+  "QR",
+  "يوتيوب"
+];
+
+const LEARNING_STYLES = [
+  "سمعي",
+  "بصري",
+  "حركي",
+  "قراءة وكتابة"
+];
+
+const STRATEGIES = [
+  "التعلم التعاوني",
+  "حل المشكلات",
+  "الاستقصاء",
+  "العصف الذهني",
+  "التعلم بالأقران",
+  "التعلم باللعب",
+  "المحطات التعليمية",
+  "التعلم القائم على المشروع",
+  "التعلم الذاتي",
+  "التعلم الرقمي",
+  "الصف المقلوب",
+  "التعلم المتمايز"
+];
+
+const ASSESSMENTS = [
+  "التقييم الذاتي",
+  "تقييم الأقران",
+  "التغذية الراجعة",
+  "الأسئلة الشفهية",
+  "التقييم التحريري",
+  "الملاحظة",
+  "بطاقة الخروج",
+  "نشاط فردي",
+  "نشاط تمايزي"
+];
+
+const CENTURY_SKILLS = [
+  "التفكير الناقد وحل المشكلات",
+  "التعاون والتواصل",
+  "المعرفة المعلوماتية",
+  "المعرفة الرقمية",
+  "الوعي العالمي والثقافي",
+  "القدرة على التكيف والمرونة",
+  "الذكاء العاطفي"
+];
+
+const SUPPORT_CATEGORIES = [
+  "صعوبات التعلم والتوحد",
+  "متدنو التحصيل",
+  "الناطقون بغير اللغة العربية"
+];
+
+const PRODUCTS = [
+  "ورقة عمل",
+  "منتج رقمي",
+  "عرض تقديمي",
+  "مشروع",
+  "مهمة أدائية",
+  "بحث",
+  "إنتاج كتابي",
+  "أخرى"
+];
+
+function byId(id){
+  return document.getElementById(id);
+}
+
+function esc(value){
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function formatDate(value){
+  if(!value) return "—";
+
+  const date = new Date(value + "T00:00:00");
+
+  if(Number.isNaN(date.getTime())){
+    return value;
+  }
+
+  return date.toLocaleDateString(
+    "ar-BH",
+    {
+      year:"numeric",
+      month:"long",
+      day:"numeric"
+    }
+  );
+}
+
+
+function renderChecks(containerId, name, values){
+  const container = byId(containerId);
+
+  container.innerHTML = values.map(value => `
+    <label class="check-item">
+      <input type="checkbox" name="${esc(name)}" value="${esc(value)}">
+      <span>${esc(value)}</span>
+    </label>
+  `).join("");
+}
+
+function getChecked(name){
+  return [
+    ...document.querySelectorAll(
+      `input[name="${name}"]:checked`
+    )
+  ].map(input => input.value);
+}
+
+function setChecked(name, values){
+  const set = new Set(values || []);
+
+  document
+    .querySelectorAll(`input[name="${name}"]`)
+    .forEach(input => {
+      input.checked = set.has(input.value);
+    });
+}
+
+function showTab(tabId){
+  document.querySelectorAll(".tab-panel")
+    .forEach(panel => {
+      panel.classList.toggle(
+        "active",
+        panel.id === tabId
+      );
+    });
+
+  document.querySelectorAll(".tab-btn")
+    .forEach(btn => {
+      btn.classList.toggle(
+        "active",
+        btn.dataset.tab === tabId
+      );
+    });
+}
+
+function addObjective(data = {}){
+  objectiveCounter++;
+
+  const id = objectiveCounter;
+
+  const card = document.createElement("div");
+  card.className = "objective-card";
+  card.dataset.objectiveId = id;
+
+  card.innerHTML = `
+    <div class="objective-head">
+      <strong>هدف تعلم ${id}</strong>
+
+      <button
+        type="button"
+        class="mini-btn btn-remove"
+        onclick="removeObjective(${id})"
+      >
+        حذف
+      </button>
+    </div>
+
+    <div class="form-grid">
+
+      <div class="field">
+        <label>الزمن بالدقائق</label>
+        <input
+          class="objective-duration"
+          type="number"
+          min="0"
+          value="${esc(data.duration_minutes ?? "")}"
+        >
+      </div>
+
+      <div class="field span-2">
+        <label>هدف التعلم *</label>
+        <textarea class="objective-text">${esc(data.learning_objective || "")}</textarea>
+      </div>
+
+      <div class="field full">
+        <label>إجراءات سير الدرس</label>
+        <textarea class="objective-procedures">${esc(data.lesson_procedures || "")}</textarea>
+      </div>
+
+      <div class="field full">
+        <label>تفاصيل التقييم لهذا الهدف</label>
+        <textarea class="objective-assessment">${esc(data.assessment_details || "")}</textarea>
+      </div>
+
+    </div>
+  `;
+
+  byId("objectivesList").appendChild(card);
+}
+
+function removeObjective(id){
+  const card =
+    document.querySelector(
+      `[data-objective-id="${id}"]`
+    );
+
+  card?.remove();
+
+  if(!byId("objectivesList").children.length){
+    addObjective();
+  }
+}
+
+function collectObjectives(){
+  return [
+    ...document.querySelectorAll(".objective-card")
+  ].map((card,index) => ({
+    objective_order:index + 1,
+    duration_minutes:
+      Number(
+        card.querySelector(".objective-duration").value
+      ) || null,
+    learning_objective:
+      card.querySelector(".objective-text").value.trim(),
+    lesson_procedures:
+      card.querySelector(".objective-procedures").value.trim() || null,
+    assessment_details:
+      card.querySelector(".objective-assessment").value.trim() || null
+  })).filter(item => item.learning_objective);
+}
+
+function addSupport(data = {}){
+  supportCounter++;
+
+  const id = supportCounter;
+
+  const card = document.createElement("div");
+  card.className = "support-card";
+  card.dataset.supportId = id;
+
+  card.innerHTML = `
+    <div class="support-head">
+      <strong>إجراء دعم</strong>
+
+      <button
+        type="button"
+        class="mini-btn btn-remove"
+        onclick="removeSupport(${id})"
+      >
+        حذف
+      </button>
+    </div>
+
+    <div class="form-grid">
+
+      <div class="field">
+        <label>الفئة</label>
+
+        <select class="support-category">
+          <option value="">— اختاري —</option>
+
+          ${SUPPORT_CATEGORIES.map(value => `
+            <option
+              value="${esc(value)}"
+              ${data.category === value ? "selected" : ""}
+            >
+              ${esc(value)}
+            </option>
+          `).join("")}
+
+        </select>
+      </div>
+
+      <div class="field">
+        <label>اسم الطالب/الطالبة</label>
+        <input
+          class="support-student"
+          type="text"
+          value="${esc(data.student_name || "")}"
+        >
+      </div>
+
+      <div class="field">
+        <label>نوع الصعوبة</label>
+        <input
+          class="support-difficulty"
+          type="text"
+          value="${esc(data.difficulty_type || "")}"
+        >
+      </div>
+
+      <div class="field">
+        <label>الطالب/الطالبة المساندة</label>
+        <input
+          class="support-helper"
+          type="text"
+          value="${esc(data.supporting_student || "")}"
+        >
+      </div>
+
+      <div class="field full">
+        <label>إجراءات الدعم</label>
+        <textarea class="support-procedure">${esc(data.support_procedure || "")}</textarea>
+      </div>
+
+    </div>
+  `;
+
+  byId("supportList").appendChild(card);
+}
+
+function removeSupport(id){
+  document
+    .querySelector(`[data-support-id="${id}"]`)
+    ?.remove();
+}
+
+function collectSupport(){
+  return [
+    ...document.querySelectorAll(".support-card")
+  ].map(card => ({
+    category:
+      card.querySelector(".support-category").value,
+    student_name:
+      card.querySelector(".support-student").value.trim() || null,
+    difficulty_type:
+      card.querySelector(".support-difficulty").value.trim() || null,
+    supporting_student:
+      card.querySelector(".support-helper").value.trim() || null,
+    support_procedure:
+      card.querySelector(".support-procedure").value.trim() || null
+  })).filter(
+    item =>
+      item.category ||
+      item.student_name ||
+      item.support_procedure
+  );
+}
+
+async function loadSubjectOptions(){
+  const select = byId("subject");
+  const currentValue = select.value;
+  availableSubjects = [];
+
+  // القيادة/الإدارة ترى جميع المواد. أما المنسقة والمعلمة فتظهر لها مواد أقسامها فقط.
+  let departmentIds = [];
+
+  if(isCoordinatorUser && coordinatorDepartmentIds.length){
+    departmentIds = [...coordinatorDepartmentIds];
+  }else if(!isAdminUser){
+    // المصدر الأساسي: profile_departments
+    const { data: assignments, error: assignmentsError } = await sb
+      .from("profile_departments")
+      .select("department_id")
+      .eq("profile_id", currentUser.id);
+
+    if(!assignmentsError){
+      departmentIds = [...new Set((assignments || [])
+        .map(x => x.department_id)
+        .filter(Boolean)
+        .map(String))];
+    }else{
+      console.warn("تعذر قراءة أقسام المستخدم من profile_departments:", assignmentsError);
+    }
+
+    // توافق مع الحسابات القديمة إن لم يوجد ربط في profile_departments
+    if(!departmentIds.length && currentProfile?.department_id){
+      departmentIds = [String(currentProfile.department_id)];
+    }
+  }
+
+  let allowedSubjectIds = null;
+
+  if(!isAdminUser && departmentIds.length){
+    const { data: links, error: linksError } = await sb
+      .from("department_subjects")
+      .select("subject_id")
+      .in("department_id", departmentIds);
+
+    if(linksError) throw linksError;
+
+    allowedSubjectIds = [...new Set((links || [])
+      .map(x => x.subject_id)
+      .filter(Boolean)
+      .map(String))];
+  }
+
+  let query = sb
+    .from("subjects")
+    .select("id,name,active")
+    .eq("active",true)
+    .order("name");
+
+  if(Array.isArray(allowedSubjectIds)){
+    if(!allowedSubjectIds.length){
+      select.innerHTML = '<option value="">— لا توجد مواد مرتبطة بالقسم —</option>';
+      return;
+    }
+    query = query.in("id", allowedSubjectIds);
+  }
+
+  const { data, error } = await query;
+  if(error) throw error;
+
+  availableSubjects = data || [];
+
+  /*
+    دعم المعلمات اللاتي يدرسن أكثر من مادة حتى لو كان ربط الحساب بالقسم
+    لا يغطي كل موادهن بعد. فاطمة البشير تدرس المواطنة + التربية الأسرية.
+    هذا لا يمنحها مواد قسم المواد الإثرائية الأخرى؛ نضيف المادة المطلوبة فقط.
+  */
+  const normalizedTeacherName = String(currentProfile?.full_name || "")
+    .replace(/\s+/g," ").trim();
+  if(!isAdminUser && /فاطمة\s+البشير/.test(normalizedTeacherName)){
+    const hasFamily = availableSubjects.some(x =>
+      /التربية\s*الأسرية|تربية\s*أسرية/.test(String(x.name || ""))
+    );
+    if(!hasFamily){
+      const { data: familySubjects, error: familyError } = await sb
+        .from("subjects")
+        .select("id,name,active")
+        .eq("active",true);
+      if(familyError) throw familyError;
+      const extra = (familySubjects || []).filter(x =>
+        /التربية\s*الأسرية|تربية\s*أسرية/.test(String(x.name || ""))
+      );
+      availableSubjects = [...availableSubjects, ...extra.filter(x =>
+        !availableSubjects.some(y => String(y.id) === String(x.id))
+      )].sort((a,b)=>String(a.name||"").localeCompare(String(b.name||""),"ar"));
+    }
+  }
+
+  select.innerHTML =
+    '<option value="">— اختاري المادة —</option>' +
+    availableSubjects.map(item =>
+      `<option value="${esc(item.id)}">${esc(item.name)}</option>`
+    ).join("");
+
+  if(currentValue && availableSubjects.some(item => String(item.id) === String(currentValue))){
+    select.value = currentValue;
+  }
+}
+
+function selectedSubject(){
+  const id = byId("subject").value;
+  return availableSubjects.find(item => String(item.id) === String(id)) || null;
+}
+
+function normalizeSubjectName(value){
+  return String(value || "")
+    .trim()
+    .replace(/^ال/, "")
+    .replace(/\s+/g, " ");
+}
+
+function findSubjectIdByLegacyName(value){
+  const normalized = normalizeSubjectName(value);
+  const aliases = {
+    "لغة عربية":"عربي",
+    "العربية":"عربي",
+    "لغة انجليزية":"إنجليزي",
+    "انجليزي":"إنجليزي",
+    "الانجليزية":"إنجليزي",
+    "تربية اسلامية":"دين",
+    "اسلامية":"دين",
+    "تقنية":"تقانة"
+  };
+  const target = aliases[normalized] || normalized;
+  const found = availableSubjects.find(item => {
+    const name = normalizeSubjectName(item.name);
+    return name === target || (aliases[name] || name) === target;
+  });
+  return found?.id || "";
+}
+
+function populateStaticOptions(){
+  renderChecks("resourcesChecks","resources",RESOURCES);
+  renderChecks("learningStylesChecks","learning_styles",LEARNING_STYLES);
+  renderChecks("strategiesChecks","strategies",STRATEGIES);
+  renderChecks("assessmentChecks","assessments",ASSESSMENTS);
+  renderChecks("centuryChecks","century",CENTURY_SKILLS);
+  renderChecks("supportCategoryChecks","support_categories",SUPPORT_CATEGORIES);
+  renderChecks("productChecks","products",PRODUCTS);
+}
+
+async function loadCoordinatorLessonPlanScope(){
+  coordinatorDepartmentIds = [];
+  coordinatorVisibleTeacherIds = [];
+
+  if(!isCoordinatorUser){
+    return [];
+  }
+
+  try{
+    let scope = null;
+
+    if(
+      window.WRAccess &&
+      typeof WRAccess.getScope === "function"
+    ){
+      try{
+        scope = await WRAccess.getScope();
+      }catch(scopeError){
+        console.warn(
+          "تعذر قراءة نطاق المنسقة من WRAccess:",
+          scopeError
+        );
+      }
+    }
+
+    if(
+      Array.isArray(scope?.department_ids) &&
+      scope.department_ids.length
+    ){
+      coordinatorDepartmentIds =
+        scope.department_ids
+          .filter(Boolean)
+          .map(String);
+    }
+
+    if(
+      !coordinatorDepartmentIds.length &&
+      Array.isArray(currentProfile?.department_ids)
+    ){
+      coordinatorDepartmentIds =
+        currentProfile.department_ids
+          .filter(Boolean)
+          .map(String);
+    }
+
+    if(
+      !coordinatorDepartmentIds.length &&
+      currentProfile?.department_id
+    ){
+      coordinatorDepartmentIds = [
+        String(currentProfile.department_id)
+      ];
+    }
+
+    const visibleIds = new Set([
+      String(currentUser.id)
+    ]);
+
+    if(coordinatorDepartmentIds.length){
+      const {
+        data: assignments,
+        error: assignmentsError
+      } = await sb
+        .from("profile_departments")
+        .select(`
+          profile_id,
+          department_id,
+          assignment_type
+        `)
+        .in(
+          "department_id",
+          coordinatorDepartmentIds
+        );
+
+      if(assignmentsError){
+        console.warn(
+          "profile_departments:",
+          assignmentsError
+        );
+      }else{
+        (assignments || []).forEach(item => {
+          const assignmentType =
+            String(item.assignment_type || "")
+              .trim()
+              .toLowerCase();
+
+          if(
+            item.profile_id &&
+            (
+              !assignmentType ||
+              assignmentType === "teacher"
+            )
+          ){
+            visibleIds.add(
+              String(item.profile_id)
+            );
+          }
+        });
+      }
+
+      const {
+        data: legacyTeachers,
+        error: legacyError
+      } = await sb
+        .from("user_profiles")
+        .select(`
+          user_id,
+          role,
+          department_id
+        `)
+        .eq("role","teacher")
+        .in(
+          "department_id",
+          coordinatorDepartmentIds
+        );
+
+      if(legacyError){
+        console.warn(
+          "user_profiles legacy departments:",
+          legacyError
+        );
+      }else{
+        (legacyTeachers || []).forEach(item => {
+          if(item.user_id){
+            visibleIds.add(
+              String(item.user_id)
+            );
+          }
+        });
+      }
+    }
+
+    coordinatorVisibleTeacherIds = [
+      ...visibleIds
+    ];
+
+    return coordinatorVisibleTeacherIds;
+
+  }catch(error){
+    console.error(
+      "Coordinator lesson plan scope:",
+      error
+    );
+
+    coordinatorVisibleTeacherIds = [
+      String(currentUser.id)
+    ];
+
+    return coordinatorVisibleTeacherIds;
+  }
+}
+
+async function init(){
+  try{
+    sb = window.supabase.createClient(
+      window.WR_CONFIG.supabaseUrl,
+      window.WR_CONFIG.supabaseKey
+    );
+
+    currentUser =
+      await WRGraph.getAccount();
+
+    if(!currentUser){
+      location.href = "../../index.html";
+      return;
+    }
+
+    currentProfile =
+      await WRGraph.getUserProfile();
+
+    /*
+      دعم الحسابات القديمة الموجودة في جدول profiles
+      إذا لم يكن لها user_profiles بعد.
+    */
+    if(!currentProfile?.role){
+      const { data: legacyProfile } =
+        await sb
+          .from("profiles")
+          .select("id, full_name, role")
+          .eq("id",currentUser.id)
+          .maybeSingle();
+
+      if(legacyProfile){
+        currentProfile = {
+          ...currentProfile,
+          full_name:
+            currentProfile?.full_name ||
+            legacyProfile.full_name ||
+            currentUser.email,
+          role:
+            legacyProfile.role || "teacher"
+        };
+      }
+    }
+
+    if(!currentProfile){
+      currentProfile = {
+        user_id:currentUser.id,
+        email:currentUser.email,
+        full_name:currentUser.email,
+        role:"teacher"
+      };
+    }
+
+    isAdminUser =
+      currentProfile.role === "admin";
+
+    isCoordinatorUser =
+      currentProfile.role === "coordinator";
+
+    canViewDepartmentOverview =
+      isAdminUser || isCoordinatorUser;
+
+    if(isCoordinatorUser){
+      await loadCoordinatorLessonPlanScope();
+    }
+
+    populateStaticOptions();
+    await loadSubjectOptions();
+
+    byId("teacherName").value =
+      currentProfile.full_name ||
+      currentUser.email ||
+      "";
+
+    byId("lessonDate").value =
+      new Date().toISOString().slice(0,10);
+
+    byId("lessonDay").value = "";
+
+
+    addObjective();
+
+    if(isAdminUser){
+      byId("scopeBox").textContent =
+        "صلاحية الإدارة — يمكنك الاطلاع على جميع التحاضير ومؤشرات الممارسات التعليمية.";
+
+      byId("tabAdminBtn").classList.remove("hidden");
+
+      /*
+        الإدارة لا تحتاج نموذج كتابة تحضير.
+      */
+      byId("tabNewBtn").classList.add("hidden");
+
+      byId("tabMineBtn").textContent =
+        "📚 سجل التحاضير";
+
+      showTab("adminTab");
+
+    }else if(isCoordinatorUser){
+      const departmentText =
+        Array.isArray(currentProfile?.department_names) &&
+        currentProfile.department_names.length
+          ? currentProfile.department_names.join("، ")
+          : currentProfile?.department_name ||
+            "الأقسام المرتبطة بحسابك";
+
+      byId("scopeBox").textContent =
+        "صلاحية المنسقة — يمكنك إعداد تحضيركِ كمعلمة، ومتابعة تحاضير معلمات أقسامك فقط دون تعديلها: " +
+        departmentText +
+        ".";
+
+      byId("tabAdminBtn").classList.remove("hidden");
+      byId("tabAdminBtn").textContent =
+        "📊 متابعة القسم";
+
+    }else{
+      byId("scopeBox").textContent =
+        "دفتر التحضير الخاص بكِ — يمكنك إنشاء التحاضير وحفظها ونسخها وتعديلها وتنزيلها PDF.";
+    }
+
+    await loadReviewCriteria();
+    await loadLessonPlanReviews();
+    await loadPlans();
+
+    if(isCoordinatorUser){
+      const allOption=byId("reviewReportDimension")?.querySelector('option[value="all"]');
+      if(allOption) allOption.remove();
+    }
+    renderReviewReports();
+
+    const deepLinkParams=new URLSearchParams(window.location.search);
+    const deepReviewId=deepLinkParams.get("reviewId");
+    const deepPlanId=deepLinkParams.get("planId");
+    const deepView=deepLinkParams.get("view");
+    const deepPrint=deepLinkParams.get("print");
+
+    if(deepReviewId){
+      const deepReview=lessonPlanReviews.find(r=>String(r.id)===String(deepReviewId) && r.status==="final");
+      if(deepReview){
+        setTimeout(async ()=>{
+          if(deepPrint==="1"){
+            await printReview(deepReview.id);
+          }else{
+            await openReviewResult(deepReview.lesson_plan_id,deepReview.id);
+          }
+        },180);
+      }
+    }else if(deepPlanId && deepView==="plan"){
+      const deepPlan=allPlans.find(p=>String(p.id)===String(deepPlanId));
+      if(deepPlan){
+        setTimeout(()=>openPlanPreview(deepPlan.id),180);
+      }
+    }
+
+  }catch(error){
+    console.error("Lesson plans init:",error);
+
+    alert(
+      "تعذر تحميل دفتر التحضير الإلكتروني."
+    );
+  }
+}
+
+async function savePlan(status){
+  const state = byId("saveState");
+
+  state.textContent = "";
+  state.className = "save-state";
+
+  const objectives = collectObjectives();
+
+  if(
+    !byId("lessonDate").value ||
+    !byId("subject").value ||
+    !byId("grade").value ||
+    !byId("lessonTitle").value.trim() ||
+    !objectives.length
+  ){
+    state.textContent =
+      "أكملي التاريخ والمادة والصف وعنوان الدرس وهدف تعلم واحد على الأقل.";
+
+    state.className =
+      "save-state error";
+
+    return;
+  }
+
+  const editingId =
+    byId("editingPlanId").value || null;
+
+  const subjectRecord = selectedSubject();
+
+  if(!subjectRecord){
+    state.textContent = "اختاري المادة من القائمة المعتمدة.";
+    state.className = "save-state error";
+    return;
+  }
+
+  const row = {
+    teacher_id:currentUser.id,
+    teacher_name:
+      currentProfile.full_name ||
+      currentUser.email,
+
+    lesson_date:byId("lessonDate").value,
+    lesson_day:byId("lessonDay").value || null,
+    subject:subjectRecord.name,
+    subject_id:subjectRecord.id,
+    grade:byId("grade").value,
+    class_section:
+      byId("classSection").value.trim() || null,
+    period:byId("period").value || null,
+    unit_name:
+      byId("unitName").value.trim() || null,
+    lesson_title:
+      byId("lessonTitle").value.trim(),
+
+    subject_connection:
+      byId("subjectConnection").value.trim() || null,
+    values_connection:
+      byId("valuesConnection").value.trim() || null,
+
+    introduction:
+      byId("introduction").value.trim() || null,
+    introduction_minutes:
+      Number(byId("introductionMinutes").value) || null,
+
+    resources:getChecked("resources"),
+    learning_styles:getChecked("learning_styles"),
+    teaching_strategies:getChecked("strategies"),
+    assessment_methods:getChecked("assessments"),
+    century21_skills:getChecked("century"),
+    support_categories:getChecked("support_categories"),
+
+    student_product_type:
+      getChecked("products").join("، ") || null,
+    student_product_description:
+      byId("productDescription").value.trim() || null,
+
+    reflection_status:
+      byId("reflectionStatus").value || null,
+    reflection_notes:
+      byId("reflectionNotes").value.trim() || null,
+
+    status,
+    updated_at:new Date().toISOString()
+  };
+
+  const button =
+    status === "completed"
+      ? byId("saveCompleteBtn")
+      : byId("saveDraftBtn");
+
+  button.disabled = true;
+
+  try{
+    let planId = editingId;
+
+    if(editingId){
+      const { error } =
+        await sb
+          .from("lesson_plans")
+          .update(row)
+          .eq("id",editingId);
+
+      if(error) throw error;
+
+    }else{
+      const { data, error } =
+        await sb
+          .from("lesson_plans")
+          .insert(row)
+          .select("id")
+          .single();
+
+      if(error) throw error;
+
+      planId = data.id;
+    }
+
+    // بمجرد نجاح حفظ السجل الرئيسي نثبّت معرفه فورًا؛ حتى لو تعذر حفظ
+    // تفصيل فرعي لاحقًا لا يبدو للمعلمة أن التحضير كله ضاع.
+    byId("editingPlanId").value = planId;
+
+    /*
+      نستبدل أهداف التحضير بالكامل عند الحفظ
+      لتسهيل التعديل بدون تعقيد.
+    */
+    {
+      const { error } =
+        await sb
+          .from("lesson_plan_objectives")
+          .delete()
+          .eq("lesson_plan_id",planId);
+
+      if(error) throw error;
+    }
+
+    const objectiveRows =
+      objectives.map(item => ({
+        ...item,
+        lesson_plan_id:planId
+      }));
+
+    if(objectiveRows.length){
+      const { error } =
+        await sb
+          .from("lesson_plan_objectives")
+          .insert(objectiveRows);
+
+      if(error) throw error;
+    }
+
+    {
+      const { error } =
+        await sb
+          .from("lesson_plan_support")
+          .delete()
+          .eq("lesson_plan_id",planId);
+
+      if(error) throw error;
+    }
+
+    const supportRows =
+      collectSupport()
+        .filter(item => item.category)
+        .map(item => ({
+          ...item,
+          lesson_plan_id:planId
+        }));
+
+    if(supportRows.length){
+      const { error } =
+        await sb
+          .from("lesson_plan_support")
+          .insert(supportRows);
+
+      if(error) throw error;
+    }
+
+    state.textContent =
+      status === "completed"
+        ? "✓ تم اعتماد التحضير وحفظه بنجاح."
+        : "✓ تم حفظ التحضير كمسودة.";
+
+    state.className =
+      "save-state ok";
+
+    byId("editingPlanId").value = planId;
+
+    byId("downloadCurrentPdfBtn")
+      .classList.remove("hidden");
+
+    await loadPlans();
+
+  }catch(error){
+    console.error("Save lesson plan:",error);
+
+    const persistedId = byId("editingPlanId").value || null;
+    if(persistedId){
+      state.textContent = "تم حفظ بيانات التحضير الأساسية، لكن تعذر حفظ جزء من التفاصيل: " +
+        (error.message || "خطأ غير متوقع") + ". أعيدي المحاولة لإكمال التفاصيل.";
+      state.className = "save-state error";
+      try{ await loadPlans(); }catch(_){ }
+    }else{
+      state.textContent = "تعذر حفظ التحضير: " + (error.message || "خطأ غير متوقع");
+      state.className = "save-state error";
+    }
+
+  }finally{
+    button.disabled = false;
+  }
+}
+
+async function loadPlans(){
+  try{
+    let query =
+      sb
+        .from("lesson_plans")
+        .select("*")
+        .order(
+          "lesson_date",
+          {ascending:false}
+        )
+        .order(
+          "created_at",
+          {ascending:false}
+        );
+
+    /*
+      فلترة صريحة حسب الدور، بالإضافة إلى RLS:
+      - المعلمة: تحاضيرها فقط.
+      - المنسقة: تحضيرها + تحاضير معلمات جميع أقسامها.
+      - القيادة العليا: جميع تحاضير المدرسة.
+    */
+    if(isCoordinatorUser){
+      if(!coordinatorVisibleTeacherIds.length){
+        await loadCoordinatorLessonPlanScope();
+      }
+
+      const visibleIds =
+        coordinatorVisibleTeacherIds.length
+          ? coordinatorVisibleTeacherIds
+          : [String(currentUser.id)];
+
+      query = query.in(
+        "teacher_id",
+        visibleIds
+      );
+
+    }else if(!isAdminUser){
+      query = query.eq(
+        "teacher_id",
+        currentUser.id
+      );
+    }
+
+    const { data, error } =
+      await query;
+
+    if(error) throw error;
+
+    allPlans = data || [];
+
+    if(isCoordinatorUser){
+      const visibleIds = new Set(
+        coordinatorVisibleTeacherIds.map(String)
+      );
+
+      allPlans = allPlans.filter(plan =>
+        visibleIds.has(
+          String(plan.teacher_id || "")
+        )
+      );
+    }
+
+    if(!isAdminUser && !isCoordinatorUser){
+      allPlans = allPlans.filter(plan =>
+        String(plan.teacher_id || "") ===
+        String(currentUser.id)
+      );
+    }
+
+    fillSubjectFilters();
+    renderMine();
+    renderAdmin();
+
+  }catch(error){
+    console.error("Load lesson plans:",error);
+
+    byId("plansList").innerHTML =
+      '<div class="empty">تعذر تحميل التحاضير.</div>';
+
+    byId("adminPlansList").innerHTML =
+      '<div class="empty">تعذر تحميل التحاضير.</div>';
+  }
+}
+
+function fillSubjectFilters(){
+  const subjects = [
+    ...new Set(
+      allPlans
+        .map(item => item.subject)
+        .filter(Boolean)
+    )
+  ].sort();
+
+  const mineValue = byId("mineSubject").value;
+  const adminValue = byId("adminSubject").value;
+
+  byId("mineSubject").innerHTML =
+    '<option value="">كل المواد</option>' +
+    subjects.map(subject =>
+      `<option value="${esc(subject)}">${esc(subject)}</option>`
+    ).join("");
+
+  byId("adminSubject").innerHTML =
+    '<option value="">كل المواد</option>' +
+    subjects.map(subject =>
+      `<option value="${esc(subject)}">${esc(subject)}</option>`
+    ).join("");
+
+  byId("mineSubject").value = mineValue;
+  byId("adminSubject").value = adminValue;
+}
+
+function mineFilteredPlans(){
+  const personalPlans =
+    isCoordinatorUser
+      ? allPlans.filter(plan => plan.teacher_id === currentUser.id)
+      : allPlans;
+
+  const search =
+    byId("mineSearch").value
+      .trim()
+      .toLowerCase();
+
+  const status =
+    byId("mineStatus").value;
+
+  const subject =
+    byId("mineSubject").value;
+
+  const from =
+    byId("mineFrom").value;
+
+  const to =
+    byId("mineTo").value;
+
+  return personalPlans.filter(plan => {
+    const text =
+      (
+        String(plan.lesson_title || "") +
+        " " +
+        String(plan.subject || "") +
+        " " +
+        String(plan.teacher_name || "")
+      ).toLowerCase();
+
+    if(search && !text.includes(search)){
+      return false;
+    }
+
+    if(status && plan.status !== status){
+      return false;
+    }
+
+    if(subject && plan.subject !== subject){
+      return false;
+    }
+
+    if(from && plan.lesson_date < from){
+      return false;
+    }
+
+    if(to && plan.lesson_date > to){
+      return false;
+    }
+
+    return true;
+  });
+}
+
+function renderMine(){
+  const rows = mineFilteredPlans();
+
+  const container = byId("plansList");
+
+  if(!rows.length){
+    container.innerHTML =
+      '<div class="empty">لا توجد تحاضير مطابقة.</div>';
+    return;
+  }
+
+  container.innerHTML =
+    rows.map(plan => renderPlanCard(plan,false))
+      .join("");
+}
+
+function renderPlanCard(plan,adminView){
+  return `
+    <article class="plan-card">
+
+      <div class="plan-head">
+
+        <div>
+          <div class="plan-title">
+            ${esc(plan.lesson_title || "تحضير")}
+          </div>
+
+          <div class="plan-meta">
+            ${adminView ? "المعلمة: " + esc(plan.teacher_name || "—") + "<br>" : ""}
+            المادة: ${esc(plan.subject || "—")}
+            • الصف: ${esc(plan.grade || "—")}
+            ${plan.class_section ? " • الشعبة: " + esc(plan.class_section) : ""}
+            <br>
+            ${esc(plan.lesson_day || "—")}
+            • ${esc(formatDate(plan.lesson_date))}
+            ${plan.period ? " • الحصة: " + esc(plan.period) : ""}
+          </div>
+        </div>
+
+        <span class="chip ${
+          plan.status === "completed"
+            ? "chip-completed"
+            : "chip-draft"
+        }">
+          ${
+            plan.status === "completed"
+              ? "مكتمل"
+              : "مسودة"
+          }
+        </span>
+
+      </div>
+
+      <div class="action-row">
+
+        ${
+          !adminView
+            ? `
+              <button
+                class="btn btn-soft"
+                type="button"
+                onclick="editPlan('${plan.id}')"
+              >
+                ✏️ تعديل
+              </button>
+
+              <button
+                class="btn btn-soft"
+                type="button"
+                onclick="copyPlan('${plan.id}')"
+              >
+                📄 نسخ التحضير
+              </button>
+
+              <button
+                class="btn btn-danger"
+                type="button"
+                onclick="deletePlan('${plan.id}')"
+              >
+                حذف
+              </button>
+            `
+            : ""
+        }
+
+        <button
+          class="btn btn-gold"
+          type="button"
+          onclick="downloadPlanPdf('${plan.id}')"
+        >
+          ⬇️ PDF
+        </button>
+
+        ${
+          adminView && plan.status === "completed" && canViewDepartmentOverview
+            ? `<button class="btn btn-primary" type="button" onclick="openLessonReview('${plan.id}')">📝 ${planReviews(plan.id).some(r=>r.status==="final") ? "متابعة جديدة" : "متابعة وتقييم"}</button>`
+            : ""
+        }
+
+        ${
+          planReviews(plan.id).some(r=>r.status==="final")
+            ? `<button class="btn btn-soft" type="button" onclick="openReviewResult('${plan.id}')">📋 عرض المتابعة</button>`
+            : ""
+        }
+
+      </div>
+
+      ${
+        planReviews(plan.id).some(r=>r.status==="final")
+          ? `<div class="review-summary"><span class="chip chip-reviewed">✓ تمت المتابعة</span> آخر متابعة معتمدة: ${esc(formatDate(planReviews(plan.id).filter(r=>r.status==="final").sort((a,b)=>Number(b.review_cycle||0)-Number(a.review_cycle||0))[0]?.review_date))}</div>`
+          : ""
+      }
+
+    </article>
+  `;
+}
+
+async function getPlanChildren(planId){
+  const [
+    objectivesResult,
+    supportResult
+  ] =
+    await Promise.all([
+      sb
+        .from("lesson_plan_objectives")
+        .select("*")
+        .eq("lesson_plan_id",planId)
+        .order("objective_order"),
+      sb
+        .from("lesson_plan_support")
+        .select("*")
+        .eq("lesson_plan_id",planId)
+        .order("created_at")
+    ]);
+
+  if(objectivesResult.error){
+    throw objectivesResult.error;
+  }
+
+  if(supportResult.error){
+    throw supportResult.error;
+  }
+
+  return {
+    objectives:objectivesResult.data || [],
+    support:supportResult.data || []
+  };
+}
+
+async function editPlan(planId){
+  try{
+    const plan =
+      allPlans.find(
+        item => item.id === planId
+      );
+
+    if(!plan) return;
+
+    const {
+      objectives,
+      support
+    } =
+      await getPlanChildren(planId);
+
+    resetForm(false);
+
+    byId("editingPlanId").value = plan.id;
+
+    byId("downloadCurrentPdfBtn")
+      .classList.remove("hidden");
+
+    byId("teacherName").value =
+      plan.teacher_name || "";
+
+    byId("lessonDate").value =
+      plan.lesson_date || "";
+
+    byId("lessonDay").value =
+      plan.lesson_day || "";
+
+    byId("subject").value =
+      plan.subject_id || findSubjectIdByLegacyName(plan.subject);
+
+    byId("grade").value =
+      plan.grade || "";
+
+    byId("classSection").value =
+      plan.class_section || "";
+
+    byId("period").value =
+      plan.period || "";
+
+    byId("unitName").value =
+      plan.unit_name || "";
+
+    byId("lessonTitle").value =
+      plan.lesson_title || "";
+
+    byId("subjectConnection").value =
+      plan.subject_connection || "";
+
+    byId("valuesConnection").value =
+      plan.values_connection || "";
+
+    byId("introduction").value =
+      plan.introduction || "";
+
+    byId("introductionMinutes").value =
+      plan.introduction_minutes || "";
+
+    setChecked("resources",plan.resources || []);
+    setChecked("learning_styles",plan.learning_styles || []);
+    setChecked("strategies",plan.teaching_strategies || []);
+    setChecked("assessments",plan.assessment_methods || []);
+    setChecked("century",plan.century21_skills || []);
+    setChecked("support_categories",plan.support_categories || []);
+
+    setChecked(
+      "products",
+      String(plan.student_product_type || "")
+        .split("،")
+        .map(item => item.trim())
+        .filter(Boolean)
+    );
+
+    byId("productDescription").value =
+      plan.student_product_description || "";
+
+    byId("reflectionStatus").value =
+      plan.reflection_status || "";
+
+    byId("reflectionNotes").value =
+      plan.reflection_notes || "";
+
+    byId("objectivesList").innerHTML = "";
+    objectiveCounter = 0;
+
+    if(objectives.length){
+      objectives.forEach(item => addObjective(item));
+    }else{
+      addObjective();
+    }
+
+    byId("supportList").innerHTML = "";
+    supportCounter = 0;
+
+    support.forEach(item => addSupport(item));
+
+    showTab("newTab");
+
+    window.scrollTo({
+      top:0,
+      behavior:"smooth"
+    });
+
+  }catch(error){
+    console.error("Edit lesson:",error);
+
+    alert("تعذر تحميل التحضير للتعديل.");
+  }
+}
+
+async function copyPlan(planId){
+  await editPlan(planId);
+
+  byId("editingPlanId").value = "";
+
+  byId("downloadCurrentPdfBtn")
+    .classList.add("hidden");
+
+  byId("lessonDate").value =
+    new Date().toISOString().slice(0,10);
+
+  byId("lessonDay").value = "";
+
+
+  byId("saveState").textContent =
+    "تم إنشاء نسخة من التحضير. عدلي التاريخ أو البيانات المطلوبة ثم احفظيها.";
+
+  byId("saveState").className =
+    "save-state ok";
+}
+
+async function deletePlan(planId){
+  if(
+    !confirm(
+      "هل تريدين حذف هذا التحضير نهائيًا؟"
+    )
+  ){
+    return;
+  }
+
+  try{
+    const { error } =
+      await sb
+        .from("lesson_plans")
+        .delete()
+        .eq("id",planId);
+
+    if(error) throw error;
+
+    await loadPlans();
+
+  }catch(error){
+    console.error("Delete lesson:",error);
+    alert("تعذر حذف التحضير.");
+  }
+}
+
+function resetForm(clearStatus = true){
+  byId("editingPlanId").value = "";
+
+  byId("downloadCurrentPdfBtn")
+    .classList.add("hidden");
+
+  byId("teacherName").value =
+    currentProfile?.full_name ||
+    currentUser?.email ||
+    "";
+
+  byId("lessonDate").value =
+    new Date().toISOString().slice(0,10);
+
+  byId("lessonDay").value = "";
+
+
+  [
+    "subject",
+    "classSection",
+    "unitName",
+    "lessonTitle",
+    "subjectConnection",
+    "valuesConnection",
+    "introduction",
+    "introductionMinutes",
+    "productDescription",
+    "reflectionNotes"
+  ].forEach(id => {
+    byId(id).value = "";
+  });
+
+  byId("grade").value = "";
+  byId("period").value = "";
+  byId("reflectionStatus").value = "";
+
+  document
+    .querySelectorAll(
+      '#newTab input[type="checkbox"]'
+    )
+    .forEach(input => {
+      input.checked = false;
+    });
+
+  byId("objectivesList").innerHTML = "";
+  objectiveCounter = 0;
+  addObjective();
+
+  byId("supportList").innerHTML = "";
+  supportCounter = 0;
+
+  if(clearStatus){
+    byId("saveState").textContent = "";
+    byId("saveState").className = "save-state";
+  }
+}
+
+function adminFilteredPlans(){
+  const search =
+    byId("adminSearch").value
+      .trim()
+      .toLowerCase();
+
+  const subject =
+    byId("adminSubject").value;
+
+  const grade =
+    byId("adminGrade").value;
+
+  const from =
+    byId("adminFrom").value;
+
+  const to =
+    byId("adminTo").value;
+
+  return allPlans.filter(plan => {
+    const text =
+      (
+        String(plan.teacher_name || "") +
+        " " +
+        String(plan.subject || "") +
+        " " +
+        String(plan.lesson_title || "")
+      ).toLowerCase();
+
+    if(search && !text.includes(search)){
+      return false;
+    }
+
+    if(subject && plan.subject !== subject){
+      return false;
+    }
+
+    if(grade && plan.grade !== grade){
+      return false;
+    }
+
+    if(from && plan.lesson_date < from){
+      return false;
+    }
+
+    if(to && plan.lesson_date > to){
+      return false;
+    }
+
+    return true;
+  });
+}
+
+function frequencyMap(rows,field){
+  const map = new Map();
+
+  rows.forEach(row => {
+    const values =
+      Array.isArray(row[field])
+        ? row[field]
+        : [];
+
+    values.forEach(value => {
+      map.set(
+        value,
+        (map.get(value) || 0) + 1
+      );
+    });
+  });
+
+  return [
+    ...map.entries()
+  ].sort(
+    (a,b) => b[1] - a[1]
+  );
+}
+
+function renderFrequency(containerId,items){
+  const container = byId(containerId);
+
+  if(!items.length){
+    container.innerHTML =
+      '<span class="frequency-chip">لا توجد بيانات</span>';
+    return;
+  }
+
+  container.innerHTML =
+    items.map(([name,count]) => `
+      <span class="frequency-chip">
+        ${esc(name)} • ${count}
+      </span>
+    `).join("");
+}
+
+function renderAdmin(){
+  if(!canViewDepartmentOverview) return;
+
+  const rows = adminFilteredPlans();
+
+  byId("adminTotal").textContent =
+    rows.length;
+
+  byId("adminCompleted").textContent =
+    rows.filter(
+      item => item.status === "completed"
+    ).length;
+
+  byId("adminDrafts").textContent =
+    rows.filter(
+      item => item.status === "draft"
+    ).length;
+
+  byId("adminTeachers").textContent =
+    new Set(
+      rows.map(item => item.teacher_id)
+    ).size;
+
+  renderFrequency(
+    "strategiesAnalysis",
+    frequencyMap(rows,"teaching_strategies")
+  );
+
+  renderFrequency(
+    "centuryAnalysis",
+    frequencyMap(rows,"century21_skills")
+  );
+
+  renderFrequency(
+    "assessmentAnalysis",
+    frequencyMap(rows,"assessment_methods")
+  );
+
+  renderFrequency(
+    "resourcesAnalysis",
+    frequencyMap(rows,"resources")
+  );
+
+  renderFrequency(
+    "stylesAnalysis",
+    frequencyMap(rows,"learning_styles")
+  );
+
+  renderFrequency(
+    "supportAnalysis",
+    frequencyMap(rows,"support_categories")
+  );
+
+  byId("adminPlansList").innerHTML =
+    rows.length
+      ? rows.map(
+          plan => renderPlanCard(plan,true)
+        ).join("")
+      : '<div class="empty">لا توجد تحاضير مطابقة.</div>';
+
+  renderReviewReports();
+}
+
+
+/* ======================================================
+   متابعة وتقييم التحضير
+   ====================================================== */
+async function loadReviewCriteria(){
+  try{
+    const {data,error}=await sb.from("lesson_plan_review_criteria").select("id,domain_name,criterion_text,display_order,active").eq("active",true).order("display_order",{ascending:true});
+    if(error) throw error;
+    reviewCriteria=data||[];
+  }catch(error){console.error("Load review criteria:",error);reviewCriteria=[];}
+}
+
+async function loadLessonPlanReviews(){
+  try{
+    let query=sb.from("lesson_plan_reviews").select("*").order("review_date",{ascending:false}).order("review_cycle",{ascending:false});
+    const {data,error}=await query;
+    if(error) throw error;
+    lessonPlanReviews=data||[];
+
+    lessonPlanReviewItems=[];
+    const reviewIds=lessonPlanReviews.map(x=>x.id).filter(Boolean);
+    if(reviewIds.length){
+      const {data:itemData,error:itemError}=await sb
+        .from("lesson_plan_review_items")
+        .select("review_id,criterion_id,rating,evaluator_note")
+        .in("review_id",reviewIds);
+      if(itemError) throw itemError;
+      lessonPlanReviewItems=itemData||[];
+    }
+
+    reviewDepartmentNames={};
+    const departmentIds=[...new Set(lessonPlanReviews.map(x=>x.department_id).filter(Boolean).map(String))];
+    if(departmentIds.length){
+      const {data:deptData,error:deptError}=await sb
+        .from("departments")
+        .select("id,name")
+        .in("id",departmentIds);
+      if(!deptError){
+        (deptData||[]).forEach(d=>reviewDepartmentNames[String(d.id)]=d.name||"قسم غير مسمى");
+      }
+    }
+  }catch(error){
+    console.warn("Load lesson plan reviews:",error);
+    lessonPlanReviews=[];
+    lessonPlanReviewItems=[];
+    reviewDepartmentNames={};
+  }
+}
+
+function planReviews(planId){return lessonPlanReviews.filter(r=>String(r.lesson_plan_id)===String(planId));}
+
+async function resolveReviewDepartmentId(plan){
+  if(isCoordinatorUser && coordinatorDepartmentIds.length) return coordinatorDepartmentIds[0];
+  try{
+    const {data,error}=await sb.from("profile_departments").select("department_id,assignment_type").eq("profile_id",plan.teacher_id);
+    if(!error && data?.length) return data.find(x=>String(x.assignment_type||"").toLowerCase()==="teacher")?.department_id || data[0].department_id || null;
+  }catch(_){}
+  return null;
+}
+
+function reviewRatingLabel(value){return value==="met"?"متحقق":value==="partial"?"متحقق جزئيًا":value==="not_met"?"غير متحقق":"—";}
+
+function renderReviewCriteria(items={}){
+  const container=byId("reviewCriteriaContainer");
+  if(!reviewCriteria.length){container.innerHTML='<div class="empty">تعذر تحميل معايير المتابعة.</div>';return;}
+  let lastDomain="";let html="";
+  reviewCriteria.forEach((criterion,index)=>{
+    if(criterion.domain_name!==lastDomain){lastDomain=criterion.domain_name;html+=`<div class="review-domain">${esc(lastDomain)}</div>`;}
+    const old=items[String(criterion.id)]||{};
+    html+=`<div class="review-criterion" data-criterion-id="${criterion.id}">
+      <div class="review-criterion-title">${index+1}. ${esc(criterion.criterion_text)}</div>
+      <div class="review-rating">
+        ${[["met","متحقق"],["partial","متحقق جزئيًا"],["not_met","غير متحقق"]].map(([value,label])=>`<label><input type="radio" name="rating_${criterion.id}" value="${value}" ${old.rating===value?"checked":""}> ${label}</label>`).join("")}
+      </div>
+      <textarea class="review-note" placeholder="ملاحظة على هذا المعيار — اختياري">${esc(old.evaluator_note||"")}</textarea>
+    </div>`;
+  });
+  container.innerHTML=html;
+}
+
+async function openLessonReview(planId){
+  prepareReviewEditMode();
+  const plan=allPlans.find(x=>String(x.id)===String(planId));
+  if(!plan || !canViewDepartmentOverview || plan.status!=="completed") return;
+  currentReviewPlan=plan;
+  byId("reviewPlanId").value=plan.id;
+  byId("reviewExistingId").value="";
+  byId("reviewGeneralNotes").value="";
+  byId("lessonReviewMessage").textContent="";
+  const history=planReviews(plan.id).sort((a,b)=>Number(b.review_cycle||0)-Number(a.review_cycle||0));
+  const ownExisting=history.find(r=>String(r.reviewer_id)===String(currentUser.id) && r.status!=="final");
+  let itemMap={};
+  if(ownExisting){
+    byId("reviewExistingId").value=ownExisting.id;
+    byId("reviewGeneralNotes").value=ownExisting.general_notes||"";
+    const {data,error}=await sb.from("lesson_plan_review_items").select("criterion_id,rating,evaluator_note").eq("review_id",ownExisting.id);
+    if(!error)(data||[]).forEach(x=>itemMap[String(x.criterion_id)]=x);
+  }
+  byId("reviewMeta").innerHTML=`
+    <div class="review-meta-box"><strong>المعلمة</strong>${esc(plan.teacher_name||"—")}</div>
+    <div class="review-meta-box"><strong>المادة</strong>${esc(plan.subject||"—")}</div>
+    <div class="review-meta-box"><strong>الدرس</strong>${esc(plan.lesson_title||"—")}</div>
+    <div class="review-meta-box"><strong>التاريخ</strong>${esc(formatDate(plan.lesson_date))}</div>`;
+  const historyBox=byId("reviewHistory");
+  if(history.length){historyBox.classList.remove("hidden");historyBox.innerHTML="<strong>سجل المتابعة:</strong> "+history.map(r=>`المتابعة ${esc(r.review_cycle)} — ${esc(formatDate(r.review_date))} — ${r.status==="final"?"معتمدة":"محفوظة"}`).join(" &nbsp; | &nbsp; ");}else{historyBox.classList.add("hidden");historyBox.innerHTML="";}
+  renderReviewCriteria(itemMap);
+  byId("lessonReviewModal").classList.remove("hidden");
+}
+
+function closeLessonReview(){byId("lessonReviewModal").classList.add("hidden");currentReviewPlan=null;}
+
+function collectReviewItems(){
+  return reviewCriteria.map(c=>{
+    const box=document.querySelector(`[data-criterion-id="${c.id}"]`);
+    const rating=box?.querySelector(`input[name="rating_${c.id}"]:checked`)?.value||"";
+    const evaluator_note=box?.querySelector(".review-note")?.value.trim()||null;
+    return {criterion_id:c.id,rating,evaluator_note};
+  });
+}
+
+async function saveLessonReview(status){
+  const msg=byId("lessonReviewMessage");msg.textContent="";msg.className="review-message";
+  if(!currentReviewPlan) return;
+  const items=collectReviewItems();
+  if(items.some(x=>!x.rating)){msg.textContent="يجب تقييم جميع المعايير الثلاثة عشر قبل الحفظ.";msg.className="review-message error";return;}
+  const btn=status==="final"?byId("approveLessonReviewBtn"):byId("saveLessonReviewDraftBtn");btn.disabled=true;
+  try{
+    const existingId=byId("reviewExistingId").value||null;
+    const history=planReviews(currentReviewPlan.id);
+    const nextCycle=history.length?Math.max(...history.map(x=>Number(x.review_cycle)||0))+1:1;
+    const departmentId=await resolveReviewDepartmentId(currentReviewPlan);
+    const row={lesson_plan_id:currentReviewPlan.id,reviewer_id:currentUser.id,department_id:departmentId,review_date:new Date().toISOString().slice(0,10),review_cycle:existingId?(history.find(x=>String(x.id)===String(existingId))?.review_cycle||1):nextCycle,general_notes:byId("reviewGeneralNotes").value.trim()||null,status,updated_at:new Date().toISOString()};
+    let reviewId=existingId;
+    if(existingId){const {error}=await sb.from("lesson_plan_reviews").update(row).eq("id",existingId);if(error)throw error;}else{const {data,error}=await sb.from("lesson_plan_reviews").insert(row).select("id").single();if(error)throw error;reviewId=data.id;}
+    {const {error}=await sb.from("lesson_plan_review_items").delete().eq("review_id",reviewId);if(error)throw error;}
+    const rows=items.map(x=>({...x,review_id:reviewId,updated_at:new Date().toISOString()}));
+    {const {error}=await sb.from("lesson_plan_review_items").insert(rows);if(error)throw error;}
+    msg.textContent=status==="final"?"✓ تم اعتماد متابعة التحضير بنجاح.":"✓ تم حفظ المتابعة بنجاح.";msg.className="review-message ok";
+    await loadLessonPlanReviews();
+    byId("reviewExistingId").value=status==="final"?"":reviewId;
+    renderReviewReports();
+    setTimeout(()=>{closeLessonReview();renderAdmin();},650);
+  }catch(error){console.error("Save lesson review:",error);msg.textContent="تعذر حفظ المتابعة: "+(error.message||"خطأ غير متوقع");msg.className="review-message error";}finally{btn.disabled=false;}
+}
+
+
+
+function latestFinalReview(planId){
+  return planReviews(planId).filter(r=>r.status==="final").sort((a,b)=>Number(b.review_cycle||0)-Number(a.review_cycle||0))[0]||null;
+}
+
+async function openPlanPreview(planId){
+  const plan=reviewPlanById(planId);
+  if(!plan) return;
+  const {objectives,support}=await getPlanChildren(planId);
+  const arr=v=>Array.isArray(v)?v:(v?[v]:[]);
+  const bullets=v=>arr(v).length?arr(v).map(x=>`<span class="chip">${esc(x)}</span>`).join(" "):"—";
+  byId("planPreviewContent").innerHTML=`
+    <div class="plan-preview-grid">
+      <div class="plan-preview-box"><strong>المعلمة</strong>${esc(plan.teacher_name||"—")}</div>
+      <div class="plan-preview-box"><strong>المادة</strong>${esc(plan.subject||"—")}</div>
+      <div class="plan-preview-box"><strong>عنوان الدرس</strong>${esc(plan.lesson_title||"—")}</div>
+      <div class="plan-preview-box"><strong>التاريخ والحصة</strong>${esc(formatDate(plan.lesson_date))} ${plan.period?" — الحصة "+esc(plan.period):""}</div>
+      <div class="plan-preview-box"><strong>الصف والشعبة</strong>${esc(plan.grade||"—")} ${plan.class_section?" — "+esc(plan.class_section):""}</div>
+      <div class="plan-preview-box"><strong>مصادر وموارد التعلم</strong>${bullets(plan.resources)}</div>
+      <div class="plan-preview-box"><strong>استراتيجيات التعليم والتعلم</strong>${bullets(plan.teaching_strategies)}</div>
+      <div class="plan-preview-box"><strong>أنماط التعلم</strong>${bullets(plan.learning_styles)}</div>
+      <div class="plan-preview-box"><strong>مهارات القرن الحادي والعشرين</strong>${bullets(plan.century21_skills)}</div>
+      <div class="plan-preview-box"><strong>أساليب التقييم</strong>${bullets(plan.assessment_methods)}</div>
+      <div class="plan-preview-box plan-preview-wide"><strong>أهداف التعلم وإجراءات سير الدرس</strong>
+        ${objectives.length?`<div class="review-table-wrap"><table class="review-table"><thead><tr><th>م</th><th>هدف التعلم</th><th>إجراءات سير الدرس</th><th>الزمن</th><th>التقييم</th></tr></thead><tbody>${objectives.map((o,i)=>`<tr><td>${i+1}</td><td>${esc(o.learning_objective||"—")}</td><td>${esc(o.lesson_procedures||"—")}</td><td>${esc(o.duration_minutes||"—")}</td><td>${esc(o.assessment_details||"—")}</td></tr>`).join("")}</tbody></table></div>`:"—"}
+      </div>
+      <div class="plan-preview-box plan-preview-wide"><strong>الدعم والمساندة</strong>${support.length?support.map(s=>`<div>• ${esc(s.category||"—")} ${s.student_name?" — "+esc(s.student_name):""} ${s.difficulty_type?" — "+esc(s.difficulty_type):""}</div>`).join(""):"—"}</div>
+      <div class="plan-preview-box"><strong>الإنتاج الطلابي</strong>${esc(plan.student_product_type||"—")} ${plan.student_product_description?" — "+esc(plan.student_product_description):""}</div>
+    </div>`;
+  byId("planPreviewModal").classList.remove("hidden");
+}
+function closePlanPreview(){byId("planPreviewModal").classList.add("hidden");}
+
+function getReviewItemsMap(reviewId){
+  const map={};
+  lessonPlanReviewItems.filter(i=>String(i.review_id)===String(reviewId)).forEach(i=>map[String(i.criterion_id)]=i);
+  return map;
+}
+
+function buildOfficialReviewHtml(review){
+  const plan=reviewPlanById(review.lesson_plan_id)||{};
+  const map=getReviewItemsMap(review.id);
+  const department=reviewDepartmentLabel(review);
+  const rows=reviewCriteria.map((c,i)=>{
+    const item=map[String(c.id)]||{};
+    return `<tr>
+      <td>${i+1}</td>
+      <td>${esc(c.domain_name||"—")}</td>
+      <td>${esc(c.criterion_text||"—")}</td>
+      <td>${esc(reviewRatingLabel(item.rating))}</td>
+      <td>${esc(item.evaluator_note||"—")}</td>
+    </tr>`;
+  }).join("");
+
+  return `<div class="official-review-sheet">
+    <div style="text-align:center;margin-bottom:8px;">
+      <img src="../../assets/school-header.jpg" alt="شعار المدرسة"
+           style="max-width:100%;height:24mm;object-fit:contain;display:block;margin:0 auto 5px;">
+    </div>
+
+    <div class="official-review-title">
+      <h1>تقرير متابعة تخطيط الدروس اليومية</h1>
+      <p>مدرسة الرفاع الغربي الابتدائية للبنين — العام الدراسي 2026/2027م</p>
+      <p style="margin-top:4px;font-weight:700;color:#075c40;">متابعة معتمدة</p>
+    </div>
+
+    <div class="official-review-meta">
+      <div><strong>اسم المعلمة:</strong> ${esc(plan.teacher_name||"—")}</div>
+      <div><strong>القسم:</strong> ${esc(department||"—")}</div>
+      <div><strong>المادة:</strong> ${esc(plan.subject||"—")}</div>
+      <div><strong>عنوان الدرس:</strong> ${esc(plan.lesson_title||"—")}</div>
+      <div><strong>الصف / الشعبة:</strong> ${esc(plan.grade||"—")} ${plan.class_section?` / ${esc(plan.class_section)}`:""}</div>
+      <div><strong>تاريخ الدرس:</strong> ${esc(formatDate(plan.lesson_date))}</div>
+      <div><strong>رقم المتابعة:</strong> ${esc(review.review_cycle||1)}</div>
+      <div><strong>تاريخ المتابعة:</strong> ${esc(formatDate(review.review_date))}</div>
+    </div>
+
+    <table class="official-review-table">
+      <thead>
+        <tr><th>م</th><th>المجال</th><th>المعيار</th><th>التقييم</th><th>الملاحظة</th></tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+
+    <div class="plan-preview-box" style="margin-top:12px">
+      <strong>الملاحظات العامة</strong>
+      ${esc(review.general_notes||"لا توجد ملاحظات عامة.")}
+    </div>
+
+    <div style="margin-top:18px;border-top:2px solid #0b6d50;padding-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:24px;text-align:center;color:#173c34;">
+      <div>
+        <div style="font-size:12px;margin-bottom:5px;">المديرة المساعدة</div>
+        <strong style="color:#075c40;font-size:14px;">خلود الكعبي</strong>
+      </div>
+      <div>
+        <div style="font-size:12px;margin-bottom:5px;">مديرة المدرسة</div>
+        <strong style="color:#075c40;font-size:14px;">أحلام السويدي</strong>
+      </div>
+    </div>
+  </div>`;
+}
+
+function printHtmlDocument(html,title="طباعة",orientation="portrait"){
+  const w = window.open("","_blank","width=1100,height=800");
+  if(!w) throw new Error("تعذر فتح نافذة الطباعة. اسمحي بالنوافذ المنبثقة لهذا الموقع.");
+  const css = Array.from(document.querySelectorAll('style,link[rel="stylesheet"]'))
+    .map(el => el.outerHTML).join("\n");
+  w.document.open();
+  w.document.write(`<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>${esc(title)}</title>${css}<style>@page{size:A4 ${orientation};margin:8mm}body{background:#fff!important;margin:0!important;padding:0!important}.no-print,button{display:none!important}#pdfSheet{display:block!important;position:static!important;width:auto!important}</style></head><body>${html}<script>window.onload=()=>setTimeout(()=>window.print(),350)<\/script></body></html>`);
+  w.document.close();
+}
+
+async function printReview(reviewId){
+  try{
+    if(!reviewId){alert("لا يوجد تقرير معتمد للطباعة.");return;}
+    const review=lessonPlanReviews.find(r=>String(r.id)===String(reviewId));
+    if(!review) throw new Error("المتابعة غير موجودة");
+
+    let existing=lessonPlanReviewItems.filter(i=>String(i.review_id)===String(reviewId));
+    if(!existing.length){
+      const {data,error}=await sb
+        .from("lesson_plan_review_items")
+        .select("review_id,criterion_id,rating,evaluator_note")
+        .eq("review_id",reviewId);
+      if(error) throw error;
+      lessonPlanReviewItems.push(...(data||[]));
+    }
+
+    const pdf=byId("pdfSheet");
+    pdf.innerHTML=`<section id="officialReviewPdfPage" style="width:210mm;min-height:297mm;box-sizing:border-box;background:#fff;padding:10mm;direction:rtl;">${buildOfficialReviewHtml(review)}</section>`;
+    pdf.style.width="210mm";
+    pdf.classList.add("pdf-visible");
+
+    // طباعة HTML مباشرة: تتجنب خطأ Tainted canvas الناتج عن html2canvas/toDataURL.
+    printHtmlDocument(pdf.innerHTML,"تقرير متابعة التحضير","portrait");
+    pdf.classList.remove("pdf-visible");
+    pdf.style.width="";
+    pdf.innerHTML="";
+    return;
+
+    if(document.fonts?.ready){try{await document.fonts.ready;}catch(_){}}
+    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+
+    const page=byId("officialReviewPdfPage");
+    const canvas=await html2canvas(page,{
+      scale:1.5,
+      useCORS:true,
+      backgroundColor:"#ffffff",
+      logging:false,
+      scrollX:0,
+      scrollY:0,
+      windowWidth:page.scrollWidth,
+      windowHeight:page.scrollHeight
+    });
+
+    const JsPDF=window.jspdf?.jsPDF||window.jsPDF;
+    if(!JsPDF) throw new Error("مكتبة PDF غير متاحة");
+
+    const doc=new JsPDF({orientation:"portrait",unit:"mm",format:"a4",compress:true});
+    const imgData=canvas.toDataURL("image/jpeg",0.96);
+    const pageW=210, pageH=297;
+    const ratio=Math.min(pageW/canvas.width,pageH/canvas.height);
+    const imgW=canvas.width*ratio, imgH=canvas.height*ratio;
+    doc.addImage(imgData,"JPEG",(pageW-imgW)/2,0,imgW,imgH,undefined,"FAST");
+
+    const plan=reviewPlanById(review.lesson_plan_id)||{};
+    const clean=s=>String(s||"").replace(/[\\/:*?"<>|]/g,"_").replace(/\s+/g,"_");
+    doc.save(`متابعة_${clean(plan.teacher_name||"معلمة")}_${clean(plan.lesson_title||"تحضير")}_${review.review_cycle||1}.pdf`);
+
+    pdf.classList.remove("pdf-visible");
+    pdf.style.width="";
+    pdf.innerHTML="";
+  }catch(error){
+    console.error("Review PDF:",error);
+    const pdf=byId("pdfSheet");
+    if(pdf){pdf.classList.remove("pdf-visible");pdf.style.width="";pdf.innerHTML="";}
+    alert("تعذر إنشاء تقرير المتابعة PDF.\n"+(error?.message||"خطأ غير معروف"));
+  }
+}
+
+function aggregateVisibleReviews(){
+  let rows=finalizedVisibleReviews();
+  const department=byId("aggregateDepartment")?.value||"";
+  const subject=byId("aggregateSubject")?.value||"";
+  const teacher=byId("aggregateTeacher")?.value||"";
+  const cycle=byId("aggregateCycle")?.value||"";
+  return rows.filter(r=>{
+    const p=reviewPlanById(r.lesson_plan_id)||{};
+    if(department && reviewDepartmentLabel(r)!==department) return false;
+    if(subject && String(p.subject||"")!==subject) return false;
+    if(teacher && String(p.teacher_name||"")!==teacher) return false;
+    if(cycle && String(r.review_cycle||1)!==cycle) return false;
+    return true;
+  });
+}
+
+function fillAggregateFilters(){
+  const reviews=finalizedVisibleReviews();
+  const dep=byId("aggregateDepartment"),sub=byId("aggregateSubject"),teach=byId("aggregateTeacher");
+  if(!dep||!sub||!teach) return;
+  const old=[dep.value,sub.value,teach.value];
+  const deps=[...new Set(reviews.map(reviewDepartmentLabel).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"ar"));
+  const subs=[...new Set(reviews.map(r=>reviewPlanById(r.lesson_plan_id)?.subject).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"ar"));
+  const teachers=[...new Set(reviews.map(r=>reviewPlanById(r.lesson_plan_id)?.teacher_name).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"ar"));
+  dep.innerHTML='<option value="">كل الأقسام</option>'+deps.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");
+  sub.innerHTML='<option value="">كل المواد</option>'+subs.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");
+  teach.innerHTML='<option value="">كل المعلمات</option>'+teachers.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");
+  if(deps.includes(old[0]))dep.value=old[0];if(subs.includes(old[1]))sub.value=old[1];if(teachers.includes(old[2]))teach.value=old[2];
+}
+
+function aggStats(reviews){
+  const ids=reviews.map(r=>r.id);
+  const items=reviewItemsFor(ids);
+  const met=items.filter(x=>x.rating==="met").length;
+  const partial=items.filter(x=>x.rating==="partial").length;
+  const notMet=items.filter(x=>x.rating==="not_met").length;
+  const total=met+partial+notMet;
+  const teachers=new Set(reviews.map(r=>reviewPlanById(r.lesson_plan_id)?.teacher_name).filter(Boolean));
+  return {items,met,partial,notMet,total,teachers:teachers.size};
+}
+
+function renderAggregateReports(){
+  if(!canViewDepartmentOverview) return;
+  fillAggregateFilters();
+  const reviews=aggregateVisibleReviews();
+  const stats=aggStats(reviews);
+  byId("aggregateScopeText").textContent=isCoordinatorUser
+    ?"تقرير تجميعي للمتابعات المعتمدة ضمن أقسام المنسقة فقط."
+    :"تقرير تجميعي للمتابعات المعتمدة على مستوى المدرسة بالكامل.";
+  byId("aggKpiReviews").textContent=reviews.length;
+  byId("aggKpiTeachers").textContent=stats.teachers;
+  byId("aggKpiMet").textContent=pct(stats.met,stats.total)+"%";
+  byId("aggKpiPartial").textContent=pct(stats.partial,stats.total)+"%";
+  byId("aggKpiNotMet").textContent=pct(stats.notMet,stats.total)+"%";
+
+  const renderGrouped=(keyFn,bodyId,includeTeachers=true)=>{
+    const groups={};
+    reviews.forEach(r=>{const k=keyFn(r)||"غير محدد";(groups[k] ||= []).push(r);});
+    const entries=Object.entries(groups).sort((a,b)=>String(a[0]).localeCompare(String(b[0]),"ar"));
+    byId(bodyId).innerHTML=entries.length?entries.map(([name,rs])=>{
+      const s=aggStats(rs);
+      return `<tr><td><strong>${esc(name)}</strong></td><td>${rs.length}</td>${includeTeachers?`<td>${s.teachers}</td>`:""}<td class="review-good">${pct(s.met,s.total)}%</td><td class="review-partial">${pct(s.partial,s.total)}%</td><td class="review-bad">${pct(s.notMet,s.total)}%</td></tr>`;
+    }).join(""):`<tr><td colspan="${includeTeachers?6:5}" class="review-empty">لا توجد بيانات مطابقة.</td></tr>`;
+  };
+
+  renderGrouped(r=>reviewDepartmentLabel(r),"aggregateDepartmentsBody",true);
+  renderGrouped(r=>reviewPlanById(r.lesson_plan_id)?.subject||"غير محدد","aggregateSubjectsBody",true);
+
+  const teacherGroups={};
+  reviews.forEach(r=>{
+    const p=reviewPlanById(r.lesson_plan_id)||{};
+    const key=[p.teacher_name||"غير محدد",reviewDepartmentLabel(r),p.subject||"غير محدد"].join("|||");
+    (teacherGroups[key] ||= []).push(r);
+  });
+  const teacherRows=Object.entries(teacherGroups).sort((a,b)=>a[0].localeCompare(b[0],"ar"));
+  byId("aggregateTeachersBody").innerHTML=teacherRows.length?teacherRows.map(([key,rs])=>{
+    const [teacher,department,subject]=key.split("|||");
+    const s=aggStats(rs);
+    const last=[...rs].sort((a,b)=>String(b.review_date||"").localeCompare(String(a.review_date||"")))[0]?.review_date;
+    return `<tr><td><strong>${esc(teacher)}</strong></td><td>${esc(department)}</td><td>${esc(subject)}</td><td>${rs.length}</td><td class="review-good">${pct(s.met,s.total)}%</td><td class="review-partial">${pct(s.partial,s.total)}%</td><td class="review-bad">${pct(s.notMet,s.total)}%</td><td>${esc(formatDate(last))}</td></tr>`;
+  }).join(""):'<tr><td colspan="8" class="review-empty">لا توجد بيانات مطابقة.</td></tr>';
+
+  byId("aggregateCriteriaBody").innerHTML=reviewCriteria.length?reviewCriteria.map(c=>{
+    const ci=stats.items.filter(i=>String(i.criterion_id)===String(c.id));
+    const m=ci.filter(x=>x.rating==="met").length,p=ci.filter(x=>x.rating==="partial").length,n=ci.filter(x=>x.rating==="not_met").length,t=m+p+n;
+    return `<tr><td><strong>${esc(c.criterion_text)}</strong></td><td class="review-good">${m} (${pct(m,t)}%)</td><td class="review-partial">${p} (${pct(p,t)}%)</td><td class="review-bad">${n} (${pct(n,t)}%)</td></tr>`;
+  }).join(""):'<tr><td colspan="4" class="review-empty">لا توجد معايير.</td></tr>';
+}
+
+async function printAggregateReport(){
+  const reviews=aggregateVisibleReviews();
+  if(!reviews.length){alert("لا توجد بيانات مطابقة لطباعة التقرير.");return;}
+  const stats=aggStats(reviews);
+  const scope=isCoordinatorUser?"نطاق أقسام المنسقة":"المدرسة بالكامل";
+  const dep=byId("aggregateDepartment")?.value||"الكل";
+  const sub=byId("aggregateSubject")?.value||"الكل";
+  const teacher=byId("aggregateTeacher")?.value||"الكل";
+  const cycle=byId("aggregateCycle")?.value||"الكل";
+  const criteriaRows=reviewCriteria.map((c,i)=>{
+    const ci=stats.items.filter(x=>String(x.criterion_id)===String(c.id));
+    const m=ci.filter(x=>x.rating==="met").length,p=ci.filter(x=>x.rating==="partial").length,n=ci.filter(x=>x.rating==="not_met").length,t=m+p+n;
+    return `<tr><td>${i+1}</td><td>${esc(c.criterion_text)}</td><td>${m} (${pct(m,t)}%)</td><td>${p} (${pct(p,t)}%)</td><td>${n} (${pct(n,t)}%)</td></tr>`;
+  }).join("");
+  const pdf=byId("pdfSheet");
+  pdf.innerHTML=`<section id="aggregatePdfPage" style="width:210mm;min-height:297mm;box-sizing:border-box;background:#fff;padding:10mm;direction:rtl;">
+    <div class="official-review-sheet">
+      <div style="text-align:center"><img src="../../assets/school-header.jpg" style="max-width:100%;height:24mm;object-fit:contain"></div>
+      <div class="official-review-title"><h1>التقرير التجميعي لمتابعة التحضير</h1><p>مدرسة الرفاع الغربي الابتدائية للبنين — العام الدراسي 2026/2027م</p></div>
+      <div class="official-review-meta"><div><strong>النطاق:</strong> ${esc(scope)}</div><div><strong>القسم:</strong> ${esc(dep)}</div><div><strong>المادة:</strong> ${esc(sub)}</div><div><strong>المعلمة:</strong> ${esc(teacher)}</div><div><strong>رقم المتابعة:</strong> ${esc(cycle)}</div><div><strong>عدد المتابعات:</strong> ${reviews.length}</div></div>
+      <div class="review-kpis" style="grid-template-columns:repeat(4,1fr)"><div class="review-kpi"><span>المعلمات</span><strong>${stats.teachers}</strong></div><div class="review-kpi"><span>متحقق</span><strong>${pct(stats.met,stats.total)}%</strong></div><div class="review-kpi"><span>جزئيًا</span><strong>${pct(stats.partial,stats.total)}%</strong></div><div class="review-kpi"><span>غير متحقق</span><strong>${pct(stats.notMet,stats.total)}%</strong></div></div>
+      <table class="official-review-table"><thead><tr><th>م</th><th>المعيار</th><th>متحقق</th><th>جزئيًا</th><th>غير متحقق</th></tr></thead><tbody>${criteriaRows}</tbody></table>
+      <div style="margin-top:18px;border-top:2px solid #0b6d50;padding-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:24px;text-align:center"><div>المديرة المساعدة<br><strong>خلود الكعبي</strong></div><div>مديرة المدرسة<br><strong>أحلام السويدي</strong></div></div>
+    </div>
+  </section>`;
+  pdf.classList.add("pdf-visible");pdf.style.width="210mm";
+  if(document.fonts?.ready){try{await document.fonts.ready;}catch(_){}}
+  await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+  try{
+    const page=byId("aggregatePdfPage");
+    const canvas=await html2canvas(page,{scale:1.5,useCORS:true,backgroundColor:"#fff",logging:false});
+    const JsPDF=window.jspdf?.jsPDF||window.jsPDF;
+    const doc=new JsPDF({orientation:"portrait",unit:"mm",format:"a4",compress:true});
+    const img=canvas.toDataURL("image/jpeg",.96),w=210,h=canvas.height*(210/canvas.width);
+    doc.addImage(img,"JPEG",0,0,w,h,undefined,"FAST");
+    doc.save("التقرير_التجميعي_لمتابعة_التحضير.pdf");
+  }finally{pdf.classList.remove("pdf-visible");pdf.style.width="";pdf.innerHTML="";}
+}
+
+function archiveFilteredReviews(){
+  const teacher=(byId("archiveTeacherSearch")?.value||"").trim().toLowerCase();
+  const department=byId("archiveDepartment")?.value||"";
+  const subject=byId("archiveSubject")?.value||"";
+  const lesson=(byId("archiveLessonSearch")?.value||"").trim().toLowerCase();
+  const cycle=byId("archiveCycle")?.value||"";
+  return finalizedVisibleReviews().filter(r=>{
+    const p=reviewPlanById(r.lesson_plan_id)||{};
+    if(teacher && !String(p.teacher_name||"").toLowerCase().includes(teacher)) return false;
+    if(department && reviewDepartmentLabel(r)!==department) return false;
+    if(subject && String(p.subject||"")!==subject) return false;
+    if(lesson && !String(p.lesson_title||"").toLowerCase().includes(lesson)) return false;
+    if(cycle && String(r.review_cycle||1)!==cycle) return false;
+    return true;
+  }).sort((a,b)=>String(b.review_date||"").localeCompare(String(a.review_date||"")));
+}
+
+function refreshArchiveOptions(){
+  const reviews=finalizedVisibleReviews();
+  const dept=byId("archiveDepartment"),sub=byId("archiveSubject");
+  if(!dept||!sub) return;
+  const dv=dept.value,sv=sub.value;
+  const depts=[...new Set(reviews.map(reviewDepartmentLabel).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"ar"));
+  const subs=[...new Set(reviews.map(r=>reviewPlanById(r.lesson_plan_id)?.subject).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"ar"));
+  dept.innerHTML='<option value="">كل الأقسام</option>'+depts.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");
+  sub.innerHTML='<option value="">كل المواد</option>'+subs.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");
+  if(depts.includes(dv))dept.value=dv;if(subs.includes(sv))sub.value=sv;
+}
+
+function renderReviewArchive(){
+  if(!canViewDepartmentOverview) return;
+  refreshArchiveOptions();
+  const list=byId("reviewArchiveList");
+  if(!list) return;
+  const rows=archiveFilteredReviews();
+  list.innerHTML=rows.length?rows.map(r=>{
+    const p=reviewPlanById(r.lesson_plan_id)||{};
+    return `<article class="archive-card">
+      <div class="archive-card-head">
+        <div>
+          <div class="archive-card-title">${esc(p.teacher_name||"—")} — ${esc(p.lesson_title||"تحضير")}</div>
+          <div class="archive-card-meta">القسم: ${esc(reviewDepartmentLabel(r))} • المادة: ${esc(p.subject||"—")} • تاريخ الدرس: ${esc(formatDate(p.lesson_date))}<br>المتابعة رقم ${esc(r.review_cycle||1)} • تاريخ الاعتماد: ${esc(formatDate(r.review_date))}</div>
+        </div>
+        <span class="chip chip-reviewed">✓ معتمد</span>
+      </div>
+      <div class="action-row">
+        <button class="btn btn-soft" type="button" onclick="openReviewResultById('${r.id}')">📋 عرض التقرير</button>
+        <button class="btn btn-gold" type="button" onclick="printReview('${r.id}')">🖨️ طباعة / PDF</button>
+        <button class="btn btn-soft" type="button" onclick="openPlanPreview('${r.lesson_plan_id}')">📖 عرض التحضير</button>
+      </div>
+    </article>`;
+  }).join(""):'<div class="empty">لا توجد متابعات معتمدة مطابقة.</div>';
+}
+
+async function openReviewResultById(reviewId){
+  const review=lessonPlanReviews.find(r=>String(r.id)===String(reviewId));
+  if(!review) return;
+  await openReviewResult(review.lesson_plan_id, reviewId);
+}
+
+function reviewPlanById(planId){
+  return allPlans.find(p=>String(p.id)===String(planId))||null;
+}
+
+function finalizedVisibleReviews(){
+  const visiblePlanIds=new Set(allPlans.map(p=>String(p.id)));
+  return lessonPlanReviews.filter(r=>r.status==="final" && visiblePlanIds.has(String(r.lesson_plan_id)));
+}
+
+function reviewDepartmentLabel(review){
+  if(review?.department_id && reviewDepartmentNames[String(review.department_id)]) return reviewDepartmentNames[String(review.department_id)];
+  const plan=reviewPlanById(review?.lesson_plan_id);
+  if(isCoordinatorUser){
+    const names=Array.isArray(currentProfile?.department_names)?currentProfile.department_names:[];
+    if(names.length===1) return names[0];
+    if(currentProfile?.department_name) return currentProfile.department_name;
+  }
+  return plan?.department_name || "غير محدد";
+}
+
+function reviewDimensionLabel(review,dimension){
+  const plan=reviewPlanById(review.lesson_plan_id);
+  if(dimension==="teacher") return plan?.teacher_name||"غير محدد";
+  if(dimension==="subject") return plan?.subject||"غير محدد";
+  if(dimension==="department") return reviewDepartmentLabel(review);
+  return "جميع المتابعات";
+}
+
+function reviewItemsFor(reviewIds){
+  const ids=new Set(reviewIds.map(String));
+  return lessonPlanReviewItems.filter(i=>ids.has(String(i.review_id)));
+}
+
+function pct(n,total){return total?Math.round((n/total)*100):0;}
+
+function refreshReviewReportValueOptions(){
+  const dimension=byId("reviewReportDimension")?.value||"department";
+  const select=byId("reviewReportValue");
+  if(!select) return;
+  const previous=select.value;
+  const reviews=finalizedVisibleReviews();
+  const values=[...new Set(reviews.map(r=>reviewDimensionLabel(r,dimension)).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),"ar"));
+  select.innerHTML='<option value="">الكل</option>'+values.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join("");
+  if(values.includes(previous)) select.value=previous;
+}
+
+function renderReviewReports(){
+  if(!canViewDepartmentOverview) return;
+  const section=byId("reviewReportsSection");
+  if(!section) return;
+
+  const dimension=byId("reviewReportDimension")?.value||"department";
+  if(isCoordinatorUser && dimension==="all"){
+    byId("reviewReportDimension").value="department";
+    return renderReviewReports();
+  }
+
+  refreshReviewReportValueOptions();
+  const selected=byId("reviewReportValue")?.value||"";
+  let reviews=finalizedVisibleReviews();
+  if(selected) reviews=reviews.filter(r=>reviewDimensionLabel(r,dimension)===selected);
+
+  const reviewIds=reviews.map(r=>r.id);
+  const items=reviewItemsFor(reviewIds);
+  const met=items.filter(x=>x.rating==="met").length;
+  const partial=items.filter(x=>x.rating==="partial").length;
+  const notMet=items.filter(x=>x.rating==="not_met").length;
+  const totalRatings=met+partial+notMet;
+  const teacherIds=new Set(reviews.map(r=>reviewPlanById(r.lesson_plan_id)?.teacher_id).filter(Boolean).map(String));
+
+  byId("reviewKpiTotal").textContent=reviews.length;
+  byId("reviewKpiTeachers").textContent=teacherIds.size;
+  byId("reviewKpiMet").textContent=pct(met,totalRatings)+"%";
+  byId("reviewKpiPartial").textContent=pct(partial,totalRatings)+"%";
+  byId("reviewKpiNotMet").textContent=pct(notMet,totalRatings)+"%";
+
+  const headings={department:"القسم",subject:"المادة",teacher:"المعلمة",all:"النطاق"};
+  byId("reviewGroupHeading").textContent=headings[dimension]||"النطاق";
+  byId("reviewReportScopeText").textContent=isCoordinatorUser
+    ?"تقارير المتابعات المعتمدة ضمن أقسام المنسقة فقط"
+    :"تقارير المتابعات المعتمدة على مستوى المدرسة";
+
+  const groups={};
+  reviews.forEach(r=>{
+    const key=reviewDimensionLabel(r,dimension);
+    (groups[key] ||= []).push(r);
+  });
+
+  const body=byId("reviewSummaryBody");
+  const entries=Object.entries(groups).sort((a,b)=>String(a[0]).localeCompare(String(b[0]),"ar"));
+  if(!entries.length){
+    body.innerHTML='<tr><td colspan="7" class="review-empty">لا توجد متابعات معتمدة ضمن هذا النطاق.</td></tr>';
+  }else{
+    body.innerHTML=entries.map(([name,groupReviews])=>{
+      const ids=groupReviews.map(r=>r.id);
+      const its=reviewItemsFor(ids);
+      const gm=its.filter(x=>x.rating==="met").length;
+      const gp=its.filter(x=>x.rating==="partial").length;
+      const gn=its.filter(x=>x.rating==="not_met").length;
+      const gt=gm+gp+gn;
+      const teachers=new Set(groupReviews.map(r=>reviewPlanById(r.lesson_plan_id)?.teacher_id).filter(Boolean).map(String));
+      const last=[...groupReviews].sort((a,b)=>String(b.review_date||"").localeCompare(String(a.review_date||"")))[0]?.review_date;
+      return `<tr>
+        <td><strong>${esc(name)}</strong></td>
+        <td>${groupReviews.length}</td>
+        <td>${teachers.size}</td>
+        <td class="review-good">${pct(gm,gt)}%</td>
+        <td class="review-partial">${pct(gp,gt)}%</td>
+        <td class="review-bad">${pct(gn,gt)}%</td>
+        <td>${esc(formatDate(last))}</td>
+      </tr>`;
+    }).join("");
+  }
+
+  const criteriaBody=byId("reviewCriteriaReportBody");
+  if(!reviewCriteria.length || !reviews.length){
+    criteriaBody.innerHTML='<tr><td colspan="4" class="review-empty">لا توجد بيانات كافية لتحليل المعايير.</td></tr>';
+  }else{
+    criteriaBody.innerHTML=reviewCriteria.map(c=>{
+      const cItems=items.filter(i=>String(i.criterion_id)===String(c.id));
+      const cm=cItems.filter(x=>x.rating==="met").length;
+      const cp=cItems.filter(x=>x.rating==="partial").length;
+      const cn=cItems.filter(x=>x.rating==="not_met").length;
+      const ct=cm+cp+cn;
+      return `<tr>
+        <td><strong>${esc(c.criterion_text)}</strong></td>
+        <td class="review-good">${cm} (${pct(cm,ct)}%)</td>
+        <td class="review-partial">${cp} (${pct(cp,ct)}%)</td>
+        <td class="review-bad">${cn} (${pct(cn,ct)}%)</td>
+      </tr>`;
+    }).join("");
+  }
+  renderReviewArchive();
+  renderAggregateReports();
+}
+
+async function openReviewResult(planId,specificReviewId=null){
+  const plan=reviewPlanById(planId);
+  if(!plan) return;
+  const finalReviews=planReviews(planId).filter(r=>r.status==="final").sort((a,b)=>Number(b.review_cycle||0)-Number(a.review_cycle||0));
+  if(!finalReviews.length) return;
+  const review=specificReviewId ? finalReviews.find(r=>String(r.id)===String(specificReviewId)) : finalReviews[0];
+  if(!review) return;
+  let items=lessonPlanReviewItems.filter(i=>String(i.review_id)===String(review.id));
+  if(!items.length){
+    const {data,error}=await sb.from("lesson_plan_review_items").select("criterion_id,rating,evaluator_note").eq("review_id",review.id);
+    if(error){alert("تعذر تحميل نتيجة المتابعة.");return;}
+    items=data||[];
+  }
+  const map={};items.forEach(i=>map[String(i.criterion_id)]=i);
+  currentReviewPlan=plan;
+  byId("reviewPlanId").value=plan.id;
+  byId("reviewExistingId").value="";
+  byId("reviewMeta").innerHTML=`
+    <div class="review-meta-box"><strong>المعلمة</strong>${esc(plan.teacher_name||"—")}</div>
+    <div class="review-meta-box"><strong>المادة</strong>${esc(plan.subject||"—")}</div>
+    <div class="review-meta-box"><strong>المتابعة</strong>رقم ${esc(review.review_cycle||1)} — معتمدة</div>
+    <div class="review-meta-box"><strong>التاريخ</strong>${esc(formatDate(review.review_date))}</div>`;
+  byId("reviewHistory").classList.remove("hidden");
+  byId("reviewHistory").innerHTML=`<strong>الملاحظات العامة:</strong> ${esc(review.general_notes||"لا توجد ملاحظات عامة.")}`;
+  let lastDomain="",html="";
+  reviewCriteria.forEach((c,index)=>{
+    if(c.domain_name!==lastDomain){lastDomain=c.domain_name;html+=`<div class="review-domain">${esc(lastDomain)}</div>`;}
+    const item=map[String(c.id)]||{};
+    html+=`<div class="review-result-box">
+      <div class="review-result-row">
+        <strong>${index+1}. ${esc(c.criterion_text)}</strong>
+        <span class="${item.rating==="met"?"review-good":item.rating==="partial"?"review-partial":"review-bad"}">${esc(reviewRatingLabel(item.rating))}</span>
+        <span class="review-result-note">${esc(item.evaluator_note||"لا توجد ملاحظة على هذا المعيار.")}</span>
+      </div>
+    </div>`;
+  });
+  byId("reviewCriteriaContainer").innerHTML=html;
+  byId("reviewGeneralNotes").value=review.general_notes||"";
+  byId("reviewGeneralNotes").readOnly=true;
+  byId("saveLessonReviewDraftBtn").classList.add("hidden");
+  byId("approveLessonReviewBtn").classList.add("hidden");
+  byId("printCurrentReviewBtn").classList.remove("hidden");
+  byId("printCurrentReviewBtn").dataset.reviewId=review.id;
+  byId("lessonReviewMessage").textContent="";
+  byId("lessonReviewTitle").textContent="📋 نتيجة متابعة التحضير";
+  byId("lessonReviewModal").classList.remove("hidden");
+}
+
+function prepareReviewEditMode(){
+  byId("reviewGeneralNotes").readOnly=false;
+  byId("saveLessonReviewDraftBtn").classList.remove("hidden");
+  byId("approveLessonReviewBtn").classList.remove("hidden");
+  byId("printCurrentReviewBtn").classList.add("hidden");
+  byId("printCurrentReviewBtn").dataset.reviewId="";
+  byId("lessonReviewTitle").textContent="📝 متابعة وتقييم التحضير";
+}
+
+async function downloadPlanPdf(planId){
+  try{
+    const plan =
+      allPlans.find(
+        item => item.id === planId
+      );
+
+    if(!plan){
+      throw new Error("التحضير غير موجود");
+    }
+
+    const {
+      objectives,
+      support
+    } =
+      await getPlanChildren(planId);
+
+    const pdf = byId("pdfSheet");
+
+    const listHtml = values =>
+      (values || []).length
+        ? (values || []).map(item => "✓ " + esc(item)).join(" • ")
+        : "—";
+
+    pdf.innerHTML = `
+      <section class="pdf-page" id="lessonPdfPage1">
+        <div class="lp-brand">
+          <img src="data:image/jpeg;base64,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" alt="شعار المدرسة">
+        </div>
+
+        <div class="lp-title">
+          <h1>خطة التحضير اليومية</h1>
+          <div class="sub">العام الدراسي 2026–2027م</div>
+        </div>
+
+        <div class="lp-meta">
+          <div class="lp-cell"><strong>اسم المعلمة:</strong> ${esc(plan.teacher_name || "—")}</div>
+          <div class="lp-cell"><strong>التاريخ:</strong> ${esc(formatDate(plan.lesson_date))}</div>
+          <div class="lp-cell"><strong>اليوم:</strong> ${esc(plan.lesson_day || "—")}</div>
+          <div class="lp-cell"><strong>المادة:</strong> ${esc(plan.subject || "—")}</div>
+          <div class="lp-cell"><strong>الصف / الشعبة:</strong> ${esc(plan.grade || "—")}${plan.class_section ? " / " + esc(plan.class_section) : ""}</div>
+          <div class="lp-cell"><strong>الحصة:</strong> ${esc(plan.period || "—")}</div>
+          <div class="lp-cell lp-unit"><strong>الوحدة:</strong> ${esc(plan.unit_name || "—")}</div>
+          <div class="lp-cell lp-lesson"><strong>عنوان الدرس:</strong> ${esc(plan.lesson_title || "—")}</div>
+        </div>
+
+        <div class="lp-grid3">
+          <div class="lp-panel">
+            <div class="lp-panel-title">التهيئة للدرس</div>
+            <div class="lp-panel-body">
+              <strong>المقدمة (${esc(plan.introduction_minutes || "—")} د):</strong><br>
+              ${esc(plan.introduction || "—")}
+            </div>
+          </div>
+
+          <div class="lp-panel">
+            <div class="lp-panel-title">الربط</div>
+            <div class="lp-panel-body">${esc(plan.subject_connection || "—")}</div>
+          </div>
+
+          <div class="lp-panel">
+            <div class="lp-panel-title">القيم والانضباط</div>
+            <div class="lp-panel-body">${esc(plan.values_connection || "—")}</div>
+          </div>
+        </div>
+
+        <div class="lp-grid4">
+          <div class="lp-panel">
+            <div class="lp-panel-title">الموارد والمصادر التعليمية</div>
+            <div class="lp-panel-body">${listHtml(plan.resources)}</div>
+          </div>
+
+          <div class="lp-panel">
+            <div class="lp-panel-title">أنماط التعلم</div>
+            <div class="lp-panel-body">${listHtml(plan.learning_styles)}</div>
+          </div>
+
+          <div class="lp-panel">
+            <div class="lp-panel-title">استراتيجيات التدريس</div>
+            <div class="lp-panel-body">${listHtml(plan.teaching_strategies)}</div>
+          </div>
+
+          <div class="lp-panel">
+            <div class="lp-panel-title">مهارات القرن الحادي والعشرين</div>
+            <div class="lp-panel-body">${listHtml(plan.century21_skills)}</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="pdf-page" id="lessonPdfPage2">
+        <div class="lp-page2-head">
+          <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCABZAscDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9U6KKwrvx34bsbhoLnxBpdvOp2tHLeRqwPoQTVKLlsiXJR+J2N2isMeOfDZGR4g0sj/r8j/8AiqX/AITjw5/0H9L/APAyP/4qnyT7Mn2kP5kbdFYZ8c+HB18QaX/4GR//ABVIfHfhoDJ8Q6UP+32P/wCKo9nPsw9pD+ZG7RWEvjvw24yuv6Yw9Rdxkfzpw8b+Hm6a7px+l0n+NTyvsVzJ7M26Kxv+E08P/wDQc07/AMCk/wAaQ+NvDy9dd04f9vSf40WY7rubVFYR8d+Gx/zH9M/8C4/8a0NN1mw1mNpLC9t72NThmt5VcA+hwaLMLou0UUUhhRRRQAUUUUAFFZd/4o0jS75rK81O1trtbdrswSyhXEKnDSEHooPGelZkvxN8KwzGGTXrKOYWZ1AxvJhhbDrLj+4PXpQB09FYtl4z0LUbTS7q01a0urbVF32M0ModLgY3Eow4PHNVLH4k+F9TuY4LTW7S5eR2jQxPuR2AJKqw4JGDwD2NAHS0VyOnfFvwbq0lqlp4j0+Y3UzW8DCUBZZQSDGrHgsCCMA54qxcfEzwraXzWc2vWMc6zi1YNKNqzHjyy33Q2TjaTmgDpqKxNL8baBrV9q1nY6vaXN3pL7L+COUF7VsZxIP4eOeabpfjnw/rXhs+IbHWLO50MKzHUUmHkYU4Y7+mAe9AG7RXLRfFDwpMl2y69ZAWlubucPJtZIB/y1wedn+0OKs6T4/8O67pNzqdhq9td6fbRCaW5jbKJGV3Bs+m3nPpQB0FFc54Y+IvhnxnK8Wh63ZapKsKXBS3lDN5Tfdkx3U9j0ol+IvhmDwxN4jfXbEaDCzJJqImBgQq21gWHAw3B96AOjorl9R+J3hXSLmS3vdds7WaOz/tF45HwVtv+exHZPfpVnw1498PeMJZ4tF1i01KWBEkljgkyyI4yjEdcMOh6GgDforn5fH/AIbh8NXHiFtbsv7Dt2ZZtQEwMMZVtrBmHAwQQfSksPiB4b1TU59NtNas59QgtlvZLRJB5qwMMrJt67T60AdDRVXS9UtNa0+C+sbhLq0nUPFNGcq6noQatUAFFFFABRRSGgCO4uobSB5p5UhhQZaSRgqqPUk9KwdD+InhnxJ/yC9dsL794Yh5M6klgcED1544rjPi7pnhLx/Np2ga/qq/YbSVr+7sYrjakyxqcRzYPC/MDg8HbXjkPxD8HnS2u9J02O1tAwl0++unjtre4AJXEMZKZx2Ybqjm13OhUnKHMk7+mh9cbh6015o4tu9wu47Rk4yfSvhvwDaaXd/EGbVV1nUdHmkQ+bBYao4s3BGGHljzN7A8kYUdOaqXvxv8c6hqd5YanPFcaTZ30F5pt9HmOUMilWhdeDjKhwf+mmO1cOKx1LBwc6zsaQw0qklGnr+B92G7gW5FuZUE7LvEZPzFfXHpSrdQtO0IkQzKoZo8/MAehxXwhcfHL4hXOsSeIxFpjeJooJreytt5FrsZyY9x9QmCffipdX/aL8caZqd3qGkW9v5+p3kL3t5Ocx2dsiklEXuW27Qe3JrgjnmElLl5urX3K9/Q0eBrLp2/E+76QsACSQAOpr5O1rxzd+Ivh9HL4a8Zf2r4nvYDJZWu5raISFdzEyMNpweecDgDOK+UtR1P9ojV2k1e7ufEs5s91oZLeZWGCCShRD8wxnGQeBXp1MSqcVJRbv2O3L8qePk4urGDX8zsfq8GDAEEEHuKWvlr9hn4k6j438EarNr1yIbuK8W1VJHwJnC5Z1U9CcgEDjI/CvqWumnNVIqS6nmYnDzwlaVCpvF2CiiitDlCiiigAooooAKKKxvGHim18FeGdR1y9jmmtLGIzSJbqGkIH90EgE/jQBs0VBZXQvbOC4CPEssayBJBhlBGcEdjzWZP4x0m18UWvh2S7A1m6ga5itgjHdGv3m3AYH4mgDaooqlq+r2uiafcXl1IEhgieVueSqqWbA7nANAF2iuU0D4k6T4lutQtrBbmS5sbG2v5YTFhjHOrtEF9WIjbj1xUOkfE+w1Lwxc65c6Zq2i2ttK0UsWqWZhlXb1Yrk4X/aJxQB2NFcP4C+Lek/EO8ubfTLa/xCpf7S9rILd1zgbZsbGPspNds7FVJALY7DrQA6iud0jxpaajqOp2FxG2nXenoktxFcOvyRvkoxYHAyAeM8VcuvFWlWd5BaPfRPdT48uCI73IPQ4XJA9zxQBrUUUUAFFFFABRRRQAUUUUAFFFFABRVS71SzsZ4Ibm5it5bhtkKyuFMjf3Vz1PsK+c/it+0P4i8H/F/T/h1DClq+pWk/la0saTLFPN8lgCgOUJlV0IZSGAzkAGgD6Xor588ZftAa5Z/BPwhquh6bcTeNvEcsNlFYLYtO8cyn/TD5eVzsVJWAJGcAd6zfAvxQ+Kvh7VtMn8c2X9tWWow3bHSNI0+OLUrNUlAtpng80sRJGGLAZ2sQKAPpWivNLv9oLwtpltJLqUGu6TsQuVvtEuoycDO0Hy8E/jW78LviDp3xM8H2Ou6deQ3Md2nm+UjL5luDyI5FBO1wOCDznNAHXUUmaWgAooooAKKKKACvyh/ahsINN+O/i6G3iWKP7WW2r0yQCf1Nfq9X5UftWrt+P3i8H/AJ+h/wCgivuOEv8AfJr+7+qPieK7rCQa7/ocP4S8B6z42kcaZHGyxsFd5pljVSRnHPJ/AV2A+C9rZfudT8W2lteNwsdtbSzop/2nAwP1rH+HN3Pa6B4vMM0sTLaQsvlOVO7z1BIx3xxXpOoalff8JkiaXcTy2r6ldCNJpW8oJ9mQrnntk4Hrmvt8XiK0azpwaSR8VhqFJ0lOabbPO9e+C2v6PaNeQzWWp2YVn822uBkgDJ+VsHp2rgM5717Df6nqbeFdUFxcy7ToNm0ZEzEtmT5ieepOR9MV48K78DUqVYy9rZ27HBi6cKUo+zTV+5+nX7G2nWsv7PPhiR7aF3b7RktGCf8AXyd69s/suzH/AC6W+P8ArmP8K8c/Yx/5N28L/wDbx/6Pkr2uZxHE7HooJr8SzG/1yrb+Z/mftGXpfU6Tf8q/I52613w1Z3c9tK1qksDBJf3GVjJGQGbbgcHuaw4/FEFxq9m0WnWLaRc3TWcTqoaeVgSDIqgY8sMMZ9OeK5jXfFC3k9lqFvLLpB1YRxyyWdyJ3VT/AKstCqH5iDjk4Gec1q/CnRJ9B8Qa9aXUcpi2xzWHnoivFbszloyqEhf3m89s5HHFc/JaHMyvac01FHpH9k2X/PnB/wB+l/wrl/CVvFbeNvF6xRrGu61+VFAH+rb0rs65DwyP+K58YH/atf8A0WaxWsZX/rU65K0o2/rQ6+iiioNQooooAKKKKAPCPjP8Adc+JPxKsvE+la6mitY6P9ltzy6vcrcCZBPFjbJCcYKk57jpUur/AAp8YeI/GM/iK/XRYri48IzaBNBBLIU+0O+7eMp/q/Y817lRQB4FpX7Nt94b13yND1hNL8F31pcfbNBUFhZXksDRma0b+BWLksnAyARjmtTwN8O/H3hPQfBHhpb3RoNJ8PuIby5hQsb+3VCE2oyfupCdpLBj/F617TRQB856N+zlr1x8N9I8EazdadDp1n4hfXJr60Z3mcfa3uEjjBUbGywUtk8Zx1pn/DOPiH/hUOufC972wm0bUdSmul112Y3SQy3BnO6PGDKCSobdjofavo+igD59uf2cdUfx5P4hsdRg02O+ae01i2Rmc6rYkAwpI2BtkDLgtz8rsKk0n9njV0/ZhtPhnc6jZ2mqWh3RXVuGe3YrcmZFZSAdp4UivfqKAPCfHfwZ8S/EnV4dZvhpmk3lh4ev9Htbe3leRZ5bqNULSPtGI1C5C4Jya6fwB8Kbrwd8Fo/Cb3Pn6odHGnySvO0kXmLB5QKkjITvjHFen0UAfM/wr/Zv8X/DTS5vs+rWC30nhuz8PnZI7/NEx3XCu65QbSQsYGMnJqK//Zi8Uad4G+J/gnRNUsJfDXihVn09bsmN7K5fH2g7UTaEYjcAOc59a+naKAPnXxb+zx4g1bxH4gv7C8tjDqngqXw0BfXcsrRzvn58lT8gz0HPFWfA3wS8Z/D+116Ky1DTbybWNKsrQXtw7/aLKSKMRPGjbfmhA3MgOCrMa+gaKAPmR/2ZPE2h+Cvij4K0LVLGXwx4ptxJp8d6Sj2d06gTkhF27GI3YHOc+tdF4n/Z71HxNfya7bXtv4e8YWFnaR6Nrdoxdo3jjKyRTLgb4XPVfTng17zRQBgeAdEu/DfgnQ9K1CSKW+s7OKCeSAERtIqgMVzzjOcVv0UUAFFFFABSEZBFLRQB8VfE79lm40n4gTXngHU7zS9T1GKc3kl3m6jvC7byrrkbANwAPT5ea8K0r4O/F7xEq+BdTuFtfDkc7QK1w8UkMaAliYQcuAACRjFfZ37Yfj+38KfDKfSF1C203U9bDRQTXcjxRlUwzqZFB2kj5R65qDw/rEcnw78K+ItV0yDQ7m+hxaaZoP7wTK0YWMOzKD35A9etefOhTqT5dV6M+sw2aYzB4ZVWlJS0XMrvTZr0/A8R0D9hDxH9gSXTPGV3pml3SRulrBJhvLIG4k9mIJ6DA963L39kHx/pdm2n6DqFlJZJNvhlvNReOfZnIV2WI7vevoTwx8YNDh+Blt40kk8rT7HT/wDSI2I3xyxjY8R/2t421Y0L46eHtc+Dn/CxRKYNIS0a5mjcjfEy9Yzj+LPH1rOrg8JWShUV7a7nDUxmZV/3krvW17dX09T5lf8AZW+MTagLrzPDW4IU8s6tc7DznOPKxn3q9p/7KPxPNtPDdX2kwNLMJRMl89yE+YEgI8QGOOme9fRXhv46aD4g+Df/AAsUSfZ9KjtWuJ4nYbonX70Z/wBrPA9cil8L/HTw/wCJvg+fiGsv2bSo7V5545GG6F0+9GffIx78VzrLMvVuWC779jJzx+t09Hy7de3qef6h8HfiJPetOuu6fFBEuIttrGZNv8SlsdMDAA4FeY+H/i1pGqa5c6f4Ws7OLUDIFlngDtcI6NtcSRFwVxg4KblPtnFfRnhb44+H/F/wef4gLN9j0pLWSa4SQgtAyg7kP+1nj8RX5k+FvG918MvihrWpXuircajdPJAtpcziPyxOQ/zEZBBVh34ya7K2JVHktsz08rySeYrERd1Upq6W131Tv2PuFfhb/wAJB/YPhzxJba5pzWl5HcQXGlo0dqrq4cMfLwrK/OWcblJ5r6gFeCfsoa7qo8JR6Brh1Rb+zjLKNWGHkHmNkx/MSYwGjUEnnBx3r3yu2NmuZdT5qspQm6cnewUUUVZgFFMklSJdzuqLkDLHAyeBTutAC0UmRS0AFcF8UvHuh+DrNLfxRpN7qGhX6NFI1tpsl/GzZ4jeONWPIzgkY4rvaqR6tZS30llHdwyXka7nt0kBdB6leo/GgD5VufiX4+1rxTrWlQ6XrPm6vIkng4XuggWlhECn7y6XII48z75BAxgZIr1uG2+Ntsg3P4AvZsbTP5d5CT/wEFvyzXT3Hxb8Nf8ACJeKPENlenU7Pw21xHqKWaFpYpIF3SR7Tg7gPwNb/hfxJYeMfDmm65pU4udN1G3S5t5l6PG4BU/kaAPG/Evwc+JPxNubR/EXjmLwklqd0b+CWuYZyc5IZpHKEHpzGfwqtZ/Db4x6bZ3WjHxf4f8AENoDMkeo69p8sl1NbyZXyndGUKyg9VHPevoGigDzfw98I5PD0urSW2rzW017oVloy3VuoEsLW4mAmGcjP70Yz/drzDUv2dPHdj4K1DwXYeIdN8TeHby6F+13r01zbaks+4OSZoPlYb1BHyj0INfS9FAHyhD8BPjTBCsSeMVCDgL/AMJNf4A/79U+b9nb4wXcEqnx1HayspCSjXdTkKt2OMqP0r6lvL620+2kuLqeK2t4xl5ZnCKo9yeBVLTfE+k6xDby2d/BOlyWEBV/9bt67c9QMHkcUAfNFj8LPjpa6RrSagng3xBfaro8Ol3EmoXlwfMaEMFmfEQDGQNyOApHJatLSPh/8ebnwz4asbe58F/D+fTJrb7a2kRyTm/gTAMfKARgKMbRuyehAr3fxv4+0T4d6dZ3+vXgsbO6vYbCOZlJUSyttQMewJ4yeKp+PPifovw5m8PJrLvDHreox6XbzhfkSZwSu89gSMD3NAHXUVU1TUF0zTbq7fbiGNnw7BQcDgZPTNZngnxBd+JPCen6tqWnSaNd3EXmS2U5+aHk8E/TB/GgDeoqO3uIruCOaFxJFIoZHU5DA8giuU0b4paDrfxC17wVDO8XiHRooZ57WdNhkikXKyR/317EjoeKAOvooqjq+t2OhWv2i+uEgjzgZ5Zj6Ko5J9hQBeoqppeoDVLKO5WCe3V+QlzGUfHqVPI/GrdACEgDJ4FY2peNNB0m1vri71rT7aKxXfcvLcoohHq/PH41rXDiOCRy6xhVJ3v0Hua8E+H3wGg1rxnF4v8AFOl6Ay2BlTSrfS7f5Lgu+5rucsAXkOBtU5C8kZJzQB2uu6fD8bdDW2/sqAeH5TvS/wBUtSZm9JLeNsFD3EhwfQVoeEfgt4U8IjSpo9O/tPVtMg+zW+s6s32u/Cbi2DO+W6s2OeM8V3IAAwOgrz2X41+GdZvNd0Hw3rdhqHi/To5gNIkYpIZkU/LtOCeR2pNpbibS3O2uxYRS2puvs6SiQ/ZzLtDb8c7M98Z6V5refHnwpZfHi1+G8kLHxHPaect3sXYhILCIt1yVyfTn3r5etPjFD+2XbS+APFMcnw+8baRI+oWOo2jMY1kiB8xWUkMpA569uK9Vh8J+C/8Ahamkanc6kl146Twg06+LVuF+xMyAQ+ey5+/znOe3rWfO38Jh7RzV4bH05BeW91JNFFPHLJEQsiI4YofQgdPxrjPE/wAFfCfie5e+/s86RrJ5XV9GkNndqfXzI8Fvo2R7V8g33xStv2JbWTw1o80nxE8eeI3TUry/uHZYBvGIwoBLMSDkfWvq+z+N/h7Q7Twzp3i/WLDR/F2rQQFtIVi0izSAfIFGSOTjmmpp6MqNRSunujxf4veBPjP4S8QWOu6X4z1HX/DdpHHA8tuxivNPj80NJPLbICl6dgK4wrAZODX074a8Rab4r0O01TSL+HU7C4QNHdQMCr+v0Oeo6g8Vp8NXhHxb8I+Ifhbb6t4z+HF0mnR3LpJrukm1+0RNHuHm3kEWRidE3MVHD45GRzobHu+ecUtYXgqK0Hhy0uLDVJdYs7xRdxXkkvmCQOA25T2U5yB2zgVu0AFFFFABX5XftX28r/H7xcVidlNwOQpP8Ir9Ua4fQ/iF4G8Z+KNR0PTNQ0/U9bsgTdW6R7njAbackjHB46172T5hLLasq8Yc2ln5ang5vgI5jSjRc+XW5+aHgn4r3ngbSBZWPh23kZjulnffvlPv/hXQ/wDDR2uY/wCRftfXrJX6EWXxE8A6j42n8I217p8viODd5lgIPnXaATztxwCO9YV/8fvhHplzqVtdeIdIguNOZkuYnhIZGVtpXG3k54wM19A84hWnd4NuT13fX5Hz0colShyrFpJabL/M+EJ/2hdXuYJIZfDdpJFIpR0bzCGX0PtXkl7E9zeTSw2TW0bsWWFQSEHoCa/WD4f/ABS+HnxSeePwzqGnanPAN0kCwbJFHrtZQce9Z/jv44fC/wCG+pnTtd1XT7bUB961itvOkT/eCKcfjW9DPnh5unRwjUuqu7/dYxr5Gq8FUq4pOPR2X+Zyf7H/AIm0nTP2f/DVte6pZWlwn2gNDPcIjr+/c8gnIr2ZvGfh9lI/t3TefW7j/wAawvAnjbwP8TLB7zwzc6bq8MZAk8mIBoz6MpAI/EVyPiX9o34QeE9bl0jUdZ05b6FzHMsNoZVibuGZVIFfGVo1MViKklTfM221ba59fQnTwuHhF1I8qSSfe3zLeteGvDl/ZS6fZ+L9OsdJmZ3exEsRXe3OQwYNw3zAEkZroPCTeEvCUM/k69ps11cFWnuDcxKXIGAMA4AHoPU+tWtT8V+C9E8KxeJNQuNNstEmjWWO8njVFdWGVwCMkn0xmuY8CfHP4XfErXP7H8P6jZXupEMy25tGQuAMkruUZwKx9nVqU3Llbit9PzZrzUoVEuZcz21/LU70+NvDw/5jum/+Bcf+NYfgrUrXU/GPi+a0uYbuEvagSQOHX/VnuOK5nxh8f/hN4F1dtL1fWdMiv0bbJDDbmUxn0bYpArvvBniTw94r0dNT8NXlnfafMeJrIjaT6HHQ+x5qJ0qlOnzSg0ns2tDWNaFSfLGabXRbm/UF9dfYbSa48qSfykL+XCu52x2A7mp6Rvun6VzHYcT8JvjF4a+NPh641jwzczSwW11JZXEF1CYZ4JkPzI6HlT39xSfEH4zeFvhlqugaXrd66arr10LTTbGCIyS3Eh44A6DPckCvnTWLsfsuePtA+JYjkh8BeLrePT/FEUSEi1vFB+z3e0d2/wBWfXIqf4+STa1rvwE8S6lZtYahqvjeydbaVtzW8AilMcfQYODuI/vMaAPppPHFk3jKHwy1pqCajJZfbhK1o/2dUzjaZsbN+f4c5roq8Z1HxbqcH7Udh4STX7r+yr7w1PfvpnlJtjkWZUWRJMbgcE8dK85+Fv8Awk/xC8BfFi91Hx/4iS50LxFq1hpstpcJE0EcCIYw2E+fGeh46+tAH01r2v23h20juLpLiRJJkgVba3eZtzsFGQoJAyeSeB3rRBzXyDqPxg8YXP7NXwW8XnxHPba1rGs6XY6jNCiKt1HLKUkDDacEgdsV2nxP8R/EDw9458UX8Gk6h4r8FRWcaxr4b1aO1vNKkVCZWaJ8eYxBDA5PAxigD6DudRtbOe3hnuIoprhikMbuA0jAZIUdzgZ4qxXylqfiiXx78RPgHdaZ4t1u00XxBpd5dATpDFMxjt1KudyHa53Hd1HpW54jfxP4m/aXufANt491nSNAbwomp4sPJE6z+eUDrIYzgYAJHf2zQB9I0V84eMfFWr/An43eGrvxH4n1G++Huvac2nlryTKWmoxLuVzgf8tVBGDxu6da9U+EWk63a+H5tS1/Ub26vdVne8S0u5d4sYWOY4F/3Vxk9zmgDu6iubqGyt5bi4lSCCJS8ksjBVRQMkknoAK4TVNbk1b4oN4UurmWxs/7LF7CkEvlSXTb9rkMOcIMcD+9Xjfjg6/pvgj46+HJvGcuuaNY6RJdWUxIa800vCxa0llIIcEDIz8wU8nvQB9CeGPGEXiuSaS0sLyPTvLSW31GZVEN2rZ5jwxPGB1A6iua8RfHDSPDXxH0/wAD3Glaxca9qNtJd2iW1sHjmijIDsH3ADBI4PNVf2bdEk0f4M+EXfV7/VRc6Vayr9ukVvKBhX5U2qML9c/WvPfi1p+oaj+158M00rVItKvU0DUmE0tsJxt3xgjaWX880Ae0eGvH9v4k17UNH/srVNMvbKKOdxqFt5aOjkhSjAkNyp+lUfi/8VtP+DPg2fxLqthfX2nQSIkv2BFZo97hFJDMOMsK47xt4s8S/B74W+PdX1DWrTxX4mtLefVNPhjtvJ2QKkagGIEnarZY885rxj9p2307xB+yZD4sk8b6hqV5eQ2EvmxX4Fteu80ZKeSPlwCTwACNvWgD7MikEsSOBgMA2DT68L+IfizV/DXx5+EOnW2t3Fro2upeRXtgzL5MzRwBo8ZGQck9DzWZp3j7VrL9qHx9oltrl1rOlad4Sj1WLSHlV44roytkLgZGQFGPegD6Hor52+CF1e/tB/BrQ/F114y1Wy8Q3EpmuP7MuvJis5VlO63MI4wANpDZJ65rmPjj8TL+T4ZfFDxN4Q8Tazb3fhq4ljjv2vYre2hniCloEhwfNXqCWAyTweKAPqS91ix024tLe6vILee7fy7eKWQK0z4ztQE5Y4BOB2FUh4ssD4q/4R4C5Oo/ZfthP2aTyRHu2/63Gzdn+HOfavn34m61q2v+NvgBDLrUmmJrxmluZLaKESJILMvuid0YoSSRx1HFbo8W6/oX7UU3hePW73VdEHg1tUTT7go265WfYHBCg5IGMdOaAPfutFfLvww8Sax8Yf2Z9T8c6l4q1DRvFW2/naS0uPJj0uaF32wmL7u1Qihg4JOT61gaN8TvHvjWf9nNtR12/wDDk/jG1vDrNpaIiCbyoAyuoZSULZ3e2elAH2DRXgXw/wBV1zw1+1B4n8DzeI9S1zw8fD9tq1vDqsomktpmlZGCvgEqQAcHOK99oA81+Pvwq/4W38PrjSYIrOTVIJUu7Br9N0KzocrvGDlTyCPevmZfjJd/Be3n0Tx1rY1TxakgaG0sbU/ZhueMhYmxgLHs24AHU19x149+0fZeHfDPwx8QeK7vw7Z6hqWm2ryWsxtlaRJWIAIOMgbiCfoawqRa9+Lsz1sHWU3HC1VeLemyd359u5+aus/ErxCujeJPB4u2i0K61mW+mtQf+Wgc4H05UkeqiqNv8Q9ftfAN54MivmXw/d3aXstv6uoxgH0JwSPVQa5OSSYX7tcAiabmUMCCHPOTn1qyDzjvX5zWr1faOSl5fLsf2HleVYJYOFN002mpP/Ekve9To7P4g69Y+A77wdDesmg3t0l5Nb88uowAPY8Ej1AosviHr2n+BNQ8HQ3rJoF/cpdzW/cuoxwewPGR32iudpG6Vj7eqtpdLfI9V5VgpXvSWsuZ6fa7+p3HgfxZ4jvtJX4eWMs02ja1qdvLNZQjLuynkL7HgkeqivcrL4Xpqf7RPjC48W+C5dc8Haquy3ug2yOCIRqVkVx91gi5A6muU/ZT8EXsMut/El3W007wwitHczoWjMhZfMJHUhYt+cc/MMcivqr9mzx3pHxm1bxZFc2VhqUekXomsLuBdyLFLkiPPqvofU9OlfXZbQc6MZVX10Xkj+d+NMzhh8zrUsBBWtabV/idr6rroj2jwV8O9A8F21u2j2zJtt0gSaaRncxjBAyfoDXV0gAAAHAFLX0p+NNtu7Kl/q1lpaM95dRWsaoZGkmcIiqOpLHgDkdayfF8mp3/AIYkXw5qFvaX91sjgvnCypEGYAyBScMQCSB3rI8VeHNM+I6eK/CuvD7RotzYR2s8AbYdsm/cQw5H3R+VeN+Bfgl4h+B2t+F/AukazqPif4fXV6l3C+qYebR2t8ymMSADMcmAAD0OfWgR7P4g0/Vbf4WTQ6ldWurazZ2iTTXTxmKKaWIhy+0fd5XIHrXX2c6XdpDOh3JKgdSO4IzVTxFZrqXh/U7R8bZ7WWJsnHDIR/WuM+D2ojxv8DPC00V9JC91o8ML3Vo43pIqBHKnkBgyn8RQB51+0t4C8D6n4h0HxD4j8b6t4V1a2kRbdNL1GdJp41O5ooreI5cv0J2k811ulfFDxf4+ton8GeDZLLS3yqax4qkNspAOMrbrmVun8Wyut8I/Crw34KmkurCw83U5RibVL1zcXcvrulfLfgMD2rjLjxrH+zz4W1HVvid4t0+LQ0uWg01re3cSMjMzqGUbi8vOPlGMLmgCxDpKarqBt/FXxCm1OcKzyadpjjT7VVXdu3bCXIGxgcv25rsvBzeELSW60zw1JpQntgjXMFhIjSKGGUZ8EnkcgnrXzjF+2N+zX41TU/ts4gs9XVrS81G/0aeKGdWAVkaYJwDxnkV7z8Kvhb4B8BaXHe+BdF07TrS/tYVF3YjJuIVH7vL5JYAHg+9AHCfD/wAMWT3Hxz8Px2kcN9e6nPJK6LhpY7i1XyyfX+IV1H7Pr2Wm/s+eD57CzjtLePRo5fssIwquEy4A7fNu4o0q3Oi/tEa6ACIta0O3ueBxvhkaM/jtYVH+zmPsPgnVdCY86Fr2pacFP8KC4d4x9Nki49qAOw8A6/beIfDVhdw38d9JcQi4ZkcMQGJx06AYI/CmeHn1m28QeJRqlnHb6WJ1ksr37Tu82MoMgpj5NpB785r5x+If7WPwz/ZQ+Kb+CV8LNp9lezR3Wq6lYyRqsMs/Kt5JO9xjklRgZrqvi98WdD1zVJtFn+H3jDxnb6YLa+WPSoGFjfwTYxKGDATBMglD69KAPU7j4weH5bqWz0V5/FN/G2x4NEj+0BG9HkyI1/FhUNw3jnW45Z557DwbpaIXYKv2y82gZJLHEaHHoH+tV/Gusa/8P/DOj3HgjwVb6tYxSj7fpcEqWssFtsJLRLjazg4+XvzU3g3Sz4p+F1zvvNRQ6/BPMWviTNbecCNoBA2hQRhe1AFrS/hxot9bW9/fNda9cyRiSO61eUzMmRkFYz+7Q89lriLTX7T4SeKJ7rxvq+iaNYXMEqWMt1cA3V20YDOy5GQNgJ2A9wAOK7vwFdeItH8Jr/wm7aXZ3VmBCbizmPlSIoCiViwGwtwdvb1Na2teHfD/AIiv9Pk1TT9P1C8td81o11EkjxAjazJkZAwwBI9RQB5R8eNd8O/EX9nr/hK9Nntde8P29xZaxFKAJIZoo7hC+Qe2zfkGr/7Sek6fqfgLw9c3VlDfWNjr+m3TRSjKbPOC5/DcDWpHL4S+LXwm8WeHvC/2dtIWK90N4LeIRxxShWVlVQMYDHII61yl5fy+P/2N4dRY+Zenw7Fdsw6+fAqs3/j8ZoA9d8X6Ne6n4evYtKa1TVlgcWL3ymSCObHyM6D7wBxXmXgvwd8W0v11Lxx440iWxm0V7S80fTrHy4Y7vkCdJWO7GDkjjnpXTeNIfFHj/wCDBl8Ea9H4e8TX1jBdWOoyRCVEfCvtYHja2CpPYNXgnwq/aM1P4veN/Dvgb4h6NeeFLyDeCyRmSx8Q3sBIbyp1G3y1Kl9ncjrgUAfQ+lx+M5tMstOaDTdGaOEJNexSm5AxkARIQuTgAktwM4wa4ufQY/CH7TPhfUJ3+2Sa74dudMN7coplaa3kWUfMAMZSR+B2QelaHxw8R+JvBXiX4daxpN8IfDr60mm67atDvV4JxtSTPVSr7ef9quf+JOsxLoGg+JYZpLi+8KeK4JL4OrAxpNIbeZMkdAk4PHHyigD0X4h67420bVfDKeE/Dtlrun3N6IdYlurvyHtLcj/WxjHzkc8V0Nh4Y0/T7+fUPLae9lYsbm5cyOo/uqT91R6DFcz4h1e9e/8AFGlaLdiHxO+mGTTUnRnhVgjbJCOmN5APriuX8I+JD8XPhj4E1fWHZJtTCxahYW0rRQGdQRMrjhiFZHG0nHrmgD03T/F2kavqc9hYXiXtxAP3v2cF0jP90uPl3e2c1sVyOpeO/BPw7vdL0C/1vRvD1zeDFjp808cDSjOPkUkZ5rrQQRkcigDyv4qa/wCJhrOlaFH4Wu5/CuoXUcOo65ZypM0UR6oYAN+1jhS/RQSe1eowQpbwpFGixoihVVRgADoBUlFAEVy7x28rxxmaRVJWMEDcccDJ6Zr4G8ZfEqVv2gdO1fWP2ftVtNetbxGj1DT55RcTYOA/yL5cnHvyO9ffpIUEk4A7muJ1b4veC7N5rWXxNaLMAUYWzmV0P/AAcGsqltLuxEoOdrHknxLs7/4e+NI/iRaeBNC8UW0EfnXX2OD7PrVjGy4diASsuATnPNfPWpRfDG6/aZ0rxFHq8cfw5u9FfxBcWBlIhWQFi0JjzxmRQTH/AHu1fQvwj+H3wh8GeOrvxFp/i+61jxHd7x5uuag24b/vAKwUHPuDXy34g+D/AIef9vSLwuI4/wCwLq/j1BoAR5eGjExQdtu7P4Vzykmk13OStGcbadT6d+HUF18WvHsHxDk8B6F4a0oov2K61WHz9WvoUGEaNMhYRgDBwT0rx3TvibJN+0ZqOtad+z/qupeIZbor9t1CaXz48fLvUMvlx8D149a9s+MvgD4PePfFNlquq+KrjSNdsFSJJNCv2V1VT8oKoGAx9BXqGjfGXwKUtbBPFVq0yqsSm9cxSOQMZJcDJNaOUb2ckdHsZs7izkkmtYpJojBK6BmiLBihI5GR1xUroHUqwDKRgg9CKEYOoZSCpGQR3p1dCNj5pvh8RPhHrGo+EPBtkt94fnne/wBMeDTpLqayjkO54PmeOFVDliuXJAbG3AFfQHhW61G88O6fNq1rJZak0K/aIZShZXxznYSvPXgkc1rUUwCiiigBCK+EfA/i/R/2fv2q/HM3i6eTTbG+SUQ3LQsyEvIrg8DOCMjIr7vrC8ReBvD3i7y/7b0Sw1Ux/cN3brIV+hIr0sFioYf2kKkW4zVnbRnmY3CTxDhOnK0oO6vsfFvwG1RPiR+2Vr/inQ45Z9DZJ5DdFCoClVVc+mSDgVB+zh4M0Txl+1F8Q01vTbfVI7Wa8mhiukDorm5IztPBOCetfceh+GdJ8M2n2bSdNtdNt858q1hWNSfoBS2PhrSdMvZryz0yztbubPmzwwKkj5OTuYDJ555r0qmcX9oqUXFOKitdUl3PMp5O1yOpJNqTk9NHfofD3wh0m28Nftz+INL0iFLGzj+2xxW8Q2oo8vIAHpnFee+CBc+EvjP4tj8V+KofBOtmaU/bdV0xbxZsyEnG/wC7kYII6jiv0ii8M6TBqj6lHplnHqL53XawIJTnrl8Z/WqniDwH4c8WPG+taHp+qvHwrXdskhA9iRWkc6XM+eGjiova+nXVGM8klypQnqpOS3tr6M+R/wBlvSdDk+L3iHxBoni+61iJLeX+0jFo5s7ORT/EGDbRyNwGM9a8e8S6t4d+HOo6z4k+Hvjmy1UXt0yT6DrGmeZM4Lkn76lSoJPPBIr9JdG8OaV4dshaaXp1tp1r/wA8bWJY1/ICsif4WeDrnUv7Ql8MaTJfbt/ntZxls+ucdamnm8YV51ZxbTSVtNUu+n5FVMnnKhCnCSUk2766N9tfzPjH4+atrvjPwn8IPGXizRJ4/CgAbVbC0QhEO8Ybb/CGQcZ9cV7X4L8efCLxZeXOmfDZNNtvFsukzrZyWtl5DqNv3N2BznB/A19A3djaXVnJBcwwy2rLtaKVQUI9CDxiuf0Hwj4N8M79S0jSdH0zdw13bQxx+xG4CuSePp1KKpuDXLe1npq76rr/AJHVHL506rmpp81r3Wuito+h8T/s8+Jvhb8P9I8RaV8U9Ljt/F63Un2h9WtDO0q/3UyDg5z9c5zXoX7EGnXMvjLx9rOi2dzp/gG7mI06G4BALbyRtB9F4P1Ar6O8ReG/BHiHVLUazpujajqEvEJuoY5JG4B4JGemK6bS1sYbcW9h9nSGD5PJttoWP2wOn0rXE5mq1OaUXedr3d0rfyozw2WSpVINyVoXtZWbv3ZcHSorq1jvbeSCZd8UilWXJGR6cVI0ipt3MF3HAyepo8xNxXcNwGcZ5xXzyPpDn1+HnhtfDzaCdGtZNGLq5sZU3xblIZThs9CAfwqHxR8MfC3jW8srrXdDtNUuLJxJayXKbjA46Mn90j1HNdMkiyA7WDYODg5wadTA5Z/hf4Vk8RR6+2iWra3HD9nTUCD5yxf3A2c7fan+Hvhr4X8KQalBo+iWmnQ6kzveRwJhbhm+8zjuT3PU10tRz3MVrG0k0qRRr1d2CgfiaAOMk+CPgSXRLHR38Lac2lWEontLIxfuoJAchkXOFIPQjpVu9+FPhTUL+5vJ9Gie4ukWO4YO4E6qNoEgDYfA4+YGumtb63vYvNt7iK4i/vxOGH5inTXUNsgeaaOJDxudgB+tAHOeJPhf4T8XwaZDrPh+w1GLS2DWKzQD/RjjH7vH3eABgUR/DHwtF4mHiJNEtU10RiIagqkTBAchN2fujH3elb0+qWVqYhPdwQmU4jEkqrv+mTzVqgDz/wAfeET8R9Y0rRNS0ZZvD1jdRanNd3BRlkljOY40Tk/ewSTjpXfgYGB0qve6laaaivd3UNqrHAaaQICfxNTxyJKiujB0YZDKcgigDD8SeBdB8XT2c+raZDd3NmS1tcHKSwk9drqQwz3APNQy/DjwzN4futCfRbRtIu2L3NoU+Wdj1Mndye+7Oa6SigDM8O+GtL8JaXDpuj2UWn2EI2x28IIRBjAAHYcdBWR4j+FnhPxfrMOrazoNnqGpwRGGK7mTMsaHkqrZyAfSuqooA5bQvhf4U8M3l1d6ZoNnaXN1D9mnlVNzSRZyUOc5X2rFtv2efhrZ2d/aQ+CdGjtL7/j4txbDy3+bd93oOQDxivQ6QnFAHJ+J/hP4Q8aaRp+ma5oFpqdlp7iS0juFJNuw4yjZypxxwado3wq8I+HtZi1bS/D9jYanFALVbuCLbJ5QOQhYckZJPNdBbavY3szxW97b3EqfeSKVWZfqAeKt0AcPb/BDwJaa7PrNt4YsLXUZ5fPllgQxiSTOd7KpCs2e5GabP8C/h/dX2r3k3hHSpbjVwwv2e3BFzu+8XHQk9zjNd1RQByGt/CTwd4k0jStL1Tw9Y39hpTiSxhnj3C2YDAKHqvHHHarEPwy8LQeJo/EUeiWia7HEIEv1TEqxjogP93/Z6V0c9xFawtLNKkMSDLPIwVQPcmm2l7b38CzW08dxC33ZInDKfoRQByk3wg8Gz6he3jeH7MTXz+bdqqlY7l/70kYIVz7sDVvVvhr4X13WdO1a/wBEtLrUtOGLO5dPntuMfuz/AA8ccV0jusYBZgoJxycU6gDDbwRoL+KV8SnS7f8At9YRbf2iFxMYgchC3dck8GtyiigArD8ZaAPEmgXNlukUuOkTAFueRyCOa21YN0IP0NLQNOzuj80/j5+y3qXhzTPFHi2e51W7vVkFy5u4lKzR5OdpUDBUD8a+cIbW5Gm2t7LERbXBZYphyrlTgjPY+3XpX64ePtQ8Tx+KYba28OLrHh6S2dJJCFdQ7KQN6E5YAgduhPNfEq+PvBl9d6v4D+INvb+D7EXrM76XZCWNZAeHVhgoccZweK+ax+X0ZPmT5W/zP2bhLi7McPH2DpurGO9t1HyXWx80A1f0TQb7xHfJa2MDSsWUO4HyxhmA3MegHNe/eKP2NNS0a4j1iy8Q2l/4CnRZoNYgUy3Dqx+SNYV5eQ54xx64rzrxB4u8e/CfT5vCdnpV34V0zV5WWJns0W7vVBwpdmywJyOOACeK8GGXzpvmrxfKu3U/U8XxdhcXR9llVSLqyX2tFH/grse5J4v1L4ZaZrXgXwV4SXxj4bs7KKPXDbb2lS8mU7WXbuyAV5wOT6V9j/BXwdYeDvh1okNroVn4fu7i0hnvba0gEX78oN24Dqc5618afsJa/wCMfCXxA1Hwg/hS5W0vnF1qOpX0TxyW21DgZIwSxx+Zr9BFHHvX2mEfPBT28ux/N3EEPq2JeHupPdyTvzX6vpvew6iiiu8+WPMvEvwsi8XfEuw8Qw63qOnW1mqx6lp1tJiDU9h3QrJ/uEknGM5APFQfH/44+Hvg74J1KW91qC016W2cadYRESXU8uPl8uIZLHPtik+IHwg8QeJNSmuPD3xI1nwVZXXzXlpp9vBKJHxgujyAmNiAAcccZxU/w3/Z58HfC6WfUdNsX1PxJOuZ/EGtSm7vZm9WlbkD2XAoA+RfgLqXw2+N3xLh0zwv4i+KWlT3MTz6t9uv9ttrDxEeaJl3s0Zy2CAFBHFdtd/EvUfgH8UJNN+Gl9o3xI8K+I764nTwZa3ypf6fdKc3C2zcoVJy3ltjBzivoHw58FdB0Xx9P4uK6faeJb5CJpNJtUtfPQHJDHl3GcZOee9ddongLwr4Unnm0vQtM0yae4e7kkt7ZI2aZhhnyB949zQB4pB+2fC37mf4SfEqC+HDWw0Lfg+m8Pg/WqOrfGn4m/EeWC28M/AG7jwxMGp+OLiG2ggJGC/ljc/T05r6bJAGe1Ri6haRYxKhdgSq7hlgOpAoA+CPEf7DPxFF6uvW+o+FfE32u++36p4BeOaw0N5sfKyKhJLDvuAB64r1+b4b/tB+MfDUclz4t8O/D270/wAt9N8PeH7d5bSRkYFY7mZvmMZAI2oB9a+hrTQ2s9Xur5r+Z45m3C22okanGMkgZY+5JxWqHVl3Agr6g8UAeY/Cjwl47t7+5174kapo1/rrwi1trbQ7d47e1izub5n+Z2Y4yTgDFaqJ4e+EK+LPEOsava6RYarf/wBozzXswjjQiGOPjPc+XnA9a63UUS+s3ijvms2dc+fAy71XuRkEfjiuBh/Z68B32vReINU01vFGqqQ8V5rdy96E7gojkov4KKAPA/i540tvjnpOq6r4M+HVjdaFDBs1Hx/4j0xF/wBFBHmCzR13ysFLYY4Udea9o+JPirXvDen+GvA3wwh0yXxJfWwFrNqTFrWwsolCmd1Xlh91VA6k16xPYW1zZPZywRvauhiaEqNhQjBXHTGOMV5t8NP2e/DXwe1bX9W8Nm9l1HVVWNTqd29wlrEuSkEWeUiBOdoNAHmVt+1T4y+G9udJ+Jnwq8TS6za5R9X8LWYvNOvAOBKh3AoD12t0qW1/aF+Jfxfu59J+HHw4uPDgTCXGu+NHWBbXIyCLVCXc45AOAa9n1P4fHxj4X1jRPF2oPq1lq0Bt7i2tl+zRIh6hCp3g+5YmuU0H4D6T8L55tR+Hum2VrrtzZR2E+qaxdTzl44/uFxnLsM9cjoKAPD5tI+M+sXHjH4RSeIPBnxHtLlQ2o6jqt1Lb6hYRTgfet4xjAOSgU+mTXV/FH4f+DPij4i+HvgG28WarJ4q8PKEvJdAvXSZbARhZ0uZEOEDlUwD8xOOOtXb79m/xX421XUb3xT8TsXOoRBXsvClkmlC5jXos0ylppEGezD616v8ACH4NaB8GtDk07Q7WK3WYh5mijC729SeWY+7MTQB5lr3gT4mfCHxnNP8ACPQdA1jwtq1tDFc6Xqt41t9huIl2CdWAO9WUDcOpIzXqvgn4fnw78K7fwrdm3kla0miufIUiHzJizSBQeQm52AHpiuzEqF2QOpZfvLnkfWlVw3Qg/Q0AYHhnwoPD3gWw8OrOSLWyFmJl68LtyK+ZLHwvZ/s/+INH1X4mfFO+8bahpIeHw34T0qxVGBYFQwtostJJtJG9sAZJzX1D4j8NweIYvJu7++t7Zl2tDaXJg3+uWXDfkay/BPwv8G+CvMu/Dmh2FpNcHdJfRL5k0vu0zEs34mgDy7wzo3xK+NfifTtc8a2S+BPBOnzrd2fhZJBLfX0inKPeOOEUHB8tc89TxXq3xM07SNW8D6tYa1qFtpWn3MW2S7upVjSM5BDFmIHBAP4V0kyrdQyRLK0ZIwXiYblz3HvXlmufsu/D7xdr8OseJ9NuvFV7Cd0Y1u+muYUPtEW2f+O0AebePv2ttR8QR6jpnwa8PN4ruLQeXdeK7weVo9lyBkSH/XMCfurx717T4T+GVnYfD3SvD2uSDXJYSLm5unXy/PuS5keXC4xl2Y4Hbit/UPB2j6h4Vu/DhsIYNGubZ7V7W3QRoI2XaQoAwPavnib4A/Hq1c6Lpnx1W28KIdkE02jpJqccPZPNzhmAwN3XjNAHC/t1/Av4ZeMvE+n+IvGHjPV9P1h7VLCx8N6HDHcXd86sSgijILA5bk8D1NfUnwS0TVvDfwj8JaZrstxNq9rp0MVw12wabcF6OR1YDAJ9RXNfCD9mTwh8Ir6bWYVu/Efi25H+leJNdmNzeynvhjwg9lxXrE6NLC6JI0TMCBIoBK+4zxQBm634o0zw7c6ZBqN2lpJqdyLO035xLMQSEzjgkKcZrVByM18tftC6FaDSIJb6x1h2i1a1jg8Tatf/ALyzm85dktrbA/vCDjoo4J6ivpjU9Qj0TRrm9u2Z4rWFpZWRMswUZOFHc46CkwPJvjb8QHnv4/A+k3yWl5dRebql75gX7HanjAOeHfoPQZNc7pGoeGdHtYLLT7/S4YolCJHFcR5wPx5NeE6h/wAJV8U/Eeq674c+E6TXN9cs4n1e0llyvYs8jqg4x8oGBWzF8CvjRqUAEvhDwTax4/1b2luD+ajP6187XVTESb1t00PUpuNOKXX1PT/Gvivwppdk41ww3cZTItxbG4aT2UKDk18C32t7v2gxqa+H7pbdb5WXRS7ed5AAAj65Dbedue+K+ldQ+CHxv8MlLrQ/Dtppk6El/wCxr/Mco9DE7lfyArjxDqAvDp83wrvG8eeW1sEFu/lOzSCQ3DH73mbh13Y561zxjKi7SizDE0ZYnl5JKydz6U8D+LfCWrWEY0IQ2SY+a2a2Nu8XswIGCKv6tqPhfU4JrPUb7Sp0kUxtHNPGcg9uTXgVp8D/AI6eKrprvW9Bi1AsMJDq98Fij/7Zq4B/HNb6/Ab406dbYg8KeCZEA/1S2luxP4sM/rUxw9R62f3HYpxSs5L7z3r4JePRpep/8IHqN8l4IojNo18ZQ5ubcdYmPd4/1XBr22vz8trLxt8Ndfs9b8SfCWAS6fcLKlzo1rJGQAeWDxOVH0K4Nfduh+JLPXdH0zUYmMEeoRrJBFcDZIcru27TzkDOR7V72EqSceSe6POrRSlzLZl281G005Ua7uobVXO1TNIEDH0Ge9Tq6uoZWDKeQQcg18ofEXx94o8b+LdN1XTtK0q6+HcmovoEY8RafDdQzXfmNGzlQ3nRqXUoGAOMZK4NfTPhPw7aeFdAs9NsrKDToIk/49rUkxRseWCZ5xknFd5zmxRRRQAVka14p0/QbvT7a8nEUt9N5ECn+JsE/wBDWvXM+Kfh7ofi+7trrUrZ5Lq2I8qWKZ42XGcfdI6bj+Zqo8t/e2M583L7m5ojxTpDWq3A1S08l13q/nLgrycjn0VvyNZ4+IOjtetbC4yQ0CiQfcbzs+WQc8g4P5GucT9n7wX5cSvp88vloI0L3kp2gBgMfN2Dt/30fWrA+BfhEFSLO5BXycf6bNx5QIi/i/hycema1tR6t/cYXr9l95e1r4teGtEslu21BLyEztbE2ZEu2RY3kIbHT5Uaulh1a2l0+G9aVYbaWNZFeUhQA2MZz06iuJtvgN4Ls8bNKcqP4HuZWUnYyDILY4VmA9M1N4t+Ell4skUNqV9Y2jWsVnNaW7jZJFHIHUDIJU5A+Yc4pNUnZJsaddXckvkdBqnjbRNJguJZ9TtgIE8x1WQM2MsMADqSUYY9QRVa38faFqmi3N5Dq0FvHFDHLK8rBTAJFBQsD0zkYrmpfgF4Z86A2yXFtbB1ee3EpkFxtZmAZmJIG53Y4xksau3HwP8ACV2waWzuCfLihwLyUDZG26NcBuinkelO1FdX9xN8Q+i+88vh0618QeM5dP8AEviq/up9XtorW3bSH2QzxsG+fcCQu4IcqOh5GKsePdJ8GWnw91fwZbardR/2TML2aRU+0yh3k54UgE7mIwRgd+leo6J8HfCnh28tbqx00xzWrBoGeZ38vG7GNxOPvN+ZpX+EHhk6re6lFaT2t5ehhO9tdyxhwzbmBAbGCSSfeuj28OZO7svQ5fq1TlaaV367Hn+mfB/wfNp9tcf8JDqU135FncbxdxeblFAgIIXj7uAAcHGOa7n4R6Lo2haJNb6RdXEokfz5obuVJJYmclvmKjnOSQST7VUT4C+FFfBt7owKsSpD9slwnlklMHd2JyPSuk8H+AND8BxXEWiWZs0n2bwZGfIQbVA3E4AHas6tVTjbmbNqNFwknypGV8Y7W5fwHfX9lJLFfaUU1KAwxh2ZojvKgEHqARxzzxXxrL8bD4X+LGsftDTapPJ4B1X7b4ZgtWY+SRbWomt3C9neZJo/qQK+/wCSNZY2RxuRgVIPcGuFu/gV4Bv/AALaeDLjwvYTeF7S5W8g0tkJiSZZDIHxnOd5J/GuQ9A+atG8Y+N/g9pXwj+HunQXw1zxTZX3iLXNSgtEvrn7QzCaSGNJXRc7pcZJOFTgV2zfEj45x+DNOu7jwpPGbbWbi21O6g0+N7+XTghMFzDaedt3FiA67ieDgGvcPHvwt8L/ABN0+1s/EmkRajFaSedbPvaKW3fGN0ciEMhxxwRWbe/A3wZf+FLLw5Lpk66TZyNLDHFf3Eciu2dxMiyB2zk5yTQB4j4x8b6/43vPgtP4U+KtzYW+uahc2kxi0NFN3JHFIz+bG/8AqyhXaYzxnmvYvjhBG3w9jguvDsHjNnu7aM6ZcssSXDlwASTwvPPcexq3qvwH8B6z4U0jw5ceHYF0jSJfPsIbeSSF7aTnLpIjBwTk5OcnJzmupv8AwvpuqWdha3Vu0sFjLHNAplcbXT7hJByce+c96APlP4dxyQ6r8Wdbs/Adl8MbrQ9IuNPn0Fr5pYr2QRmSO5aNVWLy8cB0ySCQSMYrC1TR9f8Ait8Uf2fraXxDb6bYX3g6XUzYRadHcW0cwih3FUkJDAh8AnJUdOtfYOveCNE8TztNqdgt1I1pNYsWdgGglGJIyAQCD79O1VNO+GXhfSr/AEC9tNGt4LrQLFtN0yVc5tbYhQY156YVRz6UAfOvh/whLqv7TXxJfW9T0yfRPCNjpkttDcaJFI0VtJHLJ5SvnKBCgwVGTV7QPjz4ut/iv8NrGS6vNZ8JeNJbqCO41LRotPZdkDTRyQgSmQjC4IdBkEHNfRFt4J0Oz1zW9Zh02FNT1qKKDULjkm5SJWWNWycYAZh+Ncj4Z/Zx+HPg/XLTWNL8MW8Op2UrS2lzLNLM9qWVlIi3sfLUhmG1cDnpQB5T8ebuK/8A2jPDGjXnga7+IlmfDl1c/wBkR/ZzFG/nIvmkTMozjjIPequnW/jn4ZaZ4E8PaDYw/D218UeJriKaxurn+2DptsbeSREjLEKhLR52LuVcnBNfSEng7RpvFsPid7CJtehtGsY77nesDMGKdcYLAHpVrU9A0/WbnT7i9tY7ibT5/tNq79YpNpXcPfDEfjQB4b4++J+sfDjUPFNidVh1zxDoXge411ZZ9PESPIjybWba+MEqAUA7ZzzVrQX+LXibSfBWqw+NNNgs9d0+K5v0i8O7zaO8SyAxN5hAHO395n2r1LXPht4Z8SX+o3upaRBd3eo6a2kXUr5BltGJJhOD90lj781et/CWlWkejRwWzQxaPGIrKOOV1SJAmwDaDhgFGBuzigDw+P4x6/4f8O6zo/ifX408TQ+Jz4f0u80vSDNNqG6NZYwLcsFEhQtk7toC59q4i6/aL+JeieFfHNlewQ22uaN4l0nSLHUtUsEQyW95JGrPJDFKyFk3n7rYPGQK+hfEvwQ8EeLrHULTVdAguo7+/XVJm8x0k+1qoVZldWDI4UAZUjiqulfs+fDzRNOubGz8L2kVtdXNte3C7nYzTwMGhldixLMpAOSecc5oA5Dxd428X/BXxH4VvfFGvRa/4IvpLi11XUP7NW3ewkKb4JWKEgR5R1JP95a1vhR418UfET4L6h4r1lbfS59WS7u9JgERX7NZnd9m83OdzFQGJ9+lej+JtGXX9Im06W1tL20ucR3EF6u6N4yfmBGDnjsavRWFvBYpZxwolqkflLCowoTGNoHpjigD879E0LW/B/hT4J+MtX8K6BoGlR6xZfbvFfhm+ZtTvmlcxorwlEDRyOw3jLkL0HFfQXhzx98V/ihoPjHxV4V1XSLRtH1670zT/C11ZAi4jtpfLZZ5y25JJMMwwAFyvWvRfD37MXwx8La5aaxp/hS3W/s5DNavcTSzrbucndGkjsqHk8qBjtV3Uv2ffh/q3i9vE1x4chOsSTrdSyRzSxxzTLjbJJErBHcYHzMpPFAHlXjX9pzxB8Mtc8Y+Htb0y0uPEssVjc+D9OXKG/8AtTLD5DkE7mim3BmX+HBq143+JfxC8CfEkN4svG8O+ANlklvrOl6Sl7avOxCzLdOW8yAFyFVgu0Agk5r03xb8JLHxl8VfB3izUbPTrhPDMVxJZvJCTdJcyAKCr9AgXdx/eKnjFWPFPwS8GeNfEUGt63pDajewsjqk11MYGZDlC0O/y2IPIypoAx/jr8Pdf+IeiaQNButNn+wXYu7jRNZjLWOrR7SBFKygsgBIYEAjIGQRXlOmfGW08D6XpXg/w74Qs/h/4j1PxSvh6/jTZPYadcvAZzKpUqsgdFAQfKdzDIGCK+ivGPgnSPHmhvpGswSz2LkMUguZLdgR0w8bKw/OsGH4FeAofA8ng8eGLKTw9LKJ5LSUM5eXORKXJLmQEA787h60AeLftG6H8Q4PAOm2d/4o065mPjDSW03VYrTyJY4zJ86yxBtrkHoARkdRUPjv49eN/gdqnxG0bVb608Yvovhq117Tb2a0FqyvLcPAyTCM4KKQH3DBxkH1r23TvgT4G0zRYtKi0NZbKK/i1NVubiWdvtMf+rk3u5Yle3OK3NR+HnhvV9Y1DVL7RrS8v9R08aVdyzpv8+1DM3ksDwVyzHGO9AHh/iP4teN/hB4x8P2uu6tYeNdP1zQNS1P7PY2Itprae0gE3ybWbdE4OwbuQcc81U0X4ufEDS/D/wAIvF2ra7o+s6f43vrS1utFtLHyvs63SF0MEocs5j43bhzgnivXPAvwD8B/DbUptQ8P+H4rS9lg+y+fNNJcNHDnPlIZGbYn+yuB7VB4Y/Z0+HXg3xJDruj+GLa01G3Z3tj5kjxWrP8AfMMTMUiJyfuAdaAOa/ZD1S51n4WahdXcrTTt4j1hSzHPAvZQB9AAK9trB8JeBdB8CQ6hDoGmxaXDf3cl/cRwE7XnkOXfBOASeTjAzW9QAhAIr5J+NX7Di+NPHsni3w7f2nmXMoe80bVkYW0oxg7HjG5SR9cHmvrekxWVSlCqrTVzuwmOxGAm6mHnytqz9DzXQvhM3hz4UaN4S0u7a3l0tU8ieWRnwQSSCwwSMMRng4qGx+AXh+4vNLvdZsra9udNnS5twqkgTKCA7FiSx+Zjjpk5x0r1GitLK1jk55cznfUYI1BJCgE9Tin0UUyBrsEUsegGTXlXjH4z6Z4S8BWXxCa2vLqyurq20tLRZwijzroQCQg8ZBbJPXAxXqxAIIPINfPXjv8AZ28U/ETTbXwPq2saE3wwTU4r+e1SylGoTxRzecLYtv8ALClgAXAzjtQBH8Vf2hxpOm/Gyxk0qwvIPBWnWU4jnuGAu/tCksr4wVAwBwe9aPiv42zJrvifwhBDbW0Vr8Px4livI58SLI7Sx7AP7oCKQevNR6D+xx8P7XUbg6t4S8O6jYCV5LdFtZhKQWG1bh2lYTgAY+cHnpitj/hj/wCD5YqfAemFCdxYtKZG7bC2/Jjx/wAsz8vtQB5T8JtYm1j4jfs6XM101zPc+Ar2eZjJuLsRbZY+vOea6v46fEGfWb/xxY6ZoGjXx8AaYmqXs/iCWZElMkbyIkIiIPSI5ZjgEgYr1TwJ8CfAPwy1i61Xwv4XsdG1C4j8l54FbKx5zsQEkImedq4HtUnj34J+Cfiff2l54o8P2+rz2o2oZmcK65zskVSBIuR91wR7UAedQfHWfxP4i8OeF7i1trW28Q+BZ/Ecs8FwVlhkBjXYh/u4kJ3dflry74P+IrzxN4++COoWg8i6vPA+rywpdTNKiv58YTeeCw4Bz1xXq0n7HHw1Or4TwZoC6O2C6GO4+1gBW+RJhN8keT9wDbjIx6emv8LPCbtYsuhWsLWGnSaTatADGYLSQAPEm0japAHTnigDx3xN8Ztb0WL4heGPHuiaNfX2h+Gz4mtpdLnlS1vIUYjY4f5o2Eir0JBB/Crvhz4sCe88O+D9N0e1tNM1XwJN4k/cTMzQOWRREvPKkyHnrkVqr+xl8G/twvJPBUFzcbRGzXV5cTB0BzsYPIQy552nI9q2tI/Zq+HWgWuuWemeFbPTbTWIFt7trSWWOVow24Rq4bMaA4IVCADQB8qeCbi9HhvwMlxJcxS/8Kd1Z5I5XYMG3cFgec+55r6H8AfE2x+F37LXw013VIZ7q3l03SLJjERlWnEcYdixHygsCT6V1Xg/9nbwJ4HbVm0/Spp5tUtDp91PqN9PdyPbHOYQ0rsVQ5PCkV1Uvw+8OT+Ck8ITaPaz+GktVsl0yVN8QhUAKmD2AAx9KAOU+MHxV1DwLqXg3QtB0621LX/FeoSWFm17M0dtbiOF5pJJCoLEBUwFHJJHIrzzwB+01rvia2+GCaho+nQ3vijW9V0i9FrI5SAWbSr5kYPJ3GMfe6ZrsPCf7L/gLwd41sfEGm+HLS3uNODtYTG5uZZbeRgUYgPKyAFGI4XvVaf9nbRfAFze6/8ADDwzoGm+MblpSl/q7zyRQNMxaWRFDHBJJJVdu7oSKAKXiT9obWtT+FniXxL4B8J/25qugaxd6Tf6bf3IiaH7M5WWUBcmTgBggIJB7Vw/wd+P9z401fVvD2lv4c8Q+GG0GfV59b8NJPFFp9w+T9nn81mHmMCzYBBXacgV2Hg79in4a6LpKf29pA8T69cSyXeqardzSp9vuZHLySPErhDlmIAIOAAO1b19+yN8H7+d5T4E0218wASRWJktYpcDHzxxMqtxxyDnvQB4X+zVcyz+O/gM0juTJ8Nblzuctn/SIsE56/WvYb34ueN9d+M3ijwX4ZsvDlnF4eSzldNemmS51FJk3tJAE4Ea8puIb5gQcV6fZfDvw3p2taXq1po9tbX+l2J0yylhXb9ntSQTEqjgLlV7dq8p+J/7Nlp8SfjDpvinWdK03xDpkdulri9vrq2udPUEljb+UdrbjgkNjp1oA4/xV8RNa8AfE39ofXdF04axqmj6JpFxa2B3MGzE25yo5IUEsQvJC461p/B/4sXukeMtR8Nf2lonjLRX8OP4tj1Lw7bmEo7SnfG6mRx+8JYqSQcggivT/GP7O/w88f31re654biur62t1tEuo55YZTCv3UZ43UuB23E1leH/ANm/wh8MPDut6T8OvDem+Gxr48nUrgPKXaMhgSGyWLYZscgZOaAOP1z4v6Z8RPEfwS1TRhMLHxJaavfxrIQHREsH4dVYjIZgO4yKpfAb4kW/wr/Yh8P+Lr+2n1CHTbCWVoIT88hN06KMngDLDJPQZNek/DX9mj4bfCWVJ/DPha1sLxbU2YuSzySCI43hSzHbuxltuM967HRvAfh/w/4QTwtYaVb2/h5IXgXTwC0XluSWXBzkEsfzoA8h+HfjDVtG/aFvvB2paR4fszq+gf28bnSZpnm+ScRrHJvOD/rWO5QM1rD9p7Q9R1DS7DS9PvJLjUdZ1PQYpbkLHHHdWULyOWwxJRthAI59hUn/AAyB8IfLVR4MtxIrbluVupxcAYxsEvmb9gHRM7R6Vnp+xF8FI2Rl8DwApK0y/wCm3PDsMO3+t6sCQT3zzQBa+Hv7R1t4u0D4XyX2mSWWqeOrS4ktvJ+e3hngUs6MSd2Dg4OOcVbtfif4u8IeLr3SPHWl6UdP/si51e01bRHk2EQEeZDIknIbawYEEg4PSrFj8Ebd/iLouvXK21lovhnT5dN8P6JYZWKBZAFkmbgYbaAoA6DJzk1Ruf2QfhLfXyXl34T+23C5w91qF1LwTkqQ0pBB7joaAMjwh+0Rq+veIfhq93pWmr4d+IFtPNpjWdw73Vs0cXmjzQQFZWTOSuNpwOc173XnXgj9nr4efDnxCdc8O+GLXTNSEbxRSRs7LboxyywozFYgcDIQDNei0AeS/tB/CFvitpGkxRiYPZXfnFrSQRzgFSFKOSMBWKswyNyqRnmtz4NeFPEXg3wnLp3iW9hvJxdyvbLBNJMkEBPyRh5PnOOTznGcZOK76s/xDDeXOgalDp0gh1CS2kS2kJxtlKkIfwOKALAvbb7V9lFxF9pC7vJ3jfj129cVP1r4l+JN5b+HotLnX4b6zpOqaVAt1eeKYomhv7a/QjC/amyl2k7/ALvapJO/O309y8KftTeG9Rmk07xHZ3vhTW7OSG31G1vEEsVlNIqlElmjyik7gOSMd8UAe0YFJsXdnAz61mWPizRNTuJ4LPV7C7nt22yxQXKO0ZzjDAHjnjmtKOVJl3RsHU/xKcilZAOxRtFcN40+LVj4P8U6f4cGl6lq2sX1s95HFZxoI0hR1R3eR2VQAzrxknkcV518S/2q4PA2u2n9meHtR8VeHRPLp9/qGm2zlYLxRlYlkI8tyeVxn72BnJxTA99OAK+VPjt8ULvxX4l8NweG9Ui0/wAMrJLFPqGrWpt7HU592z7LbX2M28rKJF8wcHOAc8h/jD4l6/8AET4s+Drbw19k8W+E3gHiC0stOvWtXuVVNpiuX5VWR2WRVfaHwykZWvRfBHwFsTaWFxr1rdW1vb3z6lbeFX1H7Xp9lMWYqwBUbiNxYDJVWPA4FAFb4NfAvTtDuT4i1Kyu3vJZftNtaa0sclzZS8gs0kbGOViOkm3eR1JNe3UgGAB6UtABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQBDc2kF5GEuIY50Vg4WVAwDDkHnuK8v8AEn7N/hPxLrupahPAoh1JnmvbJreGSOadl2+cGZC6twp+VgCVGRXq1FAHyXf/ALEjzeG7HSFvbOQ6bJaRWl2txcI7263Mcs/mKSRvZY8DBxuJPGa9s+F/wzn+H3i/xzcw+RbeH9WurabTdPtnYrAEgCyttPClnycDg4Br0ik70Acv4w+GHhXx/faZeeItCs9YuNMLm0a6Td5e/G4Y6EHavByMgHtXKXn7N/hO9hurB5dUXw7dXp1Cbw/HeFLJ7jcH34A3gbgG2hguRnFeqUUAZmieGNI8NrMulaZZ6d5zb5TawLGZG/vMQPmPua06KKACiiigAooooA//2Q==" alt="شعار المدرسة">
+          <div class="lp-page2-title">
+            <h2>أهداف التعلم وإجراءات سير الدرس</h2>
+            <div>${esc(plan.subject || "—")} — ${esc(plan.lesson_title || "—")}</div>
+          </div>
+        </div>
+
+        <table class="lp-objectives">
+          <thead>
+            <tr>
+              <th class="n">م</th>
+              <th class="goal">هدف التعلم</th>
+              <th class="steps">إجراءات سير الدرس</th>
+              <th class="time">الزمن</th>
+              <th class="assess">التقييم</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${
+              objectives.length
+                ? objectives.map((item,index) => `
+                    <tr>
+                      <td class="n">${index + 1}</td>
+                      <td>${esc(item.learning_objective || "—")}</td>
+                      <td>${esc(item.lesson_procedures || "—")}</td>
+                      <td class="time">${esc(item.duration_minutes || "—")} د</td>
+                      <td>${esc(item.assessment_details || "—")}</td>
+                    </tr>
+                  `).join("")
+                : `<tr><td colspan="5">—</td></tr>`
+            }
+          </tbody>
+        </table>
+
+        <div class="lp-bottom">
+          <div class="lp-panel">
+            <div class="lp-panel-title">أساليب التقييم</div>
+            <div class="lp-panel-body">${listHtml(plan.assessment_methods)}</div>
+          </div>
+
+          <div class="lp-panel">
+            <div class="lp-panel-title">الإنتاج الطلابي</div>
+            <div class="lp-panel-body">
+              ${esc(plan.student_product_type || "—")}
+              ${plan.student_product_description ? "<br>" + esc(plan.student_product_description) : ""}
+            </div>
+          </div>
+
+          <div class="lp-panel">
+            <div class="lp-panel-title">الدعم والمساندة</div>
+            <div class="lp-panel-body">
+              ${
+                support.length
+                  ? support.map(item => `
+                      • ${esc(item.category || "—")}
+                      ${item.student_name ? " — " + esc(item.student_name) : ""}
+                      ${item.difficulty_type ? " — " + esc(item.difficulty_type) : ""}
+                      ${item.support_procedure ? "<br>" + esc(item.support_procedure) : ""}<br>
+                    `).join("")
+                  : "—"
+              }
+            </div>
+          </div>
+
+          <div class="lp-panel">
+            <div class="lp-panel-title">التأمل الذاتي للمعلمة</div>
+            <div class="lp-panel-body">
+              ${esc(plan.reflection_status || "—")}
+              ${plan.reflection_notes ? "<br>" + esc(plan.reflection_notes) : ""}
+            </div>
+          </div>
+        </div>
+
+        <div class="lp-footer">
+          <div>إعداد المعلمة<strong>${esc(plan.teacher_name || "—")}</strong></div>
+          <div>المديرة المساعدة<strong>خلود الكعبي</strong></div>
+          <div>مديرة المدرسة<strong>أحلام السويدي</strong></div>
+        </div>
+      </section>
+    `;
+
+    pdf.classList.add("pdf-visible");
+
+    // استخدمي نافذة الطباعة واختاري "Save as PDF" عند الحاجة.
+    // هذا المسار لا يحول الصور إلى Canvas ولذلك لا يتأثر بقيود CORS/Tainted canvas.
+    printHtmlDocument(pdf.innerHTML,"طباعة التحضير","landscape");
+    pdf.classList.remove("pdf-visible");
+    pdf.innerHTML="";
+    return;
+
+    const fileName =
+      "تحضير_" +
+      String(plan.subject || "درس").replace(/\s+/g,"_") +
+      "_" +
+      String(plan.lesson_date || "");
+
+    if(document.fonts && document.fonts.ready){
+      try{ await document.fonts.ready; }catch(_){}
+    }
+
+    await new Promise(resolve =>
+      requestAnimationFrame(() =>
+        requestAnimationFrame(resolve)
+      )
+    );
+
+    const pages = [
+      byId("lessonPdfPage1"),
+      byId("lessonPdfPage2")
+    ].filter(Boolean);
+
+    const JsPDF =
+      window.jspdf?.jsPDF ||
+      window.jsPDF;
+
+    if(!JsPDF){
+      throw new Error("مكتبة PDF غير متاحة");
+    }
+
+    const doc = new JsPDF({
+      orientation:"landscape",
+      unit:"mm",
+      format:"a4",
+      compress:true
+    });
+
+    for(let i = 0; i < pages.length; i++){
+      if(i > 0){
+        doc.addPage("a4","landscape");
+      }
+
+      const canvas = await html2canvas(
+        pages[i],
+        {
+          scale:1.35,
+          useCORS:true,
+          backgroundColor:"#ffffff",
+          logging:false,
+          scrollX:0,
+          scrollY:0,
+          windowWidth:pages[i].scrollWidth,
+          windowHeight:pages[i].scrollHeight
+        }
+      );
+
+      const imgData =
+        canvas.toDataURL(
+          "image/jpeg",
+          0.96
+        );
+
+      doc.addImage(
+        imgData,
+        "JPEG",
+        0,
+        0,
+        297,
+        210,
+        undefined,
+        "FAST"
+      );
+    }
+
+    doc.save(fileName + ".pdf");
+
+    pdf.classList.remove("pdf-visible");
+    pdf.innerHTML = "";
+
+  }catch(error){
+    console.error("PDF lesson plan:",error);
+
+    byId("pdfSheet").classList.remove("pdf-visible");
+
+    alert(
+      "تعذر إنشاء ملف PDF للتحضير.\n" +
+      (error?.message || "خطأ غير معروف")
+    );
+  }
+}
+
+/* ======================================================
+   الأحداث
+   ====================================================== */
+
+document.querySelectorAll(".tab-btn")
+  .forEach(btn => {
+    btn.addEventListener(
+      "click",
+      () => showTab(btn.dataset.tab)
+    );
+  });
+
+byId("addObjectiveBtn")
+  .addEventListener(
+    "click",
+    () => addObjective()
+  );
+
+byId("addSupportBtn")
+  .addEventListener(
+    "click",
+    () => addSupport()
+  );
+
+byId("saveDraftBtn")
+  .addEventListener(
+    "click",
+    () => savePlan("draft")
+  );
+
+byId("saveCompleteBtn")
+  .addEventListener(
+    "click",
+    () => savePlan("completed")
+  );
+
+byId("resetFormBtn")
+  .addEventListener(
+    "click",
+    () => resetForm()
+  );
+
+
+byId("downloadCurrentPdfBtn")
+  .addEventListener(
+    "click",
+    () => {
+      const planId = byId("editingPlanId").value;
+
+      if(!planId){
+        alert("احفظي التحضير أولًا قبل تنزيله PDF.");
+        return;
+      }
+
+      downloadPlanPdf(planId);
+    }
+  );
+
+[
+  "mineSearch",
+  "mineStatus",
+  "mineSubject",
+  "mineFrom",
+  "mineTo"
+].forEach(id => {
+  byId(id).addEventListener(
+    id === "mineSearch"
+      ? "input"
+      : "change",
+    renderMine
+  );
+});
+
+byId("refreshMineBtn")
+  .addEventListener(
+    "click",
+    loadPlans
+  );
+
+[
+  "adminSearch",
+  "adminSubject",
+  "adminGrade",
+  "adminFrom",
+  "adminTo"
+].forEach(id => {
+  byId(id).addEventListener(
+    id === "adminSearch"
+      ? "input"
+      : "change",
+    renderAdmin
+  );
+});
+
+byId("refreshAdminBtn")
+  .addEventListener(
+    "click",
+    loadPlans
+  );
+
+byId("closeLessonReviewBtn").addEventListener("click",closeLessonReview);
+byId("cancelLessonReviewBtn").addEventListener("click",closeLessonReview);
+byId("saveLessonReviewDraftBtn").addEventListener("click",()=>saveLessonReview("draft"));
+byId("approveLessonReviewBtn").addEventListener("click",()=>saveLessonReview("final"));
+byId("lessonReviewModal").addEventListener("click",event=>{if(event.target===byId("lessonReviewModal"))closeLessonReview();});
+
+document.addEventListener(
+  "DOMContentLoaded",
+  init
+);
+
+window.removeObjective = removeObjective;
+window.removeSupport = removeSupport;
+window.editPlan = editPlan;
+window.copyPlan = copyPlan;
+window.deletePlan = deletePlan;
+window.downloadPlanPdf = downloadPlanPdf;
+window.openLessonReview = openLessonReview;
+window.openPlanPreview = openPlanPreview;
+window.closePlanPreview = closePlanPreview;
+window.openReviewResultById = openReviewResultById;
+window.printReview = printReview;
+window.printAggregateReport = printAggregateReport;
+
+</script>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+  const q=id=>document.getElementById(id);
+
+  q("reviewReportDimension")?.addEventListener("change",()=>{
+    if(q("reviewReportValue")) q("reviewReportValue").value="";
+    refreshReviewReportValueOptions();
+    renderReviewReports();
+  });
+  q("reviewReportValue")?.addEventListener("change",renderReviewReports);
+q("planPreviewModal")?.addEventListener("click",e=>{
+    if(e.target===q("planPreviewModal")) closePlanPreview();
+  });
+
+  ["archiveTeacherSearch","archiveDepartment","archiveSubject","archiveLessonSearch","archiveCycle"].forEach(id=>{
+    q(id)?.addEventListener(id.includes("Search")?"input":"change",renderReviewArchive);
+  });
+
+  ["aggregateDepartment","aggregateSubject","aggregateTeacher","aggregateCycle"].forEach(id=>{
+    q(id)?.addEventListener("change",renderAggregateReports);
+  });
+  q("printAggregateReportBtn")?.addEventListener("click",printAggregateReport);
+});
+</script>
+
+</body>
+</html>

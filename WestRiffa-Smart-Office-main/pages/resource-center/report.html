@@ -1,0 +1,2102 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+
+<head>
+
+<meta charset="utf-8">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1"
+>
+
+<title>
+تقرير تفعيل مركز مصادر التعلم
+</title>
+
+<link
+  rel="stylesheet"
+  href="../../css/resource-center.css"
+>
+
+<script
+  src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+
+<style>
+
+*{
+  box-sizing:border-box
+}
+
+body{
+  margin:0;
+  background:#f4f7f6;
+  color:#173c34;
+  font-family:Tahoma,Arial,sans-serif
+}
+
+.hero{
+  background:
+    linear-gradient(
+      135deg,
+      #075c40,
+      #16805e
+    );
+  color:#fff;
+  padding:24px
+}
+
+.wrap{
+  width:min(1180px,94%);
+  margin:auto
+}
+
+.hero h1{
+  margin:0
+}
+
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin:20px 0;
+  flex-wrap:wrap
+}
+
+.btn,
+.back{
+  border:0;
+  border-radius:11px;
+  padding:10px 15px;
+  text-decoration:none;
+  font:inherit;
+  font-weight:700;
+  cursor:pointer
+}
+
+.btn{
+  background:#075c40;
+  color:#fff
+}
+
+.back{
+  background:#fff;
+  border:1px solid #dfe9e5;
+  color:#075c40
+}
+
+.card{
+  background:#fff;
+  border:1px solid #e0ebe6;
+  border-radius:18px;
+  padding:22px;
+  box-shadow:
+    0 7px 20px
+    rgba(7,92,64,.06);
+  margin-bottom:16px
+}
+
+.hidden{
+  display:none!important
+}
+
+.notice{
+  padding:12px 15px;
+  border-radius:12px;
+  margin:12px 0;
+  background:#fff8e7;
+  border:1px solid #f1dfad;
+  color:#74580b
+}
+
+.ok{
+  background:#eaf8ef;
+  border-color:#c7e8d1;
+  color:#166534
+}
+
+
+/* رأس التقرير */
+
+.report-head{
+  text-align:center;
+  border-bottom:
+    3px solid #075c40;
+  padding-bottom:15px;
+  margin-bottom:15px
+}
+
+.rc-report-logo{
+  display:block;
+  max-width:330px;
+  max-height:90px;
+  object-fit:contain;
+  margin:0 auto 10px
+}
+
+.report-head .ministry{
+  font-size:14px;
+  font-weight:700
+}
+
+.report-head h2{
+  margin:5px 0;
+  color:#075c40
+}
+
+.reference{
+  margin-top:8px;
+  font-size:13px;
+  color:#61756e
+}
+
+
+/* تعريف التفعيل */
+
+.activation-banner{
+  display:grid;
+  grid-template-columns:
+    1fr 1fr;
+  gap:10px;
+  background:#eaf6f1;
+  border:
+    1px solid #cde6dc;
+  border-radius:12px;
+  padding:12px 16px;
+  margin-bottom:15px
+}
+
+.activation-banner div{
+  text-align:center;
+  line-height:1.7
+}
+
+.activation-banner span{
+  display:block;
+  font-size:12px;
+  color:#61756e
+}
+
+.activation-banner strong{
+  color:#075c40;
+  font-size:16px
+}
+
+
+/* البيانات */
+
+.facts{
+  display:grid;
+  grid-template-columns:
+    repeat(3,1fr);
+  gap:9px
+}
+
+.fact{
+  background:#f6faf8;
+  border:
+    1px solid #e0ebe6;
+  border-radius:10px;
+  padding:10px;
+  line-height:1.65
+}
+
+.fact b{
+  color:#075c40
+}
+
+.section-title{
+  color:#075c40;
+  margin:16px 0 7px
+}
+
+.auto{
+  background:#f1f8f5;
+  border:
+    1px solid #d6e9e1;
+  border-radius:12px;
+  padding:12px;
+  line-height:1.85
+}
+
+
+/* الصور */
+
+.photos{
+  display:grid;
+  grid-template-columns:
+    repeat(3,1fr);
+  gap:9px
+}
+
+.photos img{
+  width:100%;
+  height:190px;
+  object-fit:cover;
+  border-radius:10px;
+  border:1px solid #ddd
+}
+
+
+/* التقييم داخل التقرير */
+
+.rating-summary{
+  background:#fffaf0;
+  border:
+    1px solid #ead9aa;
+  border-radius:12px;
+  padding:12px;
+  margin-top:8px
+}
+
+.rating-grid{
+  display:grid;
+  grid-template-columns:
+    repeat(3,1fr);
+  gap:8px
+}
+
+.rating-item{
+  background:#fff;
+  border:
+    1px solid #eee3c7;
+  border-radius:9px;
+  padding:9px;
+  line-height:1.6
+}
+
+.rating-item b{
+  color:#075c40
+}
+
+.rating-comment{
+  margin-top:8px;
+  background:#fff;
+  border:
+    1px solid #eee3c7;
+  border-radius:9px;
+  padding:9px;
+  line-height:1.7
+}
+
+
+/* المنفذة */
+
+.executor{
+  margin-top:16px;
+  padding:11px;
+  text-align:center;
+  border:
+    1px solid #d6e9e1;
+  border-radius:12px;
+  background:#fbfdfc
+}
+
+.executor .label{
+  font-size:12px;
+  color:#6a7d76
+}
+
+.executor .name{
+  font-size:17px;
+  font-weight:700;
+  color:#075c40;
+  margin-top:3px
+}
+
+.executor .role{
+  font-size:12px;
+  color:#6a7d76
+}
+
+
+/* الاعتماد */
+
+.approvals{
+  display:grid;
+  grid-template-columns:
+    repeat(3,1fr);
+  gap:14px;
+  margin-top:18px;
+  padding-top:14px;
+  border-top:
+    2px solid #d9e8e2
+}
+
+.approval{
+  text-align:center;
+  min-height:82px
+}
+
+.approval-title{
+  font-size:12px;
+  color:#6a7d76;
+  margin-bottom:5px
+}
+
+.approval-name{
+  font-size:15px;
+  font-weight:700;
+  color:#075c40
+}
+
+.approval-role{
+  font-size:12px;
+  margin-top:3px;
+  color:#566963
+}
+
+.system-note{
+  text-align:center;
+  margin-top:14px;
+  color:#7a8984;
+  font-size:11px
+}
+
+
+/* نموذج التقييم */
+
+.field{
+  margin:14px 0
+}
+
+.field label{
+  display:block;
+  font-weight:700;
+  margin-bottom:7px
+}
+
+.field select,
+.field textarea{
+  width:100%;
+  padding:11px;
+  border:
+    1px solid #cfded8;
+  border-radius:10px;
+  font:inherit;
+  background:#fff
+}
+
+.field textarea{
+  min-height:90px
+}
+
+.muted{
+  color:#6a7d76;
+  line-height:1.7
+}
+
+
+@media(max-width:700px){
+
+  .facts,
+  .approvals,
+  .activation-banner,
+  .photos,
+  .rating-grid{
+    grid-template-columns:1fr
+  }
+
+}
+
+
+/* طباعة A4 */
+
+@media print{
+
+  @page{
+    size:A4 portrait;
+    margin:9mm
+  }
+
+  .no-print,
+  .hero{
+    display:none!important
+  }
+
+  html,
+  body{
+    background:#fff!important;
+    margin:0;
+    padding:0
+  }
+
+  .wrap{
+    width:100%
+  }
+
+  .card{
+    border:0;
+    box-shadow:none;
+    padding:0;
+    margin:0
+  }
+
+  .report-head{
+    padding-bottom:8px;
+    margin-bottom:9px
+  }
+
+  .rc-report-logo{
+    max-height:62px
+  }
+
+  .report-head h2{
+    font-size:16px;
+    margin:3px 0
+  }
+
+  .activation-banner{
+    padding:7px 10px;
+    margin-bottom:8px
+  }
+
+  .activation-banner strong{
+    font-size:13px
+  }
+
+  .facts{
+    grid-template-columns:
+      repeat(3,1fr);
+    gap:6px
+  }
+
+  .fact{
+    padding:6px;
+    font-size:11px
+  }
+
+  .section-title{
+    font-size:13px;
+    margin:8px 0 4px
+  }
+
+  .auto{
+    padding:7px;
+    font-size:11px;
+    line-height:1.55
+  }
+
+  .photos{
+    grid-template-columns:
+      repeat(3,1fr);
+    gap:6px
+  }
+
+  .photos img{
+    height:105px
+  }
+
+  .rating-summary{
+    padding:7px;
+    margin-top:4px
+  }
+
+  .rating-grid{
+    grid-template-columns:
+      repeat(3,1fr);
+    gap:5px
+  }
+
+  .rating-item,
+  .rating-comment{
+    padding:5px;
+    font-size:10px
+  }
+
+  .executor{
+    margin-top:8px;
+    padding:6px
+  }
+
+  .executor .name{
+    font-size:13px
+  }
+
+  .approvals{
+    grid-template-columns:
+      repeat(3,1fr);
+    margin-top:8px;
+    padding-top:8px;
+    gap:8px
+  }
+
+  .approval{
+    min-height:55px
+  }
+
+  .approval-name{
+    font-size:12px
+  }
+
+  .approval-title,
+  .approval-role{
+    font-size:10px
+  }
+
+  .system-note{
+    margin-top:5px;
+    font-size:9px
+  }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="hero">
+
+<div
+  class="wrap"
+  style="
+    display:flex;
+    align-items:center;
+    gap:16px
+  "
+>
+
+  <div class="rc-school-mark">
+
+    <img
+      src="../../assets/school-header.jpg"
+      alt="شعار المدرسة"
+    >
+
+  </div>
+
+  <h1>
+    📑 تقرير تفعيل مركز مصادر التعلم
+  </h1>
+
+</div>
+
+</header>
+
+
+<main class="wrap">
+
+
+<div class="top no-print">
+
+  <a
+    class="back"
+    href="archive.html"
+  >
+    ← الأرشيف
+  </a>
+
+  <button
+    class="btn"
+    type="button"
+    onclick="window.print()"
+  >
+    🖨️ طباعة / حفظ PDF
+  </button>
+
+</div>
+
+
+<div id="msg"></div>
+
+
+<article
+  id="report"
+  class="card hidden"
+>
+
+
+<div class="report-head">
+
+  <img
+    class="rc-report-logo"
+    src="../../assets/school-header.jpg"
+    alt="شعار المدرسة"
+  >
+
+  <div class="ministry">
+    مملكة البحرين – وزارة التربية والتعليم
+  </div>
+
+  <h2>
+    مدرسة الرفاع الغربي الابتدائية للبنين
+  </h2>
+
+  <h2>
+    تقرير تفعيل مركز مصادر التعلم
+  </h2>
+
+  <div
+    id="ref"
+    class="reference"
+  ></div>
+
+</div>
+
+
+<div class="activation-banner">
+
+  <div>
+
+    <span>
+      التفعيل
+    </span>
+
+    <strong
+      id="activationName"
+    >
+      —
+    </strong>
+
+  </div>
+
+
+  <div>
+
+    <span>
+      تنفيذ
+    </span>
+
+    <strong
+      id="executorTop"
+    >
+      —
+    </strong>
+
+  </div>
+
+</div>
+
+
+<div
+  id="facts"
+  class="facts"
+></div>
+
+
+<h3 class="section-title">
+  الهدف
+</h3>
+
+<div
+  id="goal"
+  class="auto"
+></div>
+
+
+<h3 class="section-title">
+  وصف التفعيل
+</h3>
+
+<div
+  id="desc"
+  class="auto"
+></div>
+
+
+<div
+  id="storyResult"
+  class="auto hidden"
+  style="margin-top:10px"
+></div>
+
+
+<h3 class="section-title">
+  شواهد التفعيل
+</h3>
+
+<div
+  id="photos"
+  class="photos"
+></div>
+
+
+<section
+  id="ratingReport"
+  class="hidden"
+>
+
+  <h3 class="section-title">
+    تقييم تجربة مركز مصادر التعلم
+  </h3>
+
+  <div
+    id="ratingSummary"
+    class="rating-summary"
+  ></div>
+
+</section>
+
+
+<div class="executor">
+
+  <div class="label">
+    تفعيل وتنفيذ
+  </div>
+
+  <div
+    id="executorName"
+    class="name"
+  >
+    —
+  </div>
+
+  <div class="role">
+    المعلمة المنفذة
+  </div>
+
+</div>
+
+
+<div class="approvals">
+
+
+  <div class="approval">
+
+    <div class="approval-title">
+      إعداد ومتابعة
+    </div>
+
+    <div class="approval-name">
+      فاتن صلاح
+    </div>
+
+    <div class="approval-role">
+      اختصاصية مصادر التعلم
+    </div>
+
+  </div>
+
+
+  <div class="approval">
+
+    <div class="approval-title">
+      متابعة
+    </div>
+
+    <div class="approval-name">
+      خلود الكعبي
+    </div>
+
+    <div class="approval-role">
+      المديرة المساعدة
+    </div>
+
+  </div>
+
+
+  <div class="approval">
+
+    <div class="approval-title">
+      اعتماد
+    </div>
+
+    <div class="approval-name">
+      أحلام السويدي
+    </div>
+
+    <div class="approval-role">
+      مديرة المدرسة
+    </div>
+
+  </div>
+
+
+</div>
+
+
+<div class="system-note">
+
+تم إنشاء هذا التقرير آليًا من نظام مركز مصادر التعلم بعد اعتماد التفعيل.
+
+</div>
+
+
+</article>
+
+
+<section
+  id="rate"
+  class="card no-print hidden"
+>
+
+<h3>
+  ⭐ قيّمي تجربتك في مركز مصادر التعلم
+</h3>
+
+<p class="muted">
+  تقييم سريع ولا يؤثر على حفظ التفعيل.
+</p>
+
+
+<div class="field">
+
+<label>
+  مدى رضاك عن التجربة
+</label>
+
+<select id="stars">
+
+<option value="5">
+⭐⭐⭐⭐⭐ ممتاز
+</option>
+
+<option value="4">
+⭐⭐⭐⭐ جيد جدًا
+</option>
+
+<option value="3">
+⭐⭐⭐ جيد
+</option>
+
+<option value="2">
+⭐⭐ مقبول
+</option>
+
+<option value="1">
+⭐ يحتاج تحسين
+</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label id="goalRateLabel">
+هل ساعد المركز في تحقيق هدف الحصة؟
+</label>
+
+<select id="goalrate">
+
+<option value="high">
+نعم بدرجة كبيرة
+</option>
+
+<option value="medium">
+إلى حد ما
+</option>
+
+<option value="low">
+لا
+</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label>
+كيف كان تفاعل الطلاب؟
+</label>
+
+<select id="eng">
+
+<option value="high">
+مرتفع
+</option>
+
+<option value="medium">
+متوسط
+</option>
+
+<option value="low">
+منخفض
+</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label>
+مقترح أو احتياج (اختياري)
+</label>
+
+<textarea id="comment"></textarea>
+
+</div>
+
+
+<button
+  id="saveRate"
+  type="button"
+  class="btn"
+>
+إرسال التقييم
+</button>
+
+
+</section>
+
+
+</main>
+
+
+<script src="../../js/config.js"></script>
+<script src="../../js/graph.js"></script>
+<script src="../../js/common.js"></script>
+<script src="../../js/resource-center.js"></script>
+
+
+<script>
+
+(function(){
+
+
+let RC=null;
+
+let row=null;
+
+
+const byId=function(id){
+
+  return document
+    .getElementById(id);
+
+};
+
+
+function esc(value){
+
+  if(
+    window.WRRC &&
+    typeof window.WRRC.esc===
+      'function'
+  ){
+
+    return window.WRRC.esc(
+      value==null
+      ?''
+      :String(value)
+    );
+
+  }
+
+
+  return String(
+    value==null
+    ?''
+    :value
+  )
+
+  .replace(
+    /&/g,
+    '&amp;'
+  )
+
+  .replace(
+    /</g,
+    '&lt;'
+  )
+
+  .replace(
+    />/g,
+    '&gt;'
+  )
+
+  .replace(
+    /"/g,
+    '&quot;'
+  )
+
+  .replace(
+    /'/g,
+    '&#039;'
+  );
+
+}
+
+
+function fmt(value){
+
+  if(!value){
+
+    return '—';
+
+  }
+
+
+  try{
+
+    if(
+      window.WRRC &&
+      typeof window.WRRC.fmt===
+        'function'
+    ){
+
+      return window.WRRC.fmt(
+        value
+      );
+
+    }
+
+
+    return new Date(
+      value
+    )
+
+    .toLocaleString(
+      'ar-BH'
+    );
+
+
+  }catch(e){
+
+    return value;
+
+  }
+
+}
+
+
+function showError(message){
+
+  byId('msg').innerHTML=
+
+    '<div class="notice">'+
+    esc(message)+
+    '</div>';
+
+}
+
+
+/* =========================
+   تحويل مستويات التقييم
+========================= */
+
+function levelLabel(value){
+
+  if(value==='high'){
+
+    return 'مرتفع / بدرجة كبيرة';
+
+  }
+
+
+  if(value==='medium'){
+
+    return 'متوسط / إلى حد ما';
+
+  }
+
+
+  if(value==='low'){
+
+    return 'منخفض / لا';
+
+  }
+
+
+  return '—';
+
+}
+
+
+/* =========================
+   النجوم
+========================= */
+
+function starsText(value){
+
+  const n=
+    Number(value)||0;
+
+
+  if(!n){
+
+    return '—';
+
+  }
+
+
+  return (
+    '★'.repeat(n)+
+    '☆'.repeat(5-n)+
+    ' ('+n+' / 5)'
+  );
+
+}
+
+
+/* =========================
+   البيانات الأساسية
+========================= */
+
+function renderFacts(){
+
+  const facts=[
+
+    [
+      'المعلمة',
+      row.teacher_name||'—'
+    ],
+
+    [
+      'نوع التفعيل',
+      row.activation_type_label||'—'
+    ],
+
+    [
+      'الصف والشعبة',
+
+      (row.grade||'—')+
+      ' / '+
+      (row.section||'—')
+    ],
+
+    [
+      'عدد الطلاب',
+      row.student_count??'—'
+    ],
+
+    [
+      'المادة',
+      row.subject||'—'
+    ],
+
+    [
+      'التاريخ',
+
+      fmt(
+        row.completed_at||
+        row.created_at
+      )
+    ]
+
+  ];
+
+
+  byId('facts').innerHTML=
+
+    facts.map(
+      function(item){
+
+        return (
+
+          '<div class="fact">'+
+
+            '<b>'+
+            esc(item[0])+
+            '</b><br>'+
+
+            esc(item[1])+
+
+          '</div>'
+
+        );
+
+      }
+
+    ).join('');
+
+}
+
+
+/* =========================
+   شواهد التنفيذ
+========================= */
+
+async function renderPhotos(){
+
+  byId('photos').innerHTML='';
+
+
+  const paths=
+
+    Array.isArray(
+      row.evidence_paths
+    )
+
+    ? row.evidence_paths
+
+    : [];
+
+
+  if(!paths.length){
+
+    byId('photos').innerHTML=
+
+      '<div class="muted">لا توجد صور مرفقة.</div>';
+
+    return;
+
+  }
+
+
+  for(
+    const path of paths
+  ){
+
+    try{
+
+      let url='';
+
+
+      if(
+        RC &&
+        typeof RC.signed===
+          'function'
+      ){
+
+        url=
+          await RC.signed(
+            path
+          );
+
+      }
+
+
+      if(!url){
+
+        continue;
+
+      }
+
+
+      const image=
+        document.createElement(
+          'img'
+        );
+
+
+      image.src=
+        url;
+
+
+      image.alt=
+        'شاهد تفعيل';
+
+
+      byId('photos')
+        .appendChild(
+          image
+        );
+
+
+    }catch(e){
+
+      console.warn(
+        'تعذر تحميل صورة التفعيل',
+        e
+      );
+
+    }
+
+  }
+
+
+  if(
+    !byId('photos')
+    .children
+    .length
+  ){
+
+    byId('photos').innerHTML=
+
+      '<div class="muted">تعذر تحميل صور التفعيل.</div>';
+
+  }
+
+}
+
+
+/* =========================
+   عرض التقييم المحفوظ
+========================= */
+
+function renderRating(){
+
+  if(
+    !row.satisfaction_submitted_at &&
+    !row.satisfaction_score
+  ){
+
+    byId('ratingReport')
+      .classList
+      .add('hidden');
+
+    return;
+
+  }
+
+
+  const goalTitle=
+
+    row.story_title
+
+    ? 'ملاءمة القصة وجاذبيتها للطلاب'
+
+    : 'مدى تحقيق هدف الحصة';
+
+
+  const comment=
+
+    row.satisfaction_comment
+
+    ? esc(
+        row.satisfaction_comment
+      )
+
+    : 'لا توجد ملاحظات أو احتياجات إضافية.';
+
+
+  byId(
+    'ratingSummary'
+  ).innerHTML=
+
+    '<div class="rating-grid">'+
+
+
+      '<div class="rating-item">'+
+
+        '<b>مدى الرضا</b><br>'+
+
+        '<span dir="ltr" style="display:inline-block;unicode-bidi:isolate">'+
+
+          esc(
+            starsText(
+              row.satisfaction_score
+            )
+          )+
+
+        '</span>'+
+
+      '</div>'+
+
+
+      '<div class="rating-item">'+
+
+        '<b>'+
+        esc(goalTitle)+
+        '</b><br>'+
+
+        esc(
+          levelLabel(
+            row.goal_achieved
+          )
+        )+
+
+      '</div>'+
+
+
+      '<div class="rating-item">'+
+
+        '<b>تفاعل الطلاب</b><br>'+
+
+        esc(
+          levelLabel(
+            row.student_engagement
+          )
+        )+
+
+      '</div>'+
+
+
+    '</div>'+
+
+
+    '<div class="rating-comment">'+
+
+      '<b>المقترح أو الاحتياج:</b> '+
+
+      comment+
+
+    '</div>';
+
+
+  byId('ratingReport')
+    .classList
+    .remove('hidden');
+
+}
+
+
+/* =========================
+   الصلاحيات
+========================= */
+
+async function checkPermission(){
+
+  const user=
+    await RC.user();
+
+
+  if(
+    !user ||
+    !user.id
+  ){
+
+    throw new Error(
+      'لم يتم العثور على المستخدم المسجل.'
+    );
+
+  }
+
+
+  if(
+    row.teacher_user_id===
+    user.id
+  ){
+
+    return true;
+
+  }
+
+
+  const profile=
+    RC.profile||{};
+
+
+  if(
+    profile.role===
+    'admin'
+  ){
+
+    return true;
+
+  }
+
+
+  if(
+    profile.role===
+    'coordinator'
+  ){
+
+    try{
+
+      const scope=
+
+        typeof window
+        .wrGetAccessScope===
+        'function'
+
+        ? await window
+          .wrGetAccessScope()
+
+        : {};
+
+
+      const ids=
+
+        Array.isArray(
+          scope.department_ids
+        )
+
+        ? scope.department_ids
+
+        : [];
+
+
+      const names=
+
+        Array.isArray(
+          scope.department_names
+        )
+
+        ? scope.department_names
+
+        : [];
+
+
+      if(
+
+        row.department_id &&
+
+        ids.includes(
+          row.department_id
+        )
+
+      ){
+
+        return true;
+
+      }
+
+
+      if(
+
+        row.department_name &&
+
+        names.includes(
+          row.department_name
+        )
+
+      ){
+
+        return true;
+
+      }
+
+
+    }catch(e){
+
+      console.warn(
+        'تعذر قراءة نطاق القسم',
+        e
+      );
+
+    }
+
+  }
+
+
+  return false;
+
+}
+
+
+/* =========================
+   تحميل التقرير
+========================= */
+
+async function loadReport(){
+
+  try{
+
+
+    if(!window.WRRC){
+
+      throw new Error(
+        'لم يتم تحميل وحدة مركز مصادر التعلم.'
+      );
+
+    }
+
+
+    RC=
+      await window.WRRC.init();
+
+
+    if(!RC){
+
+      throw new Error(
+        'تعذر تهيئة مركز مصادر التعلم.'
+      );
+
+    }
+
+
+    const params=
+
+      new URLSearchParams(
+        window.location.search
+      );
+
+
+    const id=
+      params.get('id');
+
+
+    if(!id){
+
+      throw new Error(
+        'رقم التقرير غير موجود.'
+      );
+
+    }
+
+
+    const result=
+
+      await RC.sb
+
+      .from(
+        'resource_center_activations'
+      )
+
+      .select('*')
+
+      .eq(
+        'id',
+        id
+      )
+
+      .single();
+
+
+    if(result.error){
+
+
+      if(
+        typeof RC.cacheGet===
+        'function'
+      ){
+
+        row=
+          RC.cacheGet(
+            id
+          );
+
+      }
+
+
+      if(!row){
+
+        throw result.error;
+
+      }
+
+
+    }else{
+
+
+      row=
+        result.data;
+
+
+      if(
+        !row &&
+        typeof RC.cacheGet===
+          'function'
+      ){
+
+        row=
+          RC.cacheGet(
+            id
+          );
+
+      }
+
+    }
+
+
+    if(!row){
+
+      throw new Error(
+        'لم يتم العثور على سجل التفعيل.'
+      );
+
+    }
+
+
+    const allowed=
+      await checkPermission();
+
+
+    if(!allowed){
+
+      throw new Error(
+        'غير مصرح بعرض هذا التقرير.'
+      );
+
+    }
+
+
+    /* الرقم المرجعي */
+
+    byId('ref').textContent=
+
+      'الرقم المرجعي: LRC-'+
+
+      String(
+        row.id
+      )
+
+      .slice(0,8)
+
+      .toUpperCase();
+
+
+    /* نوع التفعيل والمنفذة */
+
+    byId(
+      'activationName'
+    ).textContent=
+
+      row.activation_type_label||
+      '—';
+
+
+    byId(
+      'executorTop'
+    ).textContent=
+
+      row.teacher_name||
+      '—';
+
+
+    byId(
+      'executorName'
+    ).textContent=
+
+      row.teacher_name||
+      '—';
+
+
+    renderFacts();
+
+
+    byId(
+      'goal'
+    ).textContent=
+
+      row.goal||
+      '—';
+
+
+    byId(
+      'desc'
+    ).textContent=
+
+      row.description||
+      '—';
+
+
+    /* =====================
+       نتيجة القصة
+       الاتجاه ثابت
+    ===================== */
+
+
+    if(
+      row.story_title
+    ){
+
+      byId(
+        'storyResult'
+      ).innerHTML=
+
+        '<b>نتيجة القصة التفاعلية:</b> '+
+
+        esc(
+          row.story_title
+        )+
+
+        ' — '+
+
+        '<b>'+
+
+        '<span '+
+        'dir="ltr" '+
+        'style="'+
+        'display:inline-block;'+
+        'unicode-bidi:isolate'+
+        '">'+
+
+        esc(
+          row.quiz_score??0
+        )+
+
+        ' / '+
+
+        esc(
+          row.quiz_total||5
+        )+
+
+        '</span>'+
+
+        '</b>';
+
+
+      byId(
+        'storyResult'
+      )
+
+      .classList
+      .remove('hidden');
+
+    }
+
+
+    /* الصور */
+
+    await renderPhotos();
+
+
+    /* التقييم المحفوظ */
+
+    renderRating();
+
+
+    /* إظهار التقرير */
+
+    byId('report')
+      .classList
+      .remove('hidden');
+
+
+    /* =====================
+       إظهار نموذج التقييم
+       فقط إذا لم يُحفظ
+    ===================== */
+
+    const user=
+      await RC.user();
+
+
+    if(
+
+      user &&
+
+      row.teacher_user_id===
+      user.id &&
+
+      !row.satisfaction_submitted_at
+
+    ){
+
+
+      if(
+        row.story_title
+      ){
+
+        byId(
+          'goalRateLabel'
+        ).textContent=
+
+          'هل كانت القصة مناسبة وجاذبة للطلاب؟';
+
+      }
+
+
+      byId('rate')
+        .classList
+        .remove('hidden');
+
+    }
+
+
+  }catch(e){
+
+
+    console.error(
+      'Report load error:',
+      e
+    );
+
+
+    showError(
+      e.message||
+      String(e)
+    );
+
+  }
+
+}
+
+
+/* =========================
+   حفظ التقييم من التقرير
+========================= */
+
+byId(
+  'saveRate'
+)
+
+.addEventListener(
+
+  'click',
+
+  async function(){
+
+
+    if(
+      !RC ||
+      !row
+    ){
+
+      alert(
+        'لم يكتمل تحميل التقرير.'
+      );
+
+      return;
+
+    }
+
+
+    const button=
+      byId(
+        'saveRate'
+      );
+
+
+    button.disabled=
+      true;
+
+
+    button.textContent=
+      'جاري حفظ التقييم…';
+
+
+    const now=
+      new Date()
+      .toISOString();
+
+
+    const updateData={
+
+
+      satisfaction_score:
+
+        Number(
+          byId(
+            'stars'
+          ).value
+        ),
+
+
+      goal_achieved:
+
+        byId(
+          'goalrate'
+        ).value,
+
+
+      student_engagement:
+
+        byId(
+          'eng'
+        ).value,
+
+
+      satisfaction_comment:
+
+        byId(
+          'comment'
+        )
+
+        .value
+        .trim()
+
+        ||null,
+
+
+      satisfaction_submitted_at:
+
+        now
+
+    };
+
+
+    try{
+
+
+      const result=
+
+        await RC.sb
+
+        .from(
+          'resource_center_activations'
+        )
+
+        .update(
+          updateData
+        )
+
+        .eq(
+          'id',
+          row.id
+        );
+
+
+      if(
+        result.error
+      ){
+
+        throw result.error;
+
+      }
+
+
+      if(
+        typeof RC.cachePatch===
+        'function'
+      ){
+
+        RC.cachePatch(
+          row.id,
+          updateData
+        );
+
+      }
+
+
+      row={
+
+        ...row,
+
+        ...updateData
+
+      };
+
+
+      /*
+       يظهر التقييم فورًا
+       داخل التقرير
+      */
+
+      renderRating();
+
+
+      byId(
+        'rate'
+      ).innerHTML=
+
+        '<div class="notice ok">'+
+
+        'شكرًا، تم حفظ تقييم التجربة وسيظهر في التقرير والطباعة.'+
+
+        '</div>';
+
+
+    }catch(e){
+
+
+      console.error(
+        'Rating save error:',
+        e
+      );
+
+
+      alert(
+
+        'تعذر حفظ التقييم: '+
+
+        (
+          e.message||
+          String(e)
+        )
+
+      );
+
+
+      button.disabled=
+        false;
+
+
+      button.textContent=
+        'إرسال التقييم';
+
+    }
+
+  }
+
+);
+
+
+/* بدء التحميل */
+
+loadReport();
+
+
+})();
+
+</script>
+
+
+</body>
+
+</html>
