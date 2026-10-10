@@ -1,0 +1,2393 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>تقرير تفعيل ورضا المستفيدين | مركز مصادر التعلم</title>
+
+<link rel="stylesheet" href="../../css/resource-center.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:#eef4f1;
+  color:#173c34;
+  font-family:Tahoma,Arial,sans-serif;
+}
+
+.wrap{
+  width:min(1220px,95%);
+  margin:auto;
+}
+
+.hero{
+  background:linear-gradient(135deg,#064d39,#148263);
+  color:#fff;
+  padding:22px;
+}
+
+.hero-inner{
+  display:flex;
+  align-items:center;
+  gap:18px;
+}
+
+.hero img{
+  max-width:145px;
+  max-height:72px;
+  object-fit:contain;
+  background:#fff;
+  border-radius:10px;
+  padding:4px;
+}
+
+.hero h1{
+  margin:0;
+  font-size:26px;
+}
+
+.hero p{
+  margin:7px 0 0;
+  opacity:.92;
+}
+
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin:18px 0;
+  flex-wrap:wrap;
+}
+
+.btn,.back{
+  border:0;
+  border-radius:12px;
+  padding:11px 17px;
+  font:inherit;
+  font-weight:700;
+  text-decoration:none;
+  cursor:pointer;
+}
+
+.btn{
+  background:#075c40;
+  color:#fff;
+}
+
+.back{
+  background:#fff;
+  color:#075c40;
+  border:1px solid #d7e6e0;
+}
+
+.card{
+  background:#fff;
+  border:1px solid #dce9e4;
+  border-radius:22px;
+  padding:24px;
+  margin-bottom:20px;
+  box-shadow:0 10px 30px rgba(7,92,64,.07);
+}
+
+.filters{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+}
+
+.field label{
+  display:block;
+  font-weight:700;
+  margin-bottom:7px;
+  font-size:13px;
+}
+
+.field select{
+  width:100%;
+  padding:11px;
+  border:1px solid #cfded8;
+  border-radius:10px;
+  background:#fff;
+  font:inherit;
+}
+
+
+/* رأس التقرير */
+
+.report-head{
+  position:relative;
+  text-align:center;
+  padding:5px 10px 20px;
+  border-bottom:4px solid #075c40;
+  margin-bottom:22px;
+}
+
+.report-head:before{
+  content:"";
+  position:absolute;
+  right:0;
+  top:0;
+  width:120px;
+  height:120px;
+  background:
+    radial-gradient(
+      circle at top right,
+      #e7f4ee 0,
+      #e7f4ee 35%,
+      transparent 36%
+    );
+  pointer-events:none;
+}
+
+.report-head img{
+  display:block;
+  max-width:360px;
+  max-height:90px;
+  object-fit:contain;
+  margin:0 auto 9px;
+}
+
+.ministry{
+  font-weight:700;
+  font-size:15px;
+}
+
+.report-head h2{
+  color:#075c40;
+  margin:5px 0;
+}
+
+.report-title{
+  font-size:25px;
+}
+
+.period-text{
+  display:inline-block;
+  background:#f1f7f4;
+  border-radius:20px;
+  padding:6px 16px;
+  margin-top:7px!important;
+  color:#62756e!important;
+  font-size:12px;
+}
+
+
+/* عناوين الأقسام */
+
+.section-title{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:#075c40;
+  margin:25px 0 12px;
+  font-size:20px;
+}
+
+.section-title span{
+  display:inline-flex;
+  width:31px;
+  height:31px;
+  align-items:center;
+  justify-content:center;
+  border-radius:9px;
+  background:#e9f6f1;
+  font-size:17px;
+}
+
+
+/* المؤشرات */
+
+.kpis{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:11px;
+}
+
+.kpi{
+  min-height:125px;
+  border:1px solid #dce9e4;
+  background:linear-gradient(180deg,#fff,#f7fbf9);
+  border-radius:16px;
+  padding:14px 8px;
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+}
+
+.kpi-icon{
+  font-size:22px;
+  margin-bottom:5px;
+}
+
+.kpi strong{
+  display:block;
+  color:#075c40;
+  font-size:27px;
+  line-height:1.1;
+  margin-bottom:6px;
+}
+
+.kpi span{
+  font-size:12px;
+  color:#61756e;
+  line-height:1.5;
+}
+
+.kpi small{
+  display:block;
+  color:#87948f;
+  font-size:10px;
+  margin-top:5px;
+}
+
+.kpi.highlight{
+  background:linear-gradient(180deg,#fffaf0,#fff8e4);
+  border-color:#e7cf91;
+}
+
+.kpi.highlight strong{
+  color:#936900;
+}
+
+
+/* البطاقات */
+
+.grid2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:17px;
+  margin-top:18px;
+}
+
+.panel{
+  border:1px solid #dce9e4;
+  border-radius:18px;
+  padding:17px;
+  background:#fff;
+}
+
+.panel-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  color:#075c40;
+  margin:0 0 13px;
+  font-size:18px;
+}
+
+.panel-icon{
+  width:35px;
+  height:35px;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#eaf6f1;
+}
+
+
+/* الجداول */
+
+.table-wrap{
+  overflow:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th,td{
+  padding:12px 10px;
+  border-bottom:1px solid #e3ece8;
+  text-align:right;
+}
+
+th{
+  background:#edf6f2;
+  color:#075c40;
+  font-size:13px;
+}
+
+td{
+  font-size:13px;
+}
+
+.bar{
+  height:8px;
+  background:#e3ede9;
+  border-radius:20px;
+  overflow:hidden;
+  margin-top:7px;
+}
+
+.bar span{
+  display:block;
+  height:100%;
+  background:linear-gradient(90deg,#18a27b,#087152);
+  border-radius:20px;
+}
+
+
+/* مؤشرات الرضا */
+
+.impact-row{
+  display:grid;
+  grid-template-columns:160px 1fr 65px;
+  gap:9px;
+  align-items:center;
+  padding:10px 0;
+  border-bottom:1px solid #e6eeeb;
+}
+
+.impact-row:last-child{
+  border-bottom:0;
+}
+
+.impact-label{
+  font-weight:700;
+  font-size:13px;
+}
+
+.impact-value{
+  font-weight:700;
+  color:#075c40;
+  text-align:left;
+}
+
+.impact-bar{
+  height:10px;
+  background:#e7efec;
+  border-radius:20px;
+  overflow:hidden;
+}
+
+.impact-bar span{
+  display:block;
+  height:100%;
+  background:linear-gradient(90deg,#087152,#18a27b);
+  border-radius:20px;
+}
+
+
+/* القراءة التنفيذية */
+
+.summary-box{
+  position:relative;
+  background:linear-gradient(135deg,#f4faf7,#fffaf0);
+  border:1px solid #d4e7df;
+  border-right:6px solid #087152;
+  border-radius:17px;
+  padding:20px 22px;
+  line-height:2.05;
+  font-size:14px;
+}
+
+.summary-box b{
+  color:#075c40;
+}
+
+
+/* المقترحات */
+
+.comments-box{
+  background:linear-gradient(135deg,#f5fbf8,#eef8f4);
+  border:1px solid #d7e9e1;
+  border-radius:17px;
+  padding:20px;
+}
+
+.comments{
+  display:grid;
+  gap:9px;
+}
+
+.comment{
+  padding:11px 13px;
+  border:1px solid #dfeae6;
+  background:#fff;
+  border-radius:10px;
+  line-height:1.7;
+}
+
+.comment small{
+  display:block;
+  color:#74847e;
+  margin-top:4px;
+}
+
+.empty{
+  color:#667a72;
+  text-align:center;
+  padding:25px 10px;
+  font-size:14px;
+}
+
+
+/* التوقيعات */
+
+.footer{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:0;
+  border-top:2px solid #dce8e3;
+  margin-top:30px;
+  padding-top:19px;
+  text-align:center;
+}
+
+.signature{
+  min-height:100px;
+  padding:0 15px;
+  border-left:1px solid #e0e9e6;
+}
+
+.signature:last-child{
+  border-left:0;
+}
+
+.footer small{
+  display:block;
+  color:#71817b;
+  margin-bottom:7px;
+}
+
+.footer strong{
+  display:block;
+  color:#075c40;
+  font-size:17px;
+  margin-bottom:4px;
+}
+
+.signature-line{
+  width:75%;
+  margin:25px auto 0;
+  border-bottom:1px solid #9baaa5;
+}
+
+.note{
+  text-align:center;
+  color:#7c8985;
+  font-size:11px;
+  margin-top:18px;
+}
+
+.report-brand{
+  text-align:center;
+  margin-top:12px;
+  color:#075c40;
+  font-weight:700;
+  font-size:12px;
+}
+
+.notice{
+  background:#fff8e7;
+  border:1px solid #ead9aa;
+  color:#74580b;
+  border-radius:10px;
+  padding:12px;
+  margin-bottom:12px;
+}
+
+.hidden{
+  display:none!important;
+}
+
+
+@media(max-width:900px){
+
+  .filters{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .kpis{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .grid2{
+    grid-template-columns:1fr;
+  }
+
+}
+
+
+/* ==========================================
+   الطباعة A4 بالعرض
+   نفس الحجم - رفع الجزء السفلي فقط
+========================================== */
+
+@media print{
+
+  @page{
+    size:A4 landscape;
+    margin:7mm 10mm 5mm;
+  }
+
+  html,body{
+    margin:0!important;
+    padding:0!important;
+    background:#fff!important;
+    -webkit-print-color-adjust:exact!important;
+    print-color-adjust:exact!important;
+  }
+
+  .no-print,
+  .hero{
+    display:none!important;
+  }
+
+  .wrap{
+    width:100%!important;
+    max-width:none!important;
+    margin:0!important;
+  }
+
+  .card{
+    margin:0!important;
+    padding:0!important;
+    border:0!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+  }
+
+
+  /* الترويسة - نفس الحجم */
+
+  .report-head{
+    padding:0 10px 9px!important;
+    margin:0 0 8px!important;
+    border-bottom:3px solid #075c40!important;
+  }
+
+  .report-head:before{
+    width:85px!important;
+    height:85px!important;
+  }
+
+  .report-head img{
+    max-width:330px!important;
+    max-height:62px!important;
+    margin:0 auto 3px!important;
+  }
+
+  .ministry{
+    font-size:11px!important;
+  }
+
+  .report-head h2{
+    font-size:14px!important;
+    line-height:1.25!important;
+    margin:2px 0!important;
+  }
+
+  .report-head .report-title{
+    font-size:19px!important;
+    margin:3px 0!important;
+  }
+
+  .period-text{
+    font-size:9px!important;
+    padding:3px 14px!important;
+    margin:3px 0 0!important;
+  }
+
+
+  /* عناوين الأقسام */
+
+  .section-title{
+    font-size:15px!important;
+    margin:9px 0 6px!important;
+    gap:6px!important;
+  }
+
+  .section-title span{
+    width:25px!important;
+    height:25px!important;
+    border-radius:7px!important;
+    font-size:13px!important;
+  }
+
+
+  /* المؤشرات */
+
+  .kpis{
+    display:grid!important;
+    grid-template-columns:repeat(6,1fr)!important;
+    gap:8px!important;
+  }
+
+  .kpi{
+    min-height:82px!important;
+    padding:7px 5px!important;
+    border-radius:12px!important;
+    break-inside:avoid!important;
+    page-break-inside:avoid!important;
+  }
+
+  .kpi-icon{
+    font-size:15px!important;
+    margin-bottom:2px!important;
+  }
+
+  .kpi strong{
+    font-size:21px!important;
+    line-height:1.05!important;
+    margin-bottom:3px!important;
+  }
+
+  .kpi span{
+    font-size:9px!important;
+    line-height:1.3!important;
+  }
+
+  .kpi small{
+    font-size:7px!important;
+    margin-top:3px!important;
+  }
+
+
+  /* توزيع التفعيلات + الرضا */
+
+  .grid2{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:10px!important;
+    margin-top:9px!important;
+  }
+
+  .panel{
+    padding:10px 12px!important;
+    border-radius:12px!important;
+    break-inside:avoid!important;
+    page-break-inside:avoid!important;
+  }
+
+  .panel-title{
+    font-size:13px!important;
+    margin:0 0 7px!important;
+  }
+
+  .panel-icon{
+    width:25px!important;
+    height:25px!important;
+    font-size:11px!important;
+  }
+
+  table{
+    width:100%!important;
+  }
+
+  th,
+  td{
+    padding:5px 7px!important;
+    font-size:9px!important;
+  }
+
+  th{
+    font-size:9px!important;
+  }
+
+  .bar{
+    height:5px!important;
+    margin-top:4px!important;
+  }
+
+
+  /* مؤشرات الرضا */
+
+  .impact-row{
+    grid-template-columns:145px 1fr 55px!important;
+    gap:7px!important;
+    padding:5px 0!important;
+  }
+
+  .impact-label{
+    font-size:9px!important;
+  }
+
+  .impact-value{
+    font-size:9px!important;
+  }
+
+  .impact-bar{
+    height:6px!important;
+  }
+
+
+  /* القراءة التنفيذية */
+
+  .summary-box{
+    padding:9px 13px!important;
+    border-right-width:5px!important;
+    border-radius:11px!important;
+    font-size:9.5px!important;
+    line-height:1.75!important;
+    break-inside:avoid!important;
+    page-break-inside:avoid!important;
+  }
+
+
+  .print-second{
+    break-before:auto!important;
+    page-break-before:auto!important;
+    margin:0!important;
+    padding:0!important;
+  }
+
+
+  /* المقترحات - نفس الحجم */
+
+  .comments-box{
+    min-height:42px!important;
+    padding:7px 10px!important;
+    border-radius:10px!important;
+    break-inside:avoid!important;
+    page-break-inside:avoid!important;
+  }
+
+  .comments{
+    gap:4px!important;
+  }
+
+  .comment{
+    padding:5px 8px!important;
+    border-radius:7px!important;
+    font-size:8px!important;
+    line-height:1.4!important;
+  }
+
+  .comment small{
+    font-size:7px!important;
+    margin-top:2px!important;
+  }
+
+  .empty{
+    padding:7px!important;
+    font-size:8px!important;
+    line-height:1.4!important;
+  }
+
+
+  /* ======================================
+     التعديل هنا فقط:
+     رفع التوقيعات والتذييل قليلًا
+  ====================================== */
+
+  .footer{
+    display:grid!important;
+    grid-template-columns:repeat(3,1fr)!important;
+    gap:0!important;
+
+    /* كانت 9px */
+    margin-top:3px!important;
+
+    /* كانت 7px */
+    padding-top:4px!important;
+
+    border-top:1.5px solid #dce8e3!important;
+
+    break-inside:avoid!important;
+    page-break-inside:avoid!important;
+  }
+
+  .signature{
+    /* كانت 55px */
+    min-height:48px!important;
+
+    padding:0 12px!important;
+  }
+
+  .footer small{
+    font-size:7px!important;
+    margin-bottom:2px!important;
+  }
+
+  .footer strong{
+    font-size:11px!important;
+    margin-bottom:2px!important;
+  }
+
+  .signature div{
+    font-size:8px!important;
+  }
+
+  .signature-line{
+    width:55%!important;
+
+    /* كانت 10px */
+    margin:6px auto 0!important;
+  }
+
+
+  /* التذييل مرفوع مباشرة أسفل التوقيعات */
+
+  .note{
+    font-size:6.5px!important;
+
+    /* كانت 5px */
+    margin-top:1px!important;
+
+    line-height:1.15!important;
+  }
+
+  .report-brand{
+    font-size:7px!important;
+
+    /* كانت 2px */
+    margin-top:0!important;
+
+    line-height:1.1!important;
+  }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<header class="hero">
+
+  <div class="wrap hero-inner">
+
+    <img
+      src="../../assets/school-header.jpg"
+      alt="شعار المدرسة"
+    >
+
+    <div>
+
+      <h1>
+        تقرير تفعيل ورضا المستفيدين
+      </h1>
+
+      <p>
+        مركز مصادر التعلم · قراءة · معرفة · تجربة · أثر
+      </p>
+
+    </div>
+
+  </div>
+
+</header>
+
+
+<main class="wrap">
+
+
+<div class="top no-print">
+
+  <a href="index.html" class="back">
+    ← مركز مصادر التعلم
+  </a>
+
+  <button class="btn" onclick="window.print()">
+    🖨️ طباعة / حفظ PDF
+  </button>
+
+</div>
+
+
+<section class="card no-print">
+
+  <div class="filters">
+
+
+    <div class="field">
+
+      <label>الفترة</label>
+
+      <select id="period">
+
+        <option value="all">
+          كل الفترة
+        </option>
+
+        <option value="month">
+          شهر محدد
+        </option>
+
+        <option value="term1">
+          الفصل الدراسي الأول
+        </option>
+
+        <option value="term2">
+          الفصل الدراسي الثاني
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <div class="field">
+
+      <label>الشهر</label>
+
+      <select id="month">
+
+        <option value="">
+          كل الأشهر
+        </option>
+
+        <option value="9">سبتمبر</option>
+        <option value="10">أكتوبر</option>
+        <option value="11">نوفمبر</option>
+        <option value="12">ديسمبر</option>
+        <option value="1">يناير</option>
+        <option value="2">فبراير</option>
+        <option value="3">مارس</option>
+        <option value="4">أبريل</option>
+        <option value="5">مايو</option>
+        <option value="6">يونيو</option>
+
+      </select>
+
+    </div>
+
+
+    <div class="field">
+
+      <label>نوع التفعيل</label>
+
+      <select id="typeFilter">
+
+        <option value="">
+          كل التفعيلات
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <div class="field">
+
+      <label>الصف</label>
+
+      <select id="gradeFilter">
+
+        <option value="">
+          كل الصفوف
+        </option>
+
+        <option>الأول</option>
+        <option>الثاني</option>
+        <option>الثالث</option>
+        <option>الرابع</option>
+        <option>الخامس</option>
+
+      </select>
+
+    </div>
+
+
+  </div>
+
+</section>
+
+
+<div id="message"></div>
+
+
+<article id="report" class="card hidden">
+
+
+<div class="report-head">
+
+  <img
+    src="../../assets/school-header.jpg"
+    alt="شعار المدرسة"
+  >
+
+  <div class="ministry">
+    مملكة البحرين – وزارة التربية والتعليم
+  </div>
+
+  <h2>
+    مدرسة الرفاع الغربي الابتدائية للبنين
+  </h2>
+
+  <h2 class="report-title">
+    تقرير تفعيل ورضا المستفيدين عن مركز مصادر التعلم
+  </h2>
+
+  <p id="periodText" class="period-text"></p>
+
+</div>
+
+
+<h3 class="section-title">
+
+  <span>📊</span>
+
+  أولًا: مؤشرات التفعيل
+
+</h3>
+
+
+<div class="kpis">
+
+
+  <div class="kpi">
+
+    <div class="kpi-icon">📄</div>
+
+    <strong id="totalActivations">0</strong>
+
+    <span>إجمالي التفعيلات</span>
+
+  </div>
+
+
+  <div class="kpi">
+
+    <div class="kpi-icon">👥</div>
+
+    <strong id="studentUses">0</strong>
+
+    <span>إجمالي مرات استفادة الطلبة</span>
+
+  </div>
+
+
+  <div class="kpi">
+
+    <div class="kpi-icon">👩‍🏫</div>
+
+    <strong id="teachersCount">0</strong>
+
+    <span>المعلمات المشاركات</span>
+
+  </div>
+
+
+  <div class="kpi">
+
+    <div class="kpi-icon">☑️</div>
+
+    <strong id="ratingsCount">0</strong>
+
+    <span>التفعيلات المقيّمة</span>
+
+  </div>
+
+
+  <div class="kpi">
+
+    <div class="kpi-icon">📈</div>
+
+    <strong id="responseRate">0%</strong>
+
+    <span>نسبة الاستجابة للتقييم</span>
+
+    <small id="responseBase">—</small>
+
+  </div>
+
+
+  <div class="kpi highlight">
+
+    <div class="kpi-icon">⭐</div>
+
+    <strong id="satisfactionPercent">—</strong>
+
+    <span>مستوى الرضا</span>
+
+    <small id="ratingBase">—</small>
+
+  </div>
+
+
+</div>
+
+
+<div class="grid2">
+
+
+<section class="panel">
+
+  <h3 class="panel-title">
+
+    توزيع التفعيلات
+
+    <span class="panel-icon">◔</span>
+
+  </h3>
+
+
+  <div class="table-wrap">
+
+    <table>
+
+      <thead>
+
+        <tr>
+
+          <th>نوع التفعيل</th>
+          <th>العدد</th>
+          <th>النسبة</th>
+
+        </tr>
+
+      </thead>
+
+      <tbody id="typesBody"></tbody>
+
+    </table>
+
+  </div>
+
+</section>
+
+
+<section class="panel">
+
+  <h3 class="panel-title">
+
+    مؤشرات الرضا والأثر
+
+    <span class="panel-icon">📈</span>
+
+  </h3>
+
+  <div id="impactRows"></div>
+
+</section>
+
+
+</div>
+
+
+<h3 class="section-title">
+
+  <span>📋</span>
+
+  ثانيًا: القراءة التنفيذية للنتائج
+
+</h3>
+
+
+<div id="summary" class="summary-box"></div>
+
+
+<div class="print-second">
+
+
+<h3 class="section-title">
+
+  <span>💡</span>
+
+  ثالثًا: المقترحات والاحتياجات
+
+</h3>
+
+
+<div class="comments-box">
+
+  <div id="comments" class="comments"></div>
+
+</div>
+
+
+<div class="footer">
+
+
+  <div class="signature">
+
+    <small>إعداد ومتابعة</small>
+
+    <strong>فاتن صلاح</strong>
+
+    <div>اختصاصية مصادر التعلم</div>
+
+    <div class="signature-line"></div>
+
+  </div>
+
+
+  <div class="signature">
+
+    <small>متابعة</small>
+
+    <strong>خلود الكعبي</strong>
+
+    <div>المديرة المساعدة</div>
+
+    <div class="signature-line"></div>
+
+  </div>
+
+
+  <div class="signature">
+
+    <small>اعتماد</small>
+
+    <strong>أحلام السويدي</strong>
+
+    <div>مديرة المدرسة</div>
+
+    <div class="signature-line"></div>
+
+  </div>
+
+
+</div>
+
+
+<div class="note">
+
+  تم إنشاء هذا التقرير آليًا من سجلات تفعيل مركز مصادر التعلم والتقييمات المرتبطة بها.
+
+</div>
+
+
+<div class="report-brand">
+
+  مركز مصادر التعلم · مدرسة الرفاع الغربي الابتدائية للبنين
+
+</div>
+
+
+</div>
+
+</article>
+
+</main>
+
+
+<script src="../../js/config.js"></script>
+<script src="../../js/graph.js"></script>
+<script src="../../js/common.js"></script>
+<script src="../../js/resource-center.js"></script>
+
+
+<script>
+
+(function(){
+
+
+let RC;
+
+let allData=[];
+
+
+const $=
+  id=>document.getElementById(id);
+
+
+const pct=(a,b)=>{
+
+  if(!b)return 0;
+
+  return Math.round(
+    (a/b)*100
+  );
+
+};
+
+
+const esc=v=>{
+
+  if(
+    window.WRRC &&
+    WRRC.esc
+  ){
+
+    return WRRC.esc(
+      v??''
+    );
+
+  }
+
+  return String(v??'')
+
+  .replace(/&/g,'&amp;')
+  .replace(/</g,'&lt;')
+  .replace(/>/g,'&gt;')
+  .replace(/"/g,'&quot;');
+
+};
+
+
+function recordDate(r){
+
+  const value=
+    r.completed_at ||
+    r.created_at;
+
+
+  if(!value){
+
+    return null;
+
+  }
+
+
+  const d=
+    new Date(value);
+
+
+  return isNaN(
+    d.getTime()
+  )
+  ?null
+  :d;
+
+}
+
+
+function category(r){
+
+  if(
+    r.story_id ||
+    r.story_title
+  ){
+
+    return 'القصص التفاعلية / المنصة';
+
+  }
+
+
+  return (
+    r.activation_type_label ||
+    r.activation_type ||
+    'تفعيل آخر'
+  );
+
+}
+
+
+function filtered(){
+
+  let data=[
+    ...allData
+  ];
+
+
+  const period=
+    $('period').value;
+
+
+  const month=
+    +$('month').value;
+
+
+  const type=
+    $('typeFilter').value;
+
+
+  const grade=
+    $('gradeFilter').value;
+
+
+  if(
+    period==='month' &&
+    month
+  ){
+
+    data=data.filter(
+      r=>{
+
+        const d=
+          recordDate(r);
+
+        return (
+          d &&
+          d.getMonth()+1===
+          month
+        );
+
+      }
+    );
+
+  }
+
+
+  if(
+    period==='term1'
+  ){
+
+    data=data.filter(
+      r=>{
+
+        const d=
+          recordDate(r);
+
+        if(!d)return false;
+
+        const m=
+          d.getMonth()+1;
+
+        return [
+          9,10,11,12,1
+        ].includes(m);
+
+      }
+    );
+
+  }
+
+
+  if(
+    period==='term2'
+  ){
+
+    data=data.filter(
+      r=>{
+
+        const d=
+          recordDate(r);
+
+        if(!d)return false;
+
+        const m=
+          d.getMonth()+1;
+
+        return [
+          2,3,4,5,6
+        ].includes(m);
+
+      }
+    );
+
+  }
+
+
+  if(type){
+
+    data=data.filter(
+      r=>category(r)===type
+    );
+
+  }
+
+
+  if(grade){
+
+    data=data.filter(
+      r=>r.grade===grade
+    );
+
+  }
+
+
+  return data;
+
+}
+
+
+function periodLabel(){
+
+  const p=
+    $('period').value;
+
+
+  const m=
+    +$('month').value;
+
+
+  const months={
+
+    1:'يناير',
+    2:'فبراير',
+    3:'مارس',
+    4:'أبريل',
+    5:'مايو',
+    6:'يونيو',
+    9:'سبتمبر',
+    10:'أكتوبر',
+    11:'نوفمبر',
+    12:'ديسمبر'
+
+  };
+
+
+  if(
+    p==='month' &&
+    m
+  ){
+
+    return `الفترة: شهر ${months[m]}`;
+
+  }
+
+
+  if(
+    p==='term1'
+  ){
+
+    return 'الفترة: الفصل الدراسي الأول';
+
+  }
+
+
+  if(
+    p==='term2'
+  ){
+
+    return 'الفترة: الفصل الدراسي الثاني';
+
+  }
+
+
+  return 'الفترة: جميع التفعيلات المسجلة';
+
+}
+
+
+function impactRow(
+  label,
+  value,
+  percent
+){
+
+  const safePercent=
+    Math.max(
+      0,
+      Math.min(
+        100,
+        Number(percent)||0
+      )
+    );
+
+
+  return `
+
+    <div class="impact-row">
+
+      <div class="impact-label">
+        ${esc(label)}
+      </div>
+
+      <div class="impact-bar">
+
+        <span
+          style="width:${safePercent}%"
+        ></span>
+
+      </div>
+
+      <div class="impact-value">
+        ${esc(value)}
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+function render(){
+
+  const data=
+    filtered();
+
+
+  const total=
+    data.length;
+
+
+  const students=
+    data.reduce(
+      (sum,r)=>
+        sum+
+        (
+          Number(
+            r.student_count
+          )||0
+        ),
+      0
+    );
+
+
+  const teachers=
+    new Set(
+
+      data
+
+      .map(
+        r=>
+          r.teacher_user_id ||
+          r.teacher_name
+      )
+
+      .filter(Boolean)
+
+    ).size;
+
+
+  const rated=
+    data.filter(
+      r=>
+        r.satisfaction_submitted_at ||
+        Number(
+          r.satisfaction_score
+        )>0
+    );
+
+
+  const ratedCount=
+    rated.length;
+
+
+  const response=
+    pct(
+      ratedCount,
+      total
+    );
+
+
+  const scores=
+    rated
+
+    .map(
+      r=>
+        Number(
+          r.satisfaction_score
+        )
+    )
+
+    .filter(
+      n=>
+        n>=1 &&
+        n<=5
+    );
+
+
+  const average=
+    scores.length
+
+    ? scores.reduce(
+        (a,b)=>a+b,
+        0
+      )/
+      scores.length
+
+    :0;
+
+
+  const satisfaction=
+    scores.length
+
+    ? Math.round(
+        (average/5)*100
+      )
+
+    :0;
+
+
+  const goalHighCount=
+    rated.filter(
+      r=>
+        r.goal_achieved===
+        'high'
+    ).length;
+
+
+  const engagementHighCount=
+    rated.filter(
+      r=>
+        r.student_engagement===
+        'high'
+    ).length;
+
+
+  const goalPercent=
+    pct(
+      goalHighCount,
+      ratedCount
+    );
+
+
+  const engagementPercent=
+    pct(
+      engagementHighCount,
+      ratedCount
+    );
+
+
+  $('totalActivations')
+    .textContent=
+    total;
+
+
+  $('studentUses')
+    .textContent=
+    students.toLocaleString(
+      'ar-BH'
+    );
+
+
+  $('teachersCount')
+    .textContent=
+    teachers;
+
+
+  $('ratingsCount')
+    .textContent=
+    ratedCount;
+
+
+  $('responseRate')
+    .textContent=
+    total
+    ? response+'%'
+    :'—';
+
+
+  $('responseBase')
+    .textContent=
+
+    total
+
+    ? `تم تقييم ${ratedCount} من أصل ${total}`
+
+    :'لا توجد تفعيلات';
+
+
+  $('satisfactionPercent')
+    .textContent=
+
+    scores.length
+
+    ? satisfaction+'%'
+
+    :'—';
+
+
+  $('ratingBase')
+    .textContent=
+
+    scores.length
+
+    ? `بناءً على ${scores.length} تقييمات`
+
+    :'لا توجد تقييمات';
+
+
+  $('periodText')
+    .textContent=
+    periodLabel();
+
+
+  const counts={};
+
+
+  data.forEach(
+    r=>{
+
+      const name=
+        category(r);
+
+      counts[name]=
+        (
+          counts[name]||
+          0
+        )+1;
+
+    }
+  );
+
+
+  const entries=
+    Object.entries(
+      counts
+    )
+
+    .sort(
+      (a,b)=>
+        b[1]-a[1]
+    );
+
+
+  $('typesBody')
+    .innerHTML=
+
+    entries.length
+
+    ? entries.map(
+        ([name,count])=>`
+
+          <tr>
+
+            <td>
+
+              <b>
+                ${esc(name)}
+              </b>
+
+              <div class="bar">
+
+                <span
+                  style="width:${pct(count,total)}%"
+                ></span>
+
+              </div>
+
+            </td>
+
+            <td>
+              <b>${count}</b>
+            </td>
+
+            <td>
+              ${pct(count,total)}%
+            </td>
+
+          </tr>
+
+        `
+      ).join('')
+
+    :`
+
+      <tr>
+
+        <td
+          colspan="3"
+          class="empty"
+        >
+          لا توجد تفعيلات في الفترة المحددة.
+        </td>
+
+      </tr>
+
+    `;
+
+
+  let impactHTML='';
+
+
+  if(
+    scores.length
+  ){
+
+    impactHTML+=
+      impactRow(
+        'متوسط الرضا',
+        average.toFixed(1)+' / 5',
+        satisfaction
+      );
+
+
+    impactHTML+=
+      impactRow(
+        'الرضا من الدرجة القصوى',
+        satisfaction+'%',
+        satisfaction
+      );
+
+  }else{
+
+    impactHTML+=
+      impactRow(
+        'متوسط الرضا',
+        '—',
+        0
+      );
+
+
+    impactHTML+=
+      impactRow(
+        'الرضا من الدرجة القصوى',
+        '—',
+        0
+      );
+
+  }
+
+
+  impactHTML+=
+    impactRow(
+      'تحقق الهدف بدرجة كبيرة',
+      ratedCount
+        ?goalPercent+'%'
+        :'—',
+      goalPercent
+    );
+
+
+  impactHTML+=
+    impactRow(
+      'تفاعل الطلبة المرتفع',
+      ratedCount
+        ?engagementPercent+'%'
+        :'—',
+      engagementPercent
+    );
+
+
+  impactHTML+=
+    impactRow(
+      'نسبة الاستجابة للتقييم',
+      total
+        ?response+'%'
+        :'—',
+      response
+    );
+
+
+  $('impactRows')
+    .innerHTML=
+    impactHTML;
+
+
+  let distributionText='';
+
+
+  if(
+    entries.length
+  ){
+
+    distributionText=
+
+      entries
+
+      .map(
+        ([name,count])=>
+          `${count} ${name}`
+      )
+
+      .join('، ');
+
+  }
+
+
+  let summary='';
+
+
+  if(!total){
+
+    summary=
+      'لا توجد تفعيلات مسجلة ضمن الفترة والفلاتر المحددة.';
+
+  }else{
+
+
+    summary=
+
+      `بلغ إجمالي تفعيلات مركز مصادر التعلم خلال الفترة المحددة `+
+
+      `<b>${total} تفعيلًا</b>`+
+
+      `، بإجمالي `+
+
+      `<b>${students.toLocaleString('ar-BH')} مرة استفادة للطلبة</b>`+
+
+      `، وبمشاركة `+
+
+      `<b>${teachers} من المعلمات</b>. `;
+
+
+    if(
+      distributionText
+    ){
+
+      summary+=
+
+        `وتوزعت التفعيلات على النحو الآتي: `+
+
+        `${esc(distributionText)}. `;
+
+    }
+
+
+    if(
+      ratedCount
+    ){
+
+      summary+=
+
+        `وتم تقييم `+
+
+        `<b>${ratedCount} تفعيلًا</b>`+
+
+        ` من أصل `+
+
+        `<b>${total}</b>`+
+
+        ` بنسبة استجابة بلغت `+
+
+        `<b>${response}%</b>. `;
+
+
+      if(
+        scores.length
+      ){
+
+        summary+=
+
+          `وبلغ متوسط الرضا `+
+
+          `<b>${average.toFixed(1)} من 5</b>`+
+
+          `، بما يعادل `+
+
+          `<b>${satisfaction}% من الدرجة القصوى</b>`+
+
+          `، استنادًا إلى `+
+
+          `<b>${scores.length} تقييمات</b>. `;
+
+      }
+
+
+      summary+=
+
+        `كما بلغت نسبة التقييمات التي أفادت بتحقق الهدف بدرجة كبيرة `+
+
+        `<b>${goalPercent}%</b>`+
+
+        `، وبلغت نسبة التفعيلات التي سجلت تفاعلًا مرتفعًا للطلبة `+
+
+        `<b>${engagementPercent}%</b>.`;
+
+    }else{
+
+      summary+=
+
+        `ولم تُسجل تقييمات رضا مرتبطة بهذه التفعيلات خلال الفترة المحددة.`;
+
+    }
+
+  }
+
+
+  $('summary')
+    .innerHTML=
+    summary;
+
+
+  const comments=
+    rated.filter(
+      r=>
+        r.satisfaction_comment &&
+        String(
+          r.satisfaction_comment
+        ).trim()
+    );
+
+
+  $('comments')
+    .innerHTML=
+
+    comments.length
+
+    ? comments.map(
+        r=>`
+
+          <div class="comment">
+
+            ${esc(
+              r.satisfaction_comment
+            )}
+
+            <small>
+
+              ${esc(
+                r.teacher_name||
+                ''
+              )}
+
+              ${
+                r.activation_type_label
+
+                ? ' — '+
+                  esc(
+                    r.activation_type_label
+                  )
+
+                :''
+              }
+
+            </small>
+
+          </div>
+
+        `
+      ).join('')
+
+    :`
+
+      <div class="empty">
+
+        💡
+        <br><br>
+
+        لا توجد مقترحات أو احتياجات
+        مسجلة خلال الفترة المحددة.
+
+      </div>
+
+    `;
+
+
+  $('report')
+    .classList
+    .remove('hidden');
+
+}
+
+
+function buildTypes(){
+
+  const types=
+    [
+      ...new Set(
+
+        allData
+
+        .map(category)
+
+        .filter(Boolean)
+
+      )
+    ]
+
+    .sort();
+
+
+  $('typeFilter')
+    .innerHTML=
+
+    '<option value="">كل التفعيلات</option>'+
+
+    types.map(
+      t=>
+
+        `<option value="${esc(t)}">
+          ${esc(t)}
+        </option>`
+
+    ).join('');
+
+}
+
+
+async function load(){
+
+  try{
+
+
+    RC=
+      await window.WRRC.init();
+
+
+    const profile=
+
+      RC.profile ||
+
+      await wrGetCurrentProfile();
+
+
+    if(!profile){
+
+      throw new Error(
+        'تعذر قراءة بيانات المستخدم.'
+      );
+
+    }
+
+
+    if(
+      profile.role!==
+      'admin'
+    ){
+
+      throw new Error(
+        'هذا التقرير متاح للقيادة المدرسية فقط.'
+      );
+
+    }
+
+
+    const {
+      data,
+      error
+    }=
+
+      await RC.sb
+
+      .from(
+        'resource_center_activations'
+      )
+
+      .select(`
+        id,
+        teacher_user_id,
+        teacher_name,
+        department_id,
+        department_name,
+        activation_type,
+        activation_type_label,
+        grade,
+        section,
+        student_count,
+        subject,
+        story_id,
+        story_title,
+        satisfaction_score,
+        goal_achieved,
+        student_engagement,
+        satisfaction_comment,
+        satisfaction_submitted_at,
+        created_at,
+        completed_at,
+        status
+      `)
+
+      .order(
+        'created_at',
+        {
+          ascending:false
+        }
+      );
+
+
+    if(error){
+
+      throw error;
+
+    }
+
+
+    allData=
+      (data||[])
+
+      .filter(
+        r=>
+          !r.status ||
+          r.status===
+          'completed'
+      );
+
+
+    buildTypes();
+
+    render();
+
+
+  }catch(e){
+
+
+    console.error(e);
+
+
+    $('message')
+      .innerHTML=
+
+      `<div class="notice">
+
+        تعذر تحميل تقرير الرضا:
+        ${esc(
+          e.message||
+          e
+        )}
+
+      </div>`;
+
+  }
+
+}
+
+
+$('period')
+.addEventListener(
+  'change',
+  ()=>{
+
+
+    if(
+      $('period').value===
+      'month' &&
+
+      !$('month').value
+    ){
+
+      const now=
+        new Date();
+
+
+      const current=
+        now.getMonth()+1;
+
+
+      if(
+        [
+          1,2,3,4,5,6,
+          9,10,11,12
+        ].includes(current)
+      ){
+
+        $('month').value=
+          String(current);
+
+      }
+
+    }
+
+
+    render();
+
+  }
+);
+
+
+$('month')
+.addEventListener(
+  'change',
+  ()=>{
+
+
+    if(
+      $('month').value
+    ){
+
+      $('period').value=
+        'month';
+
+    }
+
+
+    render();
+
+  }
+);
+
+
+$('typeFilter')
+.addEventListener(
+  'change',
+  render
+);
+
+
+$('gradeFilter')
+.addEventListener(
+  'change',
+  render
+);
+
+
+load();
+
+
+})();
+
+</script>
+
+</body>
+</html>

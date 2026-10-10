@@ -1,0 +1,5192 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>مكتبي — إدارة أعمال المصادر ونبع</title>
+
+<link rel="stylesheet" href="../../css/app.css">
+<link rel="stylesheet" href="../../css/resource-center.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f4f7f6;color:#173c34;font-family:Tahoma,Arial,sans-serif}
+.hero{background:linear-gradient(135deg,#063f32,#087454);color:#fff;padding:26px 0}
+.wrap{width:min(1200px,94%);margin:auto}
+.hero-inner{display:flex;align-items:center;gap:16px}
+.school-mark img{width:78px;height:78px;object-fit:contain;background:#fff;border-radius:16px;padding:6px}
+.hero h1{margin:0 0 7px;font-size:27px}
+.hero p{margin:0;opacity:.93;line-height:1.8}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:20px 0;flex-wrap:wrap}
+.back{display:inline-block;background:#fff;color:#075c40;border:1px solid #d9e6e1;padding:10px 15px;border-radius:11px;text-decoration:none;font-weight:700}
+.user-box{color:#5b7169;font-weight:700}
+.private-note{background:#fff8e8;border:1px solid #efdfb6;color:#70570f;border-radius:13px;padding:12px 15px;margin-bottom:17px;line-height:1.7}
+
+.dashboard,.stats{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:14px;
+margin-bottom:20px
+}
+
+.action-card,.stat,.card{
+background:#fff;
+border:1px solid #dfeae6;
+border-radius:17px;
+box-shadow:0 5px 18px rgba(7,92,64,.05)
+}
+
+.action-card{padding:19px;cursor:pointer;transition:.2s}
+.action-card:hover{transform:translateY(-2px);border-color:#93c8b5}
+.action-card.active{border:2px solid #087454;background:#f1faf6}
+.action-icon{font-size:27px;margin-bottom:8px}
+.action-card h3{margin:0 0 6px;font-size:17px}
+.action-card p{margin:0;color:#6b7e77;font-size:13px;line-height:1.6}
+
+.stat{padding:17px}
+.stat .number{font-size:27px;font-weight:800;color:#075c40;margin-bottom:5px}
+.stat .label{color:#667b73;font-size:13px}
+
+.card{padding:20px;margin-bottom:18px}
+.card h2{margin:0 0 18px;font-size:21px}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:14px
+}
+
+.field{margin-bottom:14px}
+.field label{display:block;font-weight:700;margin-bottom:7px}
+
+.field input,
+.field select,
+.field textarea{
+width:100%;
+padding:11px 12px;
+border:1px solid #ceded8;
+border-radius:10px;
+background:#fff;
+font:inherit;
+color:#173c34
+}
+
+.field textarea{
+resize:vertical;
+min-height:100px;
+line-height:1.8
+}
+
+.full{grid-column:1/-1}
+.hidden{display:none!important}
+
+.smart-box{
+background:#f2f8f5;
+border:1px solid #d7e9e1;
+border-radius:14px;
+padding:15px;
+margin-top:6px
+}
+
+.smart-title{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:10px;
+margin-bottom:10px;
+flex-wrap:wrap
+}
+
+.smart-title strong{color:#075c40}
+
+.badge{
+display:inline-block;
+border-radius:999px;
+padding:5px 9px;
+font-size:12px;
+font-weight:700
+}
+
+.badge-draft{background:#f3f4f6;color:#4b5563}
+.badge-ready{background:#e7f6ee;color:#166534}
+.badge-uploaded{background:#e8f1ff;color:#1d4f91}
+
+.buttons{
+display:flex;
+gap:9px;
+flex-wrap:wrap;
+margin-top:12px
+}
+
+.btn{
+border:0;
+border-radius:10px;
+padding:10px 15px;
+font:inherit;
+font-weight:700;
+cursor:pointer
+}
+
+.primary{background:#075c40;color:#fff}
+.secondary{background:#edf5f2;color:#075c40}
+.gold{background:#fff5d9;color:#725500}
+.danger{background:#fff0f0;color:#a12424}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+
+.notice{
+padding:12px 14px;
+border-radius:11px;
+margin-bottom:15px;
+background:#fff7e5;
+border:1px solid #eedca8;
+color:#71560c;
+line-height:1.7
+}
+
+.notice.ok{
+background:#eaf8ef;
+border-color:#c8e8d2;
+color:#166534
+}
+
+.filters{
+display:grid;
+grid-template-columns:2fr 1fr 1fr;
+gap:10px;
+margin-bottom:15px
+}
+
+.filters input,
+.filters select{
+width:100%;
+padding:10px;
+border:1px solid #d2e0db;
+border-radius:10px;
+font:inherit
+}
+
+.records{display:grid;gap:12px}
+
+.record{
+border:1px solid #dfe9e5;
+border-radius:14px;
+padding:15px;
+background:#fff
+}
+
+.record-top{
+display:flex;
+justify-content:space-between;
+align-items:flex-start;
+gap:12px;
+flex-wrap:wrap
+}
+
+.record h3{margin:0 0 7px;font-size:17px}
+
+.meta{
+display:flex;
+gap:8px 14px;
+flex-wrap:wrap;
+color:#687d75;
+font-size:13px;
+margin-top:7px
+}
+
+.record-desc{
+margin-top:11px;
+color:#455c54;
+line-height:1.8;
+font-size:14px
+}
+
+.empty{
+text-align:center;
+padding:35px 15px;
+color:#71837d
+}
+
+.section-title{
+margin:0 0 15px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:10px;
+flex-wrap:wrap
+}
+
+.type-help{
+margin-top:8px;
+background:#f8fbfa;
+border:1px solid #e2ebe8;
+color:#61756e;
+padding:10px 12px;
+border-radius:10px;
+font-size:13px;
+line-height:1.7
+}
+
+/* الشواهد */
+
+.evidence-box{
+border:2px dashed #b9d6cc;
+background:#f8fcfa;
+border-radius:16px;
+padding:18px
+}
+
+.evidence-box input[type=file]{display:none}
+
+.upload-label{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:9px;
+min-height:75px;
+background:#fff;
+border:1px solid #dce9e4;
+border-radius:12px;
+cursor:pointer;
+color:#075c40;
+font-weight:700
+}
+
+.upload-help{
+text-align:center;
+color:#75877f;
+font-size:12px;
+margin:8px 0
+}
+
+.evidence-grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:10px;
+margin-top:12px
+}
+
+.evidence-item{
+position:relative;
+border:1px solid #dce8e3;
+background:#fff;
+border-radius:12px;
+padding:6px;
+overflow:hidden
+}
+
+.evidence-item img{
+width:100%;
+height:135px;
+object-fit:cover;
+border-radius:8px;
+display:block
+}
+
+.evidence-name{
+font-size:11px;
+color:#667970;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+margin-top:5px
+}
+
+.remove-evidence{
+position:absolute;
+top:10px;
+left:10px;
+width:29px;
+height:29px;
+border:0;
+border-radius:50%;
+background:#fff;
+color:#a12424;
+box-shadow:0 2px 8px #0002;
+cursor:pointer;
+font-weight:bold
+}
+
+.evidence-count{
+display:inline-block;
+background:#eef7f3;
+color:#075c40;
+border-radius:999px;
+padding:4px 9px;
+font-size:12px;
+font-weight:700;
+margin-top:9px
+}
+
+.record-evidence{
+display:flex;
+gap:7px;
+flex-wrap:wrap;
+margin-top:12px
+}
+
+.record-evidence img{
+width:82px;
+height:70px;
+object-fit:cover;
+border-radius:9px;
+border:1px solid #dce8e3;
+cursor:pointer
+}
+
+@media(max-width:900px){
+.dashboard,.stats{grid-template-columns:repeat(2,1fr)}
+.evidence-grid{grid-template-columns:repeat(3,1fr)}
+}
+
+@media(max-width:700px){
+.dashboard,.stats,.grid,.filters{grid-template-columns:1fr}
+.full{grid-column:auto}
+.hero h1{font-size:22px}
+.evidence-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+
+<body>
+
+<header class="hero">
+<div class="wrap hero-inner">
+
+<div class="school-mark">
+<img src="../../assets/school-header.jpg" alt="شعار المدرسة">
+</div>
+
+<div>
+<h1>🔐 مكتبي — إدارة أعمال المصادر ونبع</h1>
+<p>
+مساحة خاصة لتوثيق أعمال مركز مصادر التعلم،
+وتجهيز البيانات المطلوبة لمنصة نبع،
+ومتابعة الإنجاز والتقارير.
+</p>
+</div>
+
+</div>
+</header>
+
+<main class="wrap">
+
+<div class="top">
+<a class="back" href="index.html">← مركز مصادر التعلم</a>
+<div id="who" class="user-box">جاري قراءة الحساب…</div>
+</div>
+
+<div class="private-note">
+🔒 هذه المساحة مخصصة لأعمال اختصاصية مصادر التعلم.
+سجّلي المعلومة مرة واحدة، ثم استخدميها في نبع والتقارير وملف الإنجاز.
+</div>
+
+<div id="message"></div>
+
+<section class="dashboard">
+
+<div class="action-card active" data-view="new">
+<div class="action-icon">➕</div>
+<h3>تسجيل عمل جديد</h3>
+<p>نشاط، اجتماع، صادر، وارد، زيارة، مبادرة أو عمل آخر.</p>
+</div>
+
+<div class="action-card" data-view="import">
+<div class="action-icon">🔄</div>
+<h3>استيراد من المركز</h3>
+<p>استخدام تفعيل أو خدمة مسجلة بالفعل بدون إعادة الإدخال.</p>
+</div>
+
+<div class="action-card" data-view="records">
+<div class="action-icon">📋</div>
+<h3>سجل أعمالي</h3>
+<p>متابعة الأعمال والشواهد وحالة نبع والطباعة.</p>
+</div>
+
+<div class="action-card" data-view="reports">
+<div class="action-icon">📊</div>
+<h3>تقاريري</h3>
+<p>مؤشرات سريعة تمهيدًا للتقرير الشهري والفصلي.</p>
+</div>
+
+</section>
+
+<section class="stats">
+
+<div class="stat">
+<div id="statTotal" class="number">0</div>
+<div class="label">إجمالي الأعمال</div>
+</div>
+
+<div class="stat">
+<div id="statReady" class="number">0</div>
+<div class="label">جاهز لنبع</div>
+</div>
+
+<div class="stat">
+<div id="statUploaded" class="number">0</div>
+<div class="label">تم رفعه في نبع</div>
+</div>
+
+<div class="stat">
+<div id="statMonth" class="number">0</div>
+<div class="label">أعمال هذا الشهر</div>
+</div>
+
+</section>
+
+<!-- تسجيل عمل جديد -->
+
+<section id="viewNew" class="view-section">
+
+<div class="card">
+
+<div class="section-title">
+<h2 id="formTitle">➕ تسجيل عمل جديد</h2>
+
+<button
+id="resetBtn"
+class="btn secondary"
+type="button"
+>
+نموذج جديد
+</button>
+</div>
+
+<form id="workForm">
+
+<input id="recordId" type="hidden">
+
+<div class="grid">
+
+<div class="field">
+<label>نوع العمل</label>
+
+<select id="workType" required>
+<option value="">اختاري…</option>
+<option value="activity">نشاط</option>
+<option value="meeting">اجتماع</option>
+<option value="outgoing">صادر</option>
+<option value="incoming">وارد</option>
+<option value="educational_support">دعم تعليمي</option>
+<option value="visit">زيارة</option>
+<option value="initiative">مبادرة</option>
+<option value="admin_technical">عمل إداري / فني</option>
+<option value="challenge">تحدٍ / احتياج</option>
+</select>
+
+<div id="typeHelp" class="type-help hidden"></div>
+</div>
+
+<div class="field">
+<label>التاريخ</label>
+<input id="workDate" type="date" required>
+</div>
+
+<div class="field">
+<label>التصنيف</label>
+<select id="category">
+<option value="">اختاري…</option>
+</select>
+</div>
+
+<div class="field">
+<label id="titleLabel">اسم العمل</label>
+<input
+id="title"
+maxlength="200"
+placeholder="اكتبي اسم العمل"
+>
+</div>
+
+<div class="field">
+<label>المكان</label>
+<input
+id="place"
+maxlength="150"
+placeholder="مثال: مركز مصادر التعلم"
+>
+</div>
+
+<div id="targetBox" class="field">
+<label>الفئة المستهدفة</label>
+<input
+id="targetGroup"
+maxlength="200"
+placeholder="مثال: طلبة الصف الرابع"
+>
+</div>
+
+<div id="participantsBox" class="field">
+<label>المشاركون / المنفذون</label>
+<input
+id="participants"
+maxlength="250"
+placeholder="اكتبي الأسماء أو الجهة"
+>
+</div>
+
+<div id="beneficiaryBox" class="field">
+<label>عدد المستفيدين</label>
+<input
+id="beneficiaryCount"
+type="number"
+min="0"
+placeholder="اختياري"
+>
+</div>
+
+<div id="committeeBox" class="field hidden">
+<label>اللجنة / الجماعة / الجهة</label>
+<input id="committee" maxlength="200">
+</div>
+
+<div id="attendeesBox" class="field hidden">
+<label>الحضور</label>
+<input id="attendees" maxlength="500">
+</div>
+
+<div id="fromBox" class="field hidden">
+<label>وارد من</label>
+<input id="correspondenceFrom" maxlength="200">
+</div>
+
+<div id="toBox" class="field hidden">
+<label>صادر إلى</label>
+<input id="correspondenceTo" maxlength="200">
+</div>
+
+<div id="numberBox" class="field hidden">
+<label>رقم الخطاب / المعاملة</label>
+<input id="correspondenceNumber" maxlength="100">
+</div>
+
+<div id="challengeBox" class="field full hidden">
+<label>التحدي / الاحتياج</label>
+<textarea id="challenge"></textarea>
+</div>
+
+<div id="actionBox" class="field full hidden">
+<label>الإجراء المتخذ</label>
+<textarea id="actionTaken"></textarea>
+</div>
+
+<div id="referredBox" class="field hidden">
+<label>تم الرفع / الإحالة إلى</label>
+<input id="referredTo" maxlength="200">
+</div>
+
+<div id="followBox" class="field hidden">
+<label>حالة المتابعة</label>
+
+<select id="followStatus">
+<option value="">اختاري…</option>
+<option>تم الرصد</option>
+<option>تم الرفع</option>
+<option>قيد المتابعة</option>
+<option>تمت المعالجة</option>
+<option>لم تتم المعالجة بعد</option>
+</select>
+</div>
+
+<div class="field full">
+
+<div class="smart-box">
+
+<div class="smart-title">
+<strong>✨ الموضوع المقترح</strong>
+<span class="badge badge-ready">قابل للتعديل</span>
+</div>
+
+<input
+id="subject"
+maxlength="300"
+placeholder="سيظهر اقتراح تلقائي"
+>
+
+</div>
+
+</div>
+
+<div class="field full">
+
+<div class="smart-box">
+
+<div class="smart-title">
+<strong>✨ الوصف / المحتوى المقترح</strong>
+<span class="badge badge-ready">قابل للتعديل</span>
+</div>
+
+<textarea
+id="description"
+placeholder="سيظهر وصف مقترح ويمكنك تعديله"
+></textarea>
+
+</div>
+
+</div>
+
+<div class="field full">
+<label>الأثر / النتيجة</label>
+
+<textarea
+id="impact"
+placeholder="اختياري"
+></textarea>
+</div>
+
+<div class="field full">
+
+<label>📎 الشواهد والصور</label>
+
+<div class="evidence-box">
+
+<label
+class="upload-label"
+for="evidenceFiles"
+>
+📷 اضغطي هنا لاختيار صور التوثيق
+</label>
+
+<input
+id="evidenceFiles"
+type="file"
+accept="image/jpeg,image/png,image/webp"
+multiple
+>
+
+<div class="upload-help">
+يمكنكِ اختيار أكثر من صورة مرة واحدة —
+JPG / PNG / WEBP
+</div>
+
+<div
+id="evidencePreview"
+class="evidence-grid"
+></div>
+
+<div
+id="evidenceCounter"
+class="evidence-count hidden"
+>
+0 شاهد
+</div>
+
+</div>
+
+</div>
+
+<div class="field">
+<label>العام الدراسي</label>
+<input id="academicYear" value="2026-2027">
+</div>
+
+<div class="field">
+
+<label>الفصل الدراسي</label>
+
+<select id="semester">
+<option value="الفصل الدراسي الأول">
+الفصل الدراسي الأول
+</option>
+
+<option value="الفصل الدراسي الثاني">
+الفصل الدراسي الثاني
+</option>
+</select>
+
+</div>
+
+<div class="field">
+
+<label>حالة نبع</label>
+
+<select id="nabStatus">
+<option value="draft">مسودة</option>
+<option value="ready">جاهز للرفع في نبع</option>
+<option value="uploaded">تم الرفع في نبع</option>
+</select>
+
+</div>
+
+<div class="field">
+<label>ملاحظات شخصية</label>
+
+<input
+id="notes"
+maxlength="300"
+placeholder="اختياري"
+>
+</div>
+
+</div>
+
+<div class="buttons">
+
+<button
+id="saveBtn"
+class="btn primary"
+type="submit"
+>
+💾 حفظ العمل والشواهد
+</button>
+
+<button
+id="saveReadyBtn"
+class="btn secondary"
+type="button"
+>
+✓ حفظ كجاهز لنبع
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</section>
+
+<!-- الاستيراد -->
+
+<section
+id="viewImport"
+class="view-section hidden"
+>
+
+<div class="card">
+
+<h2>🔄 استيراد من أعمال مركز المصادر</h2>
+
+<div class="notice">
+اختاري تفعيلًا أو خدمة مسجلة بالفعل.
+سيتم إنشاء مسودة في «مكتبي» بدل إعادة إدخال البيانات.
+</div>
+
+<div id="importList" class="records">
+<div class="empty">
+جاري تحميل أعمال المركز…
+</div>
+</div>
+
+</div>
+
+</section>
+
+<!-- السجل -->
+
+<section
+id="viewRecords"
+class="view-section hidden"
+>
+
+<div class="card">
+
+<div class="section-title">
+
+<h2>📋 سجل أعمالي</h2>
+
+<button
+id="refreshBtn"
+class="btn secondary"
+type="button"
+>
+تحديث
+</button>
+
+</div>
+
+<div class="filters">
+
+<input
+id="searchInput"
+placeholder="بحث بالاسم أو الموضوع أو الوصف…"
+>
+
+<select id="filterType">
+<option value="">كل أنواع الأعمال</option>
+<option value="activity">نشاط</option>
+<option value="meeting">اجتماع</option>
+<option value="outgoing">صادر</option>
+<option value="incoming">وارد</option>
+<option value="educational_support">دعم تعليمي</option>
+<option value="visit">زيارة</option>
+<option value="initiative">مبادرة</option>
+<option value="admin_technical">عمل إداري / فني</option>
+<option value="challenge">تحدٍ / احتياج</option>
+</select>
+
+<select id="filterStatus">
+<option value="">كل حالات نبع</option>
+<option value="draft">مسودة</option>
+<option value="ready">جاهز لنبع</option>
+<option value="uploaded">تم الرفع</option>
+</select>
+
+</div>
+
+<div
+id="recordsList"
+class="records"
+></div>
+
+</div>
+
+</section>
+
+<!-- التقارير -->
+
+<section
+id="viewReports"
+class="view-section hidden"
+>
+
+<div class="card">
+
+<h2>📊 تقاريري</h2>
+
+<div class="notice ok">
+مؤشرات أعمال مركز مصادر التعلم المسجلة في «مكتبي».
+</div>
+
+<div
+id="reportStats"
+class="stats"
+style="margin-bottom:0"
+></div>
+
+</div>
+
+</section>
+
+</main>
+
+<script src="../../js/config.js"></script>
+<script src="../../js/graph.js"></script>
+<script src="../../js/common.js"></script>
+<script src="../../js/resource-center.js"></script>
+
+<script>
+
+(function(){
+
+let RC=null;
+let records=[];
+let currentUser=null;
+let currentIdentity=null;
+
+let pendingFiles=[];
+let existingEvidence=[];
+
+const BUCKET='resource-center-private';
+
+const PRIVATE_USER_IDS=new Set([
+'13fa0a26-0d48-474a-8da2-c1a0a9ee3627',
+'4f3129e0-358c-4029-95c2-1363b032dfbf'
+]);
+
+const $=id=>
+document.getElementById(id);
+
+
+const workTypes={
+
+activity:{
+label:'نشاط',
+
+help:
+'لتوثيق الأنشطة مثل الإذاعة والصحافة والأنشطة القرائية والتدريبية.',
+
+categories:[
+'إذاعة مدرسية',
+'صحافة مدرسية',
+'مسابقة',
+'نشاط قرائي',
+'نشاط ثقافي',
+'تدريب الطلبة',
+'تدريب المعلمين',
+'تواصل',
+'فعالية',
+'أخرى'
+],
+
+subject:
+'تنفيذ نشاط من أنشطة مركز مصادر التعلم لدعم العملية التعليمية وتعزيز مشاركة المستفيدين.',
+
+description:
+'تم تنفيذ نشاط من خلال مركز مصادر التعلم بهدف دعم العملية التعليمية وتنمية مشاركة المستفيدين، وذلك وفق طبيعة النشاط والفئة المستهدفة.'
+},
+
+
+meeting:{
+label:'اجتماع',
+
+help:
+'لتوثيق اجتماعات فريق المركز واللجان واللقاءات التنسيقية.',
+
+categories:[
+'اجتماع فريق المركز',
+'اجتماع لجنة',
+'اجتماع مع الإدارة',
+'لقاء مع المعلمات',
+'اجتماع متابعة',
+'أخرى'
+],
+
+subject:
+'اجتماع لمناقشة ومتابعة الأعمال المرتبطة بمركز مصادر التعلم.',
+
+description:
+'تم عقد اجتماع لمناقشة الأعمال والموضوعات المرتبطة بمركز مصادر التعلم، ومتابعة الإجراءات المطلوبة وتنسيق الأدوار بما يدعم سير العمل.'
+},
+
+
+outgoing:{
+label:'صادر',
+
+help:
+'لتسجيل الخطابات والمكاتبات والنماذج الصادرة.',
+
+categories:[
+'خطاب',
+'تقرير',
+'نموذج',
+'طلب',
+'حصر',
+'مراسلة',
+'أخرى'
+],
+
+subject:
+'مراسلة صادرة من مركز مصادر التعلم.',
+
+description:
+'تم إعداد وإرسال مراسلة صادرة من مركز مصادر التعلم إلى الجهة المعنية وفق موضوع المعاملة ومتطلبات العمل.'
+},
+
+
+incoming:{
+label:'وارد',
+
+help:
+'لتسجيل الخطابات والتعاميم والمراسلات الواردة.',
+
+categories:[
+'تعميم',
+'خطاب',
+'طلب',
+'نموذج',
+'تكليف',
+'مراسلة',
+'أخرى'
+],
+
+subject:
+'مراسلة واردة إلى مركز مصادر التعلم.',
+
+description:
+'تم استلام ومراجعة مراسلة واردة إلى مركز مصادر التعلم، واتخاذ ما يلزم بشأنها وفق موضوعها ومتطلبات العمل.'
+},
+
+
+educational_support:{
+label:'دعم تعليمي',
+
+help:
+'للدعم المقدم للمعلمات أو الطلبة.',
+
+categories:[
+'دعم معلمة',
+'تجهيز مورد',
+'توفير مصادر',
+'مساندة نشاط',
+'دعم طالب',
+'إرشاد لاستخدام المصادر',
+'أخرى'
+],
+
+subject:
+'تقديم دعم تعليمي من مركز مصادر التعلم.',
+
+description:
+'تم تقديم دعم تعليمي من مركز مصادر التعلم وفق احتياج المستفيد، بما يسهم في تيسير تنفيذ الممارسات التعليمية والاستفادة من موارد المركز.'
+},
+
+
+visit:{
+label:'زيارة',
+
+help:
+'لتوثيق الزيارات المهنية المرتبطة بالمركز.',
+
+categories:[
+'زيارة إشرافية',
+'زيارة تبادل خبرات',
+'زيارة متابعة',
+'زيارة داخلية',
+'زيارة خارجية',
+'أخرى'
+],
+
+subject:
+'زيارة مرتبطة بأعمال مركز مصادر التعلم.',
+
+description:
+'تم تنفيذ أو استقبال زيارة مرتبطة بمركز مصادر التعلم بهدف المتابعة أو تبادل الخبرات والاطلاع على الممارسات والخدمات المقدمة.'
+},
+
+
+initiative:{
+label:'مبادرة',
+
+help:
+'للمبادرات والمشروعات الممتدة.',
+
+categories:[
+'مبادرة قرائية',
+'مبادرة بحثية',
+'مبادرة رقمية',
+'مبادرة طلابية',
+'مبادرة مجتمعية',
+'أخرى'
+],
+
+subject:
+'تنفيذ مبادرة من مبادرات مركز مصادر التعلم.',
+
+description:
+'تم تنفيذ مبادرة من خلال مركز مصادر التعلم بهدف تحقيق أثر مستدام ودعم تعلم الطلبة وتعزيز الاستفادة من خدمات ومصادر المركز.'
+},
+
+
+admin_technical:{
+label:'عمل إداري / فني',
+
+help:
+'للحصر والتنظيم والتجهيز والأرشفة وإعداد التقارير.',
+
+categories:[
+'إعداد تقرير',
+'حصر',
+'تنظيم وأرشفة',
+'تجهيز المركز',
+'إعداد مواد',
+'متابعة سجلات',
+'إعداد خطة',
+'عمل تقني',
+'أخرى'
+],
+
+subject:
+'تنفيذ عمل إداري أو فني ضمن مهام مركز مصادر التعلم.',
+
+description:
+'تم تنفيذ عمل إداري أو فني مرتبط بمهام مركز مصادر التعلم بهدف تنظيم العمل ورفع كفاءة الخدمات وتحسين جاهزية المركز.'
+},
+
+
+challenge:{
+label:'تحدٍ / احتياج',
+
+help:
+'لتوثيق التحديات والاحتياجات والإجراءات المتخذة.',
+
+categories:[
+'أجهزة وتجهيزات',
+'قرطاسية وأحبار',
+'مصادر وقصص',
+'أثاث وتنظيم',
+'دعم فني',
+'تحدٍ تشغيلي',
+'احتياج تدريبي',
+'أخرى'
+],
+
+subject:
+'رصد تحدٍ أو احتياج مرتبط بمركز مصادر التعلم.',
+
+description:
+'تم رصد تحدٍ أو احتياج مرتبط بعمل مركز مصادر التعلم، وتم اتخاذ الإجراء المناسب ورفعه للجهة المعنية للمتابعة وفق الإمكانات المتاحة.'
+}
+
+};
+
+
+const categorySuggestions={
+
+'إذاعة مدرسية':{
+subject:
+'تفعيل الإذاعة المدرسية لنشر المعرفة وتعزيز الثقافة العامة لدى الطلبة.',
+
+description:
+'تم تنفيذ فقرة إذاعية تعليمية بالتعاون مع الإذاعة المدرسية، بهدف تقديم محتوى معرفي مبسط وجاذب يسهم في إثراء معارف الطلبة وتعزيز ارتباطهم بالقراءة والتعلم.'
+},
+
+'صحافة مدرسية':{
+subject:
+'تفعيل الصحافة المدرسية وإبراز أنشطة وممارسات مركز مصادر التعلم.',
+
+description:
+'تم إعداد محتوى للصحافة المدرسية بهدف توثيق وإبراز الأنشطة والممارسات التعليمية ونشر المعرفة وتشجيع الطلبة على القراءة والمشاركة.'
+},
+
+'مسابقة':{
+subject:
+'تنفيذ مسابقة تعليمية لتعزيز القراءة والبحث والمشاركة.',
+
+description:
+'تم تنفيذ مسابقة تعليمية من خلال مركز مصادر التعلم بهدف تنمية مهارات القراءة والبحث وتحفيز الطلبة على المشاركة والتعلم بطريقة جاذبة.'
+},
+
+'نشاط قرائي':{
+subject:
+'تنمية مهارات القراءة والفهم وتعزيز اتجاهات الطلبة الإيجابية نحو القراءة.',
+
+description:
+'تم تنفيذ نشاط قرائي من خلال مركز مصادر التعلم بهدف تشجيع الطلبة على القراءة وتنمية الفهم والمناقشة والتفاعل مع المحتوى المقروء.'
+},
+
+'تدريب الطلبة':{
+subject:
+'تنمية مهارات الطلبة في استخدام مصادر التعلم والبحث والاستفادة من الموارد المتاحة.',
+
+description:
+'تم تدريب الطلبة على مهارة مرتبطة باستخدام مصادر التعلم أو البحث والاستفادة من الموارد المتاحة، من خلال تطبيق مبسط ومناسب للفئة المستهدفة.'
+},
+
+'تدريب المعلمين':{
+subject:
+'دعم النمو المهني للمعلمات وتعزيز توظيف مصادر التعلم في الممارسات التعليمية.',
+
+description:
+'تم تقديم تدريب أو دعم مهني للمعلمات بهدف تطوير مهاراتهن في توظيف مصادر التعلم والموارد التعليمية بما يخدم العملية التعليمية.'
+},
+
+'اجتماع فريق المركز':{
+subject:
+'متابعة خطة وأعمال مركز مصادر التعلم وتوزيع المهام.',
+
+description:
+'تم عقد اجتماع لفريق مركز مصادر التعلم لمتابعة سير الأعمال ومناقشة الأولويات والإجراءات المطلوبة وتنسيق الأدوار بما يضمن جودة التنفيذ.'
+},
+
+'اجتماع مع الإدارة':{
+subject:
+'متابعة أعمال واحتياجات مركز مصادر التعلم مع إدارة المدرسة.',
+
+description:
+'تم عقد اجتماع مع إدارة المدرسة لمناقشة أعمال مركز مصادر التعلم واحتياجاته ومتابعة الإجراءات المرتبطة بالتفعيل والخدمات المقدمة.'
+},
+
+'إعداد تقرير':{
+subject:
+'إعداد وتحديث تقارير مركز مصادر التعلم.',
+
+description:
+'تم إعداد وتحديث تقرير مرتبط بأعمال مركز مصادر التعلم، وتجميع البيانات والمؤشرات والشواهد اللازمة بما يدعم التوثيق والمتابعة.'
+},
+
+'حصر':{
+subject:
+'تنفيذ حصر مرتبط باحتياجات أو أعمال مركز مصادر التعلم.',
+
+description:
+'تم تنفيذ حصر للبيانات أو الاحتياجات المرتبطة بمركز مصادر التعلم بهدف دعم التخطيط واتخاذ الإجراءات المناسبة وفق النتائج.'
+},
+
+'تنظيم وأرشفة':{
+subject:
+'تنظيم وأرشفة سجلات ووثائق مركز مصادر التعلم.',
+
+description:
+'تم تنظيم وأرشفة السجلات والوثائق المرتبطة بمركز مصادر التعلم بما يسهل الوصول إليها ويحسن جودة التوثيق والمتابعة.'
+},
+
+'تجهيز المركز':{
+subject:
+'تحسين جاهزية وتنظيم بيئة مركز مصادر التعلم.',
+
+description:
+'تم تنفيذ أعمال تجهيز وتنظيم داخل مركز مصادر التعلم بهدف تحسين البيئة التعليمية ورفع جاهزية المركز لاستقبال المستفيدين وتنفيذ الأنشطة.'
+},
+
+'أجهزة وتجهيزات':{
+subject:
+'رصد احتياج متعلق بأجهزة وتجهيزات مركز مصادر التعلم.',
+
+description:
+'تم رصد احتياج متعلق بأجهزة أو تجهيزات مركز مصادر التعلم، وتوثيقه ورفعه للجهة المعنية لاتخاذ الإجراء المناسب وفق الإمكانات المتاحة.'
+},
+
+'قرطاسية وأحبار':{
+subject:
+'رصد احتياج مركز مصادر التعلم من المواد والقرطاسية.',
+
+description:
+'تم رصد احتياج المركز من المواد التشغيلية أو القرطاسية والأحبار اللازمة لدعم استمرارية الخدمات والأنشطة، وتم رفع الاحتياج للمتابعة.'
+},
+
+'تحدٍ تشغيلي':{
+subject:
+'رصد تحدٍ تشغيلي يؤثر في تفعيل خدمات مركز مصادر التعلم.',
+
+description:
+'تم رصد تحدٍ تشغيلي يؤثر في سير أعمال أو خدمات مركز مصادر التعلم، وتم توثيق التحدي واتخاذ الإجراء الممكن ورفعه للمتابعة.'
+}
+
+};
+
+
+function escapeHtml(value){
+
+return String(value==null?'':value)
+
+.replace(/&/g,'&amp;')
+.replace(/</g,'&lt;')
+.replace(/>/g,'&gt;')
+.replace(/"/g,'&quot;')
+.replace(/'/g,'&#039;');
+
+}
+
+
+function localDate(){
+
+const d=new Date();
+const offset=d.getTimezoneOffset();
+
+return new Date(
+d.getTime()-offset*60000
+)
+.toISOString()
+.slice(0,10);
+
+}
+
+
+function typeLabel(type){
+
+return workTypes[type]?.label||
+type||
+'عمل';
+
+}
+
+
+function statusLabel(status){
+
+if(status==='ready'){
+return'جاهز لنبع';
+}
+
+if(status==='uploaded'){
+return'تم الرفع في نبع';
+}
+
+return'مسودة';
+
+}
+
+
+function statusClass(status){
+
+if(status==='ready'){
+return'badge-ready';
+}
+
+if(status==='uploaded'){
+return'badge-uploaded';
+}
+
+return'badge-draft';
+
+}
+
+
+function showMessage(text,ok=false){
+
+$('message').innerHTML=
+`<div class="notice ${ok?'ok':''}">
+${escapeHtml(text)}
+</div>`;
+
+setTimeout(()=>{
+
+if($('message')){
+$('message').innerHTML='';
+}
+
+},5000);
+
+}
+
+
+function setView(name){
+
+document
+.querySelectorAll('.view-section')
+.forEach(
+x=>x.classList.add('hidden')
+);
+
+document
+.querySelectorAll('.action-card')
+.forEach(
+x=>x.classList.remove('active')
+);
+
+const map={
+new:'viewNew',
+import:'viewImport',
+records:'viewRecords',
+reports:'viewReports'
+};
+
+const section=
+$(map[name]||'viewNew');
+
+if(section){
+section.classList.remove('hidden');
+}
+
+const card=
+document.querySelector(
+`.action-card[data-view="${name}"]`
+);
+
+if(card){
+card.classList.add('active');
+}
+
+if(name==='import'){
+loadImportList();
+}
+
+if(name==='records'){
+renderRecords();
+}
+
+if(name==='reports'){
+renderReports();
+}
+
+}
+
+
+function populateCategories(){
+
+const type=
+$('workType').value;
+
+const select=
+$('category');
+
+select.innerHTML=
+'<option value="">اختاري…</option>';
+
+if(!type||!workTypes[type]){
+
+$('typeHelp')
+.classList
+.add('hidden');
+
+return;
+}
+
+workTypes[type]
+.categories
+.forEach(category=>{
+
+const option=
+document.createElement('option');
+
+option.value=category;
+option.textContent=category;
+
+select.appendChild(option);
+
+});
+
+$('typeHelp').textContent=
+workTypes[type].help;
+
+$('typeHelp')
+.classList
+.remove('hidden');
+
+}
+
+
+function toggleFields(){
+
+const type=
+$('workType').value;
+
+[
+'committeeBox',
+'attendeesBox',
+'fromBox',
+'toBox',
+'numberBox',
+'challengeBox',
+'actionBox',
+'referredBox',
+'followBox'
+]
+.forEach(
+id=>$(id).classList.add('hidden')
+);
+
+$('targetBox')
+.classList
+.remove('hidden');
+
+$('participantsBox')
+.classList
+.remove('hidden');
+
+$('beneficiaryBox')
+.classList
+.remove('hidden');
+
+
+if(type==='meeting'){
+
+$('committeeBox')
+.classList
+.remove('hidden');
+
+$('attendeesBox')
+.classList
+.remove('hidden');
+
+}
+
+
+if(type==='outgoing'){
+
+$('toBox')
+.classList
+.remove('hidden');
+
+$('numberBox')
+.classList
+.remove('hidden');
+
+$('targetBox')
+.classList
+.add('hidden');
+
+$('beneficiaryBox')
+.classList
+.add('hidden');
+
+}
+
+
+if(type==='incoming'){
+
+$('fromBox')
+.classList
+.remove('hidden');
+
+$('numberBox')
+.classList
+.remove('hidden');
+
+$('targetBox')
+.classList
+.add('hidden');
+
+$('beneficiaryBox')
+.classList
+.add('hidden');
+
+}
+
+
+if(type==='challenge'){
+
+$('challengeBox')
+.classList
+.remove('hidden');
+
+$('actionBox')
+.classList
+.remove('hidden');
+
+$('referredBox')
+.classList
+.remove('hidden');
+
+$('followBox')
+.classList
+.remove('hidden');
+
+$('targetBox')
+.classList
+.add('hidden');
+
+$('participantsBox')
+.classList
+.add('hidden');
+
+$('beneficiaryBox')
+.classList
+.add('hidden');
+
+}
+
+
+if(type==='admin_technical'){
+
+$('beneficiaryBox')
+.classList
+.add('hidden');
+
+}
+
+
+$('titleLabel').textContent=
+
+type==='activity'
+?'اسم النشاط'
+
+:type==='meeting'
+?'موضوع الاجتماع'
+
+:type==='outgoing'
+?'عنوان الصادر'
+
+:type==='incoming'
+?'عنوان الوارد'
+
+:type==='initiative'
+?'اسم المبادرة'
+
+:type==='challenge'
+?'عنوان التحدي / الاحتياج'
+
+:'اسم العمل';
+
+}
+
+
+function applySuggestion(){
+
+const type=
+$('workType').value;
+
+if(!type||!workTypes[type]){
+return;
+}
+
+const category=
+$('category').value;
+
+const suggestion=
+categorySuggestions[category]||
+workTypes[type];
+
+
+if(
+!$('subject').value.trim()||
+$('subject').dataset.auto==='1'
+){
+
+$('subject').value=
+suggestion.subject||'';
+
+$('subject').dataset.auto='1';
+
+}
+
+
+if(
+!$('description').value.trim()||
+$('description').dataset.auto==='1'
+){
+
+$('description').value=
+suggestion.description||'';
+
+$('description').dataset.auto='1';
+
+}
+
+}
+
+
+$('subject')
+.addEventListener(
+'input',
+()=>{
+$('subject').dataset.auto='0';
+}
+);
+
+
+$('description')
+.addEventListener(
+'input',
+()=>{
+$('description').dataset.auto='0';
+}
+);
+
+
+function normaliseEvidence(value){
+
+if(Array.isArray(value)){
+return value.filter(Boolean);
+}
+
+if(typeof value==='string'){
+
+try{
+
+const parsed=
+JSON.parse(value);
+
+return Array.isArray(parsed)
+?parsed.filter(Boolean)
+:[];
+
+}catch{
+
+return value
+?[value]
+:[];
+
+}
+
+}
+
+return[];
+
+}
+
+
+async function signedUrl(path){
+
+if(!path||!RC?.sb){
+return'';
+}
+
+try{
+
+const result=
+await RC.sb
+.storage
+.from(BUCKET)
+.createSignedUrl(
+path,
+3600
+);
+
+if(result.error){
+throw result.error;
+}
+
+return result.data?.signedUrl||'';
+
+}catch(error){
+
+console.error(
+'signedUrl',
+error
+);
+
+return'';
+
+}
+
+}
+
+
+async function renderEvidencePreview(){
+
+const container=
+$('evidencePreview');
+
+container.innerHTML='';
+
+
+for(
+let i=0;
+i<existingEvidence.length;
+i++
+){
+
+const path=
+existingEvidence[i];
+
+const url=
+await signedUrl(path);
+
+const item=
+document.createElement('div');
+
+item.className=
+'evidence-item';
+
+item.innerHTML=`
+
+${url
+?`<img src="${escapeHtml(url)}" alt="شاهد">`
+:''
+}
+
+<button
+class="remove-evidence"
+type="button"
+data-existing="${i}"
+>
+×
+</button>
+
+<div class="evidence-name">
+شاهد محفوظ
+</div>
+
+`;
+
+container.appendChild(item);
+
+}
+
+
+pendingFiles
+.forEach(
+(file,index)=>{
+
+const url=
+URL.createObjectURL(file);
+
+const item=
+document.createElement('div');
+
+item.className=
+'evidence-item';
+
+item.innerHTML=`
+
+<img
+src="${url}"
+alt="${escapeHtml(file.name)}"
+>
+
+<button
+class="remove-evidence"
+type="button"
+data-pending="${index}"
+>
+×
+</button>
+
+<div class="evidence-name">
+${escapeHtml(file.name)}
+</div>
+
+`;
+
+container.appendChild(item);
+
+}
+);
+
+
+container
+.querySelectorAll('[data-existing]')
+.forEach(btn=>{
+
+btn.onclick=()=>{
+
+existingEvidence.splice(
+Number(btn.dataset.existing),
+1
+);
+
+renderEvidencePreview();
+
+};
+
+});
+
+
+container
+.querySelectorAll('[data-pending]')
+.forEach(btn=>{
+
+btn.onclick=()=>{
+
+pendingFiles.splice(
+Number(btn.dataset.pending),
+1
+);
+
+renderEvidencePreview();
+
+};
+
+});
+
+
+const count=
+existingEvidence.length+
+pendingFiles.length;
+
+$('evidenceCounter').textContent=
+count+' شاهد';
+
+$('evidenceCounter')
+.classList
+.toggle(
+'hidden',
+count===0
+);
+
+}
+
+
+async function uploadPendingEvidence(){
+
+if(!pendingFiles.length){
+return[];
+}
+
+const uploaded=[];
+
+
+for(const file of pendingFiles){
+
+const ext=
+(
+file.name
+.split('.')
+.pop()||
+'jpg'
+)
+.toLowerCase();
+
+const safeExt=
+[
+'jpg',
+'jpeg',
+'png',
+'webp'
+]
+.includes(ext)
+?ext
+:'jpg';
+
+
+const path=[
+currentUser.id,
+new Date().getFullYear(),
+`${Date.now()}-${Math.random().toString(36).slice(2)}.${safeExt}`
+]
+.join('/');
+
+
+const result=
+await RC.sb
+.storage
+.from(BUCKET)
+.upload(
+path,
+file,
+{
+cacheControl:'3600',
+upsert:false,
+contentType:file.type
+}
+);
+
+
+if(result.error){
+throw result.error;
+}
+
+uploaded.push(path);
+
+}
+
+return uploaded;
+
+}
+
+
+function resetForm(){
+
+$('workForm').reset();
+
+$('recordId').value='';
+
+$('workDate').value=
+localDate();
+
+$('academicYear').value=
+'2026-2027';
+
+$('semester').value=
+'الفصل الدراسي الأول';
+
+$('nabStatus').value=
+'draft';
+
+pendingFiles=[];
+existingEvidence=[];
+
+$('evidenceFiles').value='';
+
+$('evidencePreview').innerHTML='';
+
+$('evidenceCounter')
+.classList
+.add('hidden');
+
+$('subject').dataset.auto='1';
+$('description').dataset.auto='1';
+
+populateCategories();
+toggleFields();
+
+$('formTitle').textContent=
+'➕ تسجيل عمل جديد';
+
+$('saveBtn').textContent=
+'💾 حفظ العمل والشواهد';
+
+}
+
+
+function collectForm(){
+
+const beneficiary=
+$('beneficiaryCount').value;
+
+return{
+
+owner_user_id:
+currentUser.id,
+
+work_type:
+$('workType').value,
+
+title:
+$('title').value.trim()||
+null,
+
+category:
+$('category').value||
+null,
+
+work_date:
+$('workDate').value||
+localDate(),
+
+subject:
+$('subject').value.trim()||
+null,
+
+description:
+$('description').value.trim()||
+null,
+
+place:
+$('place').value.trim()||
+null,
+
+participants:
+$('participants').value.trim()||
+null,
+
+target_group:
+$('targetGroup').value.trim()||
+null,
+
+academic_year:
+$('academicYear').value.trim()||
+'2026-2027',
+
+semester:
+$('semester').value||
+'الفصل الدراسي الأول',
+
+committee_or_group:
+$('committee').value.trim()||
+null,
+
+attendees:
+$('attendees').value.trim()||
+null,
+
+correspondence_from:
+$('correspondenceFrom').value.trim()||
+null,
+
+correspondence_to:
+$('correspondenceTo').value.trim()||
+null,
+
+correspondence_number:
+$('correspondenceNumber').value.trim()||
+null,
+
+challenge:
+$('challenge').value.trim()||
+null,
+
+action_taken:
+$('actionTaken').value.trim()||
+null,
+
+referred_to:
+$('referredTo').value.trim()||
+null,
+
+follow_up_status:
+$('followStatus').value||
+null,
+
+impact:
+$('impact').value.trim()||
+null,
+
+beneficiary_count:
+beneficiary===''
+?null
+:Number(beneficiary),
+
+nab_status:
+$('nabStatus').value||
+'draft',
+
+notes:
+$('notes').value.trim()||
+null
+
+};
+
+}
+
+
+async function saveRecord(){
+
+if(!$('workType').value){
+
+showMessage(
+'اختاري نوع العمل أولًا.'
+);
+
+return;
+
+}
+
+
+const button=
+$('saveBtn');
+
+button.disabled=true;
+
+button.textContent=
+'جاري الحفظ…';
+
+
+try{
+
+const newPaths=
+await uploadPendingEvidence();
+
+const allEvidence=[
+...existingEvidence,
+...newPaths
+];
+
+const data=
+collectForm();
+
+data.evidence_paths=
+allEvidence;
+
+const id=
+$('recordId').value;
+
+let result;
+
+
+if(id){
+
+result=
+await RC.sb
+.from('resource_center_private_work')
+.update(data)
+.eq('id',id)
+.select()
+.single();
+
+}else{
+
+result=
+await RC.sb
+.from('resource_center_private_work')
+.insert(data)
+.select()
+.single();
+
+}
+
+
+if(result.error){
+throw result.error;
+}
+
+
+pendingFiles=[];
+
+existingEvidence=
+normaliseEvidence(
+result.data.evidence_paths
+);
+
+
+await loadRecords();
+
+
+showMessage(
+id
+?'تم تحديث العمل والشواهد بنجاح.'
+:'تم حفظ العمل والشواهد بنجاح.',
+true
+);
+
+
+resetForm();
+
+setView('records');
+
+
+}catch(error){
+
+console.error(error);
+
+showMessage(
+'تعذر الحفظ: '+
+(
+error.message||
+String(error)
+)
+);
+
+}finally{
+
+button.disabled=false;
+
+button.textContent=
+'💾 حفظ العمل والشواهد';
+
+}
+
+}
+
+
+async function loadRecords(){
+
+if(!RC?.sb){
+return;
+}
+
+
+const result=
+await RC.sb
+.from('resource_center_private_work')
+.select('*')
+.order(
+'work_date',
+{ascending:false}
+)
+.order(
+'created_at',
+{ascending:false}
+);
+
+
+if(result.error){
+throw result.error;
+}
+
+
+records=
+result.data||
+[];
+
+
+updateStats();
+
+renderRecords();
+
+renderReports();
+
+}
+
+
+function updateStats(){
+
+$('statTotal').textContent=
+records.length;
+
+
+$('statReady').textContent=
+records.filter(
+x=>x.nab_status==='ready'
+).length;
+
+
+$('statUploaded').textContent=
+records.filter(
+x=>x.nab_status==='uploaded'
+).length;
+
+
+const month=
+localDate()
+.slice(0,7);
+
+
+$('statMonth').textContent=
+records.filter(
+x=>
+String(
+x.work_date||
+''
+)
+.slice(0,7)
+===month
+)
+.length;
+
+}
+
+
+async function renderRecordEvidence(paths){
+
+const list=
+normaliseEvidence(paths);
+
+if(!list.length){
+return'';
+}
+
+const urls=[];
+
+
+for(
+const path of list.slice(0,4)
+){
+
+const url=
+await signedUrl(path);
+
+if(url){
+urls.push(url);
+}
+
+}
+
+
+if(!urls.length){
+return'';
+}
+
+
+return`
+
+<div class="record-evidence">
+
+${urls.map(
+url=>
+`<img
+src="${escapeHtml(url)}"
+alt="شاهد"
+onclick="window.open('${escapeHtml(url)}','_blank')"
+>`
+).join('')}
+
+</div>
+
+`;
+
+}
+
+
+async function renderRecords(){
+
+const container=
+$('recordsList');
+
+if(!container){
+return;
+}
+
+
+const search=
+(
+$('searchInput')?.value||
+''
+)
+.trim()
+.toLowerCase();
+
+
+const type=
+$('filterType')?.value||
+'';
+
+
+const status=
+$('filterStatus')?.value||
+'';
+
+
+const filtered=
+records.filter(item=>{
+
+
+if(
+type&&
+item.work_type!==type
+){
+return false;
+}
+
+
+if(
+status&&
+item.nab_status!==status
+){
+return false;
+}
+
+
+if(search){
+
+const text=[
+
+item.title,
+item.category,
+item.subject,
+item.description,
+item.place,
+item.participants,
+item.target_group,
+item.challenge,
+item.action_taken
+
+]
+.filter(Boolean)
+.join(' ')
+.toLowerCase();
+
+
+if(!text.includes(search)){
+return false;
+}
+
+}
+
+
+return true;
+
+});
+
+
+if(!filtered.length){
+
+container.innerHTML=
+'<div class="empty">لا توجد أعمال مطابقة.</div>';
+
+return;
+
+}
+
+
+container.innerHTML=
+'<div class="empty">جاري تجهيز السجل…</div>';
+
+
+const html=[];
+
+
+for(const item of filtered){
+
+const evidence=
+await renderRecordEvidence(
+item.evidence_paths
+);
+
+
+html.push(`
+
+<div class="record">
+
+<div class="record-top">
+
+<div>
+
+<h3>
+${escapeHtml(
+item.title||
+item.category||
+typeLabel(item.work_type)
+)}
+</h3>
+
+<div class="meta">
+
+<span>
+📌 ${escapeHtml(
+typeLabel(item.work_type)
+)}
+</span>
+
+${item.category
+?`<span>${escapeHtml(item.category)}</span>`
+:''
+}
+
+${item.work_date
+?`<span>📅 ${escapeHtml(item.work_date)}</span>`
+:''
+}
+
+${item.beneficiary_count!=null
+?`<span>👥 ${escapeHtml(item.beneficiary_count)}</span>`
+:''
+}
+
+</div>
+
+</div>
+
+<span class="badge ${statusClass(item.nab_status)}">
+${escapeHtml(
+statusLabel(item.nab_status)
+)}
+</span>
+
+</div>
+
+
+${item.subject
+?`
+<div class="record-desc">
+<strong>الموضوع:</strong>
+${escapeHtml(item.subject)}
+</div>
+`
+:''
+}
+
+
+${item.description
+?`
+<div class="record-desc">
+${escapeHtml(item.description)}
+</div>
+`
+:''
+}
+
+
+${evidence}
+
+
+<div class="buttons">
+
+<button
+class="btn secondary"
+type="button"
+onclick="window.privateOfficeEdit('${item.id}')"
+>
+✏️ تعديل
+</button>
+
+
+<button
+class="btn gold"
+type="button"
+onclick="window.privateOfficePrint('${item.id}')"
+>
+🖨️ طباعة
+</button>
+
+
+${item.nab_status!=='uploaded'
+?`
+
+<button
+class="btn primary"
+type="button"
+onclick="window.privateOfficeUploaded('${item.id}')"
+>
+✓ تم رفعه في نبع
+</button>
+
+`
+:''
+}
+
+
+<button
+class="btn danger"
+type="button"
+onclick="window.privateOfficeDelete('${item.id}')"
+>
+🗑 حذف
+</button>
+
+</div>
+
+</div>
+
+`);
+
+}
+
+
+container.innerHTML=
+html.join('');
+
+}
+
+
+window.privateOfficeEdit=
+async function(id){
+
+const item=
+records.find(
+x=>
+String(x.id)===
+String(id)
+);
+
+if(!item){
+return;
+}
+
+
+setView('new');
+
+
+$('recordId').value=
+item.id;
+
+
+$('workType').value=
+item.work_type||
+'';
+
+
+populateCategories();
+
+toggleFields();
+
+
+$('category').value=
+item.category||
+'';
+
+
+$('workDate').value=
+item.work_date||
+localDate();
+
+
+$('title').value=
+item.title||
+'';
+
+
+$('place').value=
+item.place||
+'';
+
+
+$('targetGroup').value=
+item.target_group||
+'';
+
+
+$('participants').value=
+item.participants||
+'';
+
+
+$('beneficiaryCount').value=
+item.beneficiary_count??
+'';
+
+
+$('committee').value=
+item.committee_or_group||
+'';
+
+
+$('attendees').value=
+item.attendees||
+'';
+
+
+$('correspondenceFrom').value=
+item.correspondence_from||
+'';
+
+
+$('correspondenceTo').value=
+item.correspondence_to||
+'';
+
+
+$('correspondenceNumber').value=
+item.correspondence_number||
+'';
+
+
+$('challenge').value=
+item.challenge||
+'';
+
+
+$('actionTaken').value=
+item.action_taken||
+'';
+
+
+$('referredTo').value=
+item.referred_to||
+'';
+
+
+$('followStatus').value=
+item.follow_up_status||
+'';
+
+
+$('subject').value=
+item.subject||
+'';
+
+
+$('description').value=
+item.description||
+'';
+
+
+$('impact').value=
+item.impact||
+'';
+
+
+$('academicYear').value=
+item.academic_year||
+'2026-2027';
+
+
+$('semester').value=
+item.semester||
+'الفصل الدراسي الأول';
+
+
+$('nabStatus').value=
+item.nab_status||
+'draft';
+
+
+$('notes').value=
+item.notes||
+'';
+
+
+$('subject').dataset.auto='0';
+
+$('description').dataset.auto='0';
+
+
+pendingFiles=[];
+
+existingEvidence=
+normaliseEvidence(
+item.evidence_paths
+);
+
+
+await renderEvidencePreview();
+
+
+$('formTitle').textContent=
+'✏️ تعديل العمل';
+
+
+$('saveBtn').textContent=
+'💾 حفظ التعديلات';
+
+
+window.scrollTo({
+top:0,
+behavior:'smooth'
+});
+
+};
+
+
+window.privateOfficeDelete=
+async function(id){
+
+if(
+!confirm(
+'هل تريدين حذف هذا العمل من مكتبي؟'
+)
+){
+return;
+}
+
+
+try{
+
+const item=
+records.find(
+x=>
+String(x.id)===
+String(id)
+);
+
+
+const result=
+await RC.sb
+.from('resource_center_private_work')
+.delete()
+.eq('id',id);
+
+
+if(result.error){
+throw result.error;
+}
+
+
+const paths=
+normaliseEvidence(
+item?.evidence_paths
+);
+
+
+if(paths.length){
+
+try{
+
+await RC.sb
+.storage
+.from(BUCKET)
+.remove(paths);
+
+}catch(error){
+
+console.warn(error);
+
+}
+
+}
+
+
+await loadRecords();
+
+
+showMessage(
+'تم حذف العمل.',
+true
+);
+
+
+}catch(error){
+
+showMessage(
+'تعذر الحذف: '+
+(
+error.message||
+String(error)
+)
+);
+
+}
+
+};
+
+
+window.privateOfficeUploaded=
+async function(id){
+
+try{
+
+const result=
+await RC.sb
+.from('resource_center_private_work')
+.update({
+nab_status:'uploaded'
+})
+.eq('id',id);
+
+
+if(result.error){
+throw result.error;
+}
+
+
+await loadRecords();
+
+
+showMessage(
+'تم تحديث الحالة إلى: تم الرفع في نبع.',
+true
+);
+
+
+}catch(error){
+
+showMessage(
+'تعذر تحديث الحالة: '+
+(
+error.message||
+String(error)
+)
+);
+
+}
+
+};
+
+
+function printRow(label,value){
+
+if(
+value===null||
+value===undefined||
+value===''
+){
+return'';
+}
+
+
+return`
+
+<div class="print-row">
+
+<div class="print-label">
+${escapeHtml(label)}
+</div>
+
+<div class="print-value">
+${escapeHtml(value)}
+</div>
+
+</div>
+
+`;
+
+}
+
+
+function printBlock(title,value){
+
+if(!value){
+return'';
+}
+
+
+return`
+
+<section class="print-block">
+
+<h3>
+${escapeHtml(title)}
+</h3>
+
+<div>
+${escapeHtml(value).replace(/\n/g,'<br>')}
+</div>
+
+</section>
+
+`;
+
+}
+
+
+/* ============================================
+   الطباعة — نسخة A4 صفحة واحدة
+============================================ */
+
+window.privateOfficePrint=
+async function(id){
+
+
+const item=
+records.find(
+x=>
+String(x.id)===
+String(id)
+);
+
+
+if(!item){
+return;
+}
+
+
+const paths=
+normaliseEvidence(
+item.evidence_paths
+);
+
+
+const images=[];
+
+
+for(const path of paths){
+
+const url=
+await signedUrl(path);
+
+if(url){
+images.push(url);
+}
+
+}
+
+
+const reportTitle=
+
+item.title||
+item.category||
+typeLabel(item.work_type);
+
+
+
+const evidenceHtml=
+images.length
+?`
+
+<section class="print-block evidence-section">
+
+<h3>
+شواهد التوثيق
+</h3>
+
+<div class="print-images ${images.length===1?'one-image':''}">
+
+${images.map(
+url=>
+`
+<img
+class="print-image"
+src="${escapeHtml(url)}"
+alt="شاهد توثيق"
+>
+`
+).join('')}
+
+</div>
+
+</section>
+
+`
+:'';
+
+
+
+const html=`
+
+<!doctype html>
+
+<html lang="ar" dir="rtl">
+
+<head>
+
+<meta charset="utf-8">
+
+<title>
+${escapeHtml(reportTitle)}
+</title>
+
+
+<style>
+
+
+@page{
+
+size:A4 portrait;
+
+margin:
+5mm
+8mm
+5mm
+8mm;
+
+}
+
+
+*{
+
+box-sizing:border-box;
+
+-webkit-print-color-adjust:
+exact !important;
+
+print-color-adjust:
+exact !important;
+
+}
+
+
+html,
+body{
+
+margin:0 !important;
+
+padding:0 !important;
+
+width:100%;
+
+height:auto !important;
+
+background:#fff;
+
+font-family:
+Tahoma,
+Arial,
+sans-serif;
+
+color:#183e35;
+
+}
+
+
+body{
+
+font-size:9px;
+
+}
+
+
+.report{
+
+width:100%;
+
+margin:0;
+
+padding:0;
+
+}
+
+
+/* ==========================
+   رأس التقرير
+========================== */
+
+
+.report-header{
+
+text-align:center;
+
+border-bottom:
+2px solid #075c40;
+
+padding:
+0 0 4px;
+
+margin:
+0 0 5px;
+
+break-inside:
+avoid !important;
+
+page-break-inside:
+avoid !important;
+
+}
+
+
+.report-logo{
+
+display:block;
+
+max-width:165px;
+
+max-height:43px;
+
+object-fit:contain;
+
+margin:
+0 auto 1px;
+
+}
+
+
+.report-header h1{
+
+margin:
+1px 0;
+
+font-size:
+15px;
+
+line-height:
+1.15;
+
+color:
+#075c40;
+
+}
+
+
+.report-header p{
+
+margin:
+1px 0;
+
+font-size:
+8px;
+
+line-height:
+1.2;
+
+color:
+#60756d;
+
+}
+
+
+/* ==========================
+   عنوان التقرير
+========================== */
+
+
+.report-title{
+
+margin:
+0 0 5px;
+
+padding:
+5px 7px;
+
+border:
+1px solid #d4e8df;
+
+border-radius:
+6px;
+
+background:
+#eef7f3;
+
+text-align:
+center;
+
+font-size:
+12px;
+
+font-weight:
+bold;
+
+line-height:
+1.25;
+
+color:
+#075c40;
+
+break-inside:
+avoid !important;
+
+page-break-inside:
+avoid !important;
+
+}
+
+
+/* ==========================
+   بيانات التقرير
+========================== */
+
+
+.print-grid{
+
+display:grid;
+
+grid-template-columns:
+1fr 1fr;
+
+border:
+1px solid #dce7e2;
+
+border-radius:
+6px;
+
+overflow:hidden;
+
+break-inside:
+avoid !important;
+
+page-break-inside:
+avoid !important;
+
+}
+
+
+.print-row{
+
+display:flex;
+
+min-height:
+23px;
+
+border-bottom:
+1px solid #e3ebe8;
+
+break-inside:
+avoid !important;
+
+page-break-inside:
+avoid !important;
+
+}
+
+
+.print-label{
+
+width:
+37%;
+
+padding:
+3px 5px;
+
+background:
+#f5f9f7;
+
+font-size:
+8px;
+
+font-weight:
+bold;
+
+line-height:
+1.25;
+
+color:
+#075c40;
+
+}
+
+
+.print-value{
+
+width:
+63%;
+
+padding:
+3px 5px;
+
+font-size:
+8px;
+
+line-height:
+1.3;
+
+}
+
+
+/* ==========================
+   الأقسام
+========================== */
+
+
+.print-block{
+
+margin-top:
+4px;
+
+border:
+1px solid #dce7e2;
+
+border-radius:
+6px;
+
+overflow:hidden;
+
+break-inside:
+avoid !important;
+
+page-break-inside:
+avoid !important;
+
+}
+
+
+.print-block h3{
+
+margin:0;
+
+padding:
+3px 6px;
+
+background:
+#f3f8f6;
+
+font-size:
+9px;
+
+line-height:
+1.25;
+
+color:
+#075c40;
+
+}
+
+
+.print-block > div:not(.print-images){
+
+padding:
+4px 6px;
+
+font-size:
+8.5px;
+
+line-height:
+1.35;
+
+}
+
+
+/* ==========================
+   الشواهد
+========================== */
+
+
+.evidence-section{
+
+break-inside:
+avoid !important;
+
+page-break-inside:
+avoid !important;
+
+}
+
+
+.print-images{
+
+display:flex;
+
+flex-wrap:wrap;
+
+justify-content:center;
+
+align-items:center;
+
+gap:
+4px;
+
+padding:
+4px;
+
+break-inside:
+avoid !important;
+
+page-break-inside:
+avoid !important;
+
+}
+
+
+.print-image{
+
+display:block;
+
+width:
+46%;
+
+height:
+100px;
+
+object-fit:
+contain;
+
+border:
+1px solid #dde6e2;
+
+border-radius:
+4px;
+
+background:
+#fff;
+
+break-inside:
+avoid !important;
+
+page-break-inside:
+avoid !important;
+
+}
+
+
+.print-images.one-image .print-image{
+
+width:
+46%;
+
+height:
+112px;
+
+}
+
+
+/* ==========================
+   التوقيعات
+   جدول حقيقي لمنع الانقسام
+========================== */
+
+
+.signature-wrapper{
+
+width:
+100%;
+
+margin-top:
+5px;
+
+break-inside:
+avoid !important;
+
+page-break-inside:
+avoid !important;
+
+}
+
+
+.signature-table{
+
+width:
+100%;
+
+border-collapse:
+collapse;
+
+table-layout:
+fixed;
+
+border-top:
+1px solid #cddfd8;
+
+break-inside:
+avoid !important;
+
+page-break-inside:
+avoid !important;
+
+}
+
+
+.signature-table tbody{
+
+break-inside:
+avoid !important;
+
+page-break-inside:
+avoid !important;
+
+}
+
+
+.signature-table tr{
+
+break-inside:
+avoid !important;
+
+page-break-inside:
+avoid !important;
+
+}
+
+
+.signature-table td{
+
+width:
+33.333%;
+
+text-align:
+center;
+
+vertical-align:
+top;
+
+padding:
+4px 2px 0;
+
+white-space:
+nowrap;
+
+break-inside:
+avoid !important;
+
+page-break-inside:
+avoid !important;
+
+}
+
+
+.signature-title{
+
+display:block;
+
+font-size:
+8px;
+
+font-weight:
+bold;
+
+line-height:
+1.15;
+
+color:
+#075c40;
+
+margin:
+0 0 2px;
+
+}
+
+
+.signature-name{
+
+display:block;
+
+font-size:
+8px;
+
+font-weight:
+bold;
+
+line-height:
+1.15;
+
+color:
+#314e45;
+
+margin:
+0 0 2px;
+
+}
+
+
+.signature-job{
+
+display:block;
+
+font-size:
+7px;
+
+line-height:
+1.15;
+
+color:
+#60756d;
+
+margin:0;
+
+}
+
+
+/* ==========================
+   الطباعة
+========================== */
+
+
+@media print{
+
+
+html,
+body{
+
+margin:
+0 !important;
+
+padding:
+0 !important;
+
+height:
+auto !important;
+
+min-height:
+0 !important;
+
+}
+
+
+.report{
+
+margin:
+0 !important;
+
+padding:
+0 !important;
+
+page-break-after:
+auto !important;
+
+}
+
+
+.report-header,
+.report-title,
+.print-grid,
+.print-row,
+.print-block,
+.evidence-section,
+.print-images,
+.print-image,
+.signature-wrapper,
+.signature-table,
+.signature-table tbody,
+.signature-table tr,
+.signature-table td{
+
+break-inside:
+avoid !important;
+
+page-break-inside:
+avoid !important;
+
+}
+
+
+}
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<main class="report">
+
+
+<header class="report-header">
+
+
+<img
+class="report-logo"
+src="../../assets/school-header.jpg"
+alt="شعار المدرسة"
+>
+
+
+<h1>
+مركز مصادر التعلم
+</h1>
+
+
+<p>
+مدرسة الرفاع الغربي الابتدائية للبنين
+</p>
+
+
+</header>
+
+
+
+<div class="report-title">
+
+${escapeHtml(reportTitle)}
+
+</div>
+
+
+
+<section class="print-grid">
+
+
+${printRow(
+'نوع العمل',
+typeLabel(item.work_type)
+)}
+
+
+${printRow(
+'التصنيف',
+item.category
+)}
+
+
+${printRow(
+'التاريخ',
+item.work_date
+)}
+
+
+${printRow(
+'العام الدراسي',
+item.academic_year
+)}
+
+
+${printRow(
+'الفصل الدراسي',
+item.semester
+)}
+
+
+${printRow(
+'حالة نبع',
+statusLabel(item.nab_status)
+)}
+
+
+${printRow(
+'المكان',
+item.place
+)}
+
+
+${printRow(
+'الفئة المستهدفة',
+item.target_group
+)}
+
+
+${printRow(
+'المشاركون',
+item.participants
+)}
+
+
+${printRow(
+'عدد المستفيدين',
+item.beneficiary_count
+)}
+
+
+${printRow(
+'اللجنة / الجهة',
+item.committee_or_group
+)}
+
+
+${printRow(
+'الحضور',
+item.attendees
+)}
+
+
+${printRow(
+'وارد من',
+item.correspondence_from
+)}
+
+
+${printRow(
+'صادر إلى',
+item.correspondence_to
+)}
+
+
+${printRow(
+'رقم المعاملة',
+item.correspondence_number
+)}
+
+
+${printRow(
+'حالة المتابعة',
+item.follow_up_status
+)}
+
+
+</section>
+
+
+
+${printBlock(
+'الموضوع',
+item.subject
+)}
+
+
+${printBlock(
+'الوصف / المحتوى',
+item.description
+)}
+
+
+${printBlock(
+'الأثر / النتيجة',
+item.impact
+)}
+
+
+${printBlock(
+'التحدي / الاحتياج',
+item.challenge
+)}
+
+
+${printBlock(
+'الإجراء المتخذ',
+item.action_taken
+)}
+
+
+${printBlock(
+'تم الرفع / الإحالة إلى',
+item.referred_to
+)}
+
+
+
+${evidenceHtml}
+
+
+
+/* ==========================
+   التوقيعات
+========================== */
+
+
+<div class="signature-wrapper">
+
+
+<table class="signature-table">
+
+
+<tbody>
+
+
+<tr>
+
+
+<td>
+
+
+<span class="signature-title">
+إعداد ومتابعة
+</span>
+
+
+<span class="signature-name">
+فاتن صلاح
+</span>
+
+
+<span class="signature-job">
+اختصاصية مصادر التعلم
+</span>
+
+
+</td>
+
+
+
+<td>
+
+
+<span class="signature-title">
+متابعة
+</span>
+
+
+<span class="signature-name">
+خلود الكعبي
+</span>
+
+
+<span class="signature-job">
+المديرة المساعدة
+</span>
+
+
+</td>
+
+
+
+<td>
+
+
+<span class="signature-title">
+اعتماد
+</span>
+
+
+<span class="signature-name">
+أحلام السويدي
+</span>
+
+
+<span class="signature-job">
+مديرة المدرسة
+</span>
+
+
+</td>
+
+
+</tr>
+
+
+</tbody>
+
+
+</table>
+
+
+</div>
+
+
+</main>
+
+
+
+<script>
+
+
+window.addEventListener(
+'load',
+function(){
+
+
+const imgs=
+Array.from(
+document.images
+);
+
+
+Promise.all(
+
+imgs.map(img=>{
+
+
+if(img.complete){
+
+return Promise.resolve();
+
+}
+
+
+return new Promise(resolve=>{
+
+
+img.onload=
+resolve;
+
+
+img.onerror=
+resolve;
+
+
+});
+
+
+})
+
+)
+.then(()=>{
+
+
+setTimeout(
+()=>window.print(),
+300
+);
+
+
+});
+
+
+}
+);
+
+
+<\/script>
+
+
+</body>
+
+</html>
+
+`;
+
+
+
+const printWindow=
+window.open(
+'',
+'_blank'
+);
+
+
+
+if(!printWindow){
+
+
+alert(
+'المتصفح منع نافذة الطباعة. اسمحي بالنوافذ المنبثقة ثم حاولي مرة أخرى.'
+);
+
+
+return;
+
+}
+
+
+
+printWindow.document.open();
+
+
+printWindow.document.write(
+html
+);
+
+
+printWindow.document.close();
+
+
+};
+
+
+
+async function loadImportList(){
+
+const container=
+$('importList');
+
+
+container.innerHTML=
+'<div class="empty">جاري تحميل أعمال المركز…</div>';
+
+
+try{
+
+
+let query=
+RC.sb
+.from('resource_center_activations')
+.select('*')
+.order(
+'completed_at',
+{ascending:false}
+)
+.limit(50);
+
+
+if(
+typeof RC.scopeQuery===
+'function'
+){
+
+query=
+RC.scopeQuery(query);
+
+}
+
+
+const result=
+await query;
+
+
+if(result.error){
+throw result.error;
+}
+
+
+const rows=
+result.data||
+[];
+
+
+if(!rows.length){
+
+container.innerHTML=
+'<div class="empty">لا توجد أعمال متاحة للاستيراد.</div>';
+
+return;
+
+}
+
+
+container.innerHTML=
+rows.map(item=>{
+
+
+const name=
+
+item.activation_type_label||
+item.activation_type||
+'تفعيل مركز المصادر';
+
+
+return`
+
+<div class="record">
+
+
+<h3>
+${escapeHtml(name)}
+</h3>
+
+
+<div class="meta">
+
+
+${item.completed_at
+?`
+<span>
+📅 ${escapeHtml(
+String(item.completed_at)
+.slice(0,10)
+)}
+</span>
+`
+:''
+}
+
+
+${item.teacher_name
+?`
+<span>
+👤 ${escapeHtml(item.teacher_name)}
+</span>
+`
+:''
+}
+
+
+${item.grade
+?`
+<span>
+الصف:
+${escapeHtml(item.grade)}
+</span>
+`
+:''
+}
+
+
+${item.section
+?`
+<span>
+الشعبة:
+${escapeHtml(item.section)}
+</span>
+`
+:''
+}
+
+
+${item.student_count!=null
+?`
+<span>
+👥 ${escapeHtml(item.student_count)}
+</span>
+`
+:''
+}
+
+
+</div>
+
+
+${item.subject
+?`
+<div class="record-desc">
+${escapeHtml(item.subject)}
+</div>
+`
+:''
+}
+
+
+<div class="buttons">
+
+
+<button
+class="btn primary"
+type="button"
+onclick="window.privateOfficeImport('${item.id}')"
+>
+🔄 إنشاء مسودة في مكتبي
+</button>
+
+
+</div>
+
+
+</div>
+
+`;
+
+})
+.join('');
+
+
+window.__privateImportRows=
+rows;
+
+
+}catch(error){
+
+
+console.error(error);
+
+
+container.innerHTML=
+
+'<div class="notice">تعذر تحميل أعمال المركز: '+
+escapeHtml(
+error.message||
+String(error)
+)+
+'</div>';
+
+}
+
+}
+
+
+
+window.privateOfficeImport=
+async function(id){
+
+
+const rows=
+window.__privateImportRows||
+[];
+
+
+const item=
+rows.find(
+x=>
+String(x.id)===
+String(id)
+);
+
+
+if(!item){
+return;
+}
+
+
+try{
+
+
+const existing=
+records.find(
+x=>
+String(x.source_activation_id)===
+String(id)
+);
+
+
+if(existing){
+
+alert(
+'هذا العمل تم استيراده إلى مكتبي من قبل.'
+);
+
+return;
+
+}
+
+
+const activationName=
+
+item.activation_type_label||
+item.activation_type||
+'تفعيل مركز مصادر التعلم';
+
+
+
+const target=[
+
+item.grade
+?'الصف '+item.grade
+:'',
+
+item.section
+?'الشعبة '+item.section
+:''
+
+]
+.filter(Boolean)
+.join(' — ');
+
+
+
+const row={
+
+
+owner_user_id:
+currentUser.id,
+
+
+work_type:
+'activity',
+
+
+title:
+activationName,
+
+
+category:
+'فعالية',
+
+
+work_date:
+
+item.completed_at
+
+?String(
+item.completed_at
+)
+.slice(0,10)
+
+:localDate(),
+
+
+subject:
+
+item.subject||
+
+'تفعيل من تفعيلات مركز مصادر التعلم.',
+
+
+description:
+
+item.description||
+
+item.goal||
+
+'تم تنفيذ تفعيل من خلال مركز مصادر التعلم لدعم العملية التعليمية والاستفادة من خدمات ومصادر المركز.',
+
+
+place:
+'مركز مصادر التعلم',
+
+
+participants:
+item.teacher_name||
+null,
+
+
+target_group:
+target||
+null,
+
+
+beneficiary_count:
+
+item.student_count==null
+
+?null
+
+:Number(
+item.student_count
+),
+
+
+academic_year:
+'2026-2027',
+
+
+semester:
+'الفصل الدراسي الأول',
+
+
+evidence_paths:
+[],
+
+
+source_activation_id:
+item.id,
+
+
+nab_status:
+'draft'
+
+
+};
+
+
+
+const result=
+await RC.sb
+.from('resource_center_private_work')
+.insert(row)
+.select()
+.single();
+
+
+if(result.error){
+throw result.error;
+}
+
+
+await loadRecords();
+
+
+showMessage(
+'تم إنشاء مسودة في مكتبي من العمل المسجل بالمركز.',
+true
+);
+
+
+setView('records');
+
+
+}catch(error){
+
+
+showMessage(
+
+'تعذر الاستيراد: '+
+
+(
+error.message||
+String(error)
+),
+
+false
+
+);
+
+}
+
+};
+
+
+
+function renderReports(){
+
+
+const container=
+$('reportStats');
+
+
+if(!container){
+return;
+}
+
+
+const counts={};
+
+
+Object
+.keys(workTypes)
+.forEach(type=>{
+
+
+counts[type]=
+records.filter(
+x=>
+x.work_type===type
+)
+.length;
+
+
+});
+
+
+
+const beneficiaries=
+records.reduce(
+(sum,item)=>{
+
+
+const n=
+Number(
+item.beneficiary_count
+);
+
+
+return sum+
+(
+Number.isFinite(n)
+?n
+:0
+);
+
+
+},
+0
+);
+
+
+
+const challengesOpen=
+records.filter(
+x=>
+
+x.work_type==='challenge'&&
+
+x.follow_up_status!=='تمت المعالجة'
+
+)
+.length;
+
+
+
+const evidenceTotal=
+records.reduce(
+(sum,item)=>
+
+sum+
+normaliseEvidence(
+item.evidence_paths
+)
+.length,
+
+0
+);
+
+
+
+container.innerHTML=`
+
+<div class="stat">
+
+<div class="number">
+${counts.activity||0}
+</div>
+
+<div class="label">
+أنشطة
+</div>
+
+</div>
+
+
+
+<div class="stat">
+
+<div class="number">
+${counts.initiative||0}
+</div>
+
+<div class="label">
+مبادرات
+</div>
+
+</div>
+
+
+
+<div class="stat">
+
+<div class="number">
+${counts.meeting||0}
+</div>
+
+<div class="label">
+اجتماعات
+</div>
+
+</div>
+
+
+
+<div class="stat">
+
+<div class="number">
+${beneficiaries}
+</div>
+
+<div class="label">
+إجمالي المستفيدين
+</div>
+
+</div>
+
+
+
+<div class="stat">
+
+<div class="number">
+${counts.educational_support||0}
+</div>
+
+<div class="label">
+دعم تعليمي
+</div>
+
+</div>
+
+
+
+<div class="stat">
+
+<div class="number">
+${counts.visit||0}
+</div>
+
+<div class="label">
+زيارات
+</div>
+
+</div>
+
+
+
+<div class="stat">
+
+<div class="number">
+${evidenceTotal}
+</div>
+
+<div class="label">
+شواهد وصور
+</div>
+
+</div>
+
+
+
+<div class="stat">
+
+<div class="number">
+${challengesOpen}
+</div>
+
+<div class="label">
+تحديات قيد المتابعة
+</div>
+
+</div>
+
+`;
+
+}
+
+
+
+function showAccessDenied(){
+
+
+document.body.innerHTML=`
+
+<main
+
+dir="rtl"
+
+style="
+
+min-height:100vh;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+padding:25px;
+
+background:#f4f7f6;
+
+font-family:Tahoma,Arial,sans-serif
+
+"
+
+>
+
+
+<section
+
+style="
+
+width:min(540px,100%);
+
+background:#fff;
+
+border:1px solid #dfeae6;
+
+border-radius:22px;
+
+padding:36px 28px;
+
+text-align:center
+
+"
+
+>
+
+
+<div style="font-size:45px">
+🔐
+</div>
+
+
+<h1 style="color:#075c40">
+مساحة خاصة
+</h1>
+
+
+<p style="color:#637870;line-height:2">
+
+هذه الصفحة مخصصة لاختصاصية مركز مصادر التعلم فقط.
+
+</p>
+
+
+<a
+
+href="index.html"
+
+style="
+
+display:inline-block;
+
+margin-top:18px;
+
+padding:11px 18px;
+
+border-radius:11px;
+
+background:#075c40;
+
+color:#fff;
+
+text-decoration:none;
+
+font-weight:700
+
+"
+
+>
+
+العودة إلى مركز مصادر التعلم
+
+</a>
+
+
+</section>
+
+
+</main>
+
+`;
+
+}
+
+
+
+async function initialise(){
+
+
+$('workDate').value=
+localDate();
+
+
+try{
+
+
+if(!window.WRRC){
+
+throw new Error(
+'لم يتم تحميل وحدة مركز مصادر التعلم.'
+);
+
+}
+
+
+RC=
+await window.WRRC.init();
+
+
+if(!RC){
+
+throw new Error(
+'تعذر تهيئة مركز مصادر التعلم.'
+);
+
+}
+
+
+currentUser=
+await RC.user();
+
+
+if(
+!currentUser||
+!currentUser.id
+){
+
+throw new Error(
+'لم يتم تحديد المستخدم المسجل.'
+);
+
+}
+
+
+if(
+!PRIVATE_USER_IDS.has(
+String(currentUser.id)
+)
+){
+
+showAccessDenied();
+
+return;
+
+}
+
+
+if(
+typeof RC.resolveIdentity===
+'function'
+){
+
+currentIdentity=
+await RC.resolveIdentity();
+
+}
+
+
+const name=
+
+(
+currentIdentity&&
+(
+currentIdentity.name||
+currentIdentity.full_name||
+currentIdentity.email
+)
+)
+
+||
+
+(
+RC.profile&&
+(
+RC.profile.full_name||
+RC.profile.name
+)
+)
+
+||
+
+currentUser.email
+
+||
+
+'فاتن صلاح';
+
+
+
+$('who').textContent=
+name;
+
+
+await loadRecords();
+
+
+}catch(error){
+
+
+console.error(error);
+
+
+showMessage(
+
+'تعذر فتح مكتبي: '+
+
+(
+error.message||
+String(error)
+),
+
+false
+
+);
+
+}
+
+}
+
+
+
+document
+.querySelectorAll('.action-card')
+.forEach(card=>{
+
+
+card.addEventListener(
+'click',
+()=>{
+
+setView(
+card.dataset.view
+);
+
+}
+);
+
+
+});
+
+
+
+$('workType')
+.addEventListener(
+'change',
+()=>{
+
+
+populateCategories();
+
+toggleFields();
+
+
+$('subject').dataset.auto='1';
+
+$('description').dataset.auto='1';
+
+
+applySuggestion();
+
+
+}
+);
+
+
+
+$('category')
+.addEventListener(
+'change',
+()=>{
+
+
+$('subject').dataset.auto='1';
+
+$('description').dataset.auto='1';
+
+
+applySuggestion();
+
+
+}
+);
+
+
+
+$('evidenceFiles')
+.addEventListener(
+'change',
+function(){
+
+
+const files=[
+...this.files
+];
+
+
+const valid=
+files.filter(file=>{
+
+
+if(
+![
+'image/jpeg',
+'image/png',
+'image/webp'
+]
+.includes(file.type)
+){
+
+
+alert(
+
+'تم تجاهل الملف "'+
+
+file.name+
+
+'" لأنه ليس صورة JPG أو PNG أو WEBP.'
+
+);
+
+
+return false;
+
+}
+
+
+if(
+file.size>
+10*1024*1024
+){
+
+
+alert(
+
+'تم تجاهل "'+
+
+file.name+
+
+'" لأن حجمه أكبر من 10 MB.'
+
+);
+
+
+return false;
+
+}
+
+
+return true;
+
+
+});
+
+
+pendingFiles=[
+...pendingFiles,
+...valid
+];
+
+
+this.value='';
+
+
+renderEvidencePreview();
+
+
+}
+);
+
+
+
+$('workForm')
+.addEventListener(
+'submit',
+event=>{
+
+
+event.preventDefault();
+
+
+saveRecord();
+
+
+}
+);
+
+
+
+$('saveReadyBtn')
+.addEventListener(
+'click',
+()=>{
+
+
+$('nabStatus').value=
+'ready';
+
+
+saveRecord();
+
+
+}
+);
+
+
+
+$('resetBtn')
+.addEventListener(
+'click',
+resetForm
+);
+
+
+
+$('refreshBtn')
+.addEventListener(
+'click',
+async()=>{
+
+
+try{
+
+
+await loadRecords();
+
+
+showMessage(
+'تم تحديث السجل.',
+true
+);
+
+
+}catch(error){
+
+
+showMessage(
+
+'تعذر تحديث السجل: '+
+
+(
+error.message||
+String(error)
+),
+
+false
+
+);
+
+
+}
+
+
+}
+);
+
+
+
+$('searchInput')
+.addEventListener(
+'input',
+renderRecords
+);
+
+
+$('filterType')
+.addEventListener(
+'change',
+renderRecords
+);
+
+
+$('filterStatus')
+.addEventListener(
+'change',
+renderRecords
+);
+
+
+
+resetForm();
+
+initialise();
+
+
+})();
+
+</script>
+
+</body>
+
+</html>

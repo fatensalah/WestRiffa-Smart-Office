@@ -1,1 +1,1060 @@
-<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>أرشيف تفعيل مركز مصادر التعلم</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>*{box-sizing:border-box}body{margin:0;background:#f4f7f6;color:#173c34;font-family:Tahoma,Arial,sans-serif}.hero{background:linear-gradient(135deg,#075c40,#16805e);color:#fff;padding:26px}.wrap{width:min(1180px,94%);margin:auto}.hero h1{margin:0 0 7px}.hero p{margin:0;opacity:.92}.top{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:20px 0;flex-wrap:wrap}.btn,.back{border:0;border-radius:11px;padding:10px 15px;text-decoration:none;font:inherit;font-weight:700;cursor:pointer}.btn{background:#075c40;color:#fff}.back{background:#fff;border:1px solid #dfe9e5;color:#075c40}.card{background:#fff;border:1px solid #e0ebe6;border-radius:18px;padding:20px;box-shadow:0 7px 20px rgba(7,92,64,.06);margin-bottom:16px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.field label{display:block;font-weight:700;margin:0 0 7px}.field input,.field select,.field textarea{width:100%;padding:11px;border:1px solid #cfded8;border-radius:10px;font:inherit;background:#fff}.muted{color:#6a7d76;line-height:1.7}.auto{background:#f1f8f5;border:1px solid #d6e9e1;border-radius:12px;padding:13px;line-height:1.8}.notice{padding:12px 15px;border-radius:12px;margin:12px 0;background:#fff8e7;border:1px solid #f1dfad;color:#74580b}.ok{background:#eaf8ef;border-color:#c7e8d1;color:#166534}.photos{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.photos img{width:100%;height:180px;object-fit:cover;border-radius:12px;border:1px solid #ddd}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.hidden{display:none!important}table{width:100%;border-collapse:collapse;background:#fff}th,td{padding:10px;border-bottom:1px solid #e8efec;text-align:right}th{background:#edf7f2}.pill{display:inline-block;padding:5px 9px;border-radius:999px;background:#e8f6ef;color:#075c40;font-size:12px;font-weight:700}@media(max-width:760px){.grid{grid-template-columns:1fr}.photos{grid-template-columns:1fr}table{font-size:12px}}@media print{.no-print,.top,.hero{display:none!important}body{background:#fff}.card{box-shadow:none;border:0}.wrap{width:100%}}</style><link rel="stylesheet" href="../../css/resource-center.css"></head><body><header class="hero"><div class="wrap"><h1>🗂️ أرشيف تفعيل مركز مصادر التعلم</h1><p id="sub">التقارير المحفوظة حسب نطاق صلاحيتك.</p></div></header><main class="wrap"><div class="top"><a class="back" href="index.html">← مركز مصادر التعلم</a><a class="btn" href="new.html">+ توثيق تفعيل</a></div><div class="card no-print"><div class="grid"><div class="field"><label>بحث</label><input id="search" placeholder="المعلمة، الصف، النوع…"></div><div class="field"><label>نوع التفعيل</label><select id="type"><option value="">الكل</option></select></div></div></div><div id="msg"></div><div class="card" style="overflow:auto"><table><thead><tr><th>المعلمة</th><th>النوع</th><th>الصف/الشعبة</th><th>الطلاب</th><th>التاريخ</th><th>التقرير</th></tr></thead><tbody id="rows"></tbody></table></div></main><script src="../../js/config.js"></script><script src="../../js/graph.js"></script><script src="../../js/common.js"></script><script src="../../js/resource-center.js"></script><script>let RC,data=[],$=id=>document.getElementById(id);async function load(){try{RC=await WRRC.init();Object.entries(RC.types).forEach(([k,v])=>$('type').insertAdjacentHTML('beforeend',`<option value="${k}">${v.label}</option>`));let q=RC.sb.from('resource_center_activations').select('*').eq('status','completed').order('completed_at',{ascending:false}).limit(500);q=await RC.scopeQuery(q);const r=await q;if(r.error)throw r.error;data=r.data||[];render();}catch(e){$('msg').innerHTML=`<div class="notice">${WRRC.missing(e)?'يلزم تنفيذ ملف إعداد قاعدة البيانات المرفق في Supabase.':WRRC.esc(e.message||e)}</div>`}}function render(){const s=$('search').value.trim(),t=$('type').value;const x=data.filter(r=>(!t||r.activation_type===t)&&(!s||JSON.stringify(r).includes(s)));$('rows').innerHTML=x.length?x.map(r=>`<tr><td>${WRRC.esc(r.teacher_name)}</td><td><span class="pill">${WRRC.esc(r.activation_type_label)}</span></td><td>${WRRC.esc(r.grade)} / ${WRRC.esc(r.section)}</td><td>${r.student_count}</td><td>${WRRC.fmt(r.completed_at)}</td><td><a class="btn" href="report.html?id=${encodeURIComponent(r.id)}">عرض/طباعة</a></td></tr>`).join(''):'<tr><td colspan="6">لا توجد تفعيلات مطابقة.</td></tr>'}$('search').oninput=render;$('type').onchange=render;load();</script></body></html>
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>أرشيف تفعيل مركز مصادر التعلم</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:#f4f7f6;
+  color:#173c34;
+  font-family:Tahoma,Arial,sans-serif;
+}
+
+.hero{
+  background:linear-gradient(135deg,#075c40,#16805e);
+  color:#fff;
+  padding:26px;
+}
+
+.wrap{
+  width:min(1250px,95%);
+  margin:auto;
+}
+
+.hero h1{margin:0 0 7px}
+.hero p{margin:0;opacity:.92}
+
+.top{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+  margin:20px 0;
+  flex-wrap:wrap;
+}
+
+.btn,.back,.action-btn{
+  border:0;
+  border-radius:10px;
+  padding:9px 13px;
+  text-decoration:none;
+  font:inherit;
+  font-weight:700;
+  cursor:pointer;
+  display:inline-block;
+}
+
+.btn{
+  background:#075c40;
+  color:#fff;
+}
+
+.back{
+  background:#fff;
+  border:1px solid #dfe9e5;
+  color:#075c40;
+}
+
+.card{
+  background:#fff;
+  border:1px solid #e0ebe6;
+  border-radius:18px;
+  padding:20px;
+  box-shadow:0 7px 20px rgba(7,92,64,.06);
+  margin-bottom:16px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+}
+
+.field label{
+  display:block;
+  font-weight:700;
+  margin:0 0 7px;
+}
+
+.field input,
+.field select{
+  width:100%;
+  padding:11px;
+  border:1px solid #cfded8;
+  border-radius:10px;
+  font:inherit;
+  background:#fff;
+}
+
+.notice{
+  padding:12px 15px;
+  border-radius:12px;
+  margin:12px 0;
+  background:#fff8e7;
+  border:1px solid #f1dfad;
+  color:#74580b;
+}
+
+.notice.success{
+  background:#edf8f3;
+  border-color:#cbe7da;
+  color:#075c40;
+}
+
+.notice.error{
+  background:#fff1f1;
+  border-color:#f1caca;
+  color:#8c2424;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  background:#fff;
+}
+
+th,td{
+  padding:12px 10px;
+  border-bottom:1px solid #e8efec;
+  text-align:right;
+  white-space:nowrap;
+  vertical-align:middle;
+}
+
+th{
+  background:#edf7f2;
+  color:#173c34;
+}
+
+.pill{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:999px;
+  background:#e8f6ef;
+  color:#075c40;
+  font-size:12px;
+  font-weight:700;
+}
+
+.empty{
+  text-align:center;
+  padding:25px;
+  color:#6a7d76;
+}
+
+.actions{
+  display:flex;
+  gap:6px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+.view-btn{
+  background:#075c40;
+  color:#fff;
+}
+
+.edit-btn{
+  background:#eef7ff;
+  color:#155b8a;
+  border:1px solid #cce2f2;
+}
+
+.delete-btn{
+  background:#fff1f1;
+  color:#a62d2d;
+  border:1px solid #f0cccc;
+}
+
+.action-btn:hover{
+  filter:brightness(.97);
+}
+
+.action-btn:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
+
+.service-row td{
+  background:#fffdf7;
+}
+
+@media(max-width:760px){
+  .grid{grid-template-columns:1fr}
+  table{font-size:12px}
+  .actions{min-width:220px}
+}
+
+@media print{
+  .no-print,.top,.hero,.actions{
+    display:none!important;
+  }
+
+  body{background:#fff}
+
+  .card{
+    box-shadow:none;
+    border:0;
+  }
+
+  .wrap{width:100%}
+}
+</style>
+
+<link rel="stylesheet" href="../../css/resource-center.css">
+</head>
+
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>🗂️ أرشيف تفعيل مركز مصادر التعلم</h1>
+    <p id="sub">التقارير المحفوظة حسب نطاق صلاحيتك.</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="top">
+    <a class="back" href="index.html">← مركز مصادر التعلم</a>
+    <a class="btn" href="new.html">+ توثيق تفعيل / خدمة</a>
+  </div>
+
+  <div class="card no-print">
+    <div class="grid">
+
+      <div class="field">
+        <label>بحث</label>
+        <input id="search" placeholder="المعلمة، الخدمة، الصف، النوع…">
+      </div>
+
+      <div class="field">
+        <label>نوع التفعيل / الخدمة</label>
+        <select id="type">
+          <option value="">الكل</option>
+        </select>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="msg"></div>
+
+  <div class="card" style="overflow:auto">
+    <table>
+      <thead>
+        <tr>
+          <th>المعلمة / المستفيدة</th>
+          <th>النوع</th>
+          <th>الصف/الشعبة</th>
+          <th>الطلاب</th>
+          <th>التاريخ</th>
+          <th>الإجراءات</th>
+        </tr>
+      </thead>
+
+      <tbody id="rows">
+        <tr>
+          <td colspan="6" class="empty">
+            جاري تحميل الأرشيف…
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+<script src="../../js/config.js"></script>
+<script src="../../js/graph.js"></script>
+<script src="../../js/common.js"></script>
+<script src="../../js/resource-center.js"></script>
+
+<script>
+(function(){
+
+let RC = null;
+let archiveData = [];
+let currentUser = null;
+let currentProfile = null;
+
+function el(id){
+  return document.getElementById(id);
+}
+
+function safe(value){
+  if(
+    window.WRRC &&
+    typeof window.WRRC.esc === 'function'
+  ){
+    return window.WRRC.esc(
+      value == null ? '' : String(value)
+    );
+  }
+
+  return String(value == null ? '' : value)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#039;');
+}
+
+function formatDate(value){
+  if(!value) return '—';
+
+  try{
+    if(
+      window.WRRC &&
+      typeof window.WRRC.fmt === 'function'
+    ){
+      return window.WRRC.fmt(value);
+    }
+
+    return new Date(value).toLocaleString('ar-BH');
+
+  }catch(error){
+    return value;
+  }
+}
+
+function isAdmin(){
+  return currentProfile &&
+    String(currentProfile.role || '').toLowerCase() === 'admin';
+}
+
+function isOwner(record){
+  return !!(
+    currentUser &&
+    record &&
+    record.teacher_user_id &&
+    String(record.teacher_user_id) === String(currentUser.id)
+  );
+}
+
+/*
+  الإدارة: تستطيع إدارة كل السجلات.
+  المعلمة/المنسقة: تستطيع إدارة سجلها الشخصي فقط.
+*/
+function canManage(record){
+  return isAdmin() || isOwner(record);
+}
+
+function isService(record){
+  if(!record) return false;
+
+  const type = String(
+    record.activation_type || ''
+  ).toLowerCase();
+
+  const label = String(
+    record.activation_type_label || ''
+  );
+
+  return (
+    type.includes('service') ||
+    label.includes('تغليف') ||
+    label.includes('إعارة') ||
+    label.includes('طباعة') ||
+    label.includes('تصوير') ||
+    label.includes('خدمة') ||
+    label.includes('دعم')
+  );
+}
+
+function gradeSectionText(record){
+
+  if(isService(record)){
+    return 'خدمة للمعلمات';
+  }
+
+  const grade = record.grade || '';
+  const section = record.section || '';
+
+  if(!grade && !section){
+    return '—';
+  }
+
+  if(grade && section){
+    return grade + ' / ' + section;
+  }
+
+  return grade || section || '—';
+}
+
+function studentsText(record){
+
+  if(isService(record)){
+    return '—';
+  }
+
+  if(
+    record.student_count === null ||
+    record.student_count === undefined ||
+    record.student_count === ''
+  ){
+    return '—';
+  }
+
+  return record.student_count;
+}
+
+function showMessage(text,type){
+
+  if(!text){
+    el('msg').innerHTML = '';
+    return;
+  }
+
+  el('msg').innerHTML =
+    '<div class="notice ' +
+    safe(type || '') +
+    '">' +
+    safe(text) +
+    '</div>';
+}
+
+function render(){
+
+  const searchValue =
+    (el('search').value || '')
+      .trim()
+      .toLowerCase();
+
+  const selectedType =
+    el('type').value || '';
+
+  const filtered =
+    archiveData.filter(function(record){
+
+      const typeMatch =
+        !selectedType ||
+        record.activation_type === selectedType;
+
+      const searchText = [
+        record.teacher_name,
+        record.activation_type_label,
+        record.grade,
+        record.section,
+        record.subject,
+        record.department_name,
+        record.description,
+        record.goal,
+        record.story_title
+      ]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
+
+      const searchMatch =
+        !searchValue ||
+        searchText.includes(searchValue);
+
+      return typeMatch && searchMatch;
+    });
+
+  if(!filtered.length){
+
+    el('rows').innerHTML =
+      '<tr>' +
+        '<td colspan="6" class="empty">' +
+          'لا توجد تفعيلات أو خدمات مطابقة.' +
+        '</td>' +
+      '</tr>';
+
+    return;
+  }
+
+  el('rows').innerHTML =
+    filtered.map(function(record){
+
+      const teacher =
+        record.teacher_name || '—';
+
+      const type =
+        record.activation_type_label || '—';
+
+      const date =
+        formatDate(
+          record.completed_at ||
+          record.created_at
+        );
+
+      const manage = canManage(record);
+
+      let actions =
+
+        '<div class="actions">' +
+
+          '<a class="action-btn view-btn" ' +
+             'href="report.html?id=' +
+             encodeURIComponent(record.id) +
+          '">' +
+            '📄 عرض / طباعة' +
+          '</a>';
+
+      if(manage){
+
+        actions +=
+
+          '<a class="action-btn edit-btn" ' +
+             'href="new.html?edit=1&id=' +
+             encodeURIComponent(record.id) +
+          '">' +
+            '✏️ تعديل' +
+          '</a>' +
+
+          '<button type="button" ' +
+             'class="action-btn delete-btn" ' +
+             'data-delete-id="' +
+             safe(record.id) +
+          '">' +
+            '🗑️ حذف' +
+          '</button>';
+      }
+
+      actions += '</div>';
+
+      return (
+
+        '<tr class="' +
+          (isService(record) ? 'service-row' : '') +
+        '">' +
+
+          '<td>' +
+            safe(teacher) +
+          '</td>' +
+
+          '<td>' +
+            '<span class="pill">' +
+              safe(type) +
+            '</span>' +
+          '</td>' +
+
+          '<td>' +
+            safe(gradeSectionText(record)) +
+          '</td>' +
+
+          '<td>' +
+            safe(studentsText(record)) +
+          '</td>' +
+
+          '<td>' +
+            safe(date) +
+          '</td>' +
+
+          '<td>' +
+            actions +
+          '</td>' +
+
+        '</tr>'
+      );
+
+    }).join('');
+
+  document
+    .querySelectorAll('[data-delete-id]')
+    .forEach(function(button){
+
+      button.addEventListener(
+        'click',
+        function(){
+          deleteRecord(
+            button.getAttribute('data-delete-id'),
+            button
+          );
+        }
+      );
+
+    });
+}
+
+async function deleteEvidence(record){
+
+  if(
+    !record ||
+    !Array.isArray(record.evidence_paths) ||
+    !record.evidence_paths.length
+  ){
+    return;
+  }
+
+  try{
+
+    const paths =
+      record.evidence_paths.filter(Boolean);
+
+    if(!paths.length) return;
+
+    const result =
+      await RC.sb
+        .storage
+        .from('resource-center-evidence')
+        .remove(paths);
+
+    if(result.error){
+      console.warn(
+        'تعذر حذف بعض ملفات الشواهد:',
+        result.error
+      );
+    }
+
+  }catch(error){
+
+    console.warn(
+      'Evidence delete warning:',
+      error
+    );
+  }
+}
+
+async function deleteQuizAnswers(recordId){
+
+  try{
+
+    const result =
+      await RC.sb
+        .from('resource_center_quiz_answers')
+        .delete()
+        .eq('activation_id',recordId);
+
+    if(result.error){
+      console.warn(
+        'Quiz answers delete warning:',
+        result.error
+      );
+    }
+
+  }catch(error){
+
+    /*
+      لو الجدول غير موجود في نسخة قديمة
+      لا نوقف حذف السجل الرئيسي.
+    */
+    console.warn(
+      'Quiz answers table warning:',
+      error
+    );
+  }
+}
+
+async function removeFromLocalCache(recordId){
+
+  try{
+
+    if(
+      RC &&
+      typeof RC.cacheDelete === 'function'
+    ){
+      await RC.cacheDelete(recordId);
+      return;
+    }
+
+    if(
+      RC &&
+      typeof RC.cacheRead === 'function' &&
+      typeof RC.cacheWrite === 'function'
+    ){
+      const local =
+        RC.cacheRead() || [];
+
+      const next =
+        local.filter(function(item){
+          return String(item.id) !== String(recordId);
+        });
+
+      RC.cacheWrite(next);
+    }
+
+  }catch(error){
+
+    console.warn(
+      'Cache delete warning:',
+      error
+    );
+  }
+}
+
+async function deleteRecord(recordId,button){
+
+  const record =
+    archiveData.find(function(item){
+      return String(item.id) === String(recordId);
+    });
+
+  if(!record){
+    alert('تعذر العثور على السجل.');
+    return;
+  }
+
+  if(!canManage(record)){
+    alert('ليس لديكِ صلاحية حذف هذا السجل.');
+    return;
+  }
+
+  const label =
+    record.activation_type_label ||
+    'هذا السجل';
+
+  const teacher =
+    record.teacher_name || '';
+
+  const confirmed =
+    confirm(
+      'هل أنتِ متأكدة من حذف السجل؟\n\n' +
+      label +
+      (teacher ? '\n' + teacher : '') +
+      '\n\nسيتم استبعاده من الأرشيف والمؤشرات والتقارير.'
+    );
+
+  if(!confirmed){
+    return;
+  }
+
+  const oldText = button.textContent;
+
+  button.disabled = true;
+  button.textContent = 'جاري الحذف…';
+
+  try{
+
+    /*
+      نحذف إجابات القصة أولًا إن وجدت.
+    */
+    await deleteQuizAnswers(recordId);
+
+    /*
+      حذف السجل الرئيسي من Supabase.
+      RLS هي الحماية النهائية للصلاحية.
+    */
+    const result =
+      await RC.sb
+        .from('resource_center_activations')
+        .delete()
+        .eq('id',recordId)
+        .select('id');
+
+    if(result.error){
+      throw result.error;
+    }
+
+    /*
+      لو لم يحذف Supabase أي صف،
+      نعتبر أن العملية غير مسموحة.
+    */
+    if(
+      !Array.isArray(result.data) ||
+      !result.data.length
+    ){
+      throw new Error(
+        'لم يتم حذف السجل. قد لا تكون لديكِ صلاحية الحذف.'
+      );
+    }
+
+    /*
+      بعد نجاح حذف السجل نحذف الصور.
+    */
+    await deleteEvidence(record);
+
+    await removeFromLocalCache(recordId);
+
+    archiveData =
+      archiveData.filter(function(item){
+        return String(item.id) !== String(recordId);
+      });
+
+    render();
+
+    showMessage(
+      'تم حذف السجل بنجاح واستبعاده من الأرشيف والمؤشرات.',
+      'success'
+    );
+
+  }catch(error){
+
+    console.error(
+      'Delete record error:',
+      error
+    );
+
+    button.disabled = false;
+    button.textContent = oldText;
+
+    showMessage(
+      'تعذر حذف السجل: ' +
+      (
+        error && error.message
+          ? error.message
+          : String(error)
+      ),
+      'error'
+    );
+  }
+}
+
+async function loadArchive(){
+
+  try{
+
+    if(!window.WRRC){
+      throw new Error(
+        'لم يتم تحميل وحدة مركز مصادر التعلم.'
+      );
+    }
+
+    RC =
+      await window.WRRC.init();
+
+    if(!RC){
+      throw new Error(
+        'تعذر تهيئة مركز مصادر التعلم.'
+      );
+    }
+
+    /*
+      المستخدم الحالي
+    */
+    if(typeof RC.user === 'function'){
+      currentUser = await RC.user();
+    }
+
+    /*
+      البروفايل الحالي
+    */
+    try{
+
+      if(
+        typeof window.wrGetCurrentProfile === 'function'
+      ){
+        currentProfile =
+          await window.wrGetCurrentProfile();
+      }
+
+    }catch(profileError){
+
+      console.warn(
+        'Profile warning:',
+        profileError
+      );
+    }
+
+    /*
+      أنواع التفعيل الموجودة أصلًا
+    */
+    const types =
+      RC.types ||
+      window.WRRC.types ||
+      {};
+
+    Object.entries(types)
+      .forEach(function(entry){
+
+        const key = entry[0];
+        const item = entry[1];
+
+        const option =
+          document.createElement('option');
+
+        option.value = key;
+
+        option.textContent =
+          item.label || key;
+
+        el('type')
+          .appendChild(option);
+      });
+
+    /*
+      قراءة السجلات من Supabase
+    */
+    let query =
+      RC.sb
+        .from('resource_center_activations')
+        .select('*')
+        .eq('status','completed')
+        .order(
+          'completed_at',
+          {ascending:false}
+        )
+        .limit(500);
+
+    /*
+      تطبيق نطاق الصلاحية الحالي
+    */
+    if(
+      typeof RC.scopeQuery === 'function'
+    ){
+      query =
+        await RC.scopeQuery(query);
+    }
+
+    const result =
+      await query;
+
+    if(result.error){
+      throw result.error;
+    }
+
+    const databaseRows =
+      Array.isArray(result.data)
+        ? result.data
+        : [];
+
+    /*
+      الكاش المحلي
+    */
+    let localRows = [];
+
+    try{
+
+      if(
+        typeof RC.cacheRead === 'function'
+      ){
+        localRows =
+          RC.cacheRead() || [];
+      }
+
+    }catch(error){
+
+      console.warn(
+        'تعذر قراءة الكاش المحلي',
+        error
+      );
+    }
+
+    /*
+      دمج Supabase والكاش ومنع التكرار
+    */
+    const recordsMap =
+      new Map();
+
+    localRows.forEach(function(record){
+
+      if(record && record.id){
+        recordsMap.set(
+          record.id,
+          record
+        );
+      }
+
+    });
+
+    databaseRows.forEach(function(record){
+
+      if(record && record.id){
+        recordsMap.set(
+          record.id,
+          record
+        );
+      }
+
+    });
+
+    archiveData =
+      Array.from(
+        recordsMap.values()
+      );
+
+    archiveData.sort(
+      function(a,b){
+
+        const dateA =
+          new Date(
+            a.completed_at ||
+            a.created_at ||
+            0
+          ).getTime();
+
+        const dateB =
+          new Date(
+            b.completed_at ||
+            b.created_at ||
+            0
+          ).getTime();
+
+        return dateB - dateA;
+      }
+    );
+
+    render();
+
+    if(!archiveData.length){
+
+      showMessage(
+        'لا توجد تفعيلات أو خدمات محفوظة ضمن نطاق صلاحيتك حتى الآن.'
+      );
+
+    }else{
+
+      showMessage('');
+    }
+
+  }catch(error){
+
+    console.error(
+      'Archive load error:',
+      error
+    );
+
+    /*
+      محاولة عرض الكاش عند تعذر Supabase
+    */
+    try{
+
+      if(
+        RC &&
+        typeof RC.cacheRead === 'function'
+      ){
+        archiveData =
+          RC.cacheRead() || [];
+      }else{
+        archiveData = [];
+      }
+
+    }catch(cacheError){
+      archiveData = [];
+    }
+
+    render();
+
+    const message =
+      error &&
+      error.message
+        ? error.message
+        : String(error);
+
+    showMessage(
+      'تعذر تحميل الأرشيف من قاعدة البيانات: ' +
+      message,
+      'error'
+    );
+  }
+}
+
+el('search')
+  .addEventListener(
+    'input',
+    render
+  );
+
+el('type')
+  .addEventListener(
+    'change',
+    render
+  );
+
+loadArchive();
+
+})();
+</script>
+
+</body>
+</html>
