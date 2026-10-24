@@ -753,6 +753,87 @@
     .password-actions { display:flex; gap:10px; margin-top:18px; flex-wrap:wrap; }
     .password-message { min-height:22px; margin-top:12px; font-size:13px; }
 
+
+    /* =====================================================
+       إشعار الزيارات التبادلية الموجّهة في الرئيسية
+       إضافة مستقلة - لا تغيّر أي وظيفة أصلية
+       ===================================================== */
+    .exchange-assignment-notice {
+      display: none;
+      margin: 18px 0 24px;
+      border: 1px solid #ead59b;
+      background: linear-gradient(135deg, #fffaf0, #fffdf8);
+      border-radius: 18px;
+      padding: 18px 20px;
+      box-shadow: 0 5px 18px rgba(0,0,0,.05);
+    }
+    .exchange-assignment-notice.visible { display: block; }
+    .exchange-assignment-head {
+      display:flex; justify-content:space-between; align-items:flex-start;
+      gap:14px; flex-wrap:wrap; margin-bottom:12px;
+    }
+    .exchange-assignment-title { color:#075c40; font-size:18px; font-weight:800; }
+    .exchange-assignment-count {
+      min-width:34px; height:34px; padding:0 10px; border-radius:999px;
+      display:grid; place-items:center; background:#075c40; color:#fff; font-weight:800;
+    }
+    .exchange-assignment-list { display:grid; gap:10px; }
+    .exchange-assignment-item {
+      display:grid; grid-template-columns:1fr auto; gap:14px; align-items:center;
+      padding:14px; border:1px solid #eee1bd; border-radius:13px; background:#fff;
+    }
+    .exchange-assignment-item strong { color:#27493d; }
+    .exchange-assignment-meta { margin-top:6px; color:#65766e; font-size:13px; line-height:1.8; }
+    .exchange-assignment-action {
+      text-decoration:none; white-space:nowrap; padding:10px 14px; border-radius:10px;
+      background:#087451; color:#fff; font-weight:700;
+    }
+    .exchange-assignment-error { color:#8a5a00; font-size:13px; }
+    @media (max-width:700px) {
+      .exchange-assignment-item { grid-template-columns:1fr; }
+      .exchange-assignment-action { text-align:center; }
+    }
+
+
+    /* =====================================================
+       التعاميم والتنبيهات
+       ===================================================== */
+    .school-announcements{display:none;margin:0 0 22px}
+    .school-announcements.visible{display:block}
+    .announcement-panel{background:#fff;border:1px solid #e4ddd1;border-radius:18px;padding:18px;box-shadow:0 8px 24px rgba(70,45,25,.06)}
+    .announcement-panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+    .announcement-panel-title{font-size:19px;font-weight:900;color:#6f1834}
+    .announcement-card{border:1px solid #eadfd3;border-right:5px solid #9a284b;border-radius:14px;padding:15px;margin-top:10px;background:#fffdf9}
+    .announcement-card.request{border-right-color:#b7791f}
+    .announcement-card.reminder{border-right-color:#2563a8}
+    .announcement-card.circular{border-right-color:#6f1834}
+    .announcement-card h4{margin:0 0 7px;color:#263b34;font-size:16px}
+    .announcement-message{white-space:pre-wrap;line-height:1.9;color:#3f4f49}
+    .announcement-meta{font-size:12px;color:#7a857f;margin-top:8px}
+    .announcement-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .announcement-ack{border:0;border-radius:10px;background:#075c40;color:#fff;padding:9px 16px;font-family:inherit;font-weight:800;cursor:pointer}
+    .announcement-ack:disabled{opacity:.65;cursor:default}
+    .announcement-manage{display:none;margin:0 0 22px}
+    .announcement-manage.visible{display:block}
+    .announcement-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}
+    .announcement-stat{background:#f8f6f1;border:1px solid #e7e0d6;border-radius:12px;padding:10px;text-align:center}
+    .announcement-stat span{display:block;font-size:12px;color:#6d7772}.announcement-stat strong{font-size:20px;color:#6f1834}
+    .announcement-manager-item{border-top:1px solid #eee6dc;padding:13px 0}
+    .announcement-manager-item:first-child{border-top:0}
+    .announcement-manager-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
+    .announcement-read-list{margin-top:8px;padding:10px;background:#f8faf9;border-radius:10px;font-size:12px;line-height:1.8;color:#53625c}
+    .announcement-modal{position:fixed;inset:0;background:rgba(25,25,25,.45);display:none;align-items:center;justify-content:center;padding:18px;z-index:9999}
+    .announcement-modal.visible{display:flex}
+    .announcement-modal-box{width:min(720px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:18px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+    .announcement-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .announcement-field{display:flex;flex-direction:column;gap:6px}.announcement-field.full{grid-column:1/-1}
+    .announcement-field label{font-weight:800;color:#394a43;font-size:13px}
+    .announcement-field input,.announcement-field select,.announcement-field textarea{width:100%;border:1px solid #d8dedb;border-radius:10px;padding:10px;font-family:inherit;background:#fff}
+    .announcement-field textarea{min-height:120px;resize:vertical}
+    .announcement-targets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;max-height:230px;overflow:auto;border:1px solid #e2e7e4;border-radius:10px;padding:10px}
+    .announcement-targets label{font-weight:500}
+    @media(max-width:760px){.announcement-stats,.announcement-form-grid,.announcement-targets{grid-template-columns:1fr}}
+
   </style>
 
 </head>
@@ -997,7 +1078,7 @@
     class="nav-link"
     href="pages/exchange-visits/index.html"
   >
-    🤝 الزيارات التبادلية
+    📈 رفع الكفاءة المهنية
   </a>
 
 
@@ -1201,6 +1282,104 @@
 
   </div>
 
+
+
+  <!-- ===================================================
+       إشعار الزيارة التبادلية الموجّهة
+       يظهر للمعلّمة المكلّفة فقط عند وجود تكليف قائم
+       =================================================== -->
+
+  <!-- التعاميم والتنبيهات الموجهة للمستخدم -->
+  <section id="schoolAnnouncements" class="school-announcements" aria-live="polite">
+    <div class="announcement-panel">
+      <div class="announcement-panel-head">
+        <div>
+          <div class="announcement-panel-title">📢 التنبيهات والتعاميم</div>
+          <div class="exchange-assignment-meta">تظل الرسالة ظاهرة حتى تأكيد الاطلاع عليها.</div>
+        </div>
+        <span id="schoolAnnouncementCount" class="exchange-assignment-count">0</span>
+      </div>
+      <div id="schoolAnnouncementList"></div>
+    </div>
+  </section>
+
+  <!-- إدارة التعاميم: القيادة العليا فقط -->
+  <section id="announcementManagement" class="announcement-manage">
+    <div class="announcement-panel">
+      <div class="announcement-panel-head">
+        <div>
+          <div class="announcement-panel-title">📣 إدارة التنبيهات والتعاميم</div>
+          <div class="exchange-assignment-meta">إرسال رسالة للجميع أو لمعلمات محددات ومتابعة من تم اطلاعه.</div>
+        </div>
+        <button id="newAnnouncementBtn" class="btn btn-gold" type="button">➕ إرسال تنبيه / تعميم</button>
+      </div>
+      <div id="announcementManagementList"></div>
+    </div>
+  </section>
+
+  <div id="announcementModal" class="announcement-modal" aria-hidden="true">
+    <div class="announcement-modal-box">
+      <div class="announcement-panel-head">
+        <div class="announcement-panel-title" id="announcementModalTitle">📢 إرسال تنبيه / تعميم</div>
+        <button id="closeAnnouncementModalBtn" class="btn btn-soft" type="button">✕ إغلاق</button>
+      </div>
+      <div class="announcement-form-grid">
+        <div class="announcement-field">
+          <label>نوع الرسالة</label>
+          <select id="announcementType">
+            <option>طلب إجراء</option><option>تنبيه</option><option>تعميم</option><option>تذكير</option>
+          </select>
+        </div>
+        <div class="announcement-field">
+          <label>المستهدفات</label>
+          <select id="announcementTargetType">
+            <option value="all">جميع المعلمات</option>
+            <option value="selected">معلمات أو منسقات محددات</option>
+          </select>
+        </div>
+        <div class="announcement-field full">
+          <label>عنوان الرسالة *</label>
+          <input id="announcementTitle" type="text" placeholder="مثال: تحديث بيانات رفع الكفاءة المهنية">
+        </div>
+        <div class="announcement-field full">
+          <label>نص الرسالة *</label>
+          <textarea id="announcementMessage" placeholder="اكتبي الرسالة هنا..."></textarea>
+        </div>
+        <div id="announcementTargetsField" class="announcement-field full" style="display:none">
+          <label>اختيار المستهدفات *</label>
+          <div class="announcement-actions" style="margin-top:0">
+            <input id="announcementTargetSearch" type="search" placeholder="🔎 ابحثي بالاسم..." style="flex:1;min-width:220px">
+            <button id="selectAllAnnouncementTargetsBtn" class="btn btn-soft" type="button">✓ تحديد الكل</button>
+            <button id="clearAllAnnouncementTargetsBtn" class="btn btn-soft" type="button">إلغاء التحديد</button>
+          </div>
+          <div id="announcementTargets" class="announcement-targets"></div>
+        </div>
+        <div class="announcement-field">
+          <label>تاريخ انتهاء اختياري</label>
+          <input id="announcementExpires" type="date">
+        </div>
+        <div class="announcement-field">
+          <label>الحالة</label>
+          <select id="announcementActive"><option value="true">نشط</option><option value="false">موقوف</option></select>
+        </div>
+      </div>
+      <div class="announcement-actions">
+        <button id="saveAnnouncementBtn" class="btn btn-gold" type="button">💾 حفظ وإرسال</button>
+      </div>
+      <div id="announcementSaveState" class="exchange-assignment-meta"></div>
+    </div>
+  </div>
+
+  <section id="exchangeAssignmentNotice" class="exchange-assignment-notice" aria-live="polite">
+    <div class="exchange-assignment-head">
+      <div>
+        <div class="exchange-assignment-title">🔔 لديكِ زيارة تبادلية موجّهة</div>
+        <div class="exchange-assignment-meta">تكليف مهني بزيارة تبادلية يحتاج إلى المتابعة أو توثيق التنفيذ.</div>
+      </div>
+      <span id="exchangeAssignmentCount" class="exchange-assignment-count">0</span>
+    </div>
+    <div id="exchangeAssignmentList" class="exchange-assignment-list"></div>
+  </section>
 
 
   <!-- ===================================================
@@ -1731,14 +1910,14 @@
       class="feature-card"
       href="pages/exchange-visits/index.html"
     >
-      🤝
+      📈
 
       <b>
-        الزيارات التبادلية
+        رفع الكفاءة المهنية
       </b>
 
       <span>
-        داخلية وخارجية وحصر الزيارات
+        زيارات تبادلية ذاتية وموجّهة • ورش داخلية وخارجية • زيارات الإشراف التربوي
       </span>
 
     </a>
@@ -2688,9 +2867,14 @@ async function showApp(user) {
     "";
 
 
-  await configureRoleUI(
+  dashboardProfile = await configureRoleUI(
     user
   );
+
+  if (isTopLeadership(dashboardProfile)) {
+    await loadAnnouncementDirectory();
+  }
+  await loadSchoolAnnouncements(user, dashboardProfile);
 
 
   await configureNotesNavigation(
@@ -2699,6 +2883,11 @@ async function showApp(user) {
 
 
   await configureClassroomVisitsNavigation(
+    user
+  );
+
+
+  await loadExchangeAssignmentNotice(
     user
   );
 
@@ -2718,6 +2907,312 @@ async function showApp(user) {
 
 }
 
+
+
+
+/* =====================================================
+   التعاميم والتنبيهات المدرسية
+   ===================================================== */
+let dashboardProfile = null;
+let announcementDirectory = [];
+let dashboardAnnouncements = [];
+let dashboardAnnouncementReads = [];
+let editingAnnouncementId = null;
+
+function isTopLeadership(profile){
+  return ["admin","system_admin"].includes(String(profile?.role||"").trim().toLowerCase());
+}
+function announcementClass(type){
+  if(type==="طلب إجراء") return "request";
+  if(type==="تذكير") return "reminder";
+  if(type==="تعميم") return "circular";
+  return "";
+}
+function formatAnnouncementDate(value){
+  if(!value) return "—";
+  try{return new Intl.DateTimeFormat("ar-BH",{dateStyle:"medium",timeStyle:value.includes("T")?"short":undefined}).format(new Date(value));}
+  catch(_){return value;}
+}
+async function loadAnnouncementDirectory(){
+  if(!isTopLeadership(dashboardProfile)) return;
+  try{
+    const sb=window.supabase.createClient(window.WR_CONFIG.supabaseUrl,window.WR_CONFIG.supabaseKey);
+    const {data,error}=await sb
+      .from("profiles")
+      .select("id, full_name, role, email")
+      .in("role",["teacher","coordinator"])
+      .order("full_name",{ascending:true});
+    if(error) throw error;
+
+    const seen=new Set();
+    announcementDirectory=(data||[])
+      .filter(x=>{
+        const id=String(x.id||"");
+        const name=String(x.full_name||"").trim();
+        if(!id || !name || seen.has(id)) return false;
+        if(name.includes("@")) return false;
+        if(/تجريبية|test/i.test(name)) return false;
+        seen.add(id);
+        return true;
+      })
+      .map(x=>({
+        user_id:x.id,
+        full_name:x.full_name,
+        role:x.role,
+        email:x.email||""
+      }));
+
+    renderAnnouncementTargets([]);
+  }catch(error){
+    console.error("Announcement directory:",error);
+    const state=document.getElementById("announcementSaveState");
+    if(state) state.textContent="تعذر تحميل قائمة المستهدفات.";
+  }
+}
+function renderAnnouncementTargets(selectedIds=null){
+  const box=document.getElementById("announcementTargets"); if(!box) return;
+
+  const existingSelected = selectedIds === null
+    ? new Set(selectedAnnouncementTargets().map(String))
+    : new Set((selectedIds||[]).map(String));
+
+  const search=String(document.getElementById("announcementTargetSearch")?.value||"")
+    .trim().toLowerCase();
+
+  const rows=announcementDirectory.filter(x=>
+    !search || String(x.full_name||"").toLowerCase().includes(search)
+  );
+
+  box.innerHTML=rows.map(x=>{
+    const roleLabel=String(x.role)==="coordinator" ? "منسقة" : "معلمة";
+    return `<label><input type="checkbox" name="announcementTarget" value="${escapeDashboardText(x.user_id)}" ${existingSelected.has(String(x.user_id))?"checked":""}> ${escapeDashboardText(x.full_name||"—")} <small style="color:#7a857f">(${roleLabel})</small></label>`;
+  }).join("") || '<div class="exchange-assignment-meta">لا توجد نتائج مطابقة.</div>';
+}
+function selectedAnnouncementTargets(){
+  return [...document.querySelectorAll('input[name="announcementTarget"]:checked')].map(x=>x.value);
+}
+async function loadSchoolAnnouncements(user,profile){
+  const box=document.getElementById("schoolAnnouncements"),list=document.getElementById("schoolAnnouncementList"),count=document.getElementById("schoolAnnouncementCount");
+  const management=document.getElementById("announcementManagement");
+  if(management) management.classList.remove("visible");
+  if(!box||!list||!count||!user?.id) return;
+  box.classList.remove("visible"); list.innerHTML="";
+  try{
+    const sb=window.supabase.createClient(window.WR_CONFIG.supabaseUrl,window.WR_CONFIG.supabaseKey);
+    const [{data:anns,error:aErr},{data:reads,error:rErr}]=await Promise.all([
+      sb.from("school_announcements").select("*").order("created_at",{ascending:false}),
+      sb.from("school_announcement_reads").select("announcement_id,user_id,user_name,read_at")
+    ]);
+    if(aErr) throw aErr; if(rErr) throw rErr;
+    dashboardAnnouncements=anns||[]; dashboardAnnouncementReads=reads||[];
+    const readIds=new Set(dashboardAnnouncementReads.filter(r=>String(r.user_id)===String(user.id)).map(r=>String(r.announcement_id)));
+    const unread=dashboardAnnouncements.filter(a=>{
+      if(readIds.has(String(a.id))) return false;
+      if(!a.is_active) return false;
+      if(a.expires_at && new Date(a.expires_at)<=new Date()) return false;
+      return a.target_type==="all" || (a.target_user_ids||[]).map(String).includes(String(user.id));
+    });
+    if(unread.length){
+      count.textContent=String(unread.length);
+      list.innerHTML=unread.map(a=>`<div class="announcement-card ${announcementClass(a.announcement_type)}">
+        <h4>${escapeDashboardText(a.announcement_type||"تنبيه")}: ${escapeDashboardText(a.title||"")}</h4>
+        <div class="announcement-message">${escapeDashboardText(a.message||"")}</div>
+        <div class="announcement-meta">أرسل بواسطة ${escapeDashboardText(a.created_by_name||"القيادة العليا")} • ${escapeDashboardText(formatAnnouncementDate(a.created_at))}</div>
+        <div class="announcement-actions"><button class="announcement-ack" type="button" onclick="acknowledgeAnnouncement('${escapeDashboardText(a.id)}')">✓ تم الاطلاع</button></div>
+      </div>`).join("");
+      box.classList.add("visible");
+    }
+    if(isTopLeadership(profile)) renderAnnouncementManagement();
+  }catch(error){console.error("School announcements:",error);}
+}
+async function acknowledgeAnnouncement(id){
+  const user=await WRGraph.getAccount(); if(!user) return;
+  const btn=event?.currentTarget; if(btn){btn.disabled=true;btn.textContent="جاري التسجيل...";}
+  try{
+    const sb=window.supabase.createClient(window.WR_CONFIG.supabaseUrl,window.WR_CONFIG.supabaseKey);
+    const {error}=await sb.from("school_announcement_reads").insert({
+      announcement_id:id,user_id:user.id,user_name:dashboardProfile?.full_name||user.email||"مستخدم"
+    });
+    if(error && !String(error.message||"").toLowerCase().includes("duplicate")) throw error;
+    await loadSchoolAnnouncements(user,dashboardProfile);
+  }catch(error){
+    console.error("Acknowledge announcement:",error);
+    alert("تعذر تسجيل الاطلاع. حاولي مرة أخرى.");
+    if(btn){btn.disabled=false;btn.textContent="✓ تم الاطلاع";}
+  }
+}
+function renderAnnouncementManagement(){
+  const section=document.getElementById("announcementManagement"),list=document.getElementById("announcementManagementList");
+  if(!section||!list) return;
+  section.classList.remove("visible");
+  if(!isTopLeadership(dashboardProfile)) {
+    list.innerHTML="";
+    return;
+  }
+  section.classList.add("visible");
+  if(!dashboardAnnouncements.length){list.innerHTML='<div class="announcement-manager-item">لا توجد تعاميم مرسلة حتى الآن.</div>';return;}
+  const allIds=announcementDirectory.map(x=>String(x.user_id));
+  list.innerHTML=dashboardAnnouncements.map(a=>{
+    const targetIds=a.target_type==="all"?allIds:(a.target_user_ids||[]).map(String);
+    const reads=dashboardAnnouncementReads.filter(r=>String(r.announcement_id)===String(a.id) && targetIds.includes(String(r.user_id)));
+    const readIds=new Set(reads.map(r=>String(r.user_id)));
+    const unreadNames=announcementDirectory.filter(x=>targetIds.includes(String(x.user_id))&&!readIds.has(String(x.user_id))).map(x=>x.full_name);
+    const readNames=reads.map(r=>r.user_name).filter(Boolean);
+    return `<div class="announcement-manager-item">
+      <div class="announcement-manager-head"><div><strong>${escapeDashboardText(a.announcement_type||"تنبيه")}: ${escapeDashboardText(a.title||"")}</strong><div class="announcement-meta">${a.target_type==="all"?"جميع المعلمات":targetIds.length+" معلمة"} • ${a.is_active?"نشط":"موقوف"} • ${escapeDashboardText(formatAnnouncementDate(a.created_at))}</div></div>
+      <div class="announcement-actions"><button class="btn btn-soft" type="button" onclick="openAnnouncementModal('${escapeDashboardText(a.id)}')">✏️ تعديل</button><button class="btn btn-soft" type="button" onclick="toggleAnnouncement('${escapeDashboardText(a.id)}',${a.is_active?"false":"true"})">${a.is_active?"⏸️ إيقاف":"▶️ تفعيل"}</button><button class="btn btn-soft" type="button" onclick="deleteAnnouncement('${escapeDashboardText(a.id)}')">🗑️ حذف</button></div></div>
+      <div class="announcement-stats"><div class="announcement-stat"><span>المستهدفات</span><strong>${targetIds.length}</strong></div><div class="announcement-stat"><span>تم الاطلاع</span><strong>${reads.length}</strong></div><div class="announcement-stat"><span>لم يطلع</span><strong>${Math.max(0,targetIds.length-reads.length)}</strong></div></div>
+      <div class="announcement-read-list"><strong>تم الاطلاع:</strong> ${escapeDashboardText(readNames.join("، ")||"لا أحد حتى الآن")}<br><strong>لم يطلع:</strong> ${escapeDashboardText(unreadNames.join("، ")||"لا يوجد")}</div>
+    </div>`;
+  }).join("");
+}
+function openAnnouncementModal(id=null){
+  if(!isTopLeadership(dashboardProfile)) return;
+  editingAnnouncementId=id;
+  const row=id?dashboardAnnouncements.find(x=>String(x.id)===String(id)):null;
+  document.getElementById("announcementModalTitle").textContent=row?"✏️ تعديل التنبيه":"📢 إرسال تنبيه / تعميم";
+  document.getElementById("announcementType").value=row?.announcement_type||"طلب إجراء";
+  document.getElementById("announcementTargetType").value=row?.target_type||"all";
+  document.getElementById("announcementTitle").value=row?.title||"";
+  document.getElementById("announcementMessage").value=row?.message||"";
+  document.getElementById("announcementActive").value=row?.is_active===false?"false":"true";
+  document.getElementById("announcementExpires").value=row?.expires_at?String(row.expires_at).slice(0,10):"";
+  const targetSearch=document.getElementById("announcementTargetSearch");
+  if(targetSearch) targetSearch.value="";
+  renderAnnouncementTargets(row?.target_user_ids||[]);
+  document.getElementById("announcementTargetsField").style.display=(row?.target_type==="selected")?"flex":"none";
+  document.getElementById("announcementSaveState").textContent="";
+  document.getElementById("announcementModal").classList.add("visible");
+  document.getElementById("announcementModal").setAttribute("aria-hidden","false");
+}
+function closeAnnouncementModal(){
+  editingAnnouncementId=null;
+  document.getElementById("announcementModal").classList.remove("visible");
+  document.getElementById("announcementModal").setAttribute("aria-hidden","true");
+}
+async function saveAnnouncement(){
+  if(!isTopLeadership(dashboardProfile)){ alert("هذه الخاصية متاحة للقيادة العليا فقط."); return; }
+  const title=document.getElementById("announcementTitle").value.trim();
+  const message=document.getElementById("announcementMessage").value.trim();
+  const targetType=document.getElementById("announcementTargetType").value;
+  const targets=selectedAnnouncementTargets();
+  const state=document.getElementById("announcementSaveState");
+  if(!title||!message){state.textContent="اكتبي عنوان الرسالة ونصها.";return;}
+  if(targetType==="selected"&&!targets.length){state.textContent="اختاري معلمة واحدة على الأقل.";return;}
+  const user=await WRGraph.getAccount(); if(!user) return;
+  const expiry=document.getElementById("announcementExpires").value;
+  const payload={title,message,target_type:targetType,target_user_ids:targetType==="selected"?targets:[],announcement_type:document.getElementById("announcementType").value,is_active:document.getElementById("announcementActive").value==="true",expires_at:expiry?expiry+"T23:59:59":null};
+  if(!editingAnnouncementId){payload.created_by=user.id;payload.created_by_name=dashboardProfile?.full_name||user.email||"القيادة العليا";}
+  const btn=document.getElementById("saveAnnouncementBtn");btn.disabled=true;btn.textContent="جاري الحفظ...";
+  try{
+    const sb=window.supabase.createClient(window.WR_CONFIG.supabaseUrl,window.WR_CONFIG.supabaseKey);
+    const {error}=editingAnnouncementId?await sb.from("school_announcements").update(payload).eq("id",editingAnnouncementId):await sb.from("school_announcements").insert(payload);
+    if(error) throw error;
+    closeAnnouncementModal(); await loadSchoolAnnouncements(user,dashboardProfile);
+  }catch(error){console.error("Save announcement:",error);state.textContent="تعذر الحفظ: "+(error.message||"خطأ");}
+  finally{btn.disabled=false;btn.textContent="💾 حفظ وإرسال";}
+}
+async function toggleAnnouncement(id,newState){
+  if(!isTopLeadership(dashboardProfile)){ alert("هذه الخاصية متاحة للقيادة العليا فقط."); return; }
+  const user=await WRGraph.getAccount(); if(!user) return;
+  const sb=window.supabase.createClient(window.WR_CONFIG.supabaseUrl,window.WR_CONFIG.supabaseKey);
+  const {error}=await sb.from("school_announcements").update({is_active:newState}).eq("id",id);
+  if(error){alert("تعذر تغيير حالة التنبيه.");return;} await loadSchoolAnnouncements(user,dashboardProfile);
+}
+async function deleteAnnouncement(id){
+  if(!isTopLeadership(dashboardProfile)){ alert("هذه الخاصية متاحة للقيادة العليا فقط."); return; }
+  const row=dashboardAnnouncements.find(x=>String(x.id)===String(id));
+  if(!confirm(`هل تريدين حذف "${row?.title||"هذا التنبيه"}"؟`)) return;
+  const user=await WRGraph.getAccount(); if(!user) return;
+  const sb=window.supabase.createClient(window.WR_CONFIG.supabaseUrl,window.WR_CONFIG.supabaseKey);
+  const {error}=await sb.from("school_announcements").delete().eq("id",id);
+  if(error){alert("تعذر حذف التنبيه.");return;} await loadSchoolAnnouncements(user,dashboardProfile);
+}
+
+/* =====================================================
+   إشعار الزيارات التبادلية الموجّهة في لوحة التحكم
+   إضافة مستقلة: قراءة فقط من exchange_visit_assignments
+   ===================================================== */
+function escapeDashboardText(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function formatAssignmentDate(value) {
+  if (!value) return "—";
+  try {
+    return new Intl.DateTimeFormat("ar-BH", { year:"numeric", month:"long", day:"numeric" })
+      .format(new Date(value + "T00:00:00"));
+  } catch (_) {
+    return value;
+  }
+}
+
+async function loadExchangeAssignmentNotice(user) {
+  const box = document.getElementById("exchangeAssignmentNotice");
+  const list = document.getElementById("exchangeAssignmentList");
+  const countEl = document.getElementById("exchangeAssignmentCount");
+  if (!box || !list || !countEl || !user?.id) return;
+
+  box.classList.remove("visible");
+  list.innerHTML = "";
+
+  try {
+    const sbExchangeNotice = window.supabase.createClient(
+      window.WR_CONFIG.supabaseUrl,
+      window.WR_CONFIG.supabaseKey
+    );
+
+    const { data, error } = await sbExchangeNotice
+      .from("exchange_visit_assignments")
+      .select("id, visited_teacher_name, visit_type, school_name, support_area, support_area_other, subject, scheduled_date, lesson_period, status")
+      .eq("assigned_teacher_id", user.id)
+      .in("status", ["pending", "rescheduled", "impact_pending"])
+      .order("scheduled_date", { ascending: true });
+
+    if (error) throw error;
+
+    const assignments = Array.isArray(data) ? data : [];
+    if (!assignments.length) return;
+
+    countEl.textContent = String(assignments.length);
+    list.innerHTML = assignments.map(item => {
+      const support = item.support_area === "أخرى" && item.support_area_other
+        ? item.support_area_other
+        : (item.support_area || "—");
+      const target = item.visited_teacher_name || item.school_name || "—";
+      const statusText = item.status === "rescheduled"
+        ? "أُعيدت الجدولة"
+        : (item.status === "impact_pending" ? "تحتاج متابعة أثر" : "بانتظار التنفيذ");
+
+      return `
+        <div class="exchange-assignment-item">
+          <div>
+            <strong>إلى: ${escapeDashboardText(target)}</strong>
+            <div class="exchange-assignment-meta">
+              ${escapeDashboardText(item.visit_type || "—")}
+              — ${escapeDashboardText(item.subject || "—")}
+              — ${escapeDashboardText(formatAssignmentDate(item.scheduled_date))}
+              ${item.lesson_period ? ` — ${escapeDashboardText(item.lesson_period)}` : ""}
+              <br>مجال الدعم والتطوير: ${escapeDashboardText(support)}
+              — الحالة: ${escapeDashboardText(statusText)}
+            </div>
+          </div>
+          <a class="exchange-assignment-action" href="pages/exchange-visits/index.html">توثيق / متابعة الزيارة</a>
+        </div>`;
+    }).join("");
+
+    box.classList.add("visible");
+  } catch (error) {
+    console.error("Exchange assignment dashboard notice:", error);
+    /* لا نعطّل لوحة التحكم إذا تعذر تحميل الإشعار */
+    box.classList.remove("visible");
+  }
+}
 
 
 /* =====================================================
@@ -3241,6 +3736,24 @@ window.addEventListener(
 );
 
 
+
+
+document.getElementById("newAnnouncementBtn")?.addEventListener("click",()=>openAnnouncementModal());
+document.getElementById("closeAnnouncementModalBtn")?.addEventListener("click",closeAnnouncementModal);
+document.getElementById("saveAnnouncementBtn")?.addEventListener("click",saveAnnouncement);
+document.getElementById("announcementTargetType")?.addEventListener("change",e=>{
+  document.getElementById("announcementTargetsField").style.display=e.target.value==="selected"?"flex":"none";
+});
+document.getElementById("announcementTargetSearch")?.addEventListener("input",()=>renderAnnouncementTargets(null));
+document.getElementById("selectAllAnnouncementTargetsBtn")?.addEventListener("click",()=>{
+  document.querySelectorAll('#announcementTargets input[name="announcementTarget"]').forEach(x=>x.checked=true);
+});
+document.getElementById("clearAllAnnouncementTargetsBtn")?.addEventListener("click",()=>{
+  document.querySelectorAll('#announcementTargets input[name="announcementTarget"]').forEach(x=>x.checked=false);
+});
+document.getElementById("announcementModal")?.addEventListener("click",e=>{
+  if(e.target?.id==="announcementModal") closeAnnouncementModal();
+});
 
 document.addEventListener(
   "DOMContentLoaded",

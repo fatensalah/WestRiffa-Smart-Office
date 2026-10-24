@@ -936,7 +936,7 @@
   </div>
 
   <div id="scopeBox" class="scope-box">
-    جارٍ تحميل بيانات الحساب...
+    جارٍ تحميل بيانات الحساب... <span style="font-size:11px;opacity:.65">[LP-FIX-8]</span>
   </div>
 
   <div class="tabs">
@@ -1492,6 +1492,8 @@
 <script src="../../js/common.js?v=20260816-lessonplans2"></script>
 
 <script>
+console.info("LESSON_PLANS_BUILD","LP-FIX-8");
+window.__LESSON_PLANS_BUILD__ = "LP-FIX-8";
 "use strict";
 
 let sb = null;
@@ -2172,71 +2174,126 @@ async function init(){
       window.WR_CONFIG.supabaseKey
     );
 
-    currentUser =
-      await WRGraph.getAccount();
+    /*
+      لا نعتمد على WRGraph في فتح الصفحة؛ لأن أي تعليق في getAccount
+      أو getUserProfile كان يترك الشاشة على "جار تحميل بيانات الحساب".
+      Supabase Auth هو المصدر المباشر للجلسة الحالية.
+    */
+    const { data: authData, error: authError } = await sb.auth.getUser();
+
+    if(authError){
+      throw authError;
+    }
+
+    currentUser = authData?.user || null;
 
     if(!currentUser){
       location.href = "../../index.html";
       return;
     }
 
-    currentProfile =
-      await WRGraph.getUserProfile();
+    /*
+      profiles هو مصدر الاسم والدور الفعلي المستخدم في المنصة.
+      هذا يجعل نفس المسار يعمل للقيادة العليا والمنسقات والمعلمات.
+    */
+    const { data: directProfile, error: directProfileError } =
+      await sb
+        .from("profiles")
+        .select("id, full_name, role")
+        .eq("id", currentUser.id)
+        .maybeSingle();
+
+    if(directProfileError){
+      throw directProfileError;
+    }
+
+    currentProfile = {
+      user_id: currentUser.id,
+      id: directProfile?.id || currentUser.id,
+      email: currentUser.email || "",
+      full_name:
+        directProfile?.full_name ||
+        currentUser.user_metadata?.full_name ||
+        currentUser.email ||
+        "",
+      role:
+        directProfile?.role ||
+        currentUser.user_metadata?.role ||
+        "teacher"
+    };
+
+    const normalizedRole = String(currentProfile.role || "")
+      .trim()
+      .toLowerCase();
+
+    // القيادة العليا: وصول إداري كامل لدفتر التحضير والمتابعة والتقارير.
+    // ندعم المسميات القديمة والحالية حتى لا يتعطل الحساب إذا اختلف اسم الدور في profiles.
+    const TOP_LEADERSHIP_ROLES = new Set([
+      "admin",
+      "system_admin",
+      "leadership",
+      "senior_leadership",
+      "upper_leadership",
+      "school_leadership",
+      "principal",
+      "assistant_principal",
+      "قيادة عليا",
+      "القيادة العليا"
+    ]);
+
+    isAdminUser = TOP_LEADERSHIP_ROLES.has(normalizedRole);
+
+    // المنسقة: تكتب تحضيرها كمعلمة + تتابع أقسامها فقط.
+    isCoordinatorUser = normalizedRole === "coordinator" || normalizedRole === "منسقة";
+
+    // المعلمة: تحضيرها فقط. القيادة العليا والمنسقة لهما نطاق متابعة.
+    canViewDepartmentOverview = isAdminUser || isCoordinatorUser;
+
+    console.info("LESSON_PLANS_ROLE", {
+      name: currentProfile.full_name,
+      role: currentProfile.role,
+      normalizedRole,
+      isAdminUser,
+      isCoordinatorUser
+    });
 
     /*
-      دعم الحسابات القديمة الموجودة في جدول profiles
-      إذا لم يكن لها user_profiles بعد.
+      عرّفي الحساب في الشاشة فورًا قبل أي استعلامات أخرى.
+      بذلك لا تبقى الصفحة على "جار تحميل بيانات الحساب" إذا تعطل
+      استعلام مواد/أقسام/متابعة لاحق.
     */
-    if(!currentProfile?.role){
-      const { data: legacyProfile } =
-        await sb
-          .from("profiles")
-          .select("id, full_name, role")
-          .eq("id",currentUser.id)
-          .maybeSingle();
-
-      if(legacyProfile){
-        currentProfile = {
-          ...currentProfile,
-          full_name:
-            currentProfile?.full_name ||
-            legacyProfile.full_name ||
-            currentUser.email,
-          role:
-            legacyProfile.role || "teacher"
-        };
-      }
-    }
-
-    if(!currentProfile){
-      currentProfile = {
-        user_id:currentUser.id,
-        email:currentUser.email,
-        full_name:currentUser.email,
-        role:"teacher"
-      };
-    }
-
-    isAdminUser =
-      currentProfile.role === "admin";
-
-    isCoordinatorUser =
-      currentProfile.role === "coordinator";
-
-    canViewDepartmentOverview =
-      isAdminUser || isCoordinatorUser;
-
-    if(isCoordinatorUser){
-      await loadCoordinatorLessonPlanScope();
-    }
-
-    populateStaticOptions();
-    await loadSubjectOptions();
-
     byId("teacherName").value =
       currentProfile.full_name ||
       currentUser.email ||
       "";
+
+    if(isAdminUser){
+      byId("scopeBox").textContent =
+        "صلاحية الإدارة — يمكنك الاطلاع على جميع التحاضير ومؤشرات الممارسات التعليمية.";
+    }else if(isCoordinatorUser){
+      byId("scopeBox").textContent =
+        "تم التعرف على الحساب: " +
+        (currentProfile.full_name || currentUser.email || "منسقة") +
+        " — صلاحية منسقة. جارٍ تحميل نطاق الأقسام...";
+    }else{
+      byId("scopeBox").textContent =
+        "دفتر التحضير الخاص بكِ — يمكنك إنشاء التحاضير وحفظها ونسخها وتعديلها وتنزيلها PDF.";
+    }
+
+    if(isCoordinatorUser){
+      try{
+        await loadCoordinatorLessonPlanScope();
+      }catch(scopeError){
+        console.warn("Coordinator scope non-blocking:", scopeError);
+      }
+    }
+
+    populateStaticOptions();
+    try{
+      await loadSubjectOptions();
+    }catch(subjectError){
+      console.warn("Subject options non-blocking:", subjectError);
+    }
 
     byId("lessonDate").value =
       new Date().toISOString().slice(0,10);
@@ -2320,10 +2377,12 @@ async function init(){
 
   }catch(error){
     console.error("Lesson plans init:",error);
-
-    alert(
-      "تعذر تحميل دفتر التحضير الإلكتروني."
-    );
+    const scopeBox = document.getElementById("scopeBox");
+    if(scopeBox){
+      scopeBox.textContent =
+        "❌ LP-FIX-8 — تعذر إكمال تحميل الحساب: " +
+        (error?.message || String(error || "خطأ غير معروف"));
+    }
   }
 }
 
@@ -3289,6 +3348,9 @@ async function resolveReviewDepartmentId(plan){
   return null;
 }
 
+document.addEventListener("DOMContentLoaded", init);
+</script>
+<script>
 function reviewRatingLabel(value){return value==="met"?"متحقق":value==="partial"?"متحقق جزئيًا":value==="not_met"?"غير متحقق":"—";}
 
 function renderReviewCriteria(items={}){
@@ -3477,14 +3539,17 @@ function buildOfficialReviewHtml(review){
   </div>`;
 }
 
+</script>
+<script>
 function printHtmlDocument(html,title="طباعة",orientation="portrait"){
   const w = window.open("","_blank","width=1100,height=800");
   if(!w) throw new Error("تعذر فتح نافذة الطباعة. اسمحي بالنوافذ المنبثقة لهذا الموقع.");
   const css = Array.from(document.querySelectorAll('style,link[rel="stylesheet"]'))
     .map(el => el.outerHTML).join("\n");
   w.document.open();
-  w.document.write(`<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>${esc(title)}</title>${css}<style>@page{size:A4 ${orientation};margin:8mm}body{background:#fff!important;margin:0!important;padding:0!important}.no-print,button{display:none!important}#pdfSheet{display:block!important;position:static!important;width:auto!important}</style></head><body>${html}<script>window.onload=()=>setTimeout(()=>window.print(),350)<\/script></body></html>`);
+  w.document.write(`<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>${esc(title)}</title>${css}<style>@page{size:A4 ${orientation};margin:8mm}body{background:#fff!important;margin:0!important;padding:0!important}.no-print,button{display:none!important}#pdfSheet{display:block!important;position:static!important;width:auto!important}</style></head><body>${html}</body></html>`);
   w.document.close();
+  w.onload = () => setTimeout(() => w.print(), 350);
 }
 
 async function printReview(reviewId){
@@ -3515,38 +3580,7 @@ async function printReview(reviewId){
     pdf.innerHTML="";
     return;
 
-    if(document.fonts?.ready){try{await document.fonts.ready;}catch(_){}}
-    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
 
-    const page=byId("officialReviewPdfPage");
-    const canvas=await html2canvas(page,{
-      scale:1.5,
-      useCORS:true,
-      backgroundColor:"#ffffff",
-      logging:false,
-      scrollX:0,
-      scrollY:0,
-      windowWidth:page.scrollWidth,
-      windowHeight:page.scrollHeight
-    });
-
-    const JsPDF=window.jspdf?.jsPDF||window.jsPDF;
-    if(!JsPDF) throw new Error("مكتبة PDF غير متاحة");
-
-    const doc=new JsPDF({orientation:"portrait",unit:"mm",format:"a4",compress:true});
-    const imgData=canvas.toDataURL("image/jpeg",0.96);
-    const pageW=210, pageH=297;
-    const ratio=Math.min(pageW/canvas.width,pageH/canvas.height);
-    const imgW=canvas.width*ratio, imgH=canvas.height*ratio;
-    doc.addImage(imgData,"JPEG",(pageW-imgW)/2,0,imgW,imgH,undefined,"FAST");
-
-    const plan=reviewPlanById(review.lesson_plan_id)||{};
-    const clean=s=>String(s||"").replace(/[\\/:*?"<>|]/g,"_").replace(/\s+/g,"_");
-    doc.save(`متابعة_${clean(plan.teacher_name||"معلمة")}_${clean(plan.lesson_title||"تحضير")}_${review.review_cycle||1}.pdf`);
-
-    pdf.classList.remove("pdf-visible");
-    pdf.style.width="";
-    pdf.innerHTML="";
   }catch(error){
     console.error("Review PDF:",error);
     const pdf=byId("pdfSheet");
@@ -3555,6 +3589,8 @@ async function printReview(reviewId){
   }
 }
 
+</script>
+<script>
 function aggregateVisibleReviews(){
   let rows=finalizedVisibleReviews();
   const department=byId("aggregateDepartment")?.value||"";
@@ -4312,11 +4348,6 @@ byId("cancelLessonReviewBtn").addEventListener("click",closeLessonReview);
 byId("saveLessonReviewDraftBtn").addEventListener("click",()=>saveLessonReview("draft"));
 byId("approveLessonReviewBtn").addEventListener("click",()=>saveLessonReview("final"));
 byId("lessonReviewModal").addEventListener("click",event=>{if(event.target===byId("lessonReviewModal"))closeLessonReview();});
-
-document.addEventListener(
-  "DOMContentLoaded",
-  init
-);
 
 window.removeObjective = removeObjective;
 window.removeSupport = removeSupport;

@@ -16,7 +16,163 @@
 .comment-box textarea{width:100%;min-height:125px;border:1px solid #ccdcd7;border-radius:11px;padding:12px;font:inherit;line-height:1.8}.comment-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.print-head,.signatures{display:none}.section-title{color:#0f513f;margin:0 0 14px}
 .audit-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:12px 0}.audit-item{border:1px solid #e3ece9;border-radius:14px;padding:14px;background:#fbfdfc}.audit-item strong{display:block;font-size:1.5rem;color:#0f6b52}.detail-btn{border:0;background:#e9f6f1;color:#0f6b52;border-radius:8px;padding:5px 9px;font-weight:700;cursor:pointer}.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:9999;padding:4vh 3vw}.modal.open{display:block}.modal-box{background:#fff;max-width:1200px;max-height:92vh;overflow:auto;margin:auto;border-radius:18px;padding:20px}.modal-head{display:flex;justify-content:space-between;align-items:center;gap:12px}.modal-close{font-size:24px;border:0;background:transparent;cursor:pointer}@media(max-width:900px){.audit-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:1000px){.filters{grid-template-columns:repeat(2,1fr)}.kpis{grid-template-columns:repeat(3,1fr)}.two{grid-template-columns:1fr}}@media(max-width:600px){.filters,.kpis{grid-template-columns:1fr}}
-@media print{@page{size:A4 landscape;margin:9mm}body{background:#fff}.head,.top,.access,.filters-card,.tabs,.comment-actions,.status{display:none!important}.container{width:100%;margin:0}.card{box-shadow:none;border:0;padding:0;margin-bottom:12px}.print-head{display:block;text-align:center;margin-bottom:12px}.print-head img{width:100%;max-height:72px;object-fit:contain}.print-head h2{color:#0f513f;margin:7px 0 3px}.kpis{grid-template-columns:repeat(6,1fr)}.two{grid-template-columns:1fr 1fr}.table-wrap{overflow:visible}.signatures{display:flex;justify-content:space-between;border-top:1px solid #8db7aa;padding-top:10px;margin-top:16px;font-size:11px}.comment-box textarea{border:0;min-height:auto;resize:none}}
+@media print{
+@page{size:A4 landscape;margin:9mm 10mm}
+*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+html,body{background:#fff!important;color:#183d35!important;font-size:10px!important}
+.head,.top,.access,.filters-card,.tabs,.comment-actions,.status,.detail-btn,.modal{display:none!important}
+.container{width:100%!important;max-width:none!important;margin:0!important;padding:0!important}
+#reportArea{border:0!important;box-shadow:none!important;padding:0!important;margin:0!important;background:#fff!important}
+
+.print-head{
+  display:block!important;
+  text-align:center;
+  margin:0 0 10px!important;
+  padding:0 0 8px!important;
+  border-bottom:2px solid #176c56;
+}
+.print-head img{width:100%!important;max-height:58px!important;object-fit:contain!important}
+.print-head h2{color:#0f5d49!important;margin:5px 0 2px!important;font-size:20px!important;font-weight:800!important}
+#printScope{font-size:10px!important;color:#4f6f67!important}
+#reportTitle{display:none!important}
+
+.kpis{
+  display:grid!important;
+  grid-template-columns:repeat(4,1fr)!important;
+  gap:7px!important;
+  margin:10px 0 12px!important;
+}
+.kpi{
+  display:none!important;
+  padding:10px 5px!important;
+  border:1px solid #cfe0da!important;
+  border-radius:9px!important;
+  background:#f5faf8!important;
+  box-shadow:none!important;
+  min-height:58px!important;
+}
+.kpi:nth-child(1),
+.kpi:nth-child(2),
+.kpi:nth-child(3),
+.kpi:nth-child(7){display:flex!important}
+.kpi strong{font-size:22px!important;color:#0f6b53!important;margin:0 0 2px!important}
+.kpi span{font-size:9px!important;color:#526d66!important}
+
+.print-page{width:100%!important}
+.print-page-one{break-after:page;page-break-after:always}
+.print-page-two{break-after:page;page-break-after:always}
+
+.card{
+  box-shadow:none!important;
+  border:0!important;
+  background:#fff!important;
+  padding:0!important;
+  margin:0 0 10px!important;
+}
+.section-title{
+  color:#0f5d49!important;
+  font-size:16px!important;
+  font-weight:800!important;
+  margin:8px 0 7px!important;
+  padding:5px 8px!important;
+  background:#edf6f2!important;
+  border-right:4px solid #176c56!important;
+  border-radius:5px!important;
+}
+.table-wrap{overflow:visible!important;border:1px solid #d7e4e0!important;border-radius:7px!important}
+table{width:100%!important;border-collapse:collapse!important;table-layout:auto!important}
+thead{display:table-header-group!important}
+tr{break-inside:avoid!important;page-break-inside:avoid!important}
+th{
+  background:#eaf4f0!important;
+  color:#164f40!important;
+  font-weight:800!important;
+  font-size:8.5px!important;
+  padding:5px 4px!important;
+  border-bottom:1px solid #c8dad4!important;
+  white-space:normal!important;
+}
+td{
+  color:#294d44!important;
+  font-size:8.5px!important;
+  line-height:1.35!important;
+  padding:5px 4px!important;
+  border-bottom:1px solid #e2ebe8!important;
+  vertical-align:middle!important;
+}
+tbody tr:nth-child(even) td{background:#fbfdfc!important}
+
+.two{
+  display:block!important;
+}
+.two > .card{width:100%!important}
+
+.comment-box{
+  break-before:page!important;
+  page-break-before:always!important;
+  min-height:150mm!important;
+  padding:16px 18px!important;
+  border:1px solid #d3e2dd!important;
+  border-radius:10px!important;
+  background:#fff!important;
+  position:relative!important;
+}
+.comment-box:before{
+  content:"الخلاصة الإدارية";
+  display:block;
+  color:#0f5d49;
+  font-size:19px;
+  font-weight:800;
+  margin:0 0 14px;
+  padding-bottom:8px;
+  border-bottom:2px solid #176c56;
+}
+.comment-box h3{
+  color:#0f5d49!important;
+  font-size:15px!important;
+  margin:12px 0 5px!important;
+  padding:5px 8px!important;
+  background:#edf6f2!important;
+  border-radius:5px!important;
+}
+.comment-box textarea{
+  display:block!important;
+  width:100%!important;
+  border:0!important;
+  background:#fff!important;
+  color:#294d44!important;
+  min-height:38px!important;
+  height:55px!important;
+  padding:8px 10px!important;
+  font-size:11px!important;
+  line-height:1.8!important;
+  resize:none!important;
+  overflow:hidden!important;
+}
+
+.signatures{
+  display:flex!important;
+  justify-content:space-between!important;
+  align-items:flex-start!important;
+  gap:20px!important;
+  border-top:2px solid #b8d1c9!important;
+  padding-top:12px!important;
+  margin-top:18px!important;
+  font-size:10px!important;
+  font-weight:700!important;
+  color:#214d42!important;
+  break-inside:avoid!important;
+}
+.signatures span{
+  width:32%!important;
+  text-align:center!important;
+  padding-top:5px!important;
+}
+
+.audit-grid{grid-template-columns:repeat(4,1fr)!important;gap:6px!important}
+.audit-item{padding:7px!important}
+.audit-item strong{font-size:17px!important}
+}
 </style>
 </head>
 <body>
@@ -53,6 +209,21 @@ const sb=window.supabase.createClient(window.WR_CONFIG.supabaseUrl,window.WR_CON
 const MONTHS=[9,10,11,12,1,2,3,4,5,6],MN={1:"يناير",2:"فبراير",3:"مارس",4:"أبريل",5:"مايو",6:"يونيو",9:"سبتمبر",10:"أكتوبر",11:"نوفمبر",12:"ديسمبر"};
 const $=id=>document.getElementById(id),pct=(a,b)=>b?Math.round(a*100/b):0,esc=v=>String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
 let type="monthly",user=null,displayName="",plans=[],procedures=[],followups=[],reportRows=[],departments=[],autoComment="",autoRecommendations="";
+
+
+async function fetchAllRows(table, selectText, applyQuery = null, pageSize = 1000){
+  const rows=[];
+  for(let from=0;;from+=pageSize){
+    let q=sb.from(table).select(selectText).range(from,from+pageSize-1);
+    if(typeof applyQuery==="function")q=applyQuery(q);
+    const {data,error}=await q;
+    if(error)throw error;
+    const page=data||[];
+    rows.push(...page);
+    if(page.length<pageSize)break;
+  }
+  return rows;
+}
 
 /* الزمن الأكاديمي: لا تُحسب الشهور المستقبلية كـ «غير محدث». */
 function schoolYearStart(y){const m=String(y||"").match(/(\d{4})/);return m?Number(m[1]):null}
@@ -153,32 +324,36 @@ async function bootstrap(){
 }
 
 async function loadData(){
-  const d=await sb.from("departments").select("id,name").order("name");
-  if(d.error)throw d.error;departments=d.data||[];
-
-  const p=await sb.from("plans").select("id,department_id,school_year,plan_title,status");
-  if(p.error)throw p.error;plans=p.data||[];
+  departments=await fetchAllRows("departments","id,name",q=>q.order("name"));
+  plans=await fetchAllRows("plans","id,department_id,school_year,plan_title,status");
 
   normalizePlanDepartments();
 
   const ids=plans.map(x=>x.id);
   procedures=[];followups=[];
+
   if(ids.length){
     const BATCH_SIZE=150;
     for(let i=0;i<ids.length;i+=BATCH_SIZE){
       const batch=ids.slice(i,i+BATCH_SIZE);
-      const pr=await sb.from("plan_procedures").select("id,plan_id,sequence_no,path_code,domain_name,program_name,procedure_text,planned_months").in("plan_id",batch);
-      if(pr.error)throw pr.error;
-      if(pr.data?.length)procedures.push(...pr.data);
-      const fu=await sb.from("plan_monthly_followups").select("id,plan_id,procedure_id,month_no,execution_status,non_completion_reason,followup_notes,updated_at").in("plan_id",batch);
-      if(fu.error)throw fu.error;
-      if(fu.data?.length)followups.push(...fu.data);
+
+      const pr=await fetchAllRows(
+        "plan_procedures",
+        "id,plan_id,sequence_no,path_code,domain_name,program_name,procedure_text,planned_months",
+        q=>q.in("plan_id",batch)
+      );
+      procedures.push(...pr);
+
+      const fu=await fetchAllRows(
+        "plan_monthly_followups",
+        "id,plan_id,procedure_id,month_no,execution_status,non_completion_reason,followup_notes,updated_at",
+        q=>q.in("plan_id",batch)
+      );
+      followups.push(...fu);
     }
   }
 
   buildReportRows();
-
-  /* الفلتر يتبع خطط السنة المختارة فقط؛ لا أقسام تاريخية ولا أقسام المدرسة العامة. */
   refreshDepartmentFilter();
 }
 
@@ -296,11 +471,19 @@ async function render(){
   }else{kpis(c);if(type==="monthly")renderMonthly(rows,c);else renderTracking(rows)}
   await loadNote();
 }
-function departmentDrilldown(depRows){return `<section class="card"><h3 class="section-title">تفاصيل الأقسام لهذا الشهر</h3><div class="table-wrap"><table><thead><tr><th>القسم</th><th>المستحق</th><th>الحالة</th><th>التدقيق</th></tr></thead><tbody>${depRows.map(r=>`<tr><td>${esc(r.label)}</td><td>${r.total}</td><td>${r.completed} منفذ، ${r.pending} غير محدث، ${r.progress} جاري، ${r.not} لم ينفذ</td><td><button class="detail-btn" onclick="openDetails('${r.key}',${Number($("month").value)})">عرض الإجراءات</button></td></tr>`).join("")||'<tr><td colspan="4">لا توجد بيانات</td></tr>'}</tbody></table></div></section>`}
+function departmentDrilldown(depRows){return `<section class="card"><h3 class="section-title">تفاصيل المتابعة حسب الأقسام</h3><div class="table-wrap"><table><thead><tr><th>القسم</th><th>المستحق</th><th>الحالة</th><th>التدقيق</th></tr></thead><tbody>${depRows.map(r=>`<tr><td>${esc(r.label)}</td><td>${r.total}</td><td>${r.completed} منفذ، ${r.pending} غير محدث، ${r.progress} جاري، ${r.not} لم ينفذ</td><td><button class="detail-btn" onclick="openDetails('${r.key}',${Number($("month").value)})">عرض الإجراءات</button></td></tr>`).join("")||'<tr><td colspan="4">لا توجد بيانات</td></tr>'}</tbody></table></div></section>`}
 function renderMonthly(rows,c){
   const dep=aggregate(rows,depOf,k=>departments.find(x=>String(x.id)===String(k))?.name||"غير معروف");
   const dom=aggregate(rows,f=>domainKey(procOf(f)||{}),domainName);
-  $("reportBody").innerHTML=`<div class="two">${table("النتائج حسب الأقسام",dep)}${table("النتائج حسب المجالات",dom)}</div>`+departmentDrilldown(dep);
+  $("reportBody").innerHTML=`
+    <div class="print-page print-page-one">
+      ${table("ملخص الأداء حسب الأقسام",dep)}
+    </div>
+    <div class="print-page print-page-two">
+      ${table("تحليل الأداء حسب المجالات",dom)}
+      ${departmentDrilldown(dep)}
+    </div>
+  `;
   autoComment=`خلال شهر ${MN[$("month").value]} بلغ عدد المتابعات المستحقة ${c.total} سجلًا، نُفذ منها ${c.completed} بنسبة ${pct(c.completed,c.total)}%، وبلغ الجاري تنفيذه ${c.progress}، بينما لم ينفذ ${c.not}، ولم يتم تحديث ${c.pending} سجل متابعة.${c.future?` ويوجد ${c.future} سجلًا لم يحن موعده بعد ولا يدخل في نسبة التنفيذ.`:""}`;
   autoRecommendations=`الاستمرار في متابعة الإجراءات الجاري تنفيذها، والتركيز على الإجراءات غير المنفذة وغير المحدثة، ومراجعة أسباب التعثر مع الأقسام والمجالات الأقل تنفيذًا.`;
 }

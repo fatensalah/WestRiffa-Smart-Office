@@ -1231,6 +1231,14 @@
 
     </div>
 
+    <section class="card" id="subjectGroupIndicatorsCard" style="margin-top:14px">
+      <div>
+        <h2 style="margin:0">📊 المؤشرات التحصيلية حسب نوع المادة</h2>
+        <div class="sub">مقارنة المؤشر العام بالمواد الأساسية وغير الأساسية، مع إظهار اكتمال التغطية حتى لا تُقرأ النتائج الناقصة كمتوسط نهائي للمدرسة.</div>
+      </div>
+      <div id="subjectGroupIndicators" style="margin-top:14px"></div>
+    </section>
+
     <section class="card">
       <div class="action-row" style="justify-content:space-between;align-items:center">
         <div>
@@ -1562,21 +1570,100 @@ let teacherGradeRows = [];
 let teacherCompetencyRows = [];
 let currentCompetencies = [];
 
+const SUBJECT_GROUPS = {
+  core: [
+    "اللغة العربية",
+    "الرياضيات",
+    "العلوم",
+    "اللغة الإنجليزية"
+  ],
+  nonCore: [
+    "التلاوة",
+    "التربية الإسلامية",
+    "الاجتماعيات",
+    "المواطنة",
+    "التربية الأسرية",
+    "الحاسوب",
+    "التصميم والتقانة",
+    "التربية الفنية",
+    "التربية الرياضية"
+  ]
+};
+
 const SUBJECTS = [
-  "اللغة العربية",
-  "اللغة الإنجليزية",
-  "الرياضيات",
-  "العلوم",
-  "التربية الإسلامية",
-  "الاجتماعيات",
-  "التربية الرياضية",
-  "التربية الفنية",
-  "الحاسوب",
-  "التصميم والتقانة",
-  "التربية الأسرية",
-  "مصادر التعلم",
-  "أخرى"
+  ...SUBJECT_GROUPS.core,
+  ...SUBJECT_GROUPS.nonCore
 ];
+
+function getSubjectGroup(subject){
+  if(SUBJECT_GROUPS.core.includes(subject)) return "أساسية";
+  if(SUBJECT_GROUPS.nonCore.includes(subject)) return "غير أساسية";
+  return "غير مصنفة";
+}
+
+// عدد الشعب المتوقع إدخال نتائجها لكل مادة على مستوى المدرسة.
+// الاجتماعيات والتربية الأسرية للحلقة الثانية فقط (الرابع والخامس = 5 شعب).
+const SUBJECT_EXPECTED_SECTIONS = {
+  "اللغة العربية":12,
+  "الرياضيات":12,
+  "العلوم":12,
+  "اللغة الإنجليزية":12,
+  "التلاوة":12,
+  "التربية الإسلامية":12,
+  "الاجتماعيات":5,
+  "المواطنة":12,
+  "التربية الأسرية":5,
+  "الحاسوب":12,
+  "التصميم والتقانة":12,
+  "التربية الفنية":12,
+  "التربية الرياضية":12
+};
+
+function expectedSectionsForSubject(subject){
+  return SUBJECT_EXPECTED_SECTIONS[subject] || null;
+}
+
+// المواد المطلوبة حسب الحلقة: الاجتماعيات والأسرية للحلقة الثانية فقط.
+function expectedSubjectsForGrade(grade){
+  const secondCycle = ["الرابع","الخامس"].includes(String(grade || "").trim());
+  return SUBJECTS.filter(subject => secondCycle || !["الاجتماعيات","التربية الأسرية"].includes(subject));
+}
+
+const SCHOOL_GRADE_SECTIONS = {
+  "الأول":2,
+  "الثاني":2,
+  "الثالث":3,
+  "الرابع":3,
+  "الخامس":2
+};
+
+function schoolSectionsForGrade(grade){
+  return SCHOOL_GRADE_SECTIONS[String(grade || "").trim()] || 0;
+}
+
+function uniqueAssessmentSlots(sheets){
+  return new Set((sheets || []).map(sheet => [
+    sheet.exam_type || "", sheet.subject || "", sheet.grade || "",
+    sheet.class_section || "", sheet.term || sheet.semester || ""
+  ].join("||"))).size;
+}
+
+function expectedAssessmentSlotsForSchool(){
+  const grades = ["الأول","الثاني","الثالث","الرابع","الخامس"];
+  return grades.reduce((sum, grade) => {
+    return sum + schoolSectionsForGrade(grade) * expectedSubjectsForGrade(grade).length;
+  }, 0);
+}
+
+function overallAssessmentCoverage(sheets){
+  const entered = uniqueAssessmentSlots(sheets);
+  const baseExpected = expectedAssessmentSlotsForSchool();
+  const exams = new Set((sheets || []).map(s => s.exam_type).filter(Boolean));
+  const multiplier = currentAnalysisContext?.().mode === "term" ? Math.max(1, exams.size) : 1;
+  const expected = baseExpected * multiplier;
+  const pct = expected ? Math.min(100, entered / expected * 100) : 0;
+  return {entered, expected, pct, complete: expected > 0 && entered >= expected};
+}
 
 function byId(id){
   return document.getElementById(id);
@@ -2796,10 +2883,10 @@ function renderAdmin(){
     byId("adminSupportRate").textContent = "—";
   }
 
-  renderAverageBars(
+  renderSubjectAverageBars(
     "subjectAnalysis",
     grades,
-    row => row.grade_sheets?.subject || "غير محدد"
+    sheets
   );
 
   renderAverageBars(
@@ -2825,6 +2912,172 @@ function renderAdmin(){
           sheet => renderSheetCard(sheet,true)
         ).join("")
       : '<div class="empty">لا توجد سجلات مطابقة.</div>';
+}
+
+function subjectGroupCoverage(subjects,sheets){
+  const subjectSet=new Set(subjects);
+  const relevant=(sheets||[]).filter(s=>subjectSet.has(s.subject));
+  const entered=uniqueAssessmentSlots(relevant);
+  const baseExpected=subjects.reduce((sum,subject)=>sum+(expectedSectionsForSubject(subject)||0),0);
+  const exams=new Set(relevant.map(s=>s.exam_type).filter(Boolean));
+  const multiplier=currentAnalysisContext().mode==="term"?Math.max(1,exams.size):1;
+  const expected=baseExpected*multiplier;
+  const pct=expected?Math.min(100,entered/expected*100):0;
+  return {entered,expected,pct,complete:expected>0&&entered>=expected};
+}
+
+function renderSubjectGroupIndicators(rows,sheets){
+  const container=byId("subjectGroupIndicators");
+  if(!container) return;
+  if(!rows.length){container.innerHTML='<div class="empty">لا توجد بيانات.</div>';return;}
+
+  // المتوسطات هنا موزونة بنتائج الطلاب الفعلية، وليست متوسطًا بسيطًا لمتوسطات المواد.
+  const build=(label,subjects,icon)=>{
+    const set=new Set(subjects);
+    const rr=rows.filter(r=>set.has(r.grade_sheets?.subject));
+    const avg=rr.length?rr.reduce((n,r)=>n+Number(r.percentage||0),0)/rr.length:null;
+    const cov=subjectGroupCoverage(subjects,sheets);
+    return {label,icon,avg,cov,count:rr.length};
+  };
+
+  const core=build("المواد الأساسية",SUBJECT_GROUPS.core,"📘");
+  const nonCore=build("المواد غير الأساسية",SUBJECT_GROUPS.nonCore,"📗");
+  const overallAvg=rows.length?rows.reduce((n,r)=>n+Number(r.percentage||0),0)/rows.length:null;
+  const overallCov=overallAssessmentCoverage(sheets||[]);
+  const overall={label:"المؤشر العام",icon:"🏫",avg:overallAvg,cov:overallCov,count:rows.length};
+  const cards=[overall,core,nonCore];
+
+  const cardHtml=x=>{
+    const avg=x.avg==null?'—':x.avg.toFixed(1)+'%';
+    const status=x.cov.complete?'✓ مكتملة':'⚠️ غير مكتملة';
+    return `<div style="border:1px solid #dbe7e2;border-radius:16px;padding:16px;background:#fff;min-width:0">
+      <div style="font-weight:800;color:#075f45;font-size:17px">${x.icon} ${esc(x.label)}</div>
+      <div style="font-size:30px;font-weight:900;color:#075f45;margin:8px 0 4px">${avg}</div>
+      <div style="font-size:12px;color:#60736c">متوسط البيانات المدخلة • ${x.count} نتيجة طالب</div>
+      <div style="margin-top:9px;font-size:12px;color:#60736c">التغطية: <strong>${x.cov.entered}</strong> من <strong>${x.cov.expected}</strong> مادة/شعبة — <strong>${x.cov.pct.toFixed(1)}%</strong> ${status}</div>
+      <div class="bar-track" style="margin-top:8px"><div class="bar-fill" style="width:${Math.max(0,Math.min(100,x.cov.pct))}%"></div></div>
+    </div>`;
+  };
+
+  let comparison='';
+  if(core.avg!=null&&nonCore.avg!=null){
+    const diff=core.avg-nonCore.avg;
+    const winner=Math.abs(diff)<0.05?'لا يوجد فارق يُذكر':diff>0?'لصالح المواد الأساسية':'لصالح المواد غير الأساسية';
+    comparison=`<div style="margin-top:12px;padding:11px 14px;border-radius:12px;background:#f4f8f6;text-align:center;font-weight:700;color:#315a4c">الأساسية ${core.avg.toFixed(1)}% │ غير الأساسية ${nonCore.avg.toFixed(1)}% │ الفارق ${Math.abs(diff).toFixed(1)} نقطة ${winner}</div>`;
+  }
+  container.innerHTML=`<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px">${cards.map(cardHtml).join('')}</div>${comparison}`;
+}
+
+function renderSubjectAverageBars(containerId,rows,sheets){
+  const totals = new Map();
+  rows.forEach(row => {
+    const subject = row.grade_sheets?.subject || "غير محدد";
+    const item = totals.get(subject) || {total:0,count:0};
+    item.total += Number(row.percentage || 0);
+    item.count++;
+    totals.set(subject,item);
+  });
+
+  const coverage = new Map();
+  (sheets || []).forEach(sheet => {
+    const subject = sheet.subject;
+    if(!subject) return;
+    if(!coverage.has(subject)) coverage.set(subject,new Set());
+    // نفس الشعبة لا تُحسب مرتين إذا وُجد أكثر من سجل/معلمة لنفس الاختبار.
+    coverage.get(subject).add(`${sheet.grade || ""}||${sheet.class_section || ""}`);
+  });
+
+  const items = [...totals.entries()]
+    .map(([name,item]) => {
+      const average = item.count ? item.total/item.count : 0;
+      const entered = coverage.get(name)?.size || 0;
+      const expected = expectedSectionsForSubject(name);
+      const coveragePct = expected ? Math.min(100,(entered/expected)*100) : null;
+      return {name,average,entered,expected,coveragePct};
+    })
+    .sort((a,b)=>b.average-a.average);
+
+  const container=byId(containerId);
+  if(!items.length){
+    container.innerHTML='<div class="empty">لا توجد بيانات.</div>';
+    return;
+  }
+
+  container.innerHTML=items.map(item=>{
+    const coverageText=item.expected
+      ? `التغطية: ${item.entered} من ${item.expected} صف/شعبة — ${item.coveragePct.toFixed(1)}% ${item.entered>=item.expected?"✓ مكتملة":"⚠️ غير مكتملة"}`
+      : "التغطية: غير محددة";
+    return `
+      <div class="bar-row" style="align-items:flex-start">
+        <span>${esc(item.name)}<small style="display:block;margin-top:4px;font-size:11px;opacity:.75;white-space:nowrap">${esc(coverageText)}</small></span>
+        <div class="bar-track" style="margin-top:5px">
+          <div class="bar-fill" style="width:${Math.max(0,Math.min(100,item.average))}%"></div>
+        </div>
+        <strong>${item.average.toFixed(1)}%</strong>
+      </div>`;
+  }).join("");
+}
+
+function renderGradeAverageBars(containerId,rows,sheets){
+  const map=new Map();
+  rows.forEach(row=>{
+    const grade=row.grade_sheets?.grade||"غير محدد";
+    const item=map.get(grade)||{total:0,count:0};
+    item.total+=Number(row.percentage||0); item.count++; map.set(grade,item);
+  });
+  const container=byId(containerId);
+  if(!map.size){ container.innerHTML='<div class="empty">لا توجد بيانات.</div>'; return; }
+  const items=[...map.entries()].map(([grade,item])=>{
+    const gradeSheets=(sheets||[]).filter(s=>String(s.grade||"").trim()===String(grade).trim());
+    const expectedSubjects=expectedSubjectsForGrade(grade);
+    const sectionCount=schoolSectionsForGrade(grade);
+    const enteredSlots=new Set(gradeSheets.map(s=>`${s.subject||""}||${s.class_section||""}`)).size;
+    const expectedSlots=sectionCount*expectedSubjects.length;
+    const completedSubjects=expectedSubjects.filter(subject=>{
+      const subjectSections=new Set(
+        gradeSheets
+          .filter(s=>String(s.subject||"").trim()===subject)
+          .map(s=>String(s.class_section||"").trim())
+          .filter(Boolean)
+      ).size;
+      return sectionCount>0 && subjectSections>=sectionCount;
+    }).length;
+    const expected=expectedSubjects.length;
+    const entered=completedSubjects;
+    const coveragePct=expectedSlots?Math.min(100,enteredSlots/expectedSlots*100):0;
+    return {grade,average:item.count?item.total/item.count:0,entered,expected,coveragePct,enteredSlots,expectedSlots};
+  }).sort((a,b)=>b.average-a.average);
+  container.innerHTML=items.map(item=>`
+    <div class="bar-row" style="align-items:flex-start">
+      <span>${esc(item.grade)}<small style="display:block;margin-top:4px;font-size:11px;opacity:.75;white-space:nowrap">المواد المكتملة: ${item.entered} من ${item.expected} مادة • تغطية الشعب: ${item.enteredSlots} من ${item.expectedSlots} — ${item.coveragePct.toFixed(1)}% ${item.expected&&item.entered>=item.expected?"✓ مكتملة":"⚠️ غير مكتملة"}</small></span>
+      <div class="bar-track" style="margin-top:5px"><div class="bar-fill" style="width:${Math.max(0,Math.min(100,item.average))}%"></div></div>
+      <strong>${item.average.toFixed(1)}%</strong>
+    </div>`).join("");
+}
+
+function renderExamAverageBars(containerId,rows,sheets){
+  const map=new Map();
+  rows.forEach(row=>{
+    const exam=row.grade_sheets?.exam_type||"غير محدد";
+    const item=map.get(exam)||{total:0,count:0};
+    item.total+=Number(row.percentage||0); item.count++; map.set(exam,item);
+  });
+  const container=byId(containerId);
+  if(!map.size){ container.innerHTML='<div class="empty">لا توجد بيانات.</div>'; return; }
+  const expectedBase=expectedAssessmentSlotsForSchool();
+  const items=[...map.entries()].map(([exam,item])=>{
+    const examSheets=(sheets||[]).filter(s=>(s.exam_type||"غير محدد")===exam);
+    const entered=new Set(examSheets.map(s=>`${s.subject||""}||${s.grade||""}||${s.class_section||""}`)).size;
+    const expected=expectedBase;
+    const coveragePct=expected?Math.min(100,entered/expected*100):0;
+    return {exam,average:item.count?item.total/item.count:0,entered,expected,coveragePct};
+  }).sort((a,b)=>b.average-a.average);
+  container.innerHTML=items.map(item=>`
+    <div class="bar-row" style="align-items:flex-start">
+      <span>${esc(item.exam)}<small style="display:block;margin-top:4px;font-size:11px;opacity:.75;white-space:nowrap">متوسط البيانات المدخلة • التغطية: ${item.entered} من ${item.expected} — ${item.coveragePct.toFixed(1)}% ${item.expected&&item.entered>=item.expected?"✓ مكتملة":"⚠️ غير مكتملة"}</small></span>
+      <div class="bar-track" style="margin-top:5px"><div class="bar-fill" style="width:${Math.max(0,Math.min(100,item.average))}%"></div></div>
+      <strong>${item.average.toFixed(1)}%</strong>
+    </div>`).join("");
 }
 
 function renderAverageBars(containerId,rows,keyFn){
@@ -2882,7 +3135,7 @@ function renderAverageBars(containerId,rows,keyFn){
     `).join("");
 }
 
-function renderPerformanceBars(containerId,rows){
+function renderPerformanceBars(containerId,rows,sheets){
   const order = [
     "متقن جدًا",
     "متقن",
@@ -2939,6 +3192,9 @@ function renderPerformanceBars(containerId,rows){
           </div>
         `;
       }).join("");
+
+  const cov=overallAssessmentCoverage(sheets||[]);
+  container.insertAdjacentHTML("beforeend",`<div style="margin-top:10px;padding-top:8px;border-top:1px dashed #d7e2dd;font-size:11px;opacity:.78;text-align:right">الأعداد وفق البيانات المدخلة فقط • تغطية الاختبار: ${cov.entered} من ${cov.expected} مادة/شعبة — ${cov.pct.toFixed(1)}% ${cov.complete?"✓ مكتملة":"⚠️ غير مكتملة"}</div>`);
 }
 
 /* =====================================================
@@ -3506,7 +3762,7 @@ async function saveSheet(status){
       return {index,score};
     });
     const nonNull=compScores.filter(x=>x.score!=null);
-    const total=nonNull.length?nonNull.reduce((s,x)=>s+x.score,0):null;
+    let total=nonNull.length?nonNull.reduce((s,x)=>s+x.score,0):null;
     const absent=!!row.querySelector(".absent-check")?.checked;
     let student_note=row.querySelector(".student-note-input")?.value.trim() || null;
     if(absent){ total=null; compScores.forEach(x=>x.score=null); student_note=ABSENT_MARKER+(student_note?" "+student_note:""); }
@@ -3629,8 +3885,9 @@ function renderAdmin(){
   byId("adminAverage").textContent=m.total?m.avg.toFixed(1)+"%":"—"; byId("adminMasteryRate").textContent=m.total?m.masteryRate.toFixed(1)+"%":"—";
   byId("adminSupportRate").textContent=m.total?m.failRate.toFixed(1)+"%":"—";
   byId("adminPassedCount").textContent=m.passed; byId("adminFailedCount").textContent=m.failed; byId("adminMasteredCount").textContent=m.mastered; byId("adminNotMasteredCount").textContent=m.notMastered;
-  renderAverageBars("subjectAnalysis",grades,row=>row.grade_sheets?.subject||"غير محدد"); renderAverageBars("gradeAnalysis",grades,row=>row.grade_sheets?.grade||"غير محدد");
-  renderAverageBars("examAnalysis",grades,row=>row.grade_sheets?.exam_type||"غير محدد"); renderPerformanceBars("performanceAnalysis",grades);
+  renderSubjectAverageBars("subjectAnalysis",grades,sheets); renderGradeAverageBars("gradeAnalysis",grades,sheets);
+  renderExamAverageBars("examAnalysis",grades,sheets); renderPerformanceBars("performanceAnalysis",grades,sheets);
+  renderSubjectGroupIndicators(grades,sheets);
   byId("adminSheetList").innerHTML=sheets.length?sheets.map(s=>renderSheetCard(s,true)).join(""):'<div class="empty">لا توجد سجلات مطابقة.</div>';
   renderSubjectGradeMatrix(); renderGradeSubjectMatrix(); renderCompetencyAnalysis(); renderExamGrowth(); fillExamComparisonSubjects(); renderExamComparison(); fillStudentTrackingSelect(); const adv=byId("advancedRelationships"); if(adv) adv.innerHTML=advancedRelationshipsHtml(grades,{showTeacher:false}); if(isAdminUser && byId("adminViewLeadership")?.classList.contains("active")) renderLeadershipComprehensiveReport();
 }
@@ -4282,11 +4539,17 @@ function runPrint(elementIds,title){
     window.removeEventListener("afterprint",cleanup);
   };
 
-  window.addEventListener("afterprint",cleanup);
-  window.print();
-  setTimeout(()=>{
-    if(document.getElementById("wrsoPrintArea")) cleanup();
-  },1500);
+  /* مهم: لا نحذف منطقة الطباعة بمؤقت أثناء فتح معاينة Edge.
+     Edge قد يبني المعاينة بشكل غير متزامن؛ حذف المحتوى بعد 1.5 ثانية
+     كان يؤدي إلى معاينة بيضاء/تحميل مستمر وتجمّد الصفحة. */
+  window.addEventListener("afterprint",cleanup,{once:true});
+
+  /* نمنح المتصفح إطارين كاملين لاحتساب تخطيط النسخة المطبوعة قبل فتح المعاينة. */
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      window.print();
+    });
+  });
 }
 
 function printCombinedReport(elementIds,title){

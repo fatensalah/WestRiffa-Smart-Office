@@ -1313,6 +1313,30 @@ async function initializePlansHome(){
    تحميل الخطط حسب الصلاحية
    ============================================== */
 
+
+async function fetchAllRows(table, selectText, applyQuery = null, pageSize = 1000){
+  const rows = [];
+  for(let from = 0;; from += pageSize){
+    let q = plansHomeSupabase
+      .from(table)
+      .select(selectText)
+      .range(from, from + pageSize - 1);
+
+    if(typeof applyQuery === "function"){
+      q = applyQuery(q);
+    }
+
+    const { data, error } = await q;
+    if(error) throw error;
+
+    const page = data || [];
+    rows.push(...page);
+
+    if(page.length < pageSize) break;
+  }
+  return rows;
+}
+
 async function loadPlanHomeStats(){
 
   try{
@@ -1438,34 +1462,11 @@ async function loadPlanHomeStats(){
       قراءة الإجراءات.
     */
 
-    const {
-      data: procedures,
-      error: proceduresError
-    } =
-      await plansHomeSupabase
-
-        .from(
-          "plan_procedures"
-        )
-
-        .select(
-          `
-          id,
-          plan_id
-          `
-        )
-
-        .in(
-          "plan_id",
-          planIds
-        );
-
-
-    if(proceduresError){
-
-      throw proceduresError;
-
-    }
+    const procedures = await fetchAllRows(
+      "plan_procedures",
+      "id, plan_id",
+      q => q.in("plan_id", planIds)
+    );
 
 
     const procedureList =
@@ -1506,14 +1507,13 @@ async function loadPlanHomeStats(){
 
     for (let i = 0; i < procedureIds.length; i += FOLLOWUP_BATCH_SIZE) {
       const batchIds = procedureIds.slice(i, i + FOLLOWUP_BATCH_SIZE);
-      const { data: batchFollowups, error: followupsError } =
-        await plansHomeSupabase
-          .from("plan_monthly_followups")
-          .select(`procedure_id, execution_status`)
-          .in("procedure_id", batchIds);
+      const batchFollowups = await fetchAllRows(
+        "plan_monthly_followups",
+        "procedure_id, execution_status",
+        q => q.in("procedure_id", batchIds)
+      );
 
-      if (followupsError) throw followupsError;
-      if (batchFollowups?.length) followupList.push(...batchFollowups);
+      if (batchFollowups.length) followupList.push(...batchFollowups);
     }
 
 

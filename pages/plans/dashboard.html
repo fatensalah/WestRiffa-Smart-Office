@@ -197,7 +197,33 @@
     .two-column {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 22px;
+      gap: 16px;
+    }
+
+    .two-column .card {
+      padding: 18px 14px;
+      min-width: 0;
+    }
+
+    .two-column table {
+      table-layout: fixed;
+    }
+
+    .two-column th,
+    .two-column td {
+      padding: 10px 6px;
+      font-size: 12px;
+      white-space: normal;
+      word-break: normal;
+    }
+
+    .two-column th:first-child,
+    .two-column td:first-child {
+      width: 24%;
+    }
+
+    .two-column .mini-progress {
+      min-width: 58px;
     }
 
     .table-wrapper {
@@ -485,11 +511,13 @@
           <thead>
             <tr>
               <th>القسم</th>
-              <th>الإجراءات</th>
-              <th>نفذ</th>
+              <th>إجمالي الإجراءات</th>
+              <th>المستحق حتى الآن</th>
+              <th>تم تنفيذه</th>
               <th>جاري</th>
               <th>لم ينفذ</th>
-              <th>نسبة المتابعة</th>
+              <th>لم يتم تحديثه</th>
+              <th>نسبة الإنجاز</th>
             </tr>
           </thead>
 
@@ -513,11 +541,13 @@
           <thead>
             <tr>
               <th>المجال</th>
-              <th>الإجراءات</th>
-              <th>نفذ</th>
+              <th>إجمالي الإجراءات</th>
+              <th>المستحق حتى الآن</th>
+              <th>تم تنفيذه</th>
               <th>جاري</th>
               <th>لم ينفذ</th>
-              <th>نسبة المتابعة</th>
+              <th>لم يتم تحديثه</th>
+              <th>نسبة الإنجاز</th>
             </tr>
           </thead>
 
@@ -543,7 +573,7 @@
         <thead>
           <tr>
             <th>الشهر</th>
-            <th>إجراءات المتابعة</th>
+            <th>الإجراءات المخطط متابعتها</th>
             <th>نفذ</th>
             <th>جاري التنفيذ</th>
             <th>لم ينفذ</th>
@@ -900,13 +930,10 @@ async function loadDashboard() {
       قراءة الإجراءات.
     */
 
-    const {
-      data: procedures,
-      error: proceduresError
-    } =
-      await dashboardSupabase
-        .from("plan_procedures")
-        .select(`
+    const procedures =
+      await fetchAllRowsPaged(
+        "plan_procedures",
+        `
           id,
           plan_id,
           sequence_no,
@@ -914,16 +941,9 @@ async function loadDashboard() {
           domain_name,
           program_name,
           procedure_text
-        `)
-        .in(
-          "plan_id",
-          planIds
-        );
-
-
-    if (proceduresError) {
-      throw proceduresError;
-    }
+        `,
+        planIds
+      );
 
 
     allProcedures =
@@ -935,15 +955,10 @@ async function loadDashboard() {
       قراءة المتابعات.
     */
 
-    const {
-      data: followups,
-      error: followupsError
-    } =
-      await dashboardSupabase
-        .from(
-          "plan_monthly_followups"
-        )
-        .select(`
+    const followups =
+      await fetchAllRowsPaged(
+        "plan_monthly_followups",
+        `
           id,
           plan_id,
           procedure_id,
@@ -952,16 +967,9 @@ async function loadDashboard() {
           non_completion_reason,
           followup_notes,
           updated_at
-        `)
-        .in(
-          "plan_id",
-          planIds
-        );
-
-
-    if (followupsError) {
-      throw followupsError;
-    }
+        `,
+        planIds
+      );
 
 
     allFollowups =
@@ -996,6 +1004,145 @@ async function loadDashboard() {
   }
 
 }
+
+
+/*
+  تحميل جميع السجلات على دفعات لتجاوز حد Supabase الافتراضي (1000 سجل).
+  مهم لمؤشرات الخطة التدفقية لأن عدد الإجراءات والمتابعات قد يتجاوز 1000.
+*/
+async function fetchAllRowsPaged(
+  tableName,
+  selectColumns,
+  planIds
+) {
+
+  const PAGE_SIZE = 1000;
+  let from = 0;
+  let rows = [];
+
+  while (true) {
+
+    const {
+      data,
+      error
+    } =
+      await dashboardSupabase
+        .from(tableName)
+        .select(selectColumns)
+        .in("plan_id", planIds)
+        .order("id", { ascending: true })
+        .range(
+          from,
+          from + PAGE_SIZE - 1
+        );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    const batch =
+      data || [];
+
+
+    rows.push(
+      ...batch
+    );
+
+
+    if (
+      batch.length < PAGE_SIZE
+    ) {
+      break;
+    }
+
+
+    from += PAGE_SIZE;
+
+  }
+
+
+  return rows;
+
+}
+
+
+
+function getCurrentSchoolMonth() {
+  const now = new Date();
+  return now.getMonth() + 1;
+}
+
+
+function getSchoolMonthIndex(monthNo) {
+  return SCHOOL_MONTHS.indexOf(Number(monthNo));
+}
+
+
+function isMonthDue(monthNo) {
+  const currentMonth = getCurrentSchoolMonth();
+  const currentIndex = getSchoolMonthIndex(currentMonth);
+  const monthIndex = getSchoolMonthIndex(monthNo);
+
+  if (currentIndex === -1 || monthIndex === -1) {
+    return false;
+  }
+
+  return monthIndex <= currentIndex;
+}
+
+
+function getDueFollowups(followups) {
+  return followups.filter(
+    item => isMonthDue(item.month_no)
+  );
+}
+
+
+function getProcedureStatusCounts(procedures, followups) {
+  const dueFollowups = getDueFollowups(followups);
+
+  const followupsByProcedure = new Map();
+
+  dueFollowups.forEach(item => {
+    if (!followupsByProcedure.has(item.procedure_id)) {
+      followupsByProcedure.set(item.procedure_id, []);
+    }
+    followupsByProcedure.get(item.procedure_id).push(item);
+  });
+
+  let completed = 0;
+  let inProgress = 0;
+  let notCompleted = 0;
+  let dueProcedures = 0;
+
+  procedures.forEach(procedure => {
+    const items = followupsByProcedure.get(procedure.id) || [];
+
+    if (items.length === 0) {
+      return;
+    }
+
+    dueProcedures += 1;
+
+    if (items.some(item => item.execution_status === "completed")) {
+      completed += 1;
+    } else if (items.some(item => item.execution_status === "in_progress")) {
+      inProgress += 1;
+    } else if (items.some(item => item.execution_status === "not_completed")) {
+      notCompleted += 1;
+    }
+  });
+
+  return {
+    dueProcedures,
+    completed,
+    inProgress,
+    notCompleted
+  };
+}
+
 
 
 function renderDashboard() {
@@ -1125,11 +1272,18 @@ function renderDashboard() {
 
 
   /*
-    أعداد حالات المتابعات.
+    المتابعات المستحقة حتى الشهر الحالي فقط.
+    الأشهر المستقبلية لا تدخل في نسب الأداء الحالية.
   */
 
+  const dueFollowups =
+    selectedMonth === "all"
+      ? getDueFollowups(filteredFollowups)
+      : filteredFollowups;
+
+
   const completed =
-    filteredFollowups.filter(
+    dueFollowups.filter(
       item =>
         item.execution_status ===
         "completed"
@@ -1137,7 +1291,7 @@ function renderDashboard() {
 
 
   const progress =
-    filteredFollowups.filter(
+    dueFollowups.filter(
       item =>
         item.execution_status ===
         "in_progress"
@@ -1145,7 +1299,7 @@ function renderDashboard() {
 
 
   const notCompleted =
-    filteredFollowups.filter(
+    dueFollowups.filter(
       item =>
         item.execution_status ===
         "not_completed"
@@ -1153,56 +1307,44 @@ function renderDashboard() {
 
 
   /*
-    نسبة تنفيذ المتابعات الشهرية.
+    نسبة تنفيذ المتابعات الشهرية:
+    المنفذ ÷ المتابعات المستحقة حتى الآن.
   */
 
-  const totalFollowups =
-    filteredFollowups.length;
+  const totalDueFollowups =
+    dueFollowups.length;
 
 
   const followupExecutionRate =
-    totalFollowups > 0
+    totalDueFollowups > 0
       ? Math.round(
           (
             completed /
-            totalFollowups
+            totalDueFollowups
           ) * 100
         )
       : 0;
 
 
   /*
-    نسبة إنجاز الإجراءات.
-
-    الإجراء يعتبر منجزًا
-    إذا كان لديه متابعة واحدة على الأقل
-    بحالة completed.
-
-    لذلك في بياناتنا التجريبية الحالية:
-    1 إجراء منجز من 3 = 33%.
+    نسبة إنجاز الإجراءات:
+    الإجراء يعتبر منجزًا إذا كانت له متابعة مستحقة
+    واحدة على الأقل بحالة completed.
   */
 
-  const completedProcedureIds =
-    new Set(
-      filteredFollowups
-        .filter(
-          item =>
-            item.execution_status ===
-            "completed"
-        )
-        .map(
-          item =>
-            item.procedure_id
-        )
+  const procedureStatus =
+    getProcedureStatusCounts(
+      filteredProcedures,
+      dueFollowups
     );
 
 
   const procedureAchievementRate =
-    filteredProcedures.length > 0
+    procedureStatus.dueProcedures > 0
       ? Math.round(
           (
-            completedProcedureIds.size /
-            filteredProcedures.length
+            procedureStatus.completed /
+            procedureStatus.dueProcedures
           ) * 100
         )
       : 0;
@@ -1435,7 +1577,7 @@ function renderDepartmentStats(
     departmentStatsBody.innerHTML =
       `
         <tr>
-          <td colspan="6" class="empty">
+          <td colspan="8" class="empty">
             لا توجد بيانات.
           </td>
         </tr>
@@ -1455,7 +1597,11 @@ function renderDepartmentStats(
           departmentId
         ) || "—",
         item.procedureIds.size,
-        item.followups
+        item.followups,
+        procedures.filter(
+          procedure =>
+            item.procedureIds.has(procedure.id)
+        )
       );
 
     }
@@ -1573,7 +1719,7 @@ function renderDomainStats(
     domainStatsBody.innerHTML =
       `
         <tr>
-          <td colspan="6" class="empty">
+          <td colspan="8" class="empty">
             لا توجد بيانات.
           </td>
         </tr>
@@ -1592,7 +1738,11 @@ function renderDomainStats(
         DOMAIN_NAMES[domain] ||
         "غير محدد",
         item.procedureIds.size,
-        item.followups
+        item.followups,
+        procedures.filter(
+          procedure =>
+            item.procedureIds.has(procedure.id)
+        )
       );
 
     }
@@ -1605,42 +1755,109 @@ function renderStatsRow(
   tbody,
   name,
   procedureCount,
-  followups
+  followups,
+  procedures = null
 ) {
 
+  const procedureList =
+    Array.isArray(procedures)
+      ? procedures
+      : [];
+
+
+  const dueFollowups =
+    getDueFollowups(followups);
+
+
+  const dueProcedureIds =
+    new Set(
+      dueFollowups.map(
+        item => item.procedure_id
+      )
+    );
+
+
+  const completedProcedureIds =
+    new Set(
+      dueFollowups
+        .filter(
+          item =>
+            item.execution_status ===
+            "completed"
+        )
+        .map(
+          item => item.procedure_id
+        )
+    );
+
+
+  const progressProcedureIds =
+    new Set(
+      dueFollowups
+        .filter(
+          item =>
+            item.execution_status ===
+            "in_progress" &&
+            !completedProcedureIds.has(item.procedure_id)
+        )
+        .map(
+          item => item.procedure_id
+        )
+    );
+
+
+  const notCompletedProcedureIds =
+    new Set(
+      dueFollowups
+        .filter(
+          item =>
+            item.execution_status ===
+            "not_completed" &&
+            !completedProcedureIds.has(item.procedure_id) &&
+            !progressProcedureIds.has(item.procedure_id)
+        )
+        .map(
+          item => item.procedure_id
+        )
+    );
+
+
+  const dueCount =
+    dueProcedureIds.size;
+
+
   const completed =
-    followups.filter(
-      item =>
-        item.execution_status ===
-        "completed"
-    ).length;
+    completedProcedureIds.size;
 
 
   const progress =
-    followups.filter(
-      item =>
-        item.execution_status ===
-        "in_progress"
-    ).length;
+    progressProcedureIds.size;
 
 
   const notCompleted =
-    followups.filter(
-      item =>
-        item.execution_status ===
-        "not_completed"
-    ).length;
+    notCompletedProcedureIds.size;
 
 
-  const total =
-    followups.length;
+  const updatedProcedureIds =
+    new Set([
+      ...completedProcedureIds,
+      ...progressProcedureIds,
+      ...notCompletedProcedureIds
+    ]);
+
+
+  const notUpdated =
+    Math.max(
+      0,
+      dueCount - updatedProcedureIds.size
+    );
 
 
   const rate =
-    total > 0
+    dueCount > 0
       ? Math.round(
           completed /
-          total *
+          dueCount *
           100
         )
       : 0;
@@ -1663,6 +1880,10 @@ function renderStatsRow(
     </td>
 
     <td>
+      ${dueCount}
+    </td>
+
+    <td>
       ${completed}
     </td>
 
@@ -1672,6 +1893,10 @@ function renderStatsRow(
 
     <td>
       ${notCompleted}
+    </td>
+
+    <td>
+      ${notUpdated}
     </td>
 
     <td>
@@ -1753,14 +1978,18 @@ function renderMonthStats(
         monthFollowups.length;
 
 
+      const monthDue =
+        isMonthDue(monthNo);
+
+
       const rate =
-        total > 0
+        monthDue && total > 0
           ? Math.round(
               completed /
               total *
               100
             )
-          : 0;
+          : null;
 
 
       const tr =
@@ -1780,30 +2009,30 @@ function renderMonthStats(
         </td>
 
         <td>
-          ${completed}
+          ${monthDue ? completed : "—"}
         </td>
 
         <td>
-          ${progress}
+          ${monthDue ? progress : "—"}
         </td>
 
         <td>
-          ${notCompleted}
+          ${monthDue ? notCompleted : "—"}
         </td>
 
         <td>
-          ${pending}
+          ${monthDue ? pending : "—"}
         </td>
 
         <td>
 
           <span class="percent">
-            ${rate}%
+            ${rate === null ? "غير مستحق" : `${rate}%`}
           </span>
 
           <div class="mini-progress">
             <div
-              style="width:${rate}%">
+              style="width:${rate === null ? 0 : rate}%">
             </div>
           </div>
 
