@@ -259,6 +259,36 @@ textarea.control{
   cursor:wait;
 }
 
+.bulk-save-bar{
+  display:flex;
+  justify-content:flex-start;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin:0 0 16px;
+}
+
+.bulk-save-btn{
+  border:0;
+  border-radius:11px;
+  padding:12px 22px;
+  background:#0f654f;
+  color:#fff;
+  font-weight:bold;
+  font-family:inherit;
+  font-size:15px;
+  cursor:pointer;
+}
+
+.bulk-save-btn:disabled{
+  opacity:.55;
+  cursor:wait;
+}
+
+.dirty-row{
+  background:#fffdf2;
+}
+
 .empty-state{
   text-align:center;
   padding:45px 20px;
@@ -500,6 +530,22 @@ textarea.control{
     إجراءات الشهر
   </h2>
 
+  <div class="bulk-save-bar">
+    <button
+      type="button"
+      id="saveAllBtn"
+      class="bulk-save-btn"
+      onclick="saveAllChanges()"
+      disabled
+    >
+      💾 حفظ جميع التغييرات
+    </button>
+
+    <span id="dirtyCount" style="font-weight:700;color:#5f746e;">
+      لا توجد تغييرات غير محفوظة
+    </span>
+  </div>
+
   <div class="table-wrapper">
 
     <table>
@@ -645,6 +691,22 @@ const accessLoader =
   document.getElementById(
     "accessLoader"
   );
+
+
+const saveAllBtn =
+  document.getElementById(
+    "saveAllBtn"
+  );
+
+
+const dirtyCount =
+  document.getElementById(
+    "dirtyCount"
+  );
+
+
+const dirtyFollowupIds =
+  new Set();
 
 
 const MONTH_NAMES = {
@@ -1126,6 +1188,8 @@ schoolYear.addEventListener(
 
 async function loadMonthlyFollowups(){
   const monthNo=Number(monthSelect.value), selectedYear=schoolYear.value;
+  dirtyFollowupIds.clear();
+  updateDirtyIndicator();
   followupBody.innerHTML=""; emptyState.style.display="none"; resetSummary();
   tableTitle.textContent=`إجراءات شهر ${MONTH_NAMES[monthNo]}`;
   showStatus("جاري تحميل إجراءات المتابعة...","info");
@@ -1248,6 +1312,9 @@ function renderRows(
           "tr"
         );
 
+      tr.dataset.followupId =
+        String(item.id);
+
 
       tr.innerHTML = `
 
@@ -1318,6 +1385,9 @@ function renderRows(
             onchange="
               handleLocalStatusChange(
                 '${item.id}'
+              );
+              markDirty(
+                '${item.id}'
               )
             "
           >
@@ -1384,6 +1454,7 @@ function renderRows(
             class="control reason-input"
             id="reason-${item.id}"
             placeholder="يُكتب السبب عند اختيار لم ينفذ"
+            oninput="markDirty('${item.id}')"
             ${reasonDisabled}
           >${escapeHtml(
             item.non_completion_reason ||
@@ -1399,6 +1470,7 @@ function renderRows(
             class="control"
             id="notes-${item.id}"
             placeholder="ملاحظات المتابعة"
+            oninput="markDirty('${item.id}')"
           >${escapeHtml(
             item.followup_notes ||
             ""
@@ -1434,6 +1506,73 @@ function renderRows(
 
     }
   );
+
+}
+
+
+/* =========================================================
+   تتبع التغييرات غير المحفوظة
+   ========================================================= */
+
+function markDirty(
+  followupId
+){
+
+  dirtyFollowupIds.add(
+    String(followupId)
+  );
+
+  const row =
+    Array.from(
+      followupBody.querySelectorAll(
+        "tr"
+      )
+    ).find(
+      item =>
+        item.dataset.followupId ===
+        String(followupId)
+    );
+
+  if(
+    row
+  ){
+
+    row.classList.add(
+      "dirty-row"
+    );
+
+  }
+
+  updateDirtyIndicator();
+
+}
+
+
+function clearDirty(
+  followupId
+){
+
+  dirtyFollowupIds.delete(
+    String(followupId)
+  );
+
+  updateDirtyIndicator();
+
+}
+
+
+function updateDirtyIndicator(){
+
+  const count =
+    dirtyFollowupIds.size;
+
+  saveAllBtn.disabled =
+    count === 0;
+
+  dirtyCount.textContent =
+    count === 0
+      ? "لا توجد تغييرات غير محفوظة"
+      : `لديك ${count} تغيير/تغييرات غير محفوظة`;
 
 }
 
@@ -1486,10 +1625,10 @@ function handleLocalStatusChange(
 
 
 /* =========================================================
-   حفظ متابعة
+   تجهيز وحفظ سجل متابعة واحد
    ========================================================= */
 
-async function saveFollowup(
+function getFollowupValues(
   followupId
 ){
 
@@ -1498,123 +1637,240 @@ async function saveFollowup(
       `status-${followupId}`
     );
 
-
   const reasonElement =
     document.getElementById(
       `reason-${followupId}`
     );
-
 
   const notesElement =
     document.getElementById(
       `notes-${followupId}`
     );
 
+  if(
+    !statusElement ||
+    !reasonElement ||
+    !notesElement
+  ){
+
+    throw new Error(
+      "تعذر قراءة بيانات أحد الإجراءات."
+    );
+
+  }
+
+  const executionStatus =
+    statusElement.value;
+
+  const reason =
+    reasonElement.value.trim();
+
+  const followupNotes =
+    notesElement.value.trim();
+
+  return {
+    statusElement,
+    reasonElement,
+    notesElement,
+    executionStatus,
+    reason,
+    followupNotes
+  };
+
+}
+
+
+async function persistFollowup(
+  followupId
+){
+
+  const values =
+    getFollowupValues(
+      followupId
+    );
+
+  if(
+    values.executionStatus ===
+      "not_completed" &&
+    !values.reason
+  ){
+
+    const error =
+      new Error(
+        "يجب كتابة سبب عدم التنفيذ."
+      );
+
+    error.code =
+      "MISSING_REASON";
+
+    error.reasonElement =
+      values.reasonElement;
+
+    throw error;
+
+  }
+
+  const payload = {
+    execution_status:
+      values.executionStatus,
+
+    non_completion_reason:
+      values.executionStatus ===
+        "not_completed"
+        ? values.reason
+        : null,
+
+    followup_notes:
+      values.followupNotes ||
+      null,
+
+    updated_at:
+      new Date().toISOString()
+  };
+
+  let result;
+
+  if(
+    String(followupId)
+      .startsWith(
+        "new:"
+      )
+  ){
+
+    const procedureId =
+      String(followupId)
+        .slice(4);
+
+    const monthNo =
+      Number(
+        monthSelect.value
+      );
+
+    const {
+      data: pr,
+      error: prError
+    } =
+      await followupSupabase
+        .from(
+          "plan_procedures"
+        )
+        .select(
+          "id,plan_id"
+        )
+        .eq(
+          "id",
+          procedureId
+        )
+        .maybeSingle();
+
+    if(
+      prError
+    ){
+
+      throw prError;
+
+    }
+
+    if(
+      !pr
+    ){
+
+      throw new Error(
+        "لم يتم العثور على الإجراء المطلوب."
+      );
+
+    }
+
+    result =
+      await followupSupabase
+        .from(
+          "plan_monthly_followups"
+        )
+        .insert({
+          ...payload,
+          plan_id:
+            pr.plan_id,
+          procedure_id:
+            procedureId,
+          month_no:
+            monthNo
+        });
+
+  }else{
+
+    result =
+      await followupSupabase
+        .from(
+          "plan_monthly_followups"
+        )
+        .update(
+          payload
+        )
+        .eq(
+          "id",
+          followupId
+        );
+
+  }
+
+  if(
+    result.error
+  ){
+
+    throw result.error;
+
+  }
+
+}
+
+
+/* =========================================================
+   حفظ متابعة واحدة
+   ========================================================= */
+
+async function saveFollowup(
+  followupId
+){
 
   const saveButton =
     document.getElementById(
       `save-${followupId}`
     );
 
-
-  const executionStatus =
-    statusElement.value;
-
-
-  const reason =
-    reasonElement
-      .value
-      .trim();
-
-
-  const followupNotes =
-    notesElement
-      .value
-      .trim();
-
-
-  if(
-    executionStatus ===
-    "not_completed" &&
-    !reason
-  ){
-
-    showStatus(
-      "يجب كتابة سبب عدم التنفيذ.",
-      "error"
-    );
-
-
-    reasonElement.focus();
-
-
-    return;
-
-  }
-
-
   saveButton.disabled =
     true;
 
-
   saveButton.textContent =
     "جاري الحفظ...";
-
 
   showStatus(
     "جاري حفظ المتابعة...",
     "info"
   );
 
-
   try{
 
+    await persistFollowup(
+      followupId
+    );
 
-    const payload={
-      execution_status:executionStatus,
-      non_completion_reason:executionStatus==="not_completed"?reason:null,
-      followup_notes:followupNotes||null,
-      updated_at:new Date().toISOString()
-    };
-    let result;
-    if(String(followupId).startsWith("new:")){
-      const procedureId=String(followupId).slice(4);
-      const monthNo=Number(monthSelect.value);
-      const {data:pr,error:prError}=await followupSupabase.from("plan_procedures").select("id,plan_id").eq("id",procedureId).maybeSingle();
-      if(prError)throw prError;
-      result=await followupSupabase.from("plan_monthly_followups").insert({...payload,plan_id:pr.plan_id,procedure_id:procedureId,month_no:monthNo});
-    }else{
-      result=await followupSupabase.from("plan_monthly_followups").update(payload).eq("id",followupId);
-    }
-    const {error}=result;
-
-
-    if(
-      error
-    ){
-
-      throw error;
-
-    }
-
+    clearDirty(
+      followupId
+    );
 
     showStatus(
       "تم حفظ المتابعة بنجاح.",
       "success"
     );
 
-
     await loadMonthlyFollowups();
 
-
   }catch(error){
-
 
     console.error(
       "Followup save error:",
       error
     );
-
 
     showStatus(
       `تعذر حفظ المتابعة: ${
@@ -1624,13 +1880,234 @@ async function saveFollowup(
       "error"
     );
 
+    if(
+      error.code ===
+        "MISSING_REASON" &&
+      error.reasonElement
+    ){
+
+      error.reasonElement.focus();
+
+    }
 
     saveButton.disabled =
       false;
 
-
     saveButton.textContent =
       "حفظ";
+
+  }
+
+}
+
+
+/* =========================================================
+   حفظ جميع التغييرات
+   ========================================================= */
+
+async function saveAllChanges(){
+
+  const ids =
+    Array.from(
+      dirtyFollowupIds
+    );
+
+  if(
+    !ids.length
+  ){
+
+    showStatus(
+      "لا توجد تغييرات جديدة للحفظ.",
+      "info"
+    );
+
+    return;
+
+  }
+
+  /*
+    نتحقق أولًا من كل الصفوف قبل إرسال أي شيء،
+    حتى لا يتم حفظ جزء من التغييرات ثم نتوقف بسبب سبب ناقص.
+  */
+
+  for(
+    let i = 0;
+    i < ids.length;
+    i++
+  ){
+
+    const followupId =
+      ids[i];
+
+    const values =
+      getFollowupValues(
+        followupId
+      );
+
+    if(
+      values.executionStatus ===
+        "not_completed" &&
+      !values.reason
+    ){
+
+      showStatus(
+        `تعذر حفظ الكل: الإجراء رقم ${i + 1} من التغييرات يحتاج إلى كتابة سبب عدم التنفيذ.`,
+        "error"
+      );
+
+      values.reasonElement.focus();
+
+      return;
+
+    }
+
+  }
+
+  saveAllBtn.disabled =
+    true;
+
+  saveAllBtn.textContent =
+    "جاري حفظ جميع التغييرات...";
+
+  showStatus(
+    `جاري حفظ ${ids.length} تغيير/تغييرات...`,
+    "info"
+  );
+
+  let savedCount =
+    0;
+
+  try{
+
+    /*
+      الحفظ على دفعات صغيرة متوازية:
+      أسرع من الحفظ واحدًا واحدًا،
+      وأخف على Supabase من إرسال مئات الطلبات في اللحظة نفسها.
+    */
+
+    const batchSize =
+      20;
+
+    for(
+      let start = 0;
+      start < ids.length;
+      start += batchSize
+    ){
+
+      const batch =
+        ids.slice(
+          start,
+          start + batchSize
+        );
+
+      const results =
+        await Promise.allSettled(
+          batch.map(
+            followupId =>
+              persistFollowup(
+                followupId
+              )
+          )
+        );
+
+      const failedIndex =
+        results.findIndex(
+          result =>
+            result.status ===
+            "rejected"
+        );
+
+      results.forEach(
+        (
+          result,
+          index
+        ) => {
+
+          if(
+            result.status ===
+            "fulfilled"
+          ){
+
+            savedCount++;
+
+            dirtyFollowupIds.delete(
+              String(
+                batch[index]
+              )
+            );
+
+          }
+
+        }
+      );
+
+      updateDirtyIndicator();
+
+      showStatus(
+        `جاري الحفظ... تم حفظ ${savedCount} من ${ids.length}.`,
+        "info"
+      );
+
+      if(
+        failedIndex !==
+        -1
+      ){
+
+        throw results[
+          failedIndex
+        ].reason;
+
+      }
+
+    }
+
+    showStatus(
+      `تم حفظ جميع التغييرات بنجاح (${savedCount} تغيير/تغييرات).`,
+      "success"
+    );
+
+    /*
+      إعادة تحميل واحدة فقط بعد انتهاء الحفظ بالكامل.
+    */
+
+    await loadMonthlyFollowups();
+
+  }catch(error){
+
+    console.error(
+      "Bulk followup save error:",
+      error
+    );
+
+    showStatus(
+      `تم حفظ ${savedCount} من ${ids.length}، وتعذر إكمال الباقي: ${
+        error.message ||
+        "حدث خطأ غير متوقع."
+      }`,
+      "error"
+    );
+
+    saveAllBtn.disabled =
+      dirtyFollowupIds.size ===
+      0;
+
+    saveAllBtn.textContent =
+      "💾 حفظ جميع التغييرات";
+
+  }finally{
+
+    if(
+      saveAllBtn
+    ){
+
+      saveAllBtn.disabled =
+        dirtyFollowupIds.size ===
+        0;
+
+      saveAllBtn.textContent =
+        "💾 حفظ جميع التغييرات";
+
+    }
 
   }
 
