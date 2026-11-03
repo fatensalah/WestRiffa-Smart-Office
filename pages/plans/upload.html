@@ -458,9 +458,8 @@ th{
       قاعدة الخطط:
     </strong>
 
-    الحاسوب والفن والتصميم والتقانة تتبع
-    <strong>خطة واحدة باسم «المواد الإثرائية»</strong>
-    ولا يتم رفع خطة مستقلة لكل مادة.
+    <strong>قاعدة الخطط:</strong>
+    كل قسم مرتبط بحساب المنسقة له خطة سنوية مستقلة، ويمكن للمنسقة المرتبطة بأكثر من قسم اختيار القسم ورفع خطته بصورة مستقلة.
 
   </div>
 
@@ -700,25 +699,6 @@ let allPlanDepartments =
   [];
 
 
-/*
-  المواد التي تُجمع في خطة المواد الإثرائية.
-*/
-
-const ENRICHMENT_SUBJECTS =
-  new Set([
-    "الحاسوب",
-    "الفن",
-    "التصميم والتقانة",
-    "التربية الأسرية",
-    "الاسرية",
-    "الأسرية"
-  ]);
-
-
-const ENRICHMENT_PLAN_NAME =
-  "المواد الإثرائية";
-
-
 const byId =
   id =>
     document.getElementById(
@@ -879,81 +859,6 @@ async function loadPlanDepartments(){
 }
 
 
-/* =========================================================
-   هل الحساب مروة منسقة المواد الإثرائية؟
-   ========================================================= */
-
-function isEnrichmentCoordinator(){
-
-  const email =
-    normalizeText(
-      currentUser?.email
-    )
-      .toLowerCase();
-
-
-  if(
-    email ===
-    "marwa.i.khalifa@moe.bh"
-  ){
-
-    return true;
-
-  }
-
-
-  /*
-    حماية إضافية:
-    حتى لو تغير البريد مستقبلًا،
-    لو المنسقة مرتبطة بالمواد الثلاث
-    نعتبرها منسقة المواد الإثرائية.
-  */
-
-  const names =
-    new Set(
-      (
-        currentProfile
-          ?.department_names ||
-        []
-      )
-        .map(
-          normalizeText
-        )
-    );
-
-
-  return (
-    names.has(
-      "الحاسوب"
-    ) &&
-    names.has(
-      "الفن"
-    ) &&
-    names.has(
-      "التصميم والتقانة"
-    )
-  );
-
-}
-
-
-/* =========================================================
-   قسم خطة المواد الإثرائية
-   ========================================================= */
-
-function getEnrichmentPlanDepartment(){
-
-  return allPlanDepartments
-    .find(
-      department =>
-        normalizeText(
-          department.name
-        ) ===
-        ENRICHMENT_PLAN_NAME
-    ) ||
-    null;
-
-}
 
 
 /* =========================================================
@@ -962,28 +867,7 @@ function getEnrichmentPlanDepartment(){
 
 function getAdminPlanDepartments(){
 
-  return allPlanDepartments
-    .filter(
-      department => {
-
-        const name =
-          normalizeText(
-            department.name
-          );
-
-
-        /*
-          لا نسمح برفع خطط منفصلة
-          للحاسوب أو الفن أو التقانة.
-        */
-
-        return !ENRICHMENT_SUBJECTS
-          .has(
-            name
-          );
-
-      }
-    );
+  return allPlanDepartments.slice();
 
 }
 
@@ -994,112 +878,31 @@ function getAdminPlanDepartments(){
 
 function getCoordinatorPlanDepartments(){
 
-  /*
-    مروة:
-    خطة المواد الإثرائية فقط.
-  */
-
-  if(
-    isEnrichmentCoordinator()
-  ){
-
-    const enrichment =
-      getEnrichmentPlanDepartment();
-
-
-    return enrichment
-      ? [
-          enrichment
-        ]
-      : [];
-
-  }
-
-
   const allowedIds =
     new Set(
       (
-        currentProfile
-          ?.department_ids ||
+        currentProfile?.department_ids ||
         []
+      ).map(
+        value => String(value)
       )
-        .map(
-          value =>
-            String(
-              value
-            )
-        )
     );
-
 
   const allowedNames =
     new Set(
       (
-        currentProfile
-          ?.department_names ||
+        currentProfile?.department_names ||
         []
+      ).map(
+        normalizeText
       )
-        .map(
-          normalizeText
-        )
     );
 
-
-  return allPlanDepartments
-    .filter(
-      department => {
-
-        const name =
-          normalizeText(
-            department.name
-          );
-
-
-        /*
-          حتى لأي منسقة أخرى،
-          لا تظهر المواد الثلاث كخطط مستقلة.
-        */
-
-        if(
-          ENRICHMENT_SUBJECTS
-            .has(
-              name
-            )
-        ){
-
-          return false;
-
-        }
-
-
-        if(
-          allowedIds.has(
-            String(
-              department.id
-            )
-          )
-        ){
-
-          return true;
-
-        }
-
-
-        if(
-          allowedNames.has(
-            name
-          )
-        ){
-
-          return true;
-
-        }
-
-
-        return false;
-
-      }
-    );
+  return allPlanDepartments.filter(
+    department =>
+      allowedIds.has(String(department.id)) ||
+      allowedNames.has(normalizeText(department.name))
+  );
 
 }
 
@@ -1355,32 +1158,7 @@ async function initPlanAccess(){
 
 
     await loadPlanDepartments();
-
-
-    /*
-      لازم يوجد قسم المواد الإثرائية الحقيقي
-      حتى يتم حفظ plan.department_id بصورة صحيحة.
-    */
-
-    const enrichment =
-      getEnrichmentPlanDepartment();
-
-
-    if(
-      !enrichment
-    ){
-
-      disableUpload(
-        "لم يتم العثور على قسم «المواد الإثرائية» في قاعدة البيانات. شغلي كود SQL الخاص بإضافته أولًا."
-      );
-
-
-      return;
-
-    }
-
-
-    /* =========================================
+/* =========================================
        الإدارة
        ========================================= */
 
@@ -1400,7 +1178,7 @@ async function initPlanAccess(){
 
 
       showAccessMessage(
-        "صلاحية القيادة العليا — يمكنكِ رفع ومراجعة خطط جميع الأقسام. الحاسوب والفن والتصميم والتقانة تظهر كخطة موحدة باسم «المواد الإثرائية»."
+        "صلاحية القيادة العليا — يمكنكِ رفع ومراجعة خطط جميع الأقسام، وكل قسم له خطة مستقلة."
       );
 
 
@@ -1432,9 +1210,8 @@ async function initPlanAccess(){
 
 
     /*
-      المنسقة ترفع فقط خطتها/خططها المسموحة.
-      حاليًا كل منسقة لها خطة واحدة،
-      ومروة لها «المواد الإثرائية» الواحدة.
+      المنسقة ترفع فقط خطط الأقسام المرتبطة بحسابها.
+      إذا ارتبط الحساب بأكثر من قسم، تظهر قائمة اختيار بكل الأقسام المسموحة.
     */
 
     renderDepartmentOptions(
@@ -1442,25 +1219,11 @@ async function initPlanAccess(){
       coordinatorPlans.length ===
         1
     );
-
-
-    if(
-      isEnrichmentCoordinator()
-    ){
-
-      showAccessMessage(
-        "منسقة المواد الإثرائية — الحاسوب والفن والتصميم والتقانة لها خطة قسم واحدة موحدة باسم «المواد الإثرائية»."
-      );
-
-
-    }else{
-
-
-      showAccessMessage(
-        "صلاحية المنسقة — يمكنكِ رفع ومتابعة خطة القسم المرتبط بحسابك فقط."
-      );
-
-    }
+    showAccessMessage(
+      coordinatorPlans.length > 1
+        ? "صلاحية المنسقة — يمكنكِ اختيار أي قسم من الأقسام المرتبطة بحسابك ورفع خطة مستقلة له."
+        : "صلاحية المنسقة — يمكنكِ رفع ومتابعة خطة القسم المرتبط بحسابك."
+    );
 
 
   }catch(error){

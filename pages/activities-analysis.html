@@ -1,0 +1,3973 @@
+<!DOCTYPE html>
+
+<html lang="ar" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>تقارير وتحليلات التوثيقات | WestRiffa Smart Office</title>
+
+<link rel="stylesheet" href="../css/app.css?v=20261103-analysis-filters">
+
+
+
+<style>
+
+*{box-sizing:border-box}
+
+:root{
+
+  --green:#075c40;
+
+  --green2:#0d7654;
+
+  --maroon:#741a3a;
+
+  --gold:#a47a2b;
+
+  --bg:#f4f7f6;
+
+  --border:#dce7e2;
+
+  --text:#173c34;
+
+  --muted:#6e7f77;
+
+}
+
+body{
+
+  margin:0;
+
+  font-family:Tahoma,Arial,sans-serif;
+
+  background:var(--bg);
+
+  color:var(--text);
+
+}
+
+button,input,select{font-family:inherit}
+
+.page{
+
+  width:min(1400px,95%);
+
+  margin:25px auto 60px;
+
+}
+
+.page-head{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  gap:15px;
+
+  flex-wrap:wrap;
+
+  margin-bottom:20px;
+
+}
+
+.page-head h1{
+
+  margin:0 0 7px;
+
+  color:var(--green);
+
+  font-size:28px;
+
+}
+
+.page-head p{
+
+  margin:0;
+
+  color:var(--muted);
+
+  line-height:1.8;
+
+}
+
+.head-actions{
+
+  display:flex;
+
+  gap:8px;
+
+  flex-wrap:wrap;
+
+}
+
+.action-btn{
+
+  border:0;
+
+  border-radius:10px;
+
+  padding:11px 16px;
+
+  font-weight:700;
+
+  cursor:pointer;
+
+  text-decoration:none;
+
+}
+
+.btn-home{
+
+  background:#edf4f1;
+
+  color:var(--green);
+
+}
+
+.btn-print{
+
+  background:var(--green);
+
+  color:#fff;
+
+}
+
+.filters,.panel,.kpi-card{
+
+  background:#fff;
+
+  border:1px solid var(--border);
+
+  border-radius:16px;
+
+  box-shadow:0 6px 20px rgba(0,0,0,.035);
+
+}
+
+.filters{
+
+  padding:16px;
+
+  margin-bottom:18px;
+
+}
+
+.filters-title{
+
+  font-weight:800;
+
+  color:var(--green);
+
+  margin-bottom:13px;
+
+}
+
+.filters-grid{
+
+  display:grid;
+
+  grid-template-columns:repeat(6,minmax(0,1fr));
+
+  gap:10px;
+
+}
+
+.filter-item{min-width:0}
+
+.filter-item label{
+
+  display:block;
+
+  font-size:12px;
+
+  font-weight:700;
+
+  color:#52655c;
+
+  margin-bottom:6px;
+
+}
+
+.filter-item select{
+
+  width:100%;
+
+  min-height:42px;
+
+  border:1px solid #ccd8d2;
+
+  border-radius:9px;
+
+  background:#fff;
+
+  padding:8px 10px;
+
+  color:#264b40;
+
+}
+
+#yearFilter{
+
+  min-width:0;
+
+  direction:ltr;
+
+  text-align:right;
+
+  font-variant-numeric:tabular-nums;
+
+}
+
+.filter-actions{
+
+  display:flex;
+
+  align-items:end;
+
+}
+
+.reset-btn{
+
+  width:100%;
+
+  min-height:42px;
+
+  border:0;
+
+  border-radius:9px;
+
+  background:#f1f4f3;
+
+  color:#52655c;
+
+  font-weight:700;
+
+  cursor:pointer;
+
+}
+
+.scope-note{
+
+  margin-top:12px;
+
+  padding-top:11px;
+
+  border-top:1px solid #edf1ef;
+
+  color:var(--muted);
+
+  font-size:12px;
+
+  line-height:1.7;
+
+}
+
+.kpis{
+
+  display:grid;
+
+  grid-template-columns:repeat(6,minmax(0,1fr));
+
+  gap:12px;
+
+  margin-bottom:18px;
+
+}
+
+.kpi-card{
+
+  padding:17px;
+
+  min-height:125px;
+
+  position:relative;
+
+  overflow:hidden;
+
+}
+
+.kpi-card::before{
+
+  content:"";
+
+  position:absolute;
+
+  right:0;
+
+  top:0;
+
+  bottom:0;
+
+  width:4px;
+
+  background:var(--green);
+
+}
+
+.kpi-card.maroon::before{background:var(--maroon)}
+
+.kpi-card.gold::before{background:var(--gold)}
+
+.kpi-label{
+
+  color:var(--muted);
+
+  font-size:12px;
+
+  line-height:1.5;
+
+  min-height:37px;
+
+}
+
+.kpi-value{
+
+  margin-top:7px;
+
+  font-size:29px;
+
+  font-weight:900;
+
+  color:var(--green);
+
+}
+
+.kpi-card.maroon .kpi-value{color:var(--maroon)}
+
+.kpi-card.gold .kpi-value{color:#8a6424}
+
+.kpi-sub{
+
+  margin-top:4px;
+
+  color:#8a9791;
+
+  font-size:11px;
+
+}
+
+.analysis-grid{
+
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:15px;
+
+  margin-bottom:18px;
+
+}
+
+.panel{padding:18px}
+
+.panel.full{grid-column:1/-1}
+
+.panel-head{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  gap:10px;
+
+  margin-bottom:15px;
+
+}
+
+.panel-head h2{
+
+  margin:0;
+
+  font-size:17px;
+
+  color:var(--green);
+
+}
+
+.panel-head small{color:#84918b}
+
+.bar-list{display:grid;gap:12px}
+
+.bar-row{
+
+  display:grid;
+
+  grid-template-columns:minmax(145px,220px) 1fr 55px;
+
+  align-items:center;
+
+  gap:10px;
+
+}
+
+.bar-name{
+
+  font-size:13px;
+
+  color:#40584f;
+
+  line-height:1.5;
+
+}
+
+.bar-track{
+
+  height:12px;
+
+  background:#edf2ef;
+
+  border-radius:999px;
+
+  overflow:hidden;
+
+}
+
+.bar-fill{
+
+  height:100%;
+
+  border-radius:999px;
+
+  background:linear-gradient(90deg,var(--green),#2c9470);
+
+}
+
+.bar-value{
+
+  text-align:center;
+
+  font-weight:800;
+
+  color:var(--green);
+
+  font-size:13px;
+
+}
+
+.domain-cards{
+
+  display:grid;
+
+  grid-template-columns:repeat(2,1fr);
+
+  gap:10px;
+
+}
+
+.domain-stat{
+
+  padding:14px;
+
+  border:1px solid #e3ebe7;
+
+  border-radius:12px;
+
+  background:#fafcfb;
+
+}
+
+.domain-stat h3{
+
+  margin:0 0 8px;
+
+  color:var(--green);
+
+  font-size:13px;
+
+  line-height:1.6;
+
+}
+
+.domain-number{
+
+  font-size:27px;
+
+  font-weight:900;
+
+  color:var(--maroon);
+
+}
+
+.domain-percent{
+
+  margin-top:4px;
+
+  color:#7b8a83;
+
+  font-size:12px;
+
+}
+
+.table-wrap{overflow:auto}
+
+table{
+
+  width:100%;
+
+  border-collapse:collapse;
+
+  min-width:850px;
+
+}
+
+th,td{
+
+  padding:10px;
+
+  border-bottom:1px solid #e9efec;
+
+  text-align:right;
+
+  font-size:12px;
+
+  vertical-align:top;
+
+}
+
+th{
+
+  background:#f4f8f6;
+
+  color:var(--green);
+
+  position:sticky;
+
+  top:0;
+
+}
+
+tbody tr:hover{background:#fafcfb}
+
+.rank{
+
+  width:30px;
+
+  height:30px;
+
+  display:inline-flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  border-radius:50%;
+
+  background:#edf4f1;
+
+  color:var(--green);
+
+  font-weight:900;
+
+}
+
+.empty{
+
+  padding:28px;
+
+  text-align:center;
+
+  color:#718078;
+
+  border:1px dashed #d7e0dc;
+
+  border-radius:12px;
+
+  background:#fafcfb;
+
+}
+
+.unclassified-warning{
+
+  display:none;
+
+  background:#fff8e9;
+
+  border:1px solid #eedba8;
+
+  color:#7b6027;
+
+  padding:13px 15px;
+
+  border-radius:12px;
+
+  margin-bottom:18px;
+
+  line-height:1.7;
+
+  font-size:13px;
+
+}
+
+.unclassified-warning.active{display:block}
+
+.loader{
+
+  position:fixed;
+
+  inset:0;
+
+  z-index:99999;
+
+  background:var(--bg);
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  color:var(--green);
+
+  font-weight:800;
+
+}
+
+.report-period{display:none}
+
+.print-report{display:none}
+
+
+
+@media(max-width:1100px){
+
+  .filters-grid{
+
+    grid-template-columns:repeat(3,minmax(0,1fr));
+
+  }
+
+  .kpis{
+
+    grid-template-columns:repeat(3,minmax(0,1fr));
+
+  }
+
+}
+
+
+
+@media(max-width:800px){
+
+  .analysis-grid{
+
+    grid-template-columns:1fr;
+
+  }
+
+  .panel.full{
+
+    grid-column:auto;
+
+  }
+
+  .domain-cards{
+
+    grid-template-columns:1fr;
+
+  }
+
+  .filters-grid{
+
+    grid-template-columns:repeat(2,minmax(0,1fr));
+
+  }
+
+  .kpis{
+
+    grid-template-columns:repeat(2,minmax(0,1fr));
+
+  }
+
+}
+
+
+
+@media(max-width:520px){
+
+  .filters-grid,.kpis{
+
+    grid-template-columns:1fr;
+
+  }
+
+}
+
+
+
+/* تحسين عرض الفلاتر على الشاشات الكبيرة */
+
+@media(min-width:1101px){
+
+  .filters-grid{
+
+    grid-template-columns:
+
+      minmax(170px,1.2fr)
+
+      repeat(4,minmax(0,1fr))
+
+      minmax(110px,.8fr);
+
+  }
+
+}
+
+
+
+/* التقرير الرسمي المخصص للطباعة */
+
+.print-header{
+
+  text-align:center;
+
+  border-bottom:2px solid #075c40;
+
+  padding-bottom:9px;
+
+  margin-bottom:12px;
+
+}
+
+.print-school-logo{
+
+  display:block;
+
+  max-width:100%;
+
+  width:auto;
+
+  max-height:80px;
+
+  object-fit:contain;
+
+  margin:0 auto 8px;
+
+}
+
+.print-school-name{
+
+  font-size:13px;
+
+  font-weight:800;
+
+  color:#075c40;
+
+}
+
+.print-title{
+
+  font-size:20px;
+
+  font-weight:900;
+
+  margin:8px 0;
+
+  color:#741a3a;
+
+}
+
+.print-meta{
+
+  display:grid;
+
+  grid-template-columns:repeat(3,minmax(0,1fr));
+
+  gap:7px;
+
+  margin:10px 0;
+
+}
+
+.print-meta-item{
+
+  border:1px solid #d5e1db;
+
+  padding:8px;
+
+  font-size:10px;
+
+  line-height:1.6;
+
+  background:#f9fbfa;
+
+}
+
+.print-meta-item strong{
+
+  display:block;
+
+  color:#075c40;
+
+}
+
+.print-summary{
+
+  display:grid;
+
+  grid-template-columns:repeat(4,minmax(0,1fr));
+
+  gap:7px;
+
+  margin:12px 0;
+
+}
+
+.print-stat{
+
+  border:1px solid #d5e1db;
+
+  border-top:3px solid #075c40;
+
+  text-align:center;
+
+  padding:9px 5px;
+
+}
+
+.print-stat-label{
+
+  font-size:10px;
+
+  color:#50685c;
+
+}
+
+.print-stat-value{
+
+  font-size:19px;
+
+  font-weight:900;
+
+  color:#741a3a;
+
+  margin-top:5px;
+
+}
+
+.print-section{
+
+  margin:13px 0;
+
+  break-inside:auto;
+
+}
+
+.print-section h3{
+
+  margin:0 0 7px;
+
+  padding:6px 9px;
+
+  border-right:4px solid #741a3a;
+
+  background:#edf4f0;
+
+  color:#075c40;
+
+  font-size:12px;
+
+}
+
+.print-table{
+
+  width:100%;
+
+  min-width:0;
+
+  border-collapse:collapse;
+
+  table-layout:fixed;
+
+}
+
+.print-table th,.print-table td{
+
+  border:1px solid #dce5e0;
+
+  padding:6px;
+
+  font-size:9px;
+
+  line-height:1.55;
+
+  overflow-wrap:anywhere;
+
+}
+
+.print-table th{
+
+  background:#edf4f0;
+
+  color:#075c40;
+
+  position:static;
+
+}
+
+.print-note{
+
+  font-size:10px;
+
+  color:#57695e;
+
+  line-height:1.8;
+
+  padding:8px;
+
+  border:1px solid #e0e8e3;
+
+  margin:10px 0;
+
+}
+
+.print-signatures{
+
+  display:grid;
+
+  grid-template-columns:repeat(3,minmax(0,1fr));
+
+  gap:12px;
+
+  margin-top:20px;
+
+  padding-top:12px;
+
+  border-top:1px solid #b6c9bf;
+
+  text-align:center;
+
+  break-inside:avoid;
+
+}
+
+.print-signature{
+
+  min-height:65px;
+
+  font-size:10px;
+
+  line-height:1.8;
+
+}
+
+.print-signature strong{
+
+  display:block;
+
+  color:#075c40;
+
+  font-size:11px;
+
+}
+
+.print-signature span{
+
+  display:block;
+
+  font-weight:700;
+
+  margin-top:4px;
+
+}
+
+.print-footer{
+
+  text-align:center;
+
+  font-size:9px;
+
+  color:#728078;
+
+  border-top:1px solid #dce5e0;
+
+  padding-top:7px;
+
+  margin-top:16px;
+
+}
+
+
+
+@page{
+
+  size:A4 landscape;
+
+  margin:12mm;
+
+}
+
+
+
+@media print{
+
+  html,body{
+
+    width:auto!important;
+
+    margin:0!important;
+
+    padding:0!important;
+
+    background:#fff!important;
+
+    color:#222!important;
+
+    -webkit-print-color-adjust:exact;
+
+    print-color-adjust:exact;
+
+  }
+
+  body > .topbar,
+
+  body > .page,
+
+  .loader{
+
+    display:none!important;
+
+  }
+
+  .print-report{
+
+    display:block!important;
+
+    width:100%;
+
+    font-family:Tahoma,Arial,sans-serif;
+
+    direction:rtl;
+
+  }
+
+  .print-school-logo{
+
+    max-height:72px;
+
+  }
+
+  .print-table thead{
+
+    display:table-header-group;
+
+  }
+
+  .print-table tr{
+
+    break-inside:avoid;
+
+  }
+
+  .print-signatures{
+
+    break-inside:avoid;
+
+  }
+
+}
+
+
+/* إصلاح تخطيط فلاتر التقرير - واجهة عربية متجاوبة */
+.filters .filters-grid{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:16px!important;
+  width:100%!important;
+  align-items:end;
+  direction:rtl;
+}
+.filters .filters-grid > .filter-item,
+.filters .filters-grid > .filter-actions{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  margin:0!important;
+  grid-column:auto!important;
+}
+.filters .filters-grid .filter-item label{
+  display:block!important;
+  width:100%;
+  min-height:22px;
+  margin:0 0 7px!important;
+  font-size:13px;
+  line-height:1.5;
+  white-space:normal;
+  text-align:right;
+}
+.filters .filters-grid .filter-item select,
+.filters .filters-grid .filter-actions .reset-btn{
+  display:block!important;
+  box-sizing:border-box!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  height:46px!important;
+  min-height:46px!important;
+  padding:8px 12px!important;
+  font-size:14px;
+  text-align:right;
+  direction:rtl;
+}
+.filters .filters-grid #yearFilter{
+  direction:ltr!important;
+  text-align:right!important;
+  font-variant-numeric:tabular-nums;
+}
+@media(max-width:850px){
+  .filters .filters-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+}
+@media(max-width:520px){
+  .filters .filters-grid{grid-template-columns:minmax(0,1fr)!important;}
+}
+</style>
+
+</head>
+
+
+
+<body>
+
+
+
+<div id="loader" class="loader">
+
+  جاري إعداد التحليلات من بيانات التوثيق...
+
+</div>
+
+
+
+<header class="topbar">
+
+  <div class="brand">
+
+    <img src="../assets/school-header.jpg" alt="شعار المدرسة">
+
+    <div>
+
+      <h1>تقارير وتحليلات التوثيقات</h1>
+
+      <p>WestRiffa Smart Office</p>
+
+    </div>
+
+  </div>
+
+</header>
+
+
+
+<main class="page">
+
+
+
+  <section class="page-head">
+
+    <div>
+
+      <h1>📊 تقارير وتحليلات التوثيقات والفعاليات</h1>
+
+      <p>
+
+        قراءة تحليلية مباشرة لسجلات التوثيق المصنفة بالمنصة
+
+        وفق المجالات والمشاريع المدرسية.
+
+      </p>
+
+      <div id="reportPeriod" class="report-period"></div>
+
+    </div>
+
+
+
+    <div class="head-actions">
+
+      <a href="../index.html" class="action-btn btn-home">🏠 الرئيسية</a>
+
+      <a href="archive/index.html" class="action-btn btn-home">📁 الأرشيف</a>
+
+      <button id="printBtn" class="action-btn btn-print" type="button">
+
+        🖨 طباعة التقرير
+
+      </button>
+
+    </div>
+
+  </section>
+
+
+
+  <section class="filters">
+
+    <div class="filters-title">تصفية التقرير</div>
+
+
+
+    <div class="filters-grid">
+
+
+
+      <div class="filter-item">
+
+        <label for="yearFilter">العام الدراسي</label>
+
+        <select id="yearFilter"></select>
+
+      </div>
+
+
+
+      <div class="filter-item">
+
+        <label for="monthFilter">الشهر</label>
+
+        <select id="monthFilter">
+
+          <option value="">كل الأشهر</option>
+
+          <option value="01">يناير</option>
+
+          <option value="02">فبراير</option>
+
+          <option value="03">مارس</option>
+
+          <option value="04">أبريل</option>
+
+          <option value="05">مايو</option>
+
+          <option value="06">يونيو</option>
+
+          <option value="07">يوليو</option>
+
+          <option value="08">أغسطس</option>
+
+          <option value="09">سبتمبر</option>
+
+          <option value="10">أكتوبر</option>
+
+          <option value="11">نوفمبر</option>
+
+          <option value="12">ديسمبر</option>
+
+        </select>
+
+      </div>
+
+
+
+      <div class="filter-item">
+
+        <label for="departmentFilter">القسم</label>
+
+        <select id="departmentFilter">
+
+          <option value="">كل الأقسام</option>
+
+        </select>
+
+      </div>
+
+
+
+      <div class="filter-item">
+
+        <label for="domainFilter">المجال الرئيسي</label>
+
+        <select id="domainFilter">
+
+          <option value="">كل المجالات</option>
+
+        </select>
+
+      </div>
+
+
+
+      <div class="filter-item">
+
+        <label for="projectFilter">المشروع المدرسي</label>
+
+        <select id="projectFilter">
+
+          <option value="">كل المشاريع</option>
+
+        </select>
+
+      </div>
+
+
+
+      <div class="filter-actions">
+
+        <button id="resetBtn" class="reset-btn" type="button">
+
+          إعادة الضبط
+
+        </button>
+
+      </div>
+
+
+
+    </div>
+
+
+
+    <div id="scopeNote" class="scope-note"></div>
+
+  </section>
+
+
+
+  <div id="unclassifiedWarning" class="unclassified-warning"></div>
+
+
+
+  <section class="kpis">
+
+
+
+    <article class="kpi-card">
+
+      <div class="kpi-label">إجمالي التوثيقات</div>
+
+      <div id="kpiRecords" class="kpi-value">0</div>
+
+      <div class="kpi-sub">جميع السجلات المطابقة</div>
+
+    </article>
+
+
+
+    <article class="kpi-card maroon">
+
+      <div class="kpi-label">المستفيدون المسجلون</div>
+
+      <div id="kpiBeneficiaries" class="kpi-value">0</div>
+
+      <div class="kpi-sub">في التوثيقات المصنفة فقط</div>
+
+    </article>
+
+
+
+    <article class="kpi-card gold">
+
+      <div class="kpi-label">إجمالي مرات الاستفادة</div>
+
+      <div id="kpiBenefitTimes" class="kpi-value">0</div>
+
+      <div class="kpi-sub">في التوثيقات المصنفة فقط</div>
+
+    </article>
+
+
+
+    <article class="kpi-card">
+
+      <div class="kpi-label">المعلمات المنفذات</div>
+
+      <div id="kpiTeachers" class="kpi-value">0</div>
+
+      <div class="kpi-sub">في التوثيقات المصنفة</div>
+
+    </article>
+
+
+
+    <article class="kpi-card maroon">
+
+      <div class="kpi-label">الأقسام المفعلة</div>
+
+      <div id="kpiDepartments" class="kpi-value">0</div>
+
+      <div class="kpi-sub">في التوثيقات المصنفة</div>
+
+    </article>
+
+
+
+    <article class="kpi-card gold">
+
+      <div class="kpi-label">المشاريع المفعلة</div>
+
+      <div id="kpiProjects" class="kpi-value">0</div>
+
+      <div class="kpi-sub">مشروع مدرسي مصنف</div>
+
+    </article>
+
+
+
+  </section>
+
+
+
+  <section class="analysis-grid">
+
+
+
+    <article class="panel">
+
+      <div class="panel-head">
+
+        <h2>التوزيع حسب المجالات الأربعة</h2>
+
+        <small>من التوثيقات المصنفة</small>
+
+      </div>
+
+      <div id="domainStats" class="domain-cards"></div>
+
+    </article>
+
+
+
+    <article class="panel">
+
+      <div class="panel-head">
+
+        <h2>المشاريع المدرسية الأكثر تفعيلًا</h2>
+
+        <small>حسب عدد التوثيقات المصنفة</small>
+
+      </div>
+
+      <div id="projectBars" class="bar-list"></div>
+
+    </article>
+
+
+
+    <article class="panel">
+
+      <div class="panel-head">
+
+        <h2>تفعيل الأقسام</h2>
+
+        <small>التوثيقات المصنفة</small>
+
+      </div>
+
+      <div id="departmentBars" class="bar-list"></div>
+
+    </article>
+
+
+
+    <article class="panel">
+
+      <div class="panel-head">
+
+        <h2>أنواع التوثيق الأكثر استخدامًا</h2>
+
+        <small>التوثيقات المصنفة</small>
+
+      </div>
+
+      <div id="categoryBars" class="bar-list"></div>
+
+    </article>
+
+
+
+    <article class="panel full">
+
+      <div class="panel-head">
+
+        <h2>مؤشر تفعيل المعلمات</h2>
+
+        <small>مرتب حسب التوثيقات المصنفة</small>
+
+      </div>
+
+
+
+      <div class="table-wrap">
+
+        <table>
+
+          <thead>
+
+            <tr>
+
+              <th>#</th>
+
+              <th>المعلمة</th>
+
+              <th>القسم</th>
+
+              <th>عدد التوثيقات</th>
+
+              <th>المستفيدون</th>
+
+              <th>مرات الاستفادة</th>
+
+              <th>المشاريع المفعلة</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody id="teachersBody"></tbody>
+
+        </table>
+
+      </div>
+
+    </article>
+
+
+
+    <article class="panel full">
+
+      <div class="panel-head">
+
+        <h2>تفاصيل التوثيقات المصنفة</h2>
+
+        <small id="recordsCountLabel">0 سجل</small>
+
+      </div>
+
+
+
+      <div class="table-wrap">
+
+        <table>
+
+          <thead>
+
+            <tr>
+
+              <th>التاريخ</th>
+
+              <th>عنوان التوثيق</th>
+
+              <th>المنفذة الرئيسية</th>
+
+              <th>القسم</th>
+
+              <th>المجال</th>
+
+              <th>المشروع</th>
+
+              <th>نوع التوثيق</th>
+
+              <th>المستفيدون</th>
+
+              <th>مرات الاستفادة</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody id="recordsBody"></tbody>
+
+        </table>
+
+      </div>
+
+    </article>
+
+
+
+  </section>
+
+</main>
+
+
+
+<!-- التقرير الرسمي للطباعة فقط -->
+
+<section id="printReport" class="print-report">
+
+
+
+  <div class="print-header">
+
+    <img
+
+      class="print-school-logo"
+
+      src="../assets/school-header.jpg"
+
+      alt="ترويسة المدرسة"
+
+    >
+
+    <div class="print-school-name">
+
+      مدرسة الرفاع الغربي الابتدائية للبنين
+
+    </div>
+
+    <h1 class="print-title">
+
+      التقرير التحليلي للتوثيقات والفعاليات
+
+    </h1>
+
+  </div>
+
+
+
+  <div id="printMeta" class="print-meta"></div>
+
+  <div id="printSummary" class="print-summary"></div>
+
+
+
+  <div class="print-section">
+
+    <h3>أولًا: توزيع التوثيقات حسب المجالات الرئيسية</h3>
+
+    <div id="printDomains"></div>
+
+  </div>
+
+
+
+  <div class="print-section">
+
+    <h3>ثانيًا: تفعيل المشاريع المدرسية</h3>
+
+    <div id="printProjects"></div>
+
+  </div>
+
+
+
+  <div class="print-section">
+
+    <h3>ثالثًا: تفعيل الأقسام</h3>
+
+    <div id="printDepartments"></div>
+
+  </div>
+
+
+
+  <div class="print-section">
+
+    <h3>رابعًا: أنواع التوثيق</h3>
+
+    <div id="printCategories"></div>
+
+  </div>
+
+
+
+  <div class="print-section">
+
+    <h3>خامسًا: مؤشر تفعيل المعلمات</h3>
+
+    <div id="printTeachers"></div>
+
+  </div>
+
+
+
+  <div class="print-section">
+
+    <h3>سادسًا: تفاصيل التوثيقات المصنفة</h3>
+
+    <div id="printRecords"></div>
+
+  </div>
+
+
+
+  <div id="printNote" class="print-note"></div>
+
+
+
+  <div class="print-signatures">
+
+    <div class="print-signature">
+
+      <strong>متابعة وتحليل البيانات</strong>
+
+      اختصاصي مصادر التعلم
+
+      <span>فاتن صلاح</span>
+
+    </div>
+
+
+
+    <div class="print-signature">
+
+      <strong>متابعة</strong>
+
+      مساعدة مديرة المدرسة
+
+      <span>خلود الكعبي</span>
+
+    </div>
+
+
+
+    <div class="print-signature">
+
+      <strong>اعتماد</strong>
+
+      مديرة المدرسة
+
+      <span>أحلام السويدي</span>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="print-footer">
+
+    WestRiffa Smart Office |
+
+    تقرير مستخرج من بيانات منظومة التوثيق والتحليل المدرسي
+
+  </div>
+
+
+
+</section>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="../js/config.js?v=20261103-analysis-final"></script>
+
+<script src="../js/graph.js?v=20261103-analysis-final"></script>
+
+<script src="../js/common.js?v=20261103-analysis-final"></script>
+
+
+
+<script>
+
+"use strict";
+
+
+
+const sb = window.supabase.createClient(
+
+  window.WR_CONFIG.supabaseUrl,
+
+  window.WR_CONFIG.supabaseKey
+
+);
+
+
+
+const DOMAIN_LABELS = {
+
+  achievement:"إنجاز الطلبة الأكاديمي",
+
+  teaching_learning_assessment:"التعليم والتعلم والتقويم",
+
+  personal_development:"التطور الشخصي للطلبة ورعايتهم",
+
+  leadership_management:"القيادة والإدارة والحوكمة"
+
+};
+
+
+
+const DOMAIN_PROJECTS = {
+
+  achievement:[
+
+    "آفاق الإتقان",
+
+    "آفاق المهارات",
+
+    "آفاق المستقبل",
+
+    "آفاق وطنية",
+
+    "آفاق كتابية"
+
+  ],
+
+  teaching_learning_assessment:[
+
+    "مداد الاستراتيجيات",
+
+    "مداد التخطيط",
+
+    "مداد التقويم",
+
+    "مداد الدعم"
+
+  ],
+
+  personal_development:[
+
+    "رايات التحدي",
+
+    "رايات السلوك الواعي",
+
+    "رايات الاستدامة"
+
+  ],
+
+  leadership_management:[
+
+    "خطى التقييم والتطوير",
+
+    "خطى نحو التميز",
+
+    "خطى الشراكة",
+
+    "خطى الأمان",
+
+    "خطى الابتكار"
+
+  ]
+
+};
+
+
+
+let currentUser = null;
+
+let currentProfile = null;
+
+let currentRole = "teacher";
+
+
+
+let coordinatorDepartmentIds = [];
+
+let coordinatorVisibleUserIds = [];
+
+
+
+let allActivities = [];
+
+let filteredActivities = [];
+
+let analysisActivities = [];
+
+let activeSchoolYear = "";
+
+
+
+const yearFilter = document.getElementById("yearFilter");
+
+const monthFilter = document.getElementById("monthFilter");
+
+const departmentFilter = document.getElementById("departmentFilter");
+
+const domainFilter = document.getElementById("domainFilter");
+
+const projectFilter = document.getElementById("projectFilter");
+
+
+
+function esc(value){
+
+  return String(value ?? "")
+
+    .replaceAll("&","&amp;")
+
+    .replaceAll("<","&lt;")
+
+    .replaceAll(">","&gt;")
+
+    .replaceAll('"',"&quot;")
+
+    .replaceAll("'","&#039;");
+
+}
+
+
+
+function number(value){
+
+  const n = Number(value);
+
+  return Number.isFinite(n) && n >= 0 ? n : 0;
+
+}
+
+
+
+function fmt(value){
+
+  return Number(value || 0).toLocaleString("ar-BH");
+
+}
+
+
+
+function unique(values){
+
+  return [...new Set(
+
+    values
+
+      .map(v=>String(v || "").trim())
+
+      .filter(Boolean)
+
+  )];
+
+}
+
+
+
+function schoolYearFromDate(value){
+
+  if(!value) return "";
+
+
+
+  const raw = String(value);
+
+  const match = raw.match(/^(\d{4})-(\d{2})/);
+
+
+
+  let year,month;
+
+
+
+  if(match){
+
+    year = Number(match[1]);
+
+    month = Number(match[2]);
+
+  }else{
+
+    const date = new Date(raw);
+
+    if(Number.isNaN(date.getTime())) return "";
+
+    year = date.getFullYear();
+
+    month = date.getMonth()+1;
+
+  }
+
+
+
+  return month >= 8
+
+    ? `${year}/${year+1}`
+
+    : `${year-1}/${year}`;
+
+}
+
+
+
+function normalizeSchoolYear(value,fallbackDate=""){
+
+  const raw = String(value ?? "")
+
+    .trim()
+
+    .replace(/[٠-٩]/g,d=>String("٠١٢٣٤٥٦٧٨٩".indexOf(d)))
+
+    .replace(/[۰-۹]/g,d=>String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)));
+
+
+
+  const match = raw.match(
+
+    /(20\d{2})\s*[/\-\s]\s*(20\d{2}|\d{2})/
+
+  );
+
+
+
+  if(match){
+
+    const start = Number(match[1]);
+
+    let end = Number(match[2]);
+
+
+
+    if(end < 100){
+
+      end = Math.floor(start/100)*100+end;
+
+    }
+
+
+
+    if(end === start+1){
+
+      return `${start}/${end}`;
+
+    }
+
+  }
+
+
+
+  const compact = raw.match(/^(20\d{2})(20\d{2})$/);
+
+
+
+  if(compact){
+
+    const start = Number(compact[1]);
+
+    const end = Number(compact[2]);
+
+
+
+    if(end === start+1){
+
+      return `${start}/${end}`;
+
+    }
+
+  }
+
+
+
+  return schoolYearFromDate(fallbackDate);
+
+}
+
+
+
+function recordDate(record){
+
+  return (
+
+    record.record_date ||
+
+    record.payload?.date ||
+
+    record.created_at ||
+
+    ""
+
+  );
+
+}
+
+
+
+function recordYear(record){
+
+  return normalizeSchoolYear(
+
+    record.school_year ||
+
+    record.payload?.schoolYear ||
+
+    record.payload?.school_year,
+
+    recordDate(record)
+
+  );
+
+}
+
+
+
+function recordMonth(record){
+
+  const raw = String(recordDate(record) || "");
+
+  const match = raw.match(/^\d{4}-(\d{2})/);
+
+
+
+  if(match) return match[1];
+
+
+
+  const date = new Date(raw);
+
+  if(Number.isNaN(date.getTime())) return "";
+
+
+
+  return String(date.getMonth()+1).padStart(2,"0");
+
+}
+
+
+
+function activityDomain(record){
+
+  const value = String(
+
+    record.documentation_domain ||
+
+    record.payload?.documentationDomain ||
+
+    record.payload?.documentation_domain ||
+
+    ""
+
+  ).trim();
+
+
+
+  return DOMAIN_LABELS[value] ? value : "";
+
+}
+
+
+
+function isClassified(record){
+
+  return Boolean(activityDomain(record));
+
+}
+
+
+
+function activityProject(record){
+
+  return String(
+
+    record.school_project ||
+
+    record.payload?.schoolProject ||
+
+    record.payload?.school_project ||
+
+    ""
+
+  ).trim();
+
+}
+
+
+
+function activityCategory(record){
+
+  let value = String(
+
+    record.activity_category ||
+
+    record.payload?.activityCategory ||
+
+    record.payload?.activity_category ||
+
+    ""
+
+  ).trim();
+
+
+
+  if(!value || value === "أخرى"){
+
+    const custom = String(
+
+      record.payload?.otherActivityCategory || ""
+
+    ).trim();
+
+
+
+    if(custom) value = custom;
+
+  }
+
+
+
+  return value;
+
+}
+
+
+
+function activityTitle(record){
+
+  return String(
+
+    record.title ||
+
+    record.payload?.title ||
+
+    record.payload?.name ||
+
+    "توثيق"
+
+  ).trim();
+
+}
+
+
+
+function activityTeacher(record){
+
+  return String(
+
+    record.executor_name ||
+
+    record.executor ||
+
+    record.payload?.executorName ||
+
+    record.payload?.executor ||
+
+    record.payload?.mainExecutorName ||
+
+    ""
+
+  ).trim();
+
+}
+
+
+
+function activityDepartment(record){
+
+  return String(
+
+    record.department_name ||
+
+    record.department ||
+
+    record.payload?.departmentName ||
+
+    record.payload?.department_name ||
+
+    record.payload?.department ||
+
+    ""
+
+  ).trim();
+
+}
+
+
+
+function activityBeneficiaries(record){
+
+  return number(
+
+    record.beneficiary_count ??
+
+    record.payload?.beneficiaryCount ??
+
+    record.payload?.beneficiary_count ??
+
+    0
+
+  );
+
+}
+
+
+
+function activityBenefitTimes(record){
+
+  return number(
+
+    record.benefit_times ??
+
+    record.payload?.benefitTimes ??
+
+    record.payload?.benefit_times ??
+
+    record.payload?.count ??
+
+    0
+
+  );
+
+}
+
+
+
+function activityOwner(record){
+
+  return String(
+
+    record.created_by ||
+
+    record.payload?.created_by ||
+
+    ""
+
+  );
+
+}
+
+
+
+function formatDate(value){
+
+  if(!value) return "—";
+
+
+
+  const date = new Date(value);
+
+
+
+  if(Number.isNaN(date.getTime())){
+
+    return String(value).slice(0,10);
+
+  }
+
+
+
+  return date.toLocaleDateString("ar-BH",{
+
+    year:"numeric",
+
+    month:"short",
+
+    day:"numeric"
+
+  });
+
+}
+
+
+
+async function loadAccess(){
+
+  currentUser = await WRGraph.getAccount();
+
+
+
+  if(!currentUser){
+
+    location.replace("../index.html");
+
+    return false;
+
+  }
+
+
+
+  currentProfile = await WRAccess.getProfile(true);
+
+
+
+  if(!currentProfile){
+
+    throw new Error("تعذر قراءة صلاحيات الحساب");
+
+  }
+
+
+
+  currentRole = String(
+
+    currentProfile.role || "teacher"
+
+  ).toLowerCase();
+
+
+
+  if(currentRole === "coordinator"){
+
+    await loadCoordinatorScope();
+
+  }
+
+
+
+  const note = document.getElementById("scopeNote");
+
+
+
+  if(currentRole === "admin" || currentRole === "system_admin"){
+
+    note.textContent =
+
+      "يعرض التقرير جميع التوثيقات المتاحة للقيادة العليا وفق صلاحيات المنصة.";
+
+  }else if(currentRole === "coordinator"){
+
+    note.textContent =
+
+      "يعرض التقرير توثيقاتك وتوثيقات معلمات الأقسام التابعة لك فقط.";
+
+  }else{
+
+    note.textContent =
+
+      "يعرض التقرير التوثيقات الخاصة بحسابك فقط.";
+
+  }
+
+
+
+  return true;
+
+}
+
+
+
+async function loadCoordinatorScope(){
+
+  coordinatorVisibleUserIds = [String(currentUser.id)];
+
+
+
+  let scope = null;
+
+
+
+  try{
+
+    if(window.WRAccess && typeof WRAccess.getScope === "function"){
+
+      scope = await WRAccess.getScope();
+
+    }
+
+  }catch(error){
+
+    console.warn(error);
+
+  }
+
+
+
+  if(Array.isArray(scope?.department_ids)){
+
+    coordinatorDepartmentIds =
+
+      scope.department_ids.filter(Boolean).map(String);
+
+  }
+
+
+
+  if(
+
+    !coordinatorDepartmentIds.length &&
+
+    Array.isArray(currentProfile.department_ids)
+
+  ){
+
+    coordinatorDepartmentIds =
+
+      currentProfile.department_ids.filter(Boolean).map(String);
+
+  }
+
+
+
+  if(
+
+    !coordinatorDepartmentIds.length &&
+
+    currentProfile.department_id
+
+  ){
+
+    coordinatorDepartmentIds = [
+
+      String(currentProfile.department_id)
+
+    ];
+
+  }
+
+
+
+  if(!coordinatorDepartmentIds.length) return;
+
+
+
+  const ids = new Set(coordinatorVisibleUserIds);
+
+
+
+  const {data:assignments,error:assignmentsError} =
+
+    await sb
+
+      .from("profile_departments")
+
+      .select("profile_id,department_id,assignment_type")
+
+      .in("department_id",coordinatorDepartmentIds);
+
+
+
+  if(assignmentsError){
+
+    console.warn("Department assignments:",assignmentsError);
+
+  }
+
+
+
+  (assignments || []).forEach(row=>{
+
+    const type = String(row.assignment_type || "").toLowerCase();
+
+
+
+    if(
+
+      row.profile_id &&
+
+      (!type || type === "teacher")
+
+    ){
+
+      ids.add(String(row.profile_id));
+
+    }
+
+  });
+
+
+
+  const {data:legacy,error:legacyError} =
+
+    await sb
+
+      .from("user_profiles")
+
+      .select("user_id,department_id,role")
+
+      .eq("role","teacher")
+
+      .in("department_id",coordinatorDepartmentIds);
+
+
+
+  if(legacyError){
+
+    console.warn("Legacy departments:",legacyError);
+
+  }
+
+
+
+  (legacy || []).forEach(row=>{
+
+    if(row.user_id) ids.add(String(row.user_id));
+
+  });
+
+
+
+  coordinatorVisibleUserIds = [...ids];
+
+}
+
+
+
+function applyScope(records){
+
+  if(currentRole === "admin" || currentRole === "system_admin"){
+
+    return records;
+
+  }
+
+
+
+  const allowed = new Set(
+
+    currentRole === "coordinator"
+
+      ? coordinatorVisibleUserIds.map(String)
+
+      : [String(currentUser.id)]
+
+  );
+
+
+
+  return records.filter(record=>
+
+    allowed.has(activityOwner(record))
+
+  );
+
+}
+
+
+
+async function loadActivities(){
+
+  const records = await WRGraph.fetchRecords();
+
+
+
+  allActivities = (records || [])
+
+    .filter(record=>record.type === "activity")
+
+    .map(record=>({
+
+      ...record,
+
+      payload:
+
+        record.payload && typeof record.payload === "object"
+
+          ? record.payload
+
+          : {}
+
+    }));
+
+
+
+  allActivities = applyScope(allActivities);
+
+}
+
+
+
+async function loadActiveYear(){
+
+  let rawYear = "";
+
+
+
+  try{
+
+    if(typeof WRGraph.getActiveSchoolYear === "function"){
+
+      rawYear = String(
+
+        await WRGraph.getActiveSchoolYear(true) || ""
+
+      );
+
+    }
+
+  }catch(error){
+
+    console.warn(error);
+
+  }
+
+
+
+  activeSchoolYear = normalizeSchoolYear(
+
+    rawYear,
+
+    new Date().toISOString()
+
+  );
+
+}
+
+
+
+function setupFilters(){
+
+  const years = unique(
+
+    allActivities.map(recordYear)
+
+  ).sort().reverse();
+
+
+
+  if(activeSchoolYear && !years.includes(activeSchoolYear)){
+
+    years.unshift(activeSchoolYear);
+
+  }
+
+
+
+  yearFilter.innerHTML =
+
+    '<option value="">كل الأعوام</option>' +
+
+    years.map(year=>
+
+      `<option value="${esc(year)}">${esc(year)}</option>`
+
+    ).join("");
+
+
+
+  if(years.includes(activeSchoolYear)){
+
+    yearFilter.value = activeSchoolYear;
+
+  }
+
+
+
+  const departments = unique(
+
+    allActivities
+
+      .filter(isClassified)
+
+      .map(activityDepartment)
+
+  ).sort((a,b)=>a.localeCompare(b,"ar"));
+
+
+
+  departmentFilter.innerHTML =
+
+    '<option value="">كل الأقسام</option>' +
+
+    departments.map(name=>
+
+      `<option value="${esc(name)}">${esc(name)}</option>`
+
+    ).join("");
+
+
+
+  domainFilter.innerHTML =
+
+    '<option value="">كل المجالات</option>' +
+
+    Object.entries(DOMAIN_LABELS).map(([key,label])=>
+
+      `<option value="${key}">${esc(label)}</option>`
+
+    ).join("");
+
+
+
+  refreshProjectFilter();
+
+}
+
+
+
+function refreshProjectFilter(){
+
+  const domain = domainFilter.value;
+
+  const oldValue = projectFilter.value;
+
+
+
+  const projects = domain
+
+    ? (DOMAIN_PROJECTS[domain] || [])
+
+    : unique(Object.values(DOMAIN_PROJECTS).flat())
+
+        .sort((a,b)=>a.localeCompare(b,"ar"));
+
+
+
+  projectFilter.innerHTML =
+
+    '<option value="">كل المشاريع</option>' +
+
+    projects.map(project=>
+
+      `<option value="${esc(project)}">${esc(project)}</option>`
+
+    ).join("");
+
+
+
+  if(projects.includes(oldValue)){
+
+    projectFilter.value = oldValue;
+
+  }
+
+}
+
+
+
+function applyFilters(){
+
+  filteredActivities = allActivities.filter(record=>{
+
+    if(
+
+      yearFilter.value &&
+
+      recordYear(record) !== yearFilter.value
+
+    ) return false;
+
+
+
+    if(
+
+      monthFilter.value &&
+
+      recordMonth(record) !== monthFilter.value
+
+    ) return false;
+
+
+
+    if(
+
+      departmentFilter.value &&
+
+      activityDepartment(record) !== departmentFilter.value
+
+    ) return false;
+
+
+
+    if(
+
+      domainFilter.value &&
+
+      activityDomain(record) !== domainFilter.value
+
+    ) return false;
+
+
+
+    if(
+
+      projectFilter.value &&
+
+      activityProject(record) !== projectFilter.value
+
+    ) return false;
+
+
+
+    return true;
+
+  });
+
+
+
+  filteredActivities.sort((a,b)=>
+
+    new Date(recordDate(b) || 0) -
+
+    new Date(recordDate(a) || 0)
+
+  );
+
+
+
+  analysisActivities = filteredActivities.filter(isClassified);
+
+
+
+  renderAll();
+
+}
+
+
+
+function countBy(records,getter){
+
+  const map = new Map();
+
+
+
+  records.forEach(record=>{
+
+    const key = String(getter(record) || "").trim();
+
+    if(!key) return;
+
+
+
+    map.set(key,(map.get(key) || 0)+1);
+
+  });
+
+
+
+  return [...map.entries()]
+
+    .map(([name,count])=>({name,count}))
+
+    .sort((a,b)=>b.count-a.count || a.name.localeCompare(b.name,"ar"));
+
+}
+
+
+
+function sumBy(records,getter){
+
+  return records.reduce((sum,record)=>sum+getter(record),0);
+
+}
+
+
+
+function teacherRows(){
+
+  const map = new Map();
+
+
+
+  analysisActivities.forEach(record=>{
+
+    const teacher = activityTeacher(record) || "غير محدد";
+
+    const department = activityDepartment(record) || "غير محدد";
+
+    const key = `${teacher}|||${department}`;
+
+
+
+    if(!map.has(key)){
+
+      map.set(key,{
+
+        teacher,
+
+        department,
+
+        records:0,
+
+        beneficiaries:0,
+
+        benefitTimes:0,
+
+        projects:new Set()
+
+      });
+
+    }
+
+
+
+    const row = map.get(key);
+
+
+
+    row.records++;
+
+    row.beneficiaries += activityBeneficiaries(record);
+
+    row.benefitTimes += activityBenefitTimes(record);
+
+
+
+    const project = activityProject(record);
+
+    if(project) row.projects.add(project);
+
+  });
+
+
+
+  return [...map.values()]
+
+    .sort((a,b)=>
+
+      b.records-a.records ||
+
+      a.teacher.localeCompare(b.teacher,"ar")
+
+    );
+
+}
+
+
+
+function renderKPIs(){
+
+  document.getElementById("kpiRecords").textContent =
+
+    fmt(filteredActivities.length);
+
+
+
+  document.getElementById("kpiBeneficiaries").textContent =
+
+    fmt(sumBy(analysisActivities,activityBeneficiaries));
+
+
+
+  document.getElementById("kpiBenefitTimes").textContent =
+
+    fmt(sumBy(analysisActivities,activityBenefitTimes));
+
+
+
+  document.getElementById("kpiTeachers").textContent =
+
+    fmt(unique(analysisActivities.map(activityTeacher)).length);
+
+
+
+  document.getElementById("kpiDepartments").textContent =
+
+    fmt(unique(analysisActivities.map(activityDepartment)).length);
+
+
+
+  document.getElementById("kpiProjects").textContent =
+
+    fmt(unique(analysisActivities.map(activityProject)).length);
+
+}
+
+
+
+function renderDomains(){
+
+  const total = analysisActivities.length;
+
+
+
+  document.getElementById("domainStats").innerHTML =
+
+    Object.entries(DOMAIN_LABELS).map(([key,label])=>{
+
+      const count = analysisActivities.filter(
+
+        record=>activityDomain(record) === key
+
+      ).length;
+
+
+
+      const percent = total
+
+        ? Math.round((count/total)*100)
+
+        : 0;
+
+
+
+      return `
+
+        <div class="domain-stat">
+
+          <h3>${esc(label)}</h3>
+
+          <div class="domain-number">${fmt(count)}</div>
+
+          <div class="domain-percent">
+
+            ${percent}% من التوثيقات المصنفة
+
+          </div>
+
+        </div>
+
+      `;
+
+    }).join("");
+
+}
+
+
+
+function renderBars(elementId,items){
+
+  const element = document.getElementById(elementId);
+
+
+
+  if(!items.length){
+
+    element.innerHTML =
+
+      '<div class="empty">لا توجد بيانات مصنفة في الفترة المحددة.</div>';
+
+    return;
+
+  }
+
+
+
+  const max = Math.max(...items.map(item=>item.count),1);
+
+
+
+  element.innerHTML = items.slice(0,12).map(item=>{
+
+    const width = Math.round((item.count/max)*100);
+
+
+
+    return `
+
+      <div class="bar-row">
+
+        <div class="bar-name">${esc(item.name)}</div>
+
+        <div class="bar-track">
+
+          <div class="bar-fill" style="width:${width}%"></div>
+
+        </div>
+
+        <div class="bar-value">${fmt(item.count)}</div>
+
+      </div>
+
+    `;
+
+  }).join("");
+
+}
+
+
+
+function renderTeachers(){
+
+  const rows = teacherRows();
+
+  const tbody = document.getElementById("teachersBody");
+
+
+
+  if(!rows.length){
+
+    tbody.innerHTML =
+
+      '<tr><td colspan="7"><div class="empty">لا توجد بيانات مصنفة.</div></td></tr>';
+
+    return;
+
+  }
+
+
+
+  tbody.innerHTML = rows.map((row,index)=>`
+
+    <tr>
+
+      <td><span class="rank">${index+1}</span></td>
+
+      <td><strong>${esc(row.teacher)}</strong></td>
+
+      <td>${esc(row.department)}</td>
+
+      <td>${fmt(row.records)}</td>
+
+      <td>${fmt(row.beneficiaries)}</td>
+
+      <td>${fmt(row.benefitTimes)}</td>
+
+      <td>${fmt(row.projects.size)}</td>
+
+    </tr>
+
+  `).join("");
+
+}
+
+
+
+function renderRecords(){
+
+  const tbody = document.getElementById("recordsBody");
+
+
+
+  document.getElementById("recordsCountLabel").textContent =
+
+    `${fmt(analysisActivities.length)} سجل مصنف`;
+
+
+
+  if(!analysisActivities.length){
+
+    tbody.innerHTML =
+
+      '<tr><td colspan="9"><div class="empty">لا توجد توثيقات مصنفة مطابقة للفلاتر.</div></td></tr>';
+
+    return;
+
+  }
+
+
+
+  tbody.innerHTML = analysisActivities.map(record=>`
+
+    <tr>
+
+      <td>${esc(formatDate(recordDate(record)))}</td>
+
+      <td><strong>${esc(activityTitle(record))}</strong></td>
+
+      <td>${esc(activityTeacher(record) || "—")}</td>
+
+      <td>${esc(activityDepartment(record) || "—")}</td>
+
+      <td>${esc(DOMAIN_LABELS[activityDomain(record)] || "—")}</td>
+
+      <td>${esc(activityProject(record) || "—")}</td>
+
+      <td>${esc(activityCategory(record) || "—")}</td>
+
+      <td>${fmt(activityBeneficiaries(record))}</td>
+
+      <td>${fmt(activityBenefitTimes(record))}</td>
+
+    </tr>
+
+  `).join("");
+
+}
+
+
+
+function renderWarning(){
+
+  const unclassified =
+
+    filteredActivities.length-analysisActivities.length;
+
+
+
+  const box = document.getElementById("unclassifiedWarning");
+
+
+
+  if(unclassified){
+
+    box.classList.add("active");
+
+    box.innerHTML =
+
+      `⚠️ يوجد <strong>${fmt(unclassified)}</strong> توثيق غير مصنف ` +
+
+      `من أصل <strong>${fmt(filteredActivities.length)}</strong> سجل. ` +
+
+      `التوثيقات المصنفة: <strong>${fmt(analysisActivities.length)}</strong>. ` +
+
+      `تظهر السجلات غير المصنفة ضمن الإجمالي فقط، ولا تدخل في ` +
+
+      `مؤشرات المستفيدين والمعلمات والأقسام والمشاريع حتى يتم تصنيفها من الأرشيف.`;
+
+  }else{
+
+    box.classList.remove("active");
+
+    box.innerHTML = "";
+
+  }
+
+}
+
+
+
+function selectedPeriodParts(){
+
+  const parts = [];
+
+
+
+  if(yearFilter.value){
+
+    parts.push(`العام الدراسي: ${yearFilter.value}`);
+
+  }
+
+
+
+  if(monthFilter.value){
+
+    const option =
+
+      monthFilter.options[monthFilter.selectedIndex];
+
+
+
+    parts.push(`الشهر: ${option.textContent}`);
+
+  }
+
+
+
+  if(departmentFilter.value){
+
+    parts.push(`القسم: ${departmentFilter.value}`);
+
+  }
+
+
+
+  if(domainFilter.value){
+
+    parts.push(`المجال: ${DOMAIN_LABELS[domainFilter.value]}`);
+
+  }
+
+
+
+  if(projectFilter.value){
+
+    parts.push(`المشروع: ${projectFilter.value}`);
+
+  }
+
+
+
+  return parts;
+
+}
+
+
+
+function renderPeriod(){
+
+  const parts = selectedPeriodParts();
+
+
+
+  document.getElementById("reportPeriod").textContent =
+
+    parts.length
+
+      ? parts.join(" | ")
+
+      : "تقرير شامل لجميع التوثيقات المتاحة";
+
+}
+
+
+
+function renderAll(){
+
+  renderKPIs();
+
+  renderDomains();
+
+
+
+  renderBars(
+
+    "projectBars",
+
+    countBy(analysisActivities,activityProject)
+
+  );
+
+
+
+  renderBars(
+
+    "departmentBars",
+
+    countBy(analysisActivities,activityDepartment)
+
+  );
+
+
+
+  renderBars(
+
+    "categoryBars",
+
+    countBy(analysisActivities,activityCategory)
+
+  );
+
+
+
+  renderTeachers();
+
+  renderRecords();
+
+  renderWarning();
+
+  renderPeriod();
+
+}
+
+
+
+function resetFilters(){
+
+  yearFilter.value =
+
+    [...yearFilter.options].some(
+
+      option=>option.value === activeSchoolYear
+
+    )
+
+      ? activeSchoolYear
+
+      : "";
+
+
+
+  monthFilter.value = "";
+
+  departmentFilter.value = "";
+
+  domainFilter.value = "";
+
+
+
+  refreshProjectFilter();
+
+  projectFilter.value = "";
+
+
+
+  applyFilters();
+
+}
+
+
+
+/* إنشاء جداول التقرير المطبوع */
+
+
+
+function printTable(headers,rows){
+
+  if(!rows.length){
+
+    return '<div class="print-note">لا توجد بيانات مصنفة في الفترة المحددة.</div>';
+
+  }
+
+
+
+  return `
+
+    <table class="print-table">
+
+      <thead>
+
+        <tr>
+
+          ${headers.map(h=>`<th>${esc(h)}</th>`).join("")}
+
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+        ${rows.map(row=>`
+
+          <tr>
+
+            ${row.map(value=>`<td>${esc(value)}</td>`).join("")}
+
+          </tr>
+
+        `).join("")}
+
+      </tbody>
+
+    </table>
+
+  `;
+
+}
+
+
+
+function preparePrintReport(){
+
+  const total = filteredActivities.length;
+
+  const classified = analysisActivities.length;
+
+  const unclassified = total-classified;
+
+
+
+  const percent = total
+
+    ? ((classified/total)*100).toFixed(1)
+
+    : "0.0";
+
+
+
+  const today = formatDate(new Date().toISOString());
+
+
+
+  const meta = [
+
+    ["العام الدراسي",yearFilter.value || "جميع الأعوام"],
+
+    [
+
+      "الفترة",
+
+      monthFilter.value
+
+        ? monthFilter.options[monthFilter.selectedIndex].textContent
+
+        : "جميع الأشهر"
+
+    ],
+
+    ["القسم",departmentFilter.value || "جميع الأقسام"],
+
+    [
+
+      "المجال",
+
+      domainFilter.value
+
+        ? DOMAIN_LABELS[domainFilter.value]
+
+        : "جميع المجالات"
+
+    ],
+
+    ["المشروع",projectFilter.value || "جميع المشاريع"],
+
+    ["تاريخ استخراج التقرير",today]
+
+  ];
+
+
+
+  document.getElementById("printMeta").innerHTML =
+
+    meta.map(([label,value])=>`
+
+      <div class="print-meta-item">
+
+        <strong>${esc(label)}</strong>
+
+        ${esc(value)}
+
+      </div>
+
+    `).join("");
+
+
+
+  const summary = [
+
+    ["إجمالي التوثيقات",total],
+
+    ["التوثيقات المصنفة",classified],
+
+    ["غير المصنفة",unclassified],
+
+    ["نسبة التصنيف",percent+"%"],
+
+    [
+
+      "المستفيدون المسجلون",
+
+      sumBy(analysisActivities,activityBeneficiaries)
+
+    ],
+
+    [
+
+      "مرات الاستفادة",
+
+      sumBy(analysisActivities,activityBenefitTimes)
+
+    ],
+
+    [
+
+      "المعلمات المنفذات",
+
+      unique(analysisActivities.map(activityTeacher)).length
+
+    ],
+
+    [
+
+      "الأقسام المفعلة",
+
+      unique(analysisActivities.map(activityDepartment)).length
+
+    ],
+
+    [
+
+      "المشاريع المفعلة",
+
+      unique(analysisActivities.map(activityProject)).length
+
+    ]
+
+  ];
+
+
+
+  document.getElementById("printSummary").innerHTML =
+
+    summary.map(([label,value])=>`
+
+      <div class="print-stat">
+
+        <div class="print-stat-label">${esc(label)}</div>
+
+        <div class="print-stat-value">
+
+          ${esc(typeof value === "number" ? fmt(value) : value)}
+
+        </div>
+
+      </div>
+
+    `).join("");
+
+
+
+  const domainRows = Object.entries(DOMAIN_LABELS)
+
+    .map(([key,label])=>{
+
+      const count = analysisActivities.filter(
+
+        record=>activityDomain(record) === key
+
+      ).length;
+
+
+
+      const share = classified
+
+        ? ((count/classified)*100).toFixed(1)+"%"
+
+        : "0%";
+
+
+
+      return [label,fmt(count),share];
+
+    });
+
+
+
+  document.getElementById("printDomains").innerHTML =
+
+    printTable(
+
+      ["المجال الرئيسي","عدد التوثيقات","النسبة"],
+
+      domainRows
+
+    );
+
+
+
+  document.getElementById("printProjects").innerHTML =
+
+    printTable(
+
+      ["المشروع المدرسي","عدد التوثيقات"],
+
+      countBy(analysisActivities,activityProject)
+
+        .map(item=>[item.name,fmt(item.count)])
+
+    );
+
+
+
+  document.getElementById("printDepartments").innerHTML =
+
+    printTable(
+
+      ["القسم","عدد التوثيقات"],
+
+      countBy(analysisActivities,activityDepartment)
+
+        .map(item=>[item.name,fmt(item.count)])
+
+    );
+
+
+
+  document.getElementById("printCategories").innerHTML =
+
+    printTable(
+
+      ["نوع التوثيق","عدد السجلات"],
+
+      countBy(analysisActivities,activityCategory)
+
+        .map(item=>[item.name,fmt(item.count)])
+
+    );
+
+
+
+  document.getElementById("printTeachers").innerHTML =
+
+    printTable(
+
+      [
+
+        "م",
+
+        "المعلمة",
+
+        "القسم",
+
+        "التوثيقات",
+
+        "المستفيدون",
+
+        "مرات الاستفادة",
+
+        "المشاريع"
+
+      ],
+
+      teacherRows().map((row,index)=>[
+
+        index+1,
+
+        row.teacher,
+
+        row.department,
+
+        fmt(row.records),
+
+        fmt(row.beneficiaries),
+
+        fmt(row.benefitTimes),
+
+        fmt(row.projects.size)
+
+      ])
+
+    );
+
+
+
+  document.getElementById("printRecords").innerHTML =
+
+    printTable(
+
+      [
+
+        "التاريخ",
+
+        "عنوان التوثيق",
+
+        "المنفذة",
+
+        "القسم",
+
+        "المجال",
+
+        "المشروع",
+
+        "نوع التوثيق",
+
+        "المستفيدون",
+
+        "مرات الاستفادة"
+
+      ],
+
+      analysisActivities.map(record=>[
+
+        formatDate(recordDate(record)),
+
+        activityTitle(record),
+
+        activityTeacher(record) || "—",
+
+        activityDepartment(record) || "—",
+
+        DOMAIN_LABELS[activityDomain(record)] || "—",
+
+        activityProject(record) || "—",
+
+        activityCategory(record) || "—",
+
+        fmt(activityBeneficiaries(record)),
+
+        fmt(activityBenefitTimes(record))
+
+      ])
+
+    );
+
+
+
+  document.getElementById("printNote").innerHTML =
+
+    `<strong>ملاحظة منهجية:</strong> ` +
+
+    `يشمل إجمالي السجلات التوثيقات المصنفة وغير المصنفة. ` +
+
+    `أما توزيع المجالات والمشاريع ومؤشرات التفعيل والمستفيدين ` +
+
+    `فيعتمد على التوثيقات المصنفة فقط. ` +
+
+    `أعداد المستفيدين هي مجموع القيم المسجلة في التوثيقات، ` +
+
+    `ولا تعني بالضرورة عدد الأشخاص الفريدين عبر الأنشطة المختلفة. ` +
+
+    `ويُرجى استكمال تصنيف ${fmt(unclassified)} سجل غير مصنف ` +
+
+    `قبل اعتماد تحليل شامل لجميع التوثيقات.`;
+
+}
+
+
+
+[
+
+  yearFilter,
+
+  monthFilter,
+
+  departmentFilter,
+
+  projectFilter
+
+].forEach(element=>{
+
+  element.addEventListener("change",applyFilters);
+
+});
+
+
+
+domainFilter.addEventListener("change",()=>{
+
+  refreshProjectFilter();
+
+  applyFilters();
+
+});
+
+
+
+document.getElementById("resetBtn")
+
+  .addEventListener("click",resetFilters);
+
+
+
+document.getElementById("printBtn")
+
+  .addEventListener("click",async()=>{
+
+    preparePrintReport();
+
+
+
+    const image = document.querySelector(".print-school-logo");
+
+
+
+    if(image && !image.complete){
+
+      await new Promise(resolve=>{
+
+        image.addEventListener("load",resolve,{once:true});
+
+        image.addEventListener("error",resolve,{once:true});
+
+      });
+
+    }
+
+
+
+    window.print();
+
+  });
+
+
+
+window.addEventListener("beforeprint",preparePrintReport);
+
+
+
+async function init(){
+
+  try{
+
+    if(
+
+      window.WRGraph &&
+
+      typeof WRGraph.init === "function"
+
+    ){
+
+      await WRGraph.init();
+
+    }
+
+
+
+    const allowed = await loadAccess();
+
+    if(!allowed) return;
+
+
+
+    await loadActiveYear();
+
+    await loadActivities();
+
+
+
+    setupFilters();
+
+    applyFilters();
+
+
+
+  }catch(error){
+
+    console.error("Activities analysis error:",error);
+
+
+
+    alert(
+
+      "تعذر تشغيل تقارير التوثيقات: " +
+
+      (error.message || error)
+
+    );
+
+  }finally{
+
+    document.getElementById("loader").style.display = "none";
+
+  }
+
+}
+
+
+
+document.addEventListener("DOMContentLoaded",init);
+
+
+
+</script>
+
+
+
+</body>
+
+</html>

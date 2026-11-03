@@ -1,926 +1,2830 @@
-const FIELD_IDS = [
-  "name",
-  "activityType",
-  "executor",
-  "department",
-  "date",
-  "startTime",
-  "endTime",
-  "place",
-  "activityApproved",
-  "projectLinks",
-  "target",
-  "count",
-  "goal",
-  "implementation",
-  "results",
-  "recommendations",
-  "notes"
-];
-
-const DRAFT_KEY = "wr_activity_draft_v3";
-
+"use strict";
+/* =========================================================
+   WestRiffa Smart Office
+   Activity Documentation - FINAL RPC
+   ========================================================= */
+const byId = id => document.getElementById(id);
+const DRAFT_KEY = "wr_activity_documentation_final_v1";
 let currentId = null;
-let selectedFiles = [];
-let existingImageRefs = [];
-let remoteImagePaths = [];
 let currentUser = null;
 let currentProfile = null;
-
-/* الجديد: العام الدراسي النشط */
 let currentSchoolYear = "";
-
+let selectedFiles = [];
+let remoteImagePaths = [];
 let loadedRecordOwnerId = null;
-let loadedRecordOwnerEmail = "";
-
-
+let loadedRecordOwnerName = "";
+const imageUrlCache = new Map();
+let activityUsers = [];
+let departments = [];
+let selectedCoExecutorIds = [];
 /* =========================================================
-   Supabase client
+   المجالات الرسمية
    ========================================================= */
-
-function getActivitySupabase() {
+const ACTIVITY_DOMAIN_LABELS = {
+  achievement:
+    "إنجاز الطلبة الأكاديمي",
+  teaching_learning_assessment:
+    "التعليم والتعلم والتقويم",
+  personal_development:
+    "التطور الشخصي للطلبة ورعايتهم",
+  leadership_management:
+    "القيادة والإدارة والحوكمة"
+};
+/* =========================================================
+   المشاريع الرسمية
+   ========================================================= */
+const SCHOOL_PROJECT_MAP = {
+  achievement: [
+    "آفاق الإتقان",
+    "آفاق المهارات",
+    "آفاق المستقبل",
+    "آفاق وطنية",
+    "آفاق كتابية"
+  ],
+  teaching_learning_assessment: [
+    "مداد الاستراتيجيات",
+    "مداد التخطيط",
+    "مداد التقويم",
+    "مداد الدعم"
+  ],
+  personal_development: [
+    "رايات التحدي",
+    "رايات السلوك الواعي",
+    "رايات الاستدامة"
+  ],
+  leadership_management: [
+    "خطى التقييم والتطوير",
+    "خطى نحو التميز",
+    "خطى الشراكة",
+    "خطى الأمان",
+    "خطى الابتكار"
+  ]
+};
+/* =========================================================
+   أنواع التوثيق
+   ========================================================= */
+const ACTIVITY_CATEGORY_MAP = {
+  achievement: [
+    "دعم وعلاج",
+    "إثراء",
+    "برنامج طلابي",
+    "مشروع طلابي",
+    "مبادرة طلابية",
+    "مهارات أكاديمية",
+    "التحصيل والإنجاز الأكاديمي",
+    "المسابقات الطلابية",
+    "المواهب والإبداعات الطلابية",
+    "المشاركات الطلابية الداخلية",
+    "المشاركات الطلابية الخارجية",
+    "الجوائز والتكريمات الطلابية",
+    "اختبار وقياس وتشخيص",
+    "متابعة تقدم الطلبة",
+    "أخرى"
+  ],
+  teaching_learning_assessment: [
+    "استراتيجيات التعليم والتعلم",
+    "التعلم النشط",
+    "التخطيط للتعليم والتعلم",
+    "التقويم والاستفادة من نتائجه",
+    "الدعم والعلاج",
+    "الإثراء",
+    "توظيف التقنية",
+    "القراءة والبحث",
+    "توظيف مركز مصادر التعلم",
+    "ممارسات ودروس تطبيقية",
+    "تبادل خبرات وزيارات تبادلية",
+    "مجتمع تعلم مهني وورشة تطبيقية",
+    "أخرى"
+  ],
+  personal_development: [
+    "القيم والسلوك",
+    "المواطنة والانتماء",
+    "المهارات الشخصية والاجتماعية",
+    "المسؤولية والقيادة الطلابية",
+    "اللجان الطلابية",
+    "التوعية والإرشاد",
+    "الأنشطة والفعاليات الطلابية",
+    "المشاركة المجتمعية",
+    "المبادرات الطلابية",
+    "دعم ورعاية فردية أو جماعية",
+    "تكريم وتحفيز طلابي",
+    "أخرى"
+  ],
+  leadership_management: [
+    "تطوير الأداء المؤسسي",
+    "رفع الكفاءة المهنية",
+    "فرق ولجان العمل",
+    "الشراكة المجتمعية",
+    "التواصل مع أولياء الأمور",
+    "مبادرات تنظيمية وإدارية",
+    "اجتماعات ولقاءات مهنية",
+    "تطوير البيئة المدرسية",
+    "الابتكار والتطوير",
+    "التقييم الذاتي ومتابعة خطط التحسين",
+    "الأمن والسلامة وإدارة المخاطر",
+    "المتابعة وقياس الأثر",
+    "أخرى"
+  ]
+};
+/* =========================================================
+   سياق التنفيذ
+   ========================================================= */
+const EXECUTION_CONTEXT_LABELS = {
+  classroom: "داخل الصف",
+  before_assembly: "قبل الطابور",
+  morning_assembly: "الطابور الصباحي",
+  break: "الفسحة",
+  learning_resources_center: "مركز مصادر التعلم",
+  outside_school: "خارج المدرسة",
+  other: "أخرى"
+};
+/* =========================================================
+   مشاركة أولياء الأمور
+   ========================================================= */
+const PARENT_PARTICIPATION_LABELS = {
+  none: "لا توجد مشاركة",
+  attendance: "حضور أولياء الأمور",
+  implementation: "مشاركة في التنفيذ",
+  partnership_support: "شراكة / دعم"
+};
+/* =========================================================
+   أدوات عامة
+   ========================================================= */
+function esc(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+function valueOf(id) {
+  return (
+    byId(id)?.value || ""
+  ).trim();
+}
+function numberOrNull(value) {
+  const raw =
+    String(value ?? "").trim();
+  if (raw === "") {
+    return null;
+  }
+  const number =
+    Number(raw);
+  if (
+    !Number.isFinite(number) ||
+    number < 0
+  ) {
+    return null;
+  }
+  return Math.floor(number);
+}
+function formatDate(value) {
+  if (!value) {
+    return "";
+  }
+  try {
+    return new Date(
+      value + "T00:00:00"
+    ).toLocaleDateString("ar-BH");
+  } catch {
+    return value;
+  }
+}
+function showMessage(message) {
+  if (
+    typeof window.wrToast ===
+    "function"
+  ) {
+    window.wrToast(message);
+    return;
+  }
+  alert(message);
+}
+/* =========================================================
+   Supabase
+   ========================================================= */
+function getSupabase() {
+  if (window.wrSupabase) {
+    return window.wrSupabase;
+  }
+  if (
+    !window.supabase ||
+    !window.WR_CONFIG
+  ) {
+    throw new Error(
+      "Supabase غير متاح."
+    );
+  }
   return window.supabase.createClient(
     window.WR_CONFIG.supabaseUrl,
     window.WR_CONFIG.supabaseKey
   );
 }
-
-
 /* =========================================================
-   بيانات المستخدم الحالي
+   المستخدم الحالي
    ========================================================= */
-
-async function loadCurrentProfile() {
-
+async function loadCurrentUser() {
   try {
-
     if (
-      !window.WRGraph ||
-      typeof WRGraph.getAccount !== "function"
+      window.WRGraph &&
+      typeof WRGraph.init === "function"
     ) {
-      console.warn("WRGraph غير متاح");
-      return null;
+      await WRGraph.init();
     }
-
-    currentUser = await WRGraph.getAccount();
-
-    if (!currentUser) {
-      console.warn("لا يوجد مستخدم مسجل الدخول");
-      return null;
-    }
-
-    const sb = getActivitySupabase();
-
-    const { data, error } = await sb
-      .from("user_profiles")
-      .select("user_id, full_name, role, department_id")
-      .eq("user_id", currentUser.id)
-      .maybeSingle();
-
+    const sb =
+      getSupabase();
+    const {
+      data,
+      error
+    } = await sb.auth.getUser();
     if (error) {
-      console.error("Profile error:", error);
+      throw error;
+    }
+    currentUser =
+      data?.user || null;
+    if (!currentUser) {
+      location.href =
+        "../../index.html";
       return null;
     }
-
-    currentProfile = data;
-
-    if (currentProfile?.full_name) {
-
-      $("executor").value =
-        currentProfile.full_name;
-
-      if (
-        currentProfile.role === "teacher" ||
-        currentProfile.role === "coordinator"
-      ) {
-
-        $("executor").readOnly = true;
-
-        $("executor").title =
-          "يتم تحديد اسم المنفذ تلقائيًا من الحساب المسجل";
-      }
-    }
-
     if (
-      currentProfile?.department_id &&
-      !$("department").value.trim()
+      window.WRGraph &&
+      typeof WRGraph.getUserProfile ===
+        "function"
     ) {
-
       try {
-
-        const {
-          data: departmentRow,
-          error: departmentError
-        } = await sb
-          .from("departments")
-          .select("name")
-          .eq("id", currentProfile.department_id)
-          .maybeSingle();
-
-        if (departmentError) {
-          console.warn(
-            "Department error:",
-            departmentError
-          );
-        }
-
-        if (departmentRow?.name) {
-          $("department").value =
-            departmentRow.name;
-        }
-
-      } catch (departmentError) {
-
+        currentProfile =
+          await WRGraph.getUserProfile();
+      } catch (error) {
         console.warn(
-          "تعذر تحميل اسم القسم:",
-          departmentError
+          "WRGraph profile:",
+          error
         );
       }
     }
+    if (!currentProfile) {
+      const {
+        data: profile,
+        error: profileError
+      } = await sb
+        .from("user_profiles")
+        .select(
+          "user_id, full_name, role, department_id, is_active"
+        )
+        .eq(
+          "user_id",
+          currentUser.id
+        )
+        .maybeSingle();
+      if (profileError) {
+        throw profileError;
+      }
+      currentProfile =
+        profile || null;
+    }
+    loadedRecordOwnerId =
+      currentUser.id;
+    if (byId("executor")) {
+      byId("executor").value =
+        currentProfile?.full_name ||
+        currentUser.email ||
+        "";
+    }
+    return currentProfile;
+  } catch (error) {
+    console.error(
+      "loadCurrentUser:",
+      error
+    );
+    showMessage(
+      "تعذر تحميل بيانات الحساب."
+    );
+    return null;
+  }
+}
+/* =========================================================
+   السنة الدراسية
+   ========================================================= */
+async function loadSchoolYear() {
+  try {
+    if (
+      window.WRGraph &&
+      typeof WRGraph.getSettings ===
+        "function"
+    ) {
+      const settings =
+        await WRGraph.getSettings();
+      currentSchoolYear =
+        settings?.school_year ||
+        settings?.schoolYear ||
+        settings?.active_school_year ||
+        "";
+    }
+  } catch (error) {
+    console.warn(
+      "School year:",
+      error
+    );
+  }
+  if (!currentSchoolYear) {
+    const now =
+      new Date();
+    const year =
+      now.getFullYear();
+    const month =
+      now.getMonth() + 1;
+    currentSchoolYear =
+      month >= 8
+        ? `${year}/${year + 1}`
+        : `${year - 1}/${year}`;
+  }
+}
+/* =========================================================
+   الأقسام
+   ========================================================= */
+async function loadDepartments() {
+  const select =
+    byId("department");
+  if (!select) {
+    return;
+  }
+  try {
+    const sb =
+      getSupabase();
+    const {
+      data,
+      error
+    } = await sb
+      .from("departments")
+      .select("id, name")
+      .order("name");
+    if (error) {
+      throw error;
+    }
+    departments =
+      (data || []).filter(
+        row =>
+          row.id &&
+          row.name
+      );
+    select.innerHTML =
+      departments.map(
+        department => `
+          <option
+            value="${esc(department.id)}"
+          >
+            ${esc(department.name)}
+          </option>
+        `
+      ).join("");
+  } catch (error) {
+    console.error(
+      "loadDepartments:",
+      error
+    );
+    select.innerHTML = "";
+  }
+}
+function getSelectedDepartments() {
+  const select =
+    byId("department");
+  if (!select) {
+    return [];
+  }
+  return [
+    ...select.selectedOptions
+  ].map(
+    option => ({
+      id:
+        String(
+          option.value
+        ),
+      name:
+        option.textContent.trim()
+    })
+  );
+}
+function setSelectedDepartments(
+  payload = {}
+) {
+  const select =
+    byId("department");
+  if (!select) {
+    return;
+  }
+  let ids = [];
+  if (
+    Array.isArray(
+      payload.departmentIds
+    )
+  ) {
+    ids =
+      payload.departmentIds
+        .map(String);
+  }
+  if (
+    !ids.length &&
+    Array.isArray(
+      payload.departments
+    )
+  ) {
+    const names =
+      payload.departments
+        .map(
+          item =>
+            String(item).trim()
+        );
+    ids =
+      departments
+        .filter(
+          department =>
+            names.includes(
+              department.name
+            )
+        )
+        .map(
+          department =>
+            String(
+              department.id
+            )
+        );
+  }
+  if (
+    !ids.length &&
+    payload.department
+  ) {
+    const names =
+      String(
+        payload.department
+      )
+        .split(/[،,]/)
+        .map(
+          item =>
+            item.trim()
+        )
+        .filter(Boolean);
+    ids =
+      departments
+        .filter(
+          department =>
+            names.includes(
+              department.name
+            )
+        )
+        .map(
+          department =>
+            String(
+              department.id
+            )
+        );
+  }
+  [
+    ...select.options
+  ].forEach(
+    option => {
+      option.selected =
+        ids.includes(
+          String(
+            option.value
+          )
+        );
+    }
+  );
+}
+/* =========================================================
+   تحميل الحسابات الرسمية للمشاركة
+   ========================================================= */
+async function fetchActivityUsersViaRpc() {
+  const sb =
+    getSupabase();
+  const {
+    data,
+    error
+  } = await sb.rpc(
+    "list_activity_participants"
+  );
+  if (error) {
+    throw error;
+  }
+  return data || [];
+}
+function normalizeActivityUser(
+  row
+) {
+  if (!row) {
+    return null;
+  }
+  const userId =
+    row.user_id ||
+    row.id ||
+    row.uid ||
+    null;
+  const fullName =
+    row.full_name ||
+    row.name ||
+    row.display_name ||
+    "";
+  const role =
+    row.role ||
+    row.user_role ||
+    "";
+  if (
+    !userId ||
+    !String(fullName).trim()
+  ) {
+    return null;
+  }
+  return {
+    user_id:
+      String(userId),
+    full_name:
+      String(
+        fullName
+      ).trim(),
+    role:
+      String(
+        role || ""
+      ).trim()
+  };
+}
+async function loadActivityUsers() {
+  try {
+    const rows =
+      await fetchActivityUsersViaRpc();
+    const currentUserId =
+      String(
+        currentUser?.id || ""
+      );
+    const unique =
+      new Map();
+    rows
+      .map(
+        normalizeActivityUser
+      )
+      .filter(Boolean)
+      .forEach(
+        user => {
+          if (
+            user.user_id ===
+            currentUserId
+          ) {
+            return;
+          }
+          unique.set(
+            user.user_id,
+            user
+          );
+        }
+      );
+    activityUsers =
+      [
+        ...unique.values()
+      ]
+        .sort(
+          (a, b) =>
+            a.full_name.localeCompare(
+              b.full_name,
+              "ar"
+            )
+        );
+    selectedCoExecutorIds =
+      selectedCoExecutorIds.filter(
+        id =>
+          activityUsers.some(
+            user =>
+              user.user_id ===
+              String(id)
+          )
+      );
+    renderCoExecutors();
+  } catch (error) {
+    console.error(
+      "loadActivityUsers:",
+      error
+    );
+    activityUsers = [];
+    selectedCoExecutorIds = [];
+    renderCoExecutors();
+    showMessage(
+      "تعذر تحميل قائمة المشاركات في التنفيذ."
+    );
+  }
+}
+/* =========================================================
+   المشاركات في التنفيذ
+   ========================================================= */
+function renderCoExecutors() {
+  const list =
+    byId(
+      "coExecutorsList"
+    );
+  if (!list) {
+    return;
+  }
+  list.innerHTML = "";
+  if (
+    !activityUsers.length
+  ) {
+    list.innerHTML =
+      `
+        <div class="co-empty">
+          لا توجد حسابات متاحة.
+        </div>
+      `;
+    return;
+  }
+  activityUsers.forEach(
+    user => {
+      const label =
+        document.createElement(
+          "label"
+        );
+      label.className =
+        "co-user";
+      const checkbox =
+        document.createElement(
+          "input"
+        );
+      checkbox.type =
+        "checkbox";
+      checkbox.value =
+        user.user_id;
+      checkbox.checked =
+        selectedCoExecutorIds.includes(
+          user.user_id
+        );
+      checkbox.addEventListener(
+        "change",
+        () => {
+          if (
+            checkbox.checked
+          ) {
+            if (
+              !selectedCoExecutorIds.includes(
+                user.user_id
+              )
+            ) {
+              selectedCoExecutorIds.push(
+                user.user_id
+              );
+            }
+          } else {
+            selectedCoExecutorIds =
+              selectedCoExecutorIds.filter(
+                id =>
+                  id !==
+                  user.user_id
+              );
+          }
+          updatePreview();
+          scheduleDraft();
+        }
+      );
+      const text =
+        document.createElement(
+          "span"
+        );
+      text.textContent =
+        user.full_name;
+      label.appendChild(
+        checkbox
+      );
+      label.appendChild(
+        text
+      );
+      list.appendChild(
+        label
+      );
+    }
+  );
+}
+function getSelectedCoExecutorNames() {
+  const selectedSet =
+    new Set(
+      selectedCoExecutorIds.map(
+        String
+      )
+    );
+  return activityUsers
+    .filter(
+      user =>
+        selectedSet.has(
+          user.user_id
+        )
+    )
+    .map(
+      user =>
+        user.full_name
+    );
+}
+/* =========================================================
+   تحديث قائمة المشاريع حسب المجال
+   ========================================================= */
+function refreshSchoolProjects(
+  selectedValue = ""
+) {
+  const domain =
+    valueOf(
+      "documentationDomain"
+    );
+  const select =
+    byId("schoolProject");
+  if (!select) {
+    return;
+  }
+  const projects =
+    SCHOOL_PROJECT_MAP[
+      domain
+    ] || [];
+  if (!domain) {
+    select.innerHTML =
+      `<option value="">
+        — اختاري المجال أولًا —
+      </option>`;
+    select.disabled = true;
+    return;
+  }
+  select.disabled = false;
+  select.innerHTML =
+    `
+      <option value="">
+        — اختاري المشروع —
+      </option>
+    ` +
+    projects
+      .map(
+        project => `
+          <option
+            value="${esc(project)}"
+          >
+            ${esc(project)}
+          </option>
+        `
+      )
+      .join("");
+  if (selectedValue) {
+    const exists =
+      [
+        ...select.options
+      ].some(
+        option =>
+          option.value ===
+          selectedValue
+      );
+    if (!exists) {
+      const option =
+        document.createElement(
+          "option"
+        );
+      option.value =
+        selectedValue;
+      option.textContent =
+        selectedValue;
+      select.appendChild(
+        option
+      );
+    }
+    select.value =
+      selectedValue;
+  }
+}
+/* =========================================================
+   تحديث أنواع التوثيق
+   ========================================================= */
+function refreshActivityCategories(
+  selectedValue = ""
+) {
+  const domain =
+    valueOf(
+      "documentationDomain"
+    );
+  const select =
+    byId("activityCategory");
+  if (!select) {
+    return;
+  }
+  const categories =
+    ACTIVITY_CATEGORY_MAP[
+      domain
+    ] || [];
+  if (!domain) {
+    select.innerHTML =
+      `<option value="">
+        — اختاري المجال أولًا —
+      </option>`;
+    select.disabled = true;
+    updateOtherCategoryVisibility();
+    return;
+  }
+  select.disabled = false;
+  select.innerHTML =
+    `
+      <option value="">
+        — اختاري نوع التوثيق —
+      </option>
+    ` +
+    categories
+      .map(
+        category => `
+          <option
+            value="${esc(category)}"
+          >
+            ${esc(category)}
+          </option>
+        `
+      )
+      .join("");
+  if (selectedValue) {
+    const exists =
+      categories.includes(
+        selectedValue
+      );
+    if (exists) {
+      select.value =
+        selectedValue;
+    } else {
+      select.value =
+        "أخرى";
+      if (
+        byId(
+          "otherActivityCategory"
+        )
+      ) {
+        byId(
+          "otherActivityCategory"
+        ).value =
+          selectedValue;
+      }
+    }
+  }
+  updateOtherCategoryVisibility();
+}
+/* =========================================================
+   خانة "أخرى"
+   ========================================================= */
+function updateOtherCategoryVisibility() {
+  const select =
+    byId("activityCategory");
+  const wrap =
+    byId("otherCategoryWrap");
+  const input =
+    byId(
+      "otherActivityCategory"
+    );
+  if (
+    !select ||
+    !wrap ||
+    !input
+  ) {
+    return;
+  }
+  const isOther =
+    select.value ===
+    "أخرى";
+  wrap.style.display =
+    isOther
+      ? ""
+      : "none";
+  input.required =
+    isOther;
+  if (!isOther) {
+    input.value = "";
+  }
+}
+/* =========================================================
+   نوع التوثيق النهائي
+   ========================================================= */
+function getResolvedActivityCategory() {
+  const selected =
+    valueOf(
+      "activityCategory"
+    );
+  if (
+    selected === "أخرى"
+  ) {
+    return valueOf(
+      "otherActivityCategory"
+    );
+  }
+  return selected;
+}
+/* =========================================================
+   اللجنة الطلابية
+   ========================================================= */
+function updateCommitteeVisibility() {
+  const wrap =
+    byId(
+      "studentCommitteeWrap"
+    );
+  const input =
+    byId(
+      "studentCommitteeName"
+    );
+  if (
+    !wrap ||
+    !input
+  ) {
+    return;
+  }
+  const domain =
+    valueOf(
+      "documentationDomain"
+    );
+  const category =
+    getResolvedActivityCategory();
+  const show =
+    domain ===
+      "personal_development" &&
+    (
+      category ===
+        "اللجان الطلابية" ||
+      category.includes(
+        "لجنة"
+      )
+    );
+  wrap.style.display =
+    show
+      ? ""
+      : "none";
+  input.required =
+    show;
+  if (!show) {
+    input.value = "";
+  }
+}
+/* =========================================================
+   الفئات المستهدفة
+   ========================================================= */
+function getSelectedTargets() {
+  return [
+    ...document.querySelectorAll(
+      ".wr-target-check:checked"
+    )
+  ].map(
+    checkbox =>
+      checkbox.value
+  );
+}
+function setSelectedTargets(
+  targets
+) {
+  let values = [];
+  if (
+    Array.isArray(targets)
+  ) {
+    values =
+      targets.map(String);
+  } else if (targets) {
+    values =
+      String(targets)
+        .split(/[،,]/)
+        .map(
+          item =>
+            item.trim()
+        )
+        .filter(Boolean);
+  }
+  document
+    .querySelectorAll(
+      ".wr-target-check"
+    )
+    .forEach(
+      checkbox => {
+        checkbox.checked =
+          values.includes(
+            checkbox.value
+          );
+      }
+    );
+}
+/* =========================================================
+   تجميع بيانات النموذج
+   ========================================================= */
+function collectFormData() {
+  const selectedDepartments =
+    getSelectedDepartments();
+  const beneficiaryCount =
+    numberOrNull(
+      valueOf(
+        "beneficiaryCount"
+      )
+    );
+  const benefitTimes =
+    numberOrNull(
+      valueOf(
+        "benefitTimes"
+      )
+    );
+  const categorySelection =
+    valueOf(
+      "activityCategory"
+    );
+  const otherCategory =
+    valueOf(
+      "otherActivityCategory"
+    );
+  const resolvedCategory =
+    getResolvedActivityCategory();
+  return {
+    name:
+      valueOf("name"),
+    title:
+      valueOf("name"),
+    documentationDomain:
+      valueOf(
+        "documentationDomain"
+      ),
+    documentation_domain:
+      valueOf(
+        "documentationDomain"
+      ),
+    schoolProject:
+      valueOf(
+        "schoolProject"
+      ),
+    school_project:
+      valueOf(
+        "schoolProject"
+      ),
+    activityCategory:
+      resolvedCategory,
+    activity_category:
+      resolvedCategory,
+    activityCategorySelection:
+      categorySelection,
+    otherActivityCategory:
+      categorySelection ===
+        "أخرى"
+          ? otherCategory
+          : "",
+    date:
+      valueOf("date"),
+    record_date:
+      valueOf("date"),
+    executionContext:
+      valueOf(
+        "executionContext"
+      ),
+    execution_context:
+      valueOf(
+        "executionContext"
+      ),
+    place:
+      valueOf("place"),
+    executor:
+      valueOf("executor"),
+    departmentIds:
+      selectedDepartments.map(
+        item => item.id
+      ),
+    departments:
+      selectedDepartments.map(
+        item => item.name
+      ),
+    department:
+      selectedDepartments
+        .map(
+          item => item.name
+        )
+        .join("، "),
+    coExecutorIds:
+      [
+        ...selectedCoExecutorIds
+      ],
+    coExecutors:
+      getSelectedCoExecutorNames(),
+    parentParticipation:
+      valueOf(
+        "parentParticipation"
+      ) || "none",
+    parent_participation:
+      valueOf(
+        "parentParticipation"
+      ) || "none",
+    beneficiaryCount:
+      beneficiaryCount,
+    beneficiary_count:
+      beneficiaryCount,
+    benefitTimes:
+      benefitTimes,
+    benefit_times:
+      benefitTimes,
+    /*
+      count القديم = إجمالي مرات الاستفادة
+    */
+    count:
+      benefitTimes === null
+        ? ""
+        : String(
+            benefitTimes
+          ),
+    target:
+      getSelectedTargets(),
+    targets:
+      getSelectedTargets(),
+    activityApproved:
+      valueOf(
+        "activityApproved"
+      ),
+    studentCommitteeName:
+      valueOf(
+        "studentCommitteeName"
+      ),
+    student_committee_name:
+      valueOf(
+        "studentCommitteeName"
+      ),
+    goal:
+      valueOf("goal"),
+    implementation:
+      valueOf(
+        "implementation"
+      ),
+    results:
+      valueOf("results"),
+    recommendations:
+      valueOf(
+        "recommendations"
+      ),
+    notes:
+      valueOf("notes"),
+    schoolYear:
+      currentSchoolYear,
+    school_year:
+      currentSchoolYear,
+    activityType:
+      valueOf(
+        "activityType"
+      ) || "فعالية",
+    startTime:
+      valueOf(
+        "startTime"
+      ),
+    endTime:
+      valueOf(
+        "endTime"
+      )
+  };
+}
+/* =========================================================
+   التحقق قبل الحفظ
+   ========================================================= */
+function validateForm() {
+  const data = collectFormData();
+  if (!data.name) {
+    showMessage("اكتبي اسم الفعالية.");
+    byId("name")?.focus();
+    return false;
+  }
+  /*
+    السجل الجديد يجب أن يكون مصنفًا بالكامل.
+    السجلات القديمة يمكن تعديلها كما هي حتى لو كانت
+    بعض حقول التصنيف الحديثة غير موجودة فيها.
+  */
+  if (!currentId) {
+    if (!data.documentationDomain) {
+      showMessage("اختاري المجال الرئيسي.");
+      byId("documentationDomain")?.focus();
+      return false;
+    }
+    if (!data.schoolProject) {
+      showMessage("اختاري المشروع المدرسي.");
+      byId("schoolProject")?.focus();
+      return false;
+    }
+    if (!valueOf("activityCategory")) {
+      showMessage("اختاري نوع التوثيق.");
+      byId("activityCategory")?.focus();
+      return false;
+    }
+    if (
+      valueOf("activityCategory") === "أخرى" &&
+      !valueOf("otherActivityCategory")
+    ) {
+      showMessage("اكتبي نوع التوثيق في خانة «أخرى».");
+      byId("otherActivityCategory")?.focus();
+      return false;
+    }
+    if (!data.executionContext) {
+      showMessage("اختاري سياق التنفيذ.");
+      byId("executionContext")?.focus();
+      return false;
+    }
+  }
+  if (!data.date) {
+    showMessage("اختاري تاريخ التنفيذ.");
+    byId("date")?.focus();
+    return false;
+  }
+  if (!data.executor) {
+    showMessage("تعذر تحديد المنفذة الرئيسية.");
+    return false;
+  }
+  if (!data.departmentIds.length) {
+    showMessage("اختاري القسم أو الأقسام.");
+    byId("department")?.focus();
+    return false;
+  }
+  if (
+    data.documentationDomain === "personal_development" &&
+    data.activityCategory === "اللجان الطلابية" &&
+    !data.studentCommitteeName
+  ) {
+    showMessage("اكتبي اسم اللجنة الطلابية.");
+    byId("studentCommitteeName")?.focus();
+    return false;
+  }
+  const beneficiaryRaw = valueOf("beneficiaryCount");
+  if (
+    beneficiaryRaw &&
+    (
+      Number(beneficiaryRaw) < 0 ||
+      !Number.isFinite(Number(beneficiaryRaw))
+    )
+  ) {
+    showMessage("راجعي عدد المستفيدين.");
+    return false;
+  }
+  const benefitRaw = valueOf("benefitTimes");
+  if (
+    benefitRaw &&
+    (
+      Number(benefitRaw) < 0 ||
+      !Number.isFinite(Number(benefitRaw))
+    )
+  ) {
+    showMessage("راجعي إجمالي مرات الاستفادة.");
+    return false;
+  }
+  return true;
+}
+/* =========================================================
+   أدوات معاينة التقرير
+   ========================================================= */
+function setText(
+  id,
+  value
+) {
+  const element =
+    byId(id);
+  if (!element) {
+    return;
+  }
+  element.textContent =
+    value ?? "";
+}
+function setFieldVisibility(
+  field,
+  visible
+) {
+  document
+    .querySelectorAll(
+      `[data-field="${field}"]`
+    )
+    .forEach(
+      element => {
+        element.style.display =
+          visible
+            ? ""
+            : "none";
+      }
+    );
+}
+function setSectionVisibility(
+  section,
+  visible
+) {
+  document
+    .querySelectorAll(
+      `[data-section="${section}"]`
+    )
+    .forEach(
+      element => {
+        element.style.display =
+          visible
+            ? ""
+            : "none";
+      }
+    );
+}
+/* =========================================================
+   تحديث معاينة التقرير
+   ========================================================= */
+function updatePreview() {
+  const data =
+    collectFormData();
+  setText(
+    "pName",
+    data.name ||
+      "تقرير فعالية"
+  );
+  const domainLabel =
+    ACTIVITY_DOMAIN_LABELS[
+      data.documentationDomain
+    ] || "";
+  setText(
+    "pDocumentationDomain",
+    domainLabel ||
+      "غير مصنف"
+  );
+  setText(
+    "pSchoolProject",
+    data.schoolProject
+  );
+  setFieldVisibility(
+    "schoolProject",
+    Boolean(
+      data.schoolProject
+    )
+  );
+  setText(
+    "pActivityCategory",
+    data.activityCategory
+  );
+  setFieldVisibility(
+    "activityCategory",
+    Boolean(
+      data.activityCategory
+    )
+  );
+  setText(
+    "pDate",
+    formatDate(
+      data.date
+    )
+  );
+  setFieldVisibility(
+    "date",
+    Boolean(
+      data.date
+    )
+  );
+  setText(
+    "pExecutor",
+    data.executor
+  );
+  setText(
+    "pExecutorFooter",
+    data.executor ||
+      "ـــــــــــــــــــــــــ"
+  );
+  setFieldVisibility(
+    "executor",
+    Boolean(
+      data.executor
+    )
+  );
+  const coExecutors =
+    data.coExecutors.join(
+      "، "
+    );
+  setText(
+    "pCoExecutors",
+    coExecutors
+  );
+  setFieldVisibility(
+    "coExecutors",
+    Boolean(
+      coExecutors
+    )
+  );
+  const departmentText =
+    data.departments.join(
+      "، "
+    );
+  setText(
+    "pDepartment",
+    departmentText
+  );
+  setFieldVisibility(
+    "department",
+    Boolean(
+      departmentText
+    )
+  );
+  const executionLabel =
+    EXECUTION_CONTEXT_LABELS[
+      data.executionContext
+    ] || "";
+  setText(
+    "pExecutionContext",
+    executionLabel
+  );
+  setFieldVisibility(
+    "executionContext",
+    Boolean(
+      executionLabel
+    )
+  );
+  setText(
+    "pPlace",
+    data.place
+  );
+  setFieldVisibility(
+    "place",
+    Boolean(
+      data.place
+    )
+  );
+  const parentLabel =
+    PARENT_PARTICIPATION_LABELS[
+      data.parentParticipation
+    ] || "";
+  setText(
+    "pParentParticipation",
+    parentLabel
+  );
+  setFieldVisibility(
+    "parentParticipation",
+    Boolean(
+      parentLabel
+    )
+  );
+  const targets =
+    data.targets.join(
+      "، "
+    );
+  setText(
+    "pTarget",
+    targets
+  );
+  setFieldVisibility(
+    "target",
+    Boolean(
+      targets
+    )
+  );
+  setText(
+    "pBeneficiaryCount",
+    data.beneficiaryCount === null
+      ? ""
+      : String(
+          data.beneficiaryCount
+        )
+  );
+  setFieldVisibility(
+    "beneficiaryCount",
+    data.beneficiaryCount !==
+      null
+  );
+  setText(
+    "pBenefitTimes",
+    data.benefitTimes === null
+      ? ""
+      : String(
+          data.benefitTimes
+        )
+  );
+  setText(
+    "pCount",
+    data.benefitTimes === null
+      ? ""
+      : String(
+          data.benefitTimes
+        )
+  );
+  setFieldVisibility(
+    "benefitTimes",
+    data.benefitTimes !==
+      null
+  );
+  let approvalLabel = "";
+  if (
+    data.activityApproved ===
+      "yes"
+  ) {
+    approvalLabel =
+      "معتمدة";
+  } else if (
+    data.activityApproved ===
+      "no"
+  ) {
+    approvalLabel =
+      "غير معتمدة";
+  }
+  setText(
+    "pApproval",
+    approvalLabel
+  );
+  setFieldVisibility(
+    "approval",
+    Boolean(
+      approvalLabel
+    )
+  );
+  const committeeWrap =
+    byId(
+      "pStudentCommitteeWrap"
+    );
+  setText(
+    "pStudentCommitteeName",
+    data.studentCommitteeName
+  );
+  if (committeeWrap) {
+    committeeWrap.style.display =
+      data.studentCommitteeName
+        ? ""
+        : "none";
+  }
+  setText(
+    "pGoal",
+    data.goal
+  );
+  setSectionVisibility(
+    "goal",
+    Boolean(
+      data.goal
+    )
+  );
+  setText(
+    "pImplementation",
+    data.implementation
+  );
+  setSectionVisibility(
+    "implementation",
+    Boolean(
+      data.implementation
+    )
+  );
+  setText(
+    "pResults",
+    data.results
+  );
+  setSectionVisibility(
+    "results",
+    Boolean(
+      data.results
+    )
+  );
+  setText(
+    "pRecommendations",
+    data.recommendations
+  );
+  setSectionVisibility(
+    "recommendations",
+    Boolean(
+      data.recommendations
+    )
+  );
+  setText(
+    "pNotes",
+    data.notes
+  );
+  setSectionVisibility(
+    "notes",
+    Boolean(
+      data.notes
+    )
+  );
+}
+/* =========================================================
+   المسودة المحلية
+   ========================================================= */
+let draftTimer = null;
+function scheduleDraft() {
+  clearTimeout(
+    draftTimer
+  );
+  draftTimer =
+    setTimeout(
+      saveDraft,
+      450
+    );
+}
+function saveDraft() {
+  if (currentId) {
+    return;
+  }
+  try {
+    const data =
+      collectFormData();
+    localStorage.setItem(
+      DRAFT_KEY,
+      JSON.stringify(data)
+    );
+    if (
+      byId("draftState")
+    ) {
+      byId(
+        "draftState"
+      ).textContent =
+        "تم حفظ المسودة تلقائيًا على هذا الجهاز.";
+    }
+  } catch (error) {
+    console.warn(
+      "Draft save:",
+      error
+    );
+  }
+}
+function clearDraft() {
+  try {
+    localStorage.removeItem(
+      DRAFT_KEY
+    );
+  } catch {}
+}
+function restoreDraft() {
+  if (currentId) {
+    return;
+  }
+  try {
+    const raw =
+      localStorage.getItem(
+        DRAFT_KEY
+      );
+    if (!raw) {
+      return;
+    }
+    const data =
+      JSON.parse(raw);
+    applyPayloadToForm(
+      data,
+      {
+        fromDraft: true
+      }
+    );
+    if (
+      byId("draftState")
+    ) {
+      byId(
+        "draftState"
+      ).textContent =
+        "تم استرجاع المسودة المحفوظة على هذا الجهاز.";
+    }
+  } catch (error) {
+    console.warn(
+      "Draft restore:",
+      error
+    );
+  }
+}
+/* =========================================================
+   تطبيق البيانات على النموذج
+   ========================================================= */
+function applyPayloadToForm(
+  payload = {},
+  options = {}
+) {
+  const setValue =
+    (
+      id,
+      value
+    ) => {
+      const element =
+        byId(id);
+      if (!element) {
+        return;
+      }
+      element.value =
+        value ?? "";
+    };
+  setValue(
+    "name",
+    payload.name ||
+    payload.title ||
+    ""
+  );
+  const domain =
+    payload.documentationDomain ||
+    payload.documentation_domain ||
+    "";
+  setValue(
+    "documentationDomain",
+    domain
+  );
+  const project =
+    payload.schoolProject ||
+    payload.school_project ||
+    "";
+  refreshSchoolProjects(
+    project
+  );
+  const storedCategory =
+    payload.activityCategory ||
+    payload.activity_category ||
+    payload.otherActivityCategory ||
+    "";
+  refreshActivityCategories(
+    storedCategory
+  );
+  if (
+    payload.activityCategorySelection ===
+      "أخرى"
+  ) {
+    setValue(
+      "activityCategory",
+      "أخرى"
+    );
+    setValue(
+      "otherActivityCategory",
+      payload.otherActivityCategory ||
+      storedCategory
+    );
+  }
+  updateOtherCategoryVisibility();
+  setValue(
+    "date",
+    String(
+      payload.date ||
+      payload.record_date ||
+      ""
+    ).slice(0, 10)
+  );
+  setValue(
+    "executor",
+    loadedRecordOwnerName ||
+    payload.executor ||
+    ""
+  );
+  setValue(
+    "executionContext",
+    payload.executionContext ||
+    payload.execution_context ||
+    ""
+  );
+  setValue(
+    "place",
+    payload.place ||
+    ""
+  );
+  setValue(
+    "parentParticipation",
+    payload.parentParticipation ||
+    payload.parent_participation ||
+    "none"
+  );
+  const beneficiary =
+    payload.beneficiaryCount ??
+    payload.beneficiary_count ??
+    "";
+  setValue(
+    "beneficiaryCount",
+    beneficiary
+  );
+  const benefitTimes =
+    payload.benefitTimes ??
+    payload.benefit_times ??
+    payload.count ??
+    "";
+  setValue(
+    "benefitTimes",
+    benefitTimes
+  );
+  setValue(
+    "activityApproved",
+    payload.activityApproved ||
+    ""
+  );
+  setValue(
+    "studentCommitteeName",
+    payload.studentCommitteeName ||
+    payload.student_committee_name ||
+    ""
+  );
+  setValue(
+    "goal",
+    payload.goal ||
+    ""
+  );
+  setValue(
+    "implementation",
+    payload.implementation ||
+    ""
+  );
+  setValue(
+    "results",
+    payload.results ||
+    ""
+  );
+  setValue(
+    "recommendations",
+    payload.recommendations ||
+    ""
+  );
+  setValue(
+    "notes",
+    payload.notes ||
+    ""
+  );
+  setSelectedDepartments(
+    payload
+  );
+  setSelectedTargets(
+    payload.targets ||
+    payload.target ||
+    []
+  );
+  if (
+    options.fromDraft &&
+    Array.isArray(
+      payload.coExecutorIds
+    )
+  ) {
+    selectedCoExecutorIds =
+      payload.coExecutorIds.map(
+        String
+      );
+    renderCoExecutors();
+  }
+  updateCommitteeVisibility();
+  updatePreview();
+}
+/* =========================================================
+   تطبيق سجل Supabase
+   ========================================================= */
+
+function applyFormData(
+  record
+) {
+
+  const payload =
+    record?.payload || {};
+
+  const merged = {
+
+    ...payload,
+
+    title:
+      record?.title ||
+      payload.title ||
+      payload.name ||
+      "",
+
+    name:
+      payload.name ||
+      record?.title ||
+      "",
+
+    /*
+      تاريخ الجدول له الأولوية.
+      ده يمنع ضياع تاريخ السجل القديم.
+    */
+    date:
+      String(
+        record?.record_date ||
+        payload.date ||
+        payload.record_date ||
+        ""
+      ).slice(0, 10),
+
+    record_date:
+      String(
+        record?.record_date ||
+        payload.record_date ||
+        payload.date ||
+        ""
+      ).slice(0, 10),
+
+    documentationDomain:
+      record?.documentation_domain ||
+      payload.documentationDomain ||
+      payload.documentation_domain ||
+      "",
+
+    documentation_domain:
+      record?.documentation_domain ||
+      payload.documentation_domain ||
+      "",
+
+    schoolProject:
+      record?.school_project ||
+      payload.schoolProject ||
+      payload.school_project ||
+      "",
+
+    school_project:
+      record?.school_project ||
+      payload.school_project ||
+      "",
+
+    activityCategory:
+      record?.activity_category ||
+      payload.activityCategory ||
+      payload.activity_category ||
+      "",
+
+    activity_category:
+      record?.activity_category ||
+      payload.activity_category ||
+      "",
+
+    executionContext:
+      record?.execution_context ||
+      payload.executionContext ||
+      payload.execution_context ||
+      "",
+
+    parentParticipation:
+      record?.parent_participation ||
+      payload.parentParticipation ||
+      payload.parent_participation ||
+      "none",
+
+    studentCommitteeName:
+      record?.student_committee_name ||
+      payload.studentCommitteeName ||
+      payload.student_committee_name ||
+      "",
+
+    beneficiaryCount:
+      record?.beneficiary_count ??
+      payload.beneficiaryCount ??
+      payload.beneficiary_count ??
+      "",
+
+    benefitTimes:
+      record?.benefit_times ??
+      payload.benefitTimes ??
+      payload.benefit_times ??
+      payload.count ??
+      "",
+
+    /*
+      اسم صاحبة السجل الأصلية.
+      لا نضع اسم المنسقة التي فتحت السجل.
+    */
+    executor:
+      loadedRecordOwnerName ||
+      payload.executor ||
+      ""
+
+  };
+
+  remoteImagePaths =
+    Array.isArray(
+      record?.image_paths
+    )
+      ? [
+          ...record.image_paths
+        ]
+      : (
+          Array.isArray(
+            payload.image_paths
+          )
+            ? [
+                ...payload.image_paths
+              ]
+            : []
+        );
+
+  applyPayloadToForm(
+    merged
+  );
+
+  renderCoExecutors();
+
+  updatePreview();
+
+  renderImages();
+}
+
+
+/* =========================================================
+   قراءة ID من الرابط
+   ========================================================= */
+
+function getRecordIdFromUrl() {
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+  return (
+    params.get("id") || ""
+  ).trim();
+}
+
+
+/* =========================================================
+   تحميل المشاركين المحفوظين
+   ========================================================= */
+
+async function loadParticipants() {
+
+  if (!currentId) {
+    return;
+  }
+
+  try {
+
+    const sb =
+      getSupabase();
+
+    const {
+      data,
+      error
+    } = await sb
+      .from("activity_participants")
+      .select(
+        "user_id, participation_role"
+      )
+      .eq(
+        "activity_id",
+        currentId
+      );
+
+    if (error) {
+      throw error;
+    }
+
+    const rows =
+      data || [];
+
+    const main =
+      rows.find(
+        row =>
+          row.participation_role ===
+          "main_executor"
+      );
+
+    /*
+      created_by في records هو المرجع الأساسي
+      لصاحبة السجل.
+
+      نستخدم main_executor فقط كسند للسجلات
+      القديمة جدًا التي لا تحتوي created_by.
+    */
+    if (
+      !loadedRecordOwnerId &&
+      main?.user_id
+    ) {
+
+      loadedRecordOwnerId =
+        main.user_id;
+    }
+
+    selectedCoExecutorIds =
+      rows
+        .filter(
+          row =>
+            row.participation_role ===
+            "co_executor"
+        )
+        .map(
+          row =>
+            String(
+              row.user_id
+            )
+        );
+
+  } catch (error) {
+
+    console.warn(
+      "loadParticipants:",
+      error
+    );
+  }
+}
+
+
+/* =========================================================
+   تحميل اسم صاحبة السجل الأصلية
+   ========================================================= */
+
+async function loadRecordOwnerName() {
+
+  loadedRecordOwnerName = "";
+
+  if (!loadedRecordOwnerId) {
+    return "";
+  }
+
+  try {
+
+    const sb =
+      getSupabase();
+
+    const {
+      data,
+      error
+    } = await sb
+      .from("user_profiles")
+      .select("full_name")
+      .eq(
+        "user_id",
+        loadedRecordOwnerId
+      )
+      .maybeSingle();
+
+    if (error) {
+      throw error;
+    }
+
+    loadedRecordOwnerName =
+      String(
+        data?.full_name ||
+        ""
+      ).trim();
+
+    return loadedRecordOwnerName;
+
+  } catch (error) {
+
+    console.warn(
+      "loadRecordOwnerName:",
+      error
+    );
+
+    return "";
+  }
+}
+
+
+/* =========================================================
+   تحميل سجل موجود
+   ========================================================= */
+
+async function loadExistingRecord() {
+
+  if (!currentId) {
+    return;
+  }
+
+  try {
+
+    const sb =
+      getSupabase();
+
+    const {
+      data,
+      error
+    } = await sb
+      .from("records")
+      .select(`
+        id,
+        type,
+        title,
+        record_date,
+        payload,
+        image_paths,
+        created_by,
+        created_at,
+        updated_at,
+        documentation_domain,
+        school_project,
+        activity_category,
+        execution_context,
+        parent_participation,
+        student_committee_name,
+        beneficiary_count,
+        benefit_times
+      `)
+      .eq(
+        "id",
+        currentId
+      )
+      .maybeSingle();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data) {
+
+      showMessage(
+        "لم يتم العثور على التوثيق."
+      );
+
+      return;
+    }
+
+    /*
+      مهم جدًا:
+      لا نستخدم المستخدم الحالي كصاحبة للسجل
+      عند فتح سجل معلمة بواسطة المنسقة.
+    */
+    loadedRecordOwnerId =
+      data.created_by ||
+      null;
+
+    await loadRecordOwnerName();
+
+    if (
+      byId("pageTitle")
+    ) {
+
+      byId(
+        "pageTitle"
+      ).textContent =
+        "تعديل التوثيق";
+    }
+
+    await loadParticipants();
+
+    /*
+      لو السجل قديم ولا يوجد created_by
+      نستفيد من main_executor.
+    */
+    if (
+      !loadedRecordOwnerName &&
+      loadedRecordOwnerId
+    ) {
+
+      await loadRecordOwnerName();
+    }
+
+    applyFormData(data);
+
+    /*
+      نثبت المنفذة الأصلية مرة أخرى
+      بعد تطبيق جميع بيانات النموذج.
+    */
+    if (
+      byId("executor") &&
+      loadedRecordOwnerName
+    ) {
+
+      byId("executor").value =
+        loadedRecordOwnerName;
+    }
+
+    /*
+      تثبيت التاريخ الأصلي.
+    */
+    const originalDate =
+      String(
+        data.record_date ||
+        data?.payload?.date ||
+        data?.payload?.record_date ||
+        ""
+      )
+        .trim()
+        .slice(0, 10);
+
+    if (
+      originalDate &&
+      byId("date")
+    ) {
+
+      byId("date").value =
+        originalDate;
+    }
+
+    updateCommitteeVisibility();
 
     updatePreview();
 
-    return currentProfile;
+    await renderImages();
+
+    updateDeleteButton();
 
   } catch (error) {
 
     console.error(
-      "تعذر تحميل بيانات المستخدم:",
+      "loadExistingRecord:",
       error
     );
 
-    return null;
+    showMessage(
+      "تعذر تحميل التوثيق."
+    );
   }
 }
 
 
 /* =========================================================
-   مؤشرات الفعالية متعددة الاختيار
+   حفظ المشاركين
    ========================================================= */
 
-function getCheckedValues(selector) {
-
-  return [
-    ...document.querySelectorAll(
-      selector + ":checked"
-    )
-  ].map(
-    input => input.value
-  );
-}
-
-
-function setCheckedValues(
-  selector,
-  values
+async function saveParticipants(
+  activityId,
+  mainExecutorId
 ) {
 
-  const wanted =
-    new Set(
-      Array.isArray(values)
-        ? values
-        : String(values || "")
-            .split("،")
-            .map(
-              value =>
-                value.trim()
-            )
-            .filter(Boolean)
+  const sb =
+    getSupabase();
+
+  const {
+    error: deleteError
+  } = await sb
+    .from(
+      "activity_participants"
+    )
+    .delete()
+    .eq(
+      "activity_id",
+      activityId
     );
 
-
-  document
-    .querySelectorAll(selector)
-    .forEach(
-      input => {
-
-        input.checked =
-          wanted.has(
-            input.value
-          );
-
-      }
-    );
-}
-
-
-function syncActivityIndicators() {
-
-  const projects =
-    getCheckedValues(
-      ".wr-project-check"
-    );
-
-  const targets =
-    getCheckedValues(
-      ".wr-target-check"
-    );
-
-
-  if ($("projectLinks")) {
-
-    $("projectLinks").value =
-      projects.join("، ");
-
+  if (deleteError) {
+    throw deleteError;
   }
 
+  const rows = [];
 
-  if ($("target")) {
+  if (mainExecutorId) {
 
-    $("target").value =
-      targets.join("، ");
+    rows.push({
 
+      activity_id:
+        activityId,
+
+      user_id:
+        mainExecutorId,
+
+      participation_role:
+        "main_executor",
+
+      created_by:
+        currentUser.id
+    });
   }
 
-
-  return {
-    projects,
-    targets
-  };
-}
-
-
-/* =========================================================
-   قراءة قيم النموذج
-   ========================================================= */
-
-function values() {
-
-  const data = {};
-
-  FIELD_IDS.forEach(id => {
-
-    if ($(id)) {
-      data[id] =
-        $(id).value;
-    }
-
-  });
-
-  return data;
-}
-
-
-/* =========================================================
-   تعبئة النموذج
-   ========================================================= */
-
-function applyValues(data = {}) {
-
-  FIELD_IDS.forEach(id => {
-
-    if (
-      data[id] !== undefined &&
-      data[id] !== null &&
-      $(id)
-    ) {
-
-      $(id).value =
-        data[id];
-
-    }
-
-  });
-
-
-  const projectValues =
-    Array.isArray(
-      data.projects
-    )
-      ? data.projects
-      : (
-          data.projectLinks ||
-          ""
-        );
-
-
-  const targetValues =
-    Array.isArray(
-      data.targetGroups
-    )
-      ? data.targetGroups
-      : (
-          data.target ||
-          ""
-        );
-
-
-  setCheckedValues(
-    ".wr-project-check",
-    projectValues
-  );
-
-
-  setCheckedValues(
-    ".wr-target-check",
-    targetValues
-  );
-
-
-  syncActivityIndicators();
-
-  updatePreview();
-}
-
-
-/* =========================================================
-   بيانات التقرير
-   ========================================================= */
-
-function recordData() {
-
-  return {
-
-    type:
-      "activity",
-
-    /* الجديد: يُحفظ تلقائيًا مع التقرير */
-    school_year:
-      currentSchoolYear || "",
-
-    title:
-      $("name").value.trim() ||
-      "تقرير فعالية",
-
-    activityType:
-      $("activityType").value,
-
-    executor:
-      $("executor").value.trim(),
-
-    department:
-      $("department").value.trim(),
-
-    date:
-      $("date").value,
-
-    startTime:
-      $("startTime").value,
-
-    endTime:
-      $("endTime").value,
-
-    place:
-      $("place").value.trim(),
-
-    activityApproved:
-      $("activityApproved")?.value ||
-      "",
-
-    projects:
-      getCheckedValues(
-        ".wr-project-check"
-      ),
-
-    projectLinks:
-      $("projectLinks")
-        ?.value
-        .trim() ||
-      "",
-
-    targetGroups:
-      getCheckedValues(
-        ".wr-target-check"
-      ),
-
-    target:
-      $("target").value.trim(),
-
-    count:
-      $("count").value,
-
-    goal:
-      $("goal").value,
-
-    implementation:
-      $("implementation").value,
-
-    results:
-      $("results").value,
-
-    recommendations:
-      $("recommendations").value,
-
-    notes:
-      $("notes").value,
-
-    owner_id:
-      loadedRecordOwnerId ||
-      currentUser?.id ||
-      "",
-
-    owner_name:
-      $("executor").value.trim(),
-
-    owner_role:
-      currentProfile?.role ||
-      "",
-
-    owner_email:
-      loadedRecordOwnerEmail ||
-      (
-        (
-          !loadedRecordOwnerId ||
-          String(
-            loadedRecordOwnerId
-          ) ===
-          String(
-            currentUser?.id ||
-            ""
-          )
-        )
-          ? (
-              currentUser?.email ||
-              ""
-            )
-          : ""
-      ),
-
-    image_paths:
-      remoteImagePaths
-  };
-}
-
-
-/* =========================================================
-   تحديث المعاينة
-   ========================================================= */
-
-function updatePreview() {
-
-  const data =
-    recordData();
-
-
-  $("pName").textContent =
-    data.title;
-
-
-  $("pType").textContent =
-    data.activityType ||
-    "—";
-
-
-  $("pExecutor").textContent =
-    data.executor ||
-    "—";
-
-
-  $("pDepartment").textContent =
-    data.department ||
-    "—";
-
-
-  $("pDate").textContent =
-    wrFormatDate(
-      data.date
-    );
-
-
-  $("pTime").textContent =
+  const uniqueCoExecutors =
     [
-      wrFormatTime(
-        data.startTime
-      ),
-      wrFormatTime(
-        data.endTime
+      ...new Set(
+        selectedCoExecutorIds
+          .map(String)
       )
     ]
       .filter(
-        x =>
-          x !== "—"
-      )
-      .join(" – ") ||
-    "—";
+        userId =>
+          userId !==
+          String(
+            mainExecutorId
+          )
+      );
 
+  uniqueCoExecutors.forEach(
+    userId => {
 
-  $("pPlace").textContent =
-    data.place ||
-    "—";
+      rows.push({
 
+        activity_id:
+          activityId,
 
-  if (
-    $("pApproval")
-  ) {
+        user_id:
+          userId,
 
-    $("pApproval").textContent =
-      data.activityApproved ===
-      "yes"
-        ? "نعم"
-        : data.activityApproved ===
-          "no"
-          ? "لا"
-          : "—";
+        participation_role:
+          "co_executor",
 
-  }
+        created_by:
+          currentUser.id
+      });
+    }
+  );
 
-
-  if (
-    $("pProjects")
-  ) {
-
-    $("pProjects").textContent =
-      data.projectLinks ||
-      (
-        Array.isArray(
-          data.projects
-        )
-          ? data.projects.join(
-              "، "
-            )
-          : ""
-      ) ||
-      "—";
-
-  }
-
-
-  $("pTarget").textContent =
-    data.target ||
-    "—";
-
-
-  $("pCount").textContent =
-    data.count ||
-    "—";
-
-
-  $("pGoal").textContent =
-    data.goal ||
-    "—";
-
-
-  $("pImplementation").textContent =
-    data.implementation ||
-    "—";
-
-
-  $("pResults").textContent =
-    data.results ||
-    "—";
-
-
-  $("pRecommendations").textContent =
-    data.recommendations ||
-    "—";
-
-
-  $("pNotes").textContent =
-    data.notes ||
-    "—";
-}
-
-
-/* =========================================================
-   حفظ المسودة
-   ========================================================= */
-
-function saveDraft() {
-
-  if (currentId) {
+  if (!rows.length) {
     return;
   }
 
-
-  syncActivityIndicators();
-
-
-  localStorage.setItem(
-    DRAFT_KEY,
-    JSON.stringify({
-      ...values(),
-
-      projects:
-        getCheckedValues(
-          ".wr-project-check"
-        ),
-
-      targetGroups:
-        getCheckedValues(
-          ".wr-target-check"
-        ),
-
-      savedAt:
-        new Date()
-          .toISOString()
-    })
-  );
-
-
-  $("draftState").textContent =
-    "تم حفظ المسودة تلقائيًا: " +
-    new Date()
-      .toLocaleTimeString(
-        "ar-BH"
-      );
-}
-
-
-let draftTimer;
-
-
-/* =========================================================
-   مراقبة الحقول
-   ========================================================= */
-
-FIELD_IDS.forEach(id => {
-
-  const field =
-    $(id);
-
-
-  if (!field) {
-    return;
-  }
-
-
-  field.addEventListener(
-    "input",
-    () => {
-
-      syncActivityIndicators();
-
-      updatePreview();
-
-      clearTimeout(
-        draftTimer
-      );
-
-
-      draftTimer =
-        setTimeout(
-          saveDraft,
-          450
-        );
-
-    }
-  );
-
-
-  field.addEventListener(
-    "change",
-    () => {
-
-      syncActivityIndicators();
-
-      updatePreview();
-
-      clearTimeout(
-        draftTimer
-      );
-
-
-      draftTimer =
-        setTimeout(
-          saveDraft,
-          450
-        );
-
-    }
-  );
-
-});
-
-
-document
-  .querySelectorAll(
-    ".wr-project-check, .wr-target-check"
-  )
-  .forEach(
-    input => {
-
-      input.addEventListener(
-        "change",
-        () => {
-
-          syncActivityIndicators();
-
-          updatePreview();
-
-          clearTimeout(
-            draftTimer
-          );
-
-
-          draftTimer =
-            setTimeout(
-              saveDraft,
-              450
-            );
-
-        }
-      );
-
-    }
-  );
-
-
-/* =========================================================
-   عرض الصور
-   ========================================================= */
-
-async function renderImages() {
-
-  const box =
-    $("pImages");
-
-
-  box.innerHTML =
-    "";
-
-
-  const sources =
-    [];
-
-
-  for (
-    const ref of
-    existingImageRefs
-  ) {
-
-    try {
-
-      const file =
-        await wrGetFile(
-          ref
-        );
-
-
-      if (file) {
-
-        sources.push({
-
-          name:
-            file.name,
-
-          url:
-            URL.createObjectURL(
-              file.blob
-            ),
-
-          revoke:
-            true
-
-        });
-
-      }
-
-    } catch (error) {
-
-      console.warn(
-        "تعذر قراءة صورة محلية:",
-        error
-      );
-
-    }
-
-  }
-
-
-  for (
-    const path of
-    remoteImagePaths
-  ) {
-
-    try {
-
-      const url =
-        await WRGraph
-          .getFileUrl(
-            path
-          );
-
-
-      if (url) {
-
-        sources.push({
-
-          name:
-            path
-              .split("/")
-              .pop(),
-
-          url,
-
-          revoke:
-            false
-
-        });
-
-      }
-
-    } catch (error) {
-
-      console.warn(
-        "تعذر تحميل صورة من Supabase:",
-        error
-      );
-
-    }
-
-  }
-
-
-  for (
-    const file of
-    selectedFiles
-  ) {
-
-    sources.push({
-
-      name:
-        file.name,
-
-      url:
-        URL.createObjectURL(
-          file
-        ),
-
-      revoke:
-        true
-
-    });
-
-  }
-
-
-  sources
-    .slice(
-      0,
-      10
+  const {
+    error
+  } = await sb
+    .from(
+      "activity_participants"
     )
-    .forEach(
-      source => {
+    .insert(rows);
 
-        const figure =
-          document
-            .createElement(
-              "figure"
-            );
+  if (error) {
+    throw error;
+  }
+}
 
 
-        figure.className =
-          "report-photo";
+/* =========================================================
+   إنشاء ID
+   ========================================================= */
+
+function createActivityId() {
+
+  if (
+    window.crypto &&
+    typeof crypto.randomUUID ===
+      "function"
+  ) {
+
+    return (
+      "activity-" +
+      crypto.randomUUID()
+    );
+  }
+
+  return (
+    "activity-" +
+    Date.now() +
+    "-" +
+    Math.random()
+      .toString(36)
+      .slice(2, 10)
+  );
+}
 
 
-        const image =
-          new Image();
+/* =========================================================
+   رفع الصور
+   ========================================================= */
 
+async function uploadNewImages(
+  activityId
+) {
 
-        image.src =
-          source.url;
+  if (!selectedFiles.length) {
 
+    return [
+      ...remoteImagePaths
+    ];
+  }
 
-        image.alt =
-          source.name ||
-          "صورة الفعالية";
+  if (
+    !window.WRGraph ||
+    typeof WRGraph.uploadFiles !==
+      "function"
+  ) {
 
+    throw new Error(
+      "خدمة رفع الصور غير متاحة."
+    );
+  }
 
-        image.onload =
-          () => {
+  const uploaded =
+    await WRGraph.uploadFiles(
+      activityId,
+      selectedFiles
+    );
+
+  let newPaths = [];
+
+  if (
+    Array.isArray(uploaded)
+  ) {
+
+    newPaths =
+      uploaded
+        .map(
+          item => {
 
             if (
-              source.revoke
+              typeof item ===
+              "string"
             ) {
-
-              setTimeout(
-                () => {
-
-                  URL
-                    .revokeObjectURL(
-                      source.url
-                    );
-
-                },
-                5000
-              );
-
+              return item;
             }
 
-          };
+            return (
+              item?.path ||
+              item?.file_path ||
+              item?.storage_path ||
+              ""
+            );
+          }
+        )
+        .filter(Boolean);
+
+  } else if (
+    uploaded &&
+    Array.isArray(
+      uploaded.paths
+    )
+  ) {
+
+    newPaths =
+      uploaded.paths.filter(
+        Boolean
+      );
+  }
+
+  return [
+    ...new Set([
+      ...remoteImagePaths,
+      ...newPaths
+    ])
+  ];
+}
 
 
-        figure
-          .appendChild(
-            image
-          );
+/* =========================================================
+   تحديث أعمدة التصنيف
+   ========================================================= */
 
+async function updateClassificationColumns(
+  activityId,
+  data
+) {
 
-        box
-          .appendChild(
-            figure
-          );
+  const sb =
+    getSupabase();
 
-      }
+  const {
+    error
+  } = await sb
+    .from("records")
+    .update({
+
+      documentation_domain:
+        data.documentationDomain ||
+        null,
+
+      school_project:
+        data.schoolProject ||
+        null,
+
+      activity_category:
+        data.activityCategory ||
+        null,
+
+      execution_context:
+        data.executionContext ||
+        null,
+
+      parent_participation:
+        data.parentParticipation ||
+        "none",
+
+      student_committee_name:
+        data.studentCommitteeName ||
+        null,
+
+      beneficiary_count:
+        data.beneficiaryCount,
+
+      benefit_times:
+        data.benefitTimes
+
+    })
+    .eq(
+      "id",
+      activityId
     );
 
+  if (error) {
+    throw error;
+  }
+}
 
-  $("noImages")
-    .classList
-    .toggle(
-      "hidden",
-      sources.length > 0
+
+/* =========================================================
+   حفظ التوثيق
+   ========================================================= */
+
+async function saveActivity() {
+
+  if (!validateForm()) {
+    return;
+  }
+
+  const saveButton =
+    byId("saveBtn");
+
+  const originalText =
+    saveButton?.textContent ||
+    "💾 حفظ التوثيق";
+
+  try {
+
+    if (saveButton) {
+
+      saveButton.disabled =
+        true;
+
+      saveButton.textContent =
+        "جاري الحفظ...";
+    }
+
+    const data =
+      collectFormData();
+
+    const isNew =
+      !currentId;
+
+    const activityId =
+      currentId ||
+      createActivityId();
+
+    /*
+      عند تعديل سجل معلمة بواسطة المنسقة:
+      نحتفظ بالمنفذة الأصلية.
+    */
+    const mainExecutorId =
+      isNew
+        ? currentUser.id
+        : (
+            loadedRecordOwnerId ||
+            currentUser.id
+          );
+
+    /*
+      لا نسمح لاسم المنسقة الموجود في الصفحة
+      أن يحل محل اسم صاحبة السجل.
+    */
+    if (
+      !isNew &&
+      loadedRecordOwnerName
+    ) {
+
+      data.executor =
+        loadedRecordOwnerName;
+    }
+
+    const allImagePaths =
+      await uploadNewImages(
+        activityId
+      );
+
+    remoteImagePaths =
+      [
+        ...allImagePaths
+      ];
+
+    const payload = {
+
+      ...data,
+
+      id:
+        activityId,
+
+      image_paths:
+        [...allImagePaths],
+
+      beneficiaryCount:
+        data.beneficiaryCount,
+
+      beneficiary_count:
+        data.beneficiaryCount,
+
+      benefitTimes:
+        data.benefitTimes,
+
+      benefit_times:
+        data.benefitTimes,
+
+      count:
+        data.benefitTimes === null
+          ? ""
+          : String(
+              data.benefitTimes
+            ),
+
+      schoolProject:
+        data.schoolProject,
+
+      school_project:
+        data.schoolProject,
+
+      activityCategory:
+        data.activityCategory,
+
+      activity_category:
+        data.activityCategory,
+
+      activityCategorySelection:
+        data.activityCategorySelection,
+
+      otherActivityCategory:
+        data.otherActivityCategory,
+
+      executor:
+        data.executor
+    };
+
+    if (
+      !window.WRGraph ||
+      typeof WRGraph.uploadJson !==
+        "function"
+    ) {
+
+      throw new Error(
+        "خدمة حفظ التوثيق غير متاحة."
+      );
+    }
+
+    /*
+      في السجل الجديد المستخدم الحالي هو المنشئ.
+
+      في السجل الموجود نمرر صاحبة السجل الأصلية
+      بدل تحويل الملكية إلى المنسقة.
+    */
+    await WRGraph.uploadJson({
+
+      id:
+        activityId,
+
+      type:
+        "activity",
+
+      title:
+        data.name,
+
+      date:
+        data.date,
+
+      user:
+        mainExecutorId,
+
+      ...payload
+    });
+
+    await updateClassificationColumns(
+      activityId,
+      data
     );
+
+    await saveParticipants(
+      activityId,
+      mainExecutorId
+    );
+
+    currentId =
+      activityId;
+
+    loadedRecordOwnerId =
+      mainExecutorId;
+
+    if (
+      !loadedRecordOwnerName
+    ) {
+
+      loadedRecordOwnerName =
+        data.executor ||
+        currentProfile?.full_name ||
+        "";
+    }
+
+    selectedFiles = [];
+
+    if (
+      byId("images")
+    ) {
+
+      byId(
+        "images"
+      ).value = "";
+    }
+
+    clearDraft();
+
+    if (
+      byId("draftState")
+    ) {
+
+      byId(
+        "draftState"
+      ).textContent =
+        "تم حفظ التوثيق في المنظومة.";
+    }
+
+    if (
+      byId("pageTitle")
+    ) {
+
+      byId(
+        "pageTitle"
+      ).textContent =
+        "تعديل التوثيق";
+    }
+
+    await renderImages();
+
+    updatePreview();
+
+    updateDeleteButton();
+
+    const newUrl =
+      new URL(
+        window.location.href
+      );
+
+    newUrl.searchParams.set(
+      "id",
+      activityId
+    );
+
+    history.replaceState(
+      {},
+      "",
+      newUrl
+    );
+
+    showMessage(
+      "تم حفظ التوثيق بنجاح."
+    );
+
+  } catch (error) {
+
+    console.error(
+      "saveActivity:",
+      error
+    );
+
+    showMessage(
+      "تعذر حفظ التوثيق. راجعي البيانات والصلاحيات ثم حاولي مرة أخرى."
+    );
+
+  } finally {
+
+    if (saveButton) {
+
+      saveButton.disabled =
+        false;
+
+      saveButton.textContent =
+        originalText;
+    }
+  }
 }
 
 
@@ -928,1748 +2832,1172 @@ async function renderImages() {
    اختيار الصور
    ========================================================= */
 
-$("images")
-  .addEventListener(
-    "change",
-    () => {
-
-      selectedFiles =
-        [
-          ...$("images").files
-        ]
-          .slice(
-            0,
-            10
-          );
-
-
-      $("imageHint")
-        .textContent =
-        `تم اختيار ${selectedFiles.length} صورة`;
-
-
-      renderImages();
-
-    }
-  );
-
-
-/* =========================================================
-   تحميل تقرير محفوظ
-   ========================================================= */
-
-async function loadRecord(
-  id
+function handleImageSelection(
+  event
 ) {
 
-  try {
-
-    const records =
-      await WRGraph
-        .fetchRecords();
-
-
-    const row =
-      records.find(
-        record =>
-          String(
-            record.id
-          ) ===
-          String(
-            id
-          )
-      );
-
-
-    if (!row) {
-
-      wrToast(
-        "السجل غير موجود أو لا تملكين صلاحية عرضه"
-      );
-
-      return false;
-    }
-
-
-    currentId =
-      row.id;
-
-
-    loadedRecordOwnerId =
-      row.created_by ||
-      row.payload
-        ?.owner_id ||
-      null;
-
-
-    loadedRecordOwnerEmail =
-      row.payload
-        ?.owner_email ||
-      row.payload
-        ?.ownerEmail ||
-      (
-        String(
-          loadedRecordOwnerId ||
-          ""
-        ) ===
-        String(
-          currentUser?.id ||
-          ""
-        )
-          ? (
-              currentUser?.email ||
-              ""
-            )
-          : ""
-      );
-
-
-    const payload = {
+  const files =
+    [
       ...(
-        row.payload ||
-        {}
+        event?.target?.files ||
+        []
       )
-    };
+    ];
 
-
-    if (
-      !payload.name
-    ) {
-
-      payload.name =
-        payload.title ||
-        row.title ||
-        "";
-
-    }
-
-
-    if (
-      !payload.date
-    ) {
-
-      payload.date =
-        row.record_date ||
-        "";
-
-    }
-
-
-    if (
-      !payload.executor
-    ) {
-
-      payload.executor =
-        payload.owner_name ||
-        "";
-
-    }
-
-
-    remoteImagePaths =
-      Array.isArray(
-        row.image_paths
-      )
-        ? row.image_paths
-        : Array.isArray(
-            payload
-              .image_paths
-          )
-          ? payload
-              .image_paths
-          : [];
-
-
-    existingImageRefs =
-      Array.isArray(
-        payload
-          .imageRefs
-      )
-        ? payload
-            .imageRefs
-        : [];
-
-
-    applyValues(
-      payload
+  selectedFiles =
+    files.filter(
+      file =>
+        file.type.startsWith(
+          "image/"
+        )
     );
 
+  renderImages();
 
-    $("executor").value =
-      payload.executor ||
-      payload.owner_name ||
-      "";
-
-
-    if (
-      currentProfile
-        ?.role ===
-        "teacher" ||
-      currentProfile
-        ?.role ===
-        "coordinator"
-    ) {
-
-      $("executor")
-        .readOnly =
-        true;
-
-    } else {
-
-      $("executor")
-        .readOnly =
-        false;
-
-    }
+  scheduleDraft();
+}
 
 
-    $("pageTitle")
-      .textContent =
-      "تعديل تقرير فعالية";
+/* =========================================================
+   رابط الصورة المحفوظة
+   ========================================================= */
 
+async function getStoredImageUrl(
+  path
+) {
 
-    $("draftState")
-      .textContent =
-      "تم تحميل التقرير المحفوظ من الأرشيف السحابي.";
+  const raw =
+    String(
+      path || ""
+    ).trim();
 
-
-    $("deleteBtn")
-      .classList
-      .remove(
-        "hidden"
-      );
-
-
-    updatePreview();
-
-
-    await renderImages();
-
-
-    console.log(
-      "Activity loaded from Supabase:",
-      row
-    );
-
-
-    return true;
-
-  } catch (error) {
-
-    console.error(
-      "خطأ تحميل التقرير:",
-      error
-    );
-
-
-    wrToast(
-      "تعذر تحميل التقرير: " +
-      (
-        error.message ||
-        error
-      )
-    );
-
-
-    return false;
-
+  if (!raw) {
+    return "";
   }
-}
 
-
-/* =========================================================
-   إنشاء ID ثابت
-   ========================================================= */
-
-function createActivityId() {
-
-  return (
-    "rec_" +
-    Date.now() +
-    "_" +
-    Math.random()
-      .toString(36)
-      .slice(
-        2,
-        8
-      )
-  );
-}
-
-
-/* =========================================================
-   حفظ التقرير
-   ========================================================= */
-
-async function save() {
-
-  syncActivityIndicators();
-
-
+  /*
+    لو الرابط سبق تحويله في نفس الجلسة
+    لا نطلب Signed URL جديدًا كل مرة.
+    ده يسرع الطباعة جدًا.
+  */
   if (
-    !$("name")
-      .value
-      .trim() ||
-    !$("executor")
-      .value
-      .trim() ||
-    !$("date")
-      .value
+    imageUrlCache.has(raw)
   ) {
 
-    wrToast(
-      "أكملي اسم الفعالية والتاريخ"
+    return imageUrlCache.get(
+      raw
     );
-
-    return;
   }
 
+  if (
+    /^https?:\/\//i.test(
+      raw
+    )
+  ) {
 
-  $("saveBtn")
-    .disabled =
-    true;
+    imageUrlCache.set(
+      raw,
+      raw
+    );
 
+    return raw;
+  }
+
+  const cleanPath =
+    raw
+      .replace(
+        /^\/+/,
+        ""
+      )
+      .replace(
+        /^wrso-files\//,
+        ""
+      );
+
+  try {
+
+    const sb =
+      getSupabase();
+
+    const {
+      data,
+      error
+    } = await sb
+      .storage
+      .from(
+        "wrso-files"
+      )
+      .createSignedUrl(
+        cleanPath,
+        60 * 60 * 2
+      );
+
+    if (
+      !error &&
+      data?.signedUrl
+    ) {
+
+      imageUrlCache.set(
+        raw,
+        data.signedUrl
+      );
+
+      return data.signedUrl;
+    }
+
+  } catch (error) {
+
+    console.warn(
+      "Signed image URL:",
+      error
+    );
+  }
 
   try {
 
     if (
-      !currentId ||
-      String(
-        currentId
-      ) ===
-        "undefined" ||
-      String(
-        currentId
-      ) ===
-        "null"
-    ) {
-
-      currentId =
-        createActivityId();
-
-    }
-
-
-    loadedRecordOwnerId =
-      loadedRecordOwnerId ||
-      currentUser?.id ||
-      null;
-
-
-    loadedRecordOwnerEmail =
-      loadedRecordOwnerEmail ||
-      currentUser?.email ||
-      "";
-
-
-    if (
-      selectedFiles.length &&
-      typeof WRGraph
-        .uploadFiles ===
+      window.WRGraph &&
+      typeof WRGraph.getFileUrl ===
         "function"
     ) {
 
-      try {
-
-        const uploaded =
-          await WRGraph
-            .uploadFiles(
-              currentId,
-              selectedFiles
-            );
-
-
-        remoteImagePaths = [
-          ...remoteImagePaths,
-          ...uploaded
-        ]
-          .filter(
-            (
-              value,
-              index,
-              array
-            ) =>
-              array.indexOf(
-                value
-              ) ===
-              index
-          )
-          .slice(
-            0,
-            10
-          );
-
-      } catch (
-        uploadError
-      ) {
-
-        console.warn(
-          "تعذر رفع الصور إلى Supabase:",
-          uploadError
+      const url =
+        await WRGraph.getFileUrl(
+          cleanPath
         );
 
-      }
+      if (url) {
 
-    }
-
-
-    const data = {
-
-      ...recordData(),
-
-      id:
-        currentId,
-
-      image_paths:
-        remoteImagePaths
-
-    };
-
-
-    let rec =
-      null;
-
-
-    try {
-
-      rec =
-        await wrAddRecord(
-          data,
-          selectedFiles
-        );
-
-    } catch (
-      localSaveError
-    ) {
-
-      console.warn(
-        "تعذر الحفظ المحلي:",
-        localSaveError
-      );
-
-    }
-
-
-    if (
-      rec?.id &&
-      String(
-        rec.id
-      ) !==
-        "undefined" &&
-      String(
-        rec.id
-      ) !==
-        "null"
-    ) {
-
-      currentId =
-        rec.id;
-
-    }
-
-
-    existingImageRefs =
-      rec?.imageRefs ||
-      existingImageRefs ||
-      [];
-
-
-    if (
-      typeof WRGraph
-        .uploadJson ===
-        "function"
-    ) {
-
-      await WRGraph
-        .uploadJson({
-
-          ...recordData(),
-
-          id:
-            currentId,
-
-          image_paths:
-            remoteImagePaths
-
-        });
-
-    }
-
-
-    selectedFiles =
-      [];
-
-
-    $("images").value =
-      "";
-
-
-    localStorage
-      .removeItem(
-        DRAFT_KEY
-      );
-
-
-    $("deleteBtn")
-      .classList
-      .remove(
-        "hidden"
-      );
-
-
-    const cleanUrl =
-      new URL(
-        window.location
-          .href
-      );
-
-
-    cleanUrl.search =
-      "";
-
-
-    cleanUrl
-      .searchParams
-      .set(
-        "id",
-        currentId
-      );
-
-
-    history
-      .replaceState(
-        null,
-        "",
-        cleanUrl
-          .pathname +
-        cleanUrl
-          .search
-      );
-
-
-    $("pageTitle")
-      .textContent =
-      "تعديل تقرير فعالية";
-
-
-    $("draftState")
-      .textContent =
-      "تم حفظ التقرير بنجاح.";
-
-
-    await renderImages();
-
-
-    wrToast(
-      "تم حفظ التقرير بنجاح"
-    );
-
-
-    console.log(
-      "Activity saved with ID:",
-      currentId
-    );
-
-
-  } catch (error) {
-
-    console.error(
-      "Save error:",
-      error
-    );
-
-
-    wrToast(
-      "تعذر الحفظ: " +
-      (
-        error.message ||
-        error
-      )
-    );
-
-  } finally {
-
-    $("saveBtn")
-      .disabled =
-      false;
-
-  }
-}
-/* =========================================================
-   تحويل Blob إلى Data URL
-   ========================================================= */
-
-function wrBlobToDataURL(
-  blob
-) {
-
-  return new Promise(
-    (
-      resolve,
-      reject
-    ) => {
-
-      const reader =
-        new FileReader();
-
-
-      reader.onload =
-        () =>
-          resolve(
-            reader.result
-          );
-
-
-      reader.onerror =
-        reject;
-
-
-      reader
-        .readAsDataURL(
-          blob
-        );
-
-    }
-  );
-}
-
-
-/* =========================================================
-   تنزيل ملف
-   ========================================================= */
-
-function wrDownloadBlob(
-  blob,
-  fileName
-) {
-
-  const url =
-    URL.createObjectURL(
-      blob
-    );
-
-
-  const link =
-    document
-      .createElement(
-        "a"
-      );
-
-
-  link.href =
-    url;
-
-
-  link.download =
-    fileName;
-
-
-  document.body
-    .appendChild(
-      link
-    );
-
-
-  link.click();
-
-
-  link.remove();
-
-
-  setTimeout(
-    () => {
-
-      URL
-        .revokeObjectURL(
+        imageUrlCache.set(
+          raw,
           url
         );
 
-    },
-    1000
-  );
-}
-
-
-/* =========================================================
-   اسم آمن للملف
-   ========================================================= */
-
-function wrSafeName(
-  value
-) {
-
-  return String(
-    value ||
-    "تقرير فعالية"
-  )
-    .replace(
-      /[\\/:*?"<>|]/g,
-      "-"
-    )
-    .trim();
-}
-
-
-/* =========================================================
-   إنشاء HTML
-   ========================================================= */
-
-function reportHtml() {
-
-  const clone =
-    $("reportSheet")
-      .cloneNode(
-        true
-      );
-
-
-  clone
-    .querySelectorAll(
-      "img"
-    )
-    .forEach(
-      img => {
-
-        if (
-          img.src
-            .startsWith(
-              "blob:"
-            )
-        ) {
-
-          img
-            .setAttribute(
-              "data-needs-inline",
-              "1"
-            );
-
-        }
-
+        return url;
       }
-    );
-
-
-  return `
-<!doctype html>
-
-<html lang="ar" dir="rtl">
-
-<head>
-
-<meta charset="utf-8">
-
-<title>
-${wrSafeName(
-  $("name").value
-)}
-</title>
-
-<style>
-
-body{
-  font-family:Tahoma,Arial,sans-serif;
-  background:#fff;
-  margin:0;
-  color:#24352e;
-}
-
-.sheet{
-  max-width:190mm;
-  margin:auto;
-  padding:12mm;
-}
-
-.school-header{
-  width:100%;
-  max-height:100px;
-  object-fit:contain;
-}
-
-.doc-title{
-  text-align:center;
-  border-top:3px solid #087451;
-  border-bottom:1px solid #b58a36;
-  padding:14px;
-}
-
-.doc-title h1{
-  color:#075c40;
-}
-
-.summary{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-
-.summary-item{
-  padding:10px;
-  background:#f5f8f6;
-  border-right:4px solid #087451;
-  border-radius:8px;
-}
-
-.doc-section h3{
-  color:#075c40;
-  border-bottom:2px solid #d8b668;
-}
-
-.doc-section p{
-  white-space:pre-wrap;
-  line-height:1.8;
-}
-
-.images-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-
-.report-photo{
-  margin:0;
-  break-inside:avoid;
-}
-
-.report-photo img{
-  width:100%;
-  max-height:280px;
-  object-fit:contain;
-}
-
-.empty{
-  display:none;
-}
-
-.report-footer{
-  text-align:center;
-  margin-top:25px;
-  color:#6b7a72;
-  font-size:12px;
-}
-
-@media print{
-
-  @page{
-    size:A4;
-    margin:10mm;
-  }
-
-}
-
-</style>
-
-</head>
-
-<body>
-
-${clone.outerHTML}
-
-</body>
-
-</html>
-`;
-
-}
-
-
-/* =========================================================
-   تنزيل HTML كامل بالصور
-   ========================================================= */
-
-async function downloadHtml() {
-
-  const clone =
-    $("reportSheet")
-      .cloneNode(
-        true
-      );
-
-
-  const originalImages = [
-    ...$("reportSheet")
-      .querySelectorAll(
-        "img"
-      )
-  ];
-
-
-  const clonedImages = [
-    ...clone
-      .querySelectorAll(
-        "img"
-      )
-  ];
-
-
-  for (
-    let i = 0;
-    i <
-      originalImages.length;
-    i++
-  ) {
-
-    try {
-
-      const response =
-        await fetch(
-          originalImages[i]
-            .src
-        );
-
-
-      const blob =
-        await response
-          .blob();
-
-
-      clonedImages[i]
-        .src =
-        await wrBlobToDataURL(
-          blob
-        );
-
-
-    } catch (error) {
-
-      console.warn(
-        "تعذر تضمين صورة في HTML:",
-        error
-      );
-
     }
-
-  }
-
-
-  const css = `
-
-body{
-  font-family:Tahoma,Arial,sans-serif;
-  background:#fff;
-  margin:0;
-  color:#24352e;
-}
-
-.sheet{
-  max-width:190mm;
-  margin:auto;
-  padding:12mm;
-}
-
-.school-header{
-  width:100%;
-  max-height:100px;
-  object-fit:contain;
-}
-
-.doc-title{
-  text-align:center;
-  border-top:3px solid #087451;
-  border-bottom:1px solid #b58a36;
-  padding:14px;
-}
-
-.doc-title h1{
-  color:#075c40;
-}
-
-.summary{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-
-.summary-item{
-  padding:10px;
-  background:#f5f8f6;
-  border-right:4px solid #087451;
-  border-radius:8px;
-}
-
-.doc-section h3{
-  color:#075c40;
-  border-bottom:2px solid #d8b668;
-}
-
-.doc-section p{
-  white-space:pre-wrap;
-  line-height:1.8;
-}
-
-.images-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-
-.report-photo{
-  margin:0;
-  break-inside:avoid;
-}
-
-.report-photo img{
-  width:100%;
-  max-height:280px;
-  object-fit:contain;
-}
-
-.empty{
-  display:none;
-}
-
-.report-footer{
-  text-align:center;
-  margin-top:25px;
-  color:#6b7a72;
-  font-size:12px;
-}
-
-@media print{
-
-  @page{
-    size:A4;
-    margin:10mm;
-  }
-
-}
-
-`;
-
-
-  const html = `
-
-<!doctype html>
-
-<html lang="ar" dir="rtl">
-
-<head>
-
-<meta charset="utf-8">
-
-<meta
-  name="viewport"
-  content="width=device-width"
->
-
-<title>
-${wrSafeName(
-  $("name").value
-)}
-</title>
-
-<style>
-${css}
-</style>
-
-</head>
-
-<body>
-
-${clone.outerHTML}
-
-</body>
-
-</html>
-`;
-
-
-  wrDownloadBlob(
-
-    new Blob(
-      [html],
-      {
-        type:
-          "text/html;charset=utf-8"
-      }
-    ),
-
-    `تقرير - ${wrSafeName(
-      $("name").value
-    )}.html`
-
-  );
-
-
-  wrToast(
-    "تم تنزيل نسخة التقرير كاملة بالصور"
-  );
-}
-
-
-/* =========================================================
-   حذف التقرير
-   ========================================================= */
-
-async function deleteCurrentReport() {
-
-  if (
-    !currentId
-  ) {
-
-    wrToast(
-      "لا يوجد تقرير محفوظ لحذفه"
-    );
-
-    return;
-  }
-
-
-  const ok =
-    confirm(
-      "حذف هذا التقرير وصوره من الأرشيف؟"
-    );
-
-
-  if (!ok) {
-    return;
-  }
-
-
-  $("deleteBtn")
-    .disabled =
-    true;
-
-
-  try {
-
-    if (
-      remoteImagePaths
-        .length &&
-      typeof WRGraph
-        .deleteFiles ===
-        "function"
-    ) {
-
-      try {
-
-        await WRGraph
-          .deleteFiles(
-            remoteImagePaths
-          );
-
-      } catch (error) {
-
-        console.warn(
-          "تعذر حذف بعض الصور السحابية:",
-          error
-        );
-
-      }
-
-    }
-
-
-    await WRGraph
-      .deleteRecord(
-        currentId
-      );
-
-
-    try {
-
-      if (
-        typeof wrDeleteRecord ===
-          "function"
-      ) {
-
-        await wrDeleteRecord(
-          currentId
-        );
-
-      }
-
-    } catch (error) {
-
-      console.warn(
-        "تعذر تنظيف النسخة المحلية:",
-        error
-      );
-
-    }
-
-
-    wrToast(
-      "تم حذف التقرير"
-    );
-
-
-    setTimeout(
-      () => {
-
-        location.href =
-          "../archive/index.html";
-
-      },
-      400
-    );
-
 
   } catch (error) {
 
-    console.error(
-      "Delete error:",
+    console.warn(
+      "WRGraph image URL:",
       error
     );
-
-
-    wrToast(
-      "تعذر حذف التقرير: " +
-      (
-        error.message ||
-        error
-      )
-    );
-
-
-    $("deleteBtn")
-      .disabled =
-      false;
-
   }
-}
-
-
-/* =========================================================
-   بريد صاحبة التقرير
-   ========================================================= */
-
-function getReportOwnerEmail() {
-
-  if (
-    loadedRecordOwnerEmail
-  ) {
-
-    return loadedRecordOwnerEmail;
-
-  }
-
-
-  if (
-    !loadedRecordOwnerId ||
-    String(
-      loadedRecordOwnerId
-    ) ===
-    String(
-      currentUser?.id ||
-      ""
-    )
-  ) {
-
-    return (
-      currentUser?.email ||
-      ""
-    );
-
-  }
-
 
   return "";
 }
 
 
 /* =========================================================
-   رابط التقرير
+   انتظار تحميل الصورة
    ========================================================= */
 
-function getCurrentReportLink() {
-
-  if (
-    !currentId ||
-    String(
-      currentId
-    ) ===
-      "undefined" ||
-    String(
-      currentId
-    ) ===
-      "null"
-  ) {
-
-    return "";
-  }
-
-
-  const url =
-    new URL(
-      window.location.href
-    );
-
-
-  url.search =
-    "";
-
-
-  url
-    .searchParams
-    .set(
-      "id",
-      currentId
-    );
-
-
-  return url
-    .toString();
-}
-
-
-/* =========================================================
-   إرسال التقرير بالبريد
-   ========================================================= */
-
-async function sendReportByEmail() {
-
-  if (
-    !currentId ||
-    String(
-      currentId
-    ) ===
-      "undefined" ||
-    String(
-      currentId
-    ) ===
-      "null"
-  ) {
-
-    wrToast(
-      "احفظي التقرير أولًا ثم أرسليه بالبريد"
-    );
-
-    return;
-  }
-
-
-  const recipient =
-    getReportOwnerEmail();
-
-
-  if (
-    !recipient
-  ) {
-
-    wrToast(
-      "لا يوجد بريد إلكتروني محفوظ لصاحبة التقرير"
-    );
-
-    return;
-  }
-
-
-  const activityName =
-    $("name")
-      .value
-      .trim() ||
-    "تقرير فعالية";
-
-
-  const executorName =
-    $("executor")
-      .value
-      .trim() ||
-    "المعلمة";
-
-
-  const activityDate =
-    $("date").value
-      ? wrFormatDate(
-          $("date").value
-        )
-      : "—";
-
-
-  const reportLink =
-    getCurrentReportLink();
-
-
-  const pdfFileName =
-    `تقرير - ${wrSafeName(
-      activityName
-    )} - ${wrSafeName(
-      executorName
-    )}.pdf`;
-
-
-  const subject =
-    `تقرير فعالية - ${activityName}`;
-
-
-  const body = [
-
-    `الأستاذة/ ${executorName}`,
-
-    "",
-
-    "تحية طيبة،",
-
-    "",
-
-    "هذه نسخة من تقرير الفعالية المسجل في منصة التوثيق الذكي لمدرسة الرفاع الغربي الابتدائية للبنين.",
-
-    "",
-
-    `اسم الفعالية: ${activityName}`,
-
-    `التاريخ: ${activityDate}`,
-
-    "",
-
-    "رابط التقرير الإلكتروني:",
-
-    reportLink,
-
-    "",
-
-    `اسم ملف التقرير: ${pdfFileName}`,
-
-    "",
-
-    "يرجى إرفاق ملف PDF المحفوظ مع هذه الرسالة.",
-
-    "",
-
-    "مع تحيات منصة التوثيق الذكي — الرفاع الغربي"
-
-  ].join(
-    "\n"
-  );
-
-
-  const outlookUrl =
-    "https://outlook.office.com/mail/deeplink/compose" +
-    "?to=" +
-    encodeURIComponent(
-      recipient
-    ) +
-    "&subject=" +
-    encodeURIComponent(
-      subject
-    ) +
-    "&body=" +
-    encodeURIComponent(
-      body
-    );
-
-
-  const outlookWindow =
-    window.open(
-      "about:blank",
-      "_blank"
-    );
-
-
-  const oldTitle =
-    document.title;
-
-
-  document.title =
-    pdfFileName.replace(
-      /\.pdf$/i,
-      ""
-    );
-
-
-  wrToast(
-    "احفظي التقرير PDF، وبعدها ستفتح رسالة Outlook جاهزة."
-  );
-
-
-  window.print();
-
-
-  document.title =
-    oldTitle;
-
-
-  if (
-    outlookWindow
-  ) {
-
-    outlookWindow
-      .location
-      .href =
-      outlookUrl;
-
-  } else {
-
-    window.open(
-      outlookUrl,
-      "_blank"
-    );
-
-  }
-}
-
-
-/* =========================================================
-   الأزرار
-   ========================================================= */
-
-$("saveBtn").onclick =
-  save;
-
-
-$("htmlBtn").onclick =
-  downloadHtml;
-
-
-$("printBtn").onclick =
-  () => {
-
-    document.title =
-      `تقرير - ${wrSafeName(
-        $("name").value
-      )}`;
-
-
-    window.print();
-
-  };
-
-
-if (
-  $("emailBtn")
+function waitForImage(
+  image
 ) {
 
-  $("emailBtn").onclick =
-    sendReportByEmail;
+  return new Promise(
+    resolve => {
 
+      if (
+        image.complete &&
+        image.naturalWidth > 0
+      ) {
+
+        resolve(true);
+        return;
+      }
+
+      let finished =
+        false;
+
+      const finish =
+        value => {
+
+          if (finished) {
+            return;
+          }
+
+          finished =
+            true;
+
+          clearTimeout(
+            timer
+          );
+
+          resolve(value);
+        };
+
+      image.addEventListener(
+        "load",
+        () =>
+          finish(true),
+        {
+          once: true
+        }
+      );
+
+      image.addEventListener(
+        "error",
+        () =>
+          finish(false),
+        {
+          once: true
+        }
+      );
+
+      const timer =
+        setTimeout(
+          () =>
+            finish(false),
+          5000
+        );
+    }
+  );
 }
 
 
-$("deleteBtn").onclick =
-  deleteCurrentReport;
-
-
-$("newBtn").onclick =
-  () => {
-
-    if (
-      confirm(
-        "بدء تقرير جديد؟ سيتم مسح المسودة الحالية وفتح نموذج فارغ."
-      )
-    ) {
-
-      localStorage
-        .removeItem(
-          DRAFT_KEY
-        );
-
-
-      location.href =
-        "report.html?new=1";
-
-    }
-
-  };
-
-
 /* =========================================================
-   تشغيل الصفحة
+   تجهيز الصورة للطباعة
    ========================================================= */
 
-(async function init() {
+async function ensureImageReady(
+  image
+) {
 
-  await loadCurrentProfile();
-
-
-  /* الجديد: قراءة العام الدراسي النشط */
-  try {
-
-    if (
-      window.WRGraph &&
-      typeof WRGraph.getActiveSchoolYear ===
-        "function"
-    ) {
-
-      currentSchoolYear =
-        await WRGraph.getActiveSchoolYear();
-
-    }
-
-  } catch (error) {
-
-    console.warn(
-      "تعذر تحميل العام الدراسي:",
-      error
-    );
-
-    currentSchoolYear =
-      "";
-
-  }
-
-
-  const params =
-    new URLSearchParams(
-      location.search
-    );
-
-
-  const id =
-    params.get(
-      "id"
-    );
-
-
-  const forceNew =
-    params.get(
-      "new"
-    ) ===
-    "1";
-
-
-  if (
-    forceNew
-  ) {
-
-    localStorage
-      .removeItem(
-        DRAFT_KEY
-      );
-
-
-    history.replaceState(
-      null,
-      "",
-      location.pathname
-    );
-
-  }
-
-
-  const validId =
-    id &&
-    id !==
-      "undefined" &&
-    id !==
-      "null";
-
-
-  if (
-    validId
-  ) {
-
-    await loadRecord(
-      id
-    );
-
+  if (!image) {
     return;
   }
 
-
-  loadedRecordOwnerId =
-    currentUser?.id ||
-    null;
-
-
-  loadedRecordOwnerEmail =
-    currentUser?.email ||
-    "";
-
-
-  let draft =
-    null;
-
-
   if (
-    !forceNew
+    !image.complete ||
+    image.naturalWidth === 0
+  ) {
+
+    await waitForImage(
+      image
+    );
+  }
+
+  /*
+    decode يجعل المتصفح ينهي فك الصورة
+    قبل فتح نافذة الطباعة.
+  */
+  if (
+    typeof image.decode ===
+      "function"
   ) {
 
     try {
 
-      draft =
-        JSON.parse(
-          localStorage
-            .getItem(
-              DRAFT_KEY
-            ) ||
-          "null"
-        );
+      await image.decode();
+
+    } catch {}
+  }
+}
 
 
-    } catch (error) {
+/* =========================================================
+   عرض الصور
+   ========================================================= */
 
-      console.warn(
-        "تعذر قراءة المسودة:",
-        error
+let imageRenderVersion = 0;
+
+async function renderImages() {
+
+  const container =
+    byId("pImages");
+
+  if (!container) {
+    return;
+  }
+
+  const version =
+    ++imageRenderVersion;
+
+  container.innerHTML = "";
+
+  const imagePromises = [];
+
+  /*
+    الصور المحفوظة
+  */
+  if (
+    remoteImagePaths.length
+  ) {
+
+    const resolved =
+      await Promise.all(
+        remoteImagePaths.map(
+          async path => ({
+            path,
+            url:
+              await getStoredImageUrl(
+                path
+              )
+          })
+        )
       );
 
-
-      localStorage
-        .removeItem(
-          DRAFT_KEY
-        );
-
+    if (
+      version !==
+      imageRenderVersion
+    ) {
+      return;
     }
 
+    resolved.forEach(
+      item => {
+
+        if (!item.url) {
+          return;
+        }
+
+        const image =
+          document.createElement(
+            "img"
+          );
+
+        image.src =
+          item.url;
+
+        image.alt =
+          "صورة توثيق";
+
+        image.loading =
+          "eager";
+
+        image.decoding =
+          "sync";
+
+        container.appendChild(
+          image
+        );
+
+        imagePromises.push(
+          ensureImageReady(
+            image
+          )
+        );
+      }
+    );
   }
 
+  /*
+    الصور الجديدة قبل الحفظ
+  */
+  selectedFiles.forEach(
+    file => {
+
+      const image =
+        document.createElement(
+          "img"
+        );
+
+      const objectUrl =
+        URL.createObjectURL(
+          file
+        );
+
+      image.src =
+        objectUrl;
+
+      image.alt =
+        "صورة توثيق";
+
+      image.loading =
+        "eager";
+
+      image.decoding =
+        "sync";
+
+      image.addEventListener(
+        "load",
+        () => {
+
+          /*
+            نترك الرابط موجودًا حتى تنتهي
+            عملية الرسم ثم يتم تحريره.
+          */
+          setTimeout(
+            () =>
+              URL.revokeObjectURL(
+                objectUrl
+              ),
+            1000
+          );
+        },
+        {
+          once: true
+        }
+      );
+
+      container.appendChild(
+        image
+      );
+
+      imagePromises.push(
+        ensureImageReady(
+          image
+        )
+      );
+    }
+  );
+
+  await Promise.allSettled(
+    imagePromises
+  );
+}
+
+
+/* =========================================================
+   صلاحية حذف السجل الحالي
+   ========================================================= */
+
+function canDeleteCurrentRecord() {
 
   if (
-    draft
+    !currentId ||
+    !currentUser
+  ) {
+    return false;
+  }
+
+  const role =
+    String(
+      currentProfile?.role ||
+      ""
+    ).toLowerCase();
+
+  if (
+    role === "admin" ||
+    role === "system_admin" ||
+    role === "coordinator"
+  ) {
+    return true;
+  }
+
+  return (
+    String(
+      loadedRecordOwnerId ||
+      ""
+    ) ===
+    String(
+      currentUser.id
+    )
+  );
+}
+
+
+/* =========================================================
+   زر الحذف
+   ========================================================= */
+
+function updateDeleteButton() {
+
+  const button =
+    byId("deleteBtn");
+
+  if (!button) {
+    return;
+  }
+
+  button.style.display =
+    canDeleteCurrentRecord()
+      ? ""
+      : "none";
+}
+
+
+/* =========================================================
+   حذف التوثيق
+   ========================================================= */
+
+async function deleteActivity() {
+
+  if (
+    !currentId ||
+    !canDeleteCurrentRecord()
   ) {
 
-    applyValues(
-      draft
+    showMessage(
+      "ليس لديك صلاحية حذف هذا التوثيق."
     );
 
-
-    $("draftState")
-      .textContent =
-      "تم استرجاع المسودة المحفوظة تلقائيًا.";
-
-
-  } else {
-
-    $("date").value =
-      new Date()
-        .toISOString()
-        .slice(
-          0,
-          10
-        );
-
-
-    if (
-      forceNew
-    ) {
-
-      $("draftState")
-        .textContent =
-        "نموذج جديد — تم مسح المسودة السابقة.";
-
-    }
-
+    return;
   }
 
+  const confirmed =
+    confirm(
+      "هل أنتِ متأكدة من حذف هذا التوثيق؟\n\nلن يمكن التراجع عن الحذف."
+    );
 
-  if (
-    currentProfile
-      ?.full_name
-  ) {
+  if (!confirmed) {
+    return;
+  }
 
-    $("executor").value =
-      currentProfile
-        .full_name;
+  const button =
+    byId("deleteBtn");
 
+  const originalText =
+    button?.textContent ||
+    "حذف";
 
-    if (
-      currentProfile.role ===
-        "teacher" ||
-      currentProfile.role ===
-        "coordinator"
-    ) {
+  try {
 
-      $("executor")
-        .readOnly =
+    if (button) {
+
+      button.disabled =
         true;
 
+      button.textContent =
+        "جاري الحذف...";
     }
 
+    const sb =
+      getSupabase();
+
+    /*
+      نحذف المشاركين أولًا.
+    */
+    const {
+      error: participantsError
+    } = await sb
+      .from(
+        "activity_participants"
+      )
+      .delete()
+      .eq(
+        "activity_id",
+        currentId
+      );
+
+    if (
+      participantsError
+    ) {
+
+      console.warn(
+        "Delete participants:",
+        participantsError
+      );
+    }
+
+    /*
+      ثم السجل.
+      RLS هي الحكم النهائي للصلاحية.
+    */
+    const {
+      error
+    } = await sb
+      .from("records")
+      .delete()
+      .eq(
+        "id",
+        currentId
+      );
+
+    if (error) {
+      throw error;
+    }
+
+    clearDraft();
+
+    showMessage(
+      "تم حذف التوثيق."
+    );
+
+    setTimeout(
+      () => {
+
+        if (
+          document.referrer
+        ) {
+
+          history.back();
+
+        } else {
+
+          location.href =
+            "../index.html";
+        }
+
+      },
+      300
+    );
+
+  } catch (error) {
+
+    console.error(
+      "deleteActivity:",
+      error
+    );
+
+    showMessage(
+      "تعذر حذف التوثيق. تأكدي من الصلاحية ثم حاولي مرة أخرى."
+    );
+
+  } finally {
+
+    if (button) {
+
+      button.disabled =
+        false;
+
+      button.textContent =
+        originalText;
+    }
+  }
+}
+
+
+/* =========================================================
+   إعادة تعيين النموذج
+   ========================================================= */
+
+function resetForm() {
+
+  const confirmed =
+    confirm(
+      "هل تريدين مسح البيانات الحالية والبدء من جديد؟"
+    );
+
+  if (!confirmed) {
+    return;
   }
 
+  const form =
+    byId(
+      "activityForm"
+    );
 
-  syncActivityIndicators();
+  form?.reset();
+
+  selectedFiles = [];
+
+  remoteImagePaths = [];
+
+  selectedCoExecutorIds = [];
+
+  imageUrlCache.clear();
+
+  if (
+    byId("images")
+  ) {
+
+    byId("images").value =
+      "";
+  }
+
+  if (
+    byId("executor")
+  ) {
+
+    byId("executor").value =
+      currentProfile?.full_name ||
+      currentUser?.email ||
+      "";
+  }
+
+  refreshSchoolProjects();
+
+  refreshActivityCategories();
+
+  updateOtherCategoryVisibility();
+
+  updateCommitteeVisibility();
+
+  renderCoExecutors();
+
+  renderImages();
 
   updatePreview();
 
-})();
+  clearDraft();
+
+  if (
+    byId("draftState")
+  ) {
+
+    byId(
+      "draftState"
+    ).textContent =
+      "";
+  }
+}
+
+
+/* =========================================================
+   تنزيل التقرير HTML
+   ========================================================= */
+
+function downloadReport() {
+
+  updatePreview();
+
+  const report =
+    byId("report");
+
+  if (!report) {
+
+    showMessage(
+      "تعذر العثور على التقرير."
+    );
+
+    return;
+  }
+
+  const html =
+`<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>${esc(
+  valueOf("name") ||
+  "تقرير فعالية"
+)}</title>
+<style>
+body{
+  font-family:Arial,Tahoma,sans-serif;
+  direction:rtl;
+  margin:30px;
+}
+img{
+  max-width:100%;
+  height:auto;
+}
+</style>
+</head>
+<body>
+${report.outerHTML}
+</body>
+</html>`;
+
+  const blob =
+    new Blob(
+      [html],
+      {
+        type:
+          "text/html;charset=utf-8"
+      }
+    );
+
+  const url =
+    URL.createObjectURL(
+      blob
+    );
+
+  const link =
+    document.createElement(
+      "a"
+    );
+
+  link.href =
+    url;
+
+  link.download =
+    `${
+      valueOf("name") ||
+      "activity-report"
+    }.html`;
+
+  document.body.appendChild(
+    link
+  );
+
+  link.click();
+
+  link.remove();
+
+  setTimeout(
+    () =>
+      URL.revokeObjectURL(
+        url
+      ),
+    1000
+  );
+}
+
+
+/* =========================================================
+   طباعة التقرير
+   ========================================================= */
+
+async function printReport() {
+
+  updatePreview();
+
+  /*
+    لو الصور معروضة بالفعل لا نعيد
+    إنشاء Signed URLs من الصفر.
+
+    فقط نتأكد أن المتصفح أنهى تحميلها.
+  */
+  let images =
+    [
+      ...document.querySelectorAll(
+        "#pImages img"
+      )
+    ];
+
+  /*
+    لو لم تكن الصور مرسومة لأي سبب
+    نرسمها مرة واحدة.
+  */
+  if (
+    !images.length &&
+    (
+      remoteImagePaths.length ||
+      selectedFiles.length
+    )
+  ) {
+
+    await renderImages();
+
+    images =
+      [
+        ...document.querySelectorAll(
+          "#pImages img"
+        )
+      ];
+  }
+
+  await Promise.allSettled(
+    images.map(
+      image =>
+        ensureImageReady(
+          image
+        )
+    )
+  );
+
+  /*
+    نعطي المتصفح إطارين للرسم قبل print.
+    ده مهم لظهور الصور داخل Save as PDF.
+  */
+  await new Promise(
+    resolve =>
+      requestAnimationFrame(
+        () =>
+          requestAnimationFrame(
+            resolve
+          )
+      )
+  );
+
+  window.print();
+}
+
+
+/* =========================================================
+   إرسال بالبريد
+   ========================================================= */
+
+function emailReport() {
+
+  const data =
+    collectFormData();
+
+  const subject =
+    encodeURIComponent(
+      `تقرير فعالية: ${
+        data.name ||
+        "فعالية مدرسية"
+      }`
+    );
+
+  const body =
+    encodeURIComponent(
+`اسم الفعالية: ${data.name}
+
+المجال:
+${
+  ACTIVITY_DOMAIN_LABELS[
+    data.documentationDomain
+  ] || ""
+}
+
+المشروع:
+${data.schoolProject}
+
+نوع التوثيق:
+${data.activityCategory}
+
+التاريخ:
+${formatDate(data.date)}
+
+المنفذة الرئيسية:
+${data.executor}
+
+المشاركات في التنفيذ:
+${data.coExecutors.join("، ")}
+
+القسم:
+${data.departments.join("، ")}
+
+الهدف:
+${data.goal}
+
+التنفيذ:
+${data.implementation}
+
+النتائج:
+${data.results}
+
+التوصيات:
+${data.recommendations}
+
+الملاحظات:
+${data.notes}`
+    );
+
+  window.location.href =
+    `mailto:?subject=${subject}&body=${body}`;
+}
+
+
+/* =========================================================
+   ربط الأحداث
+   ========================================================= */
+
+function bindEvents() {
+
+  const form =
+    byId(
+      "activityForm"
+    );
+
+  if (form) {
+
+    form.addEventListener(
+      "submit",
+      event => {
+
+        event.preventDefault();
+
+        saveActivity();
+      }
+    );
+
+    form.addEventListener(
+      "input",
+      event => {
+
+        if (
+          event.target?.id !==
+          "images"
+        ) {
+
+          updatePreview();
+
+          scheduleDraft();
+        }
+      }
+    );
+
+    form.addEventListener(
+      "change",
+      event => {
+
+        const target =
+          event.target;
+
+        if (!target) {
+          return;
+        }
+
+        if (
+          target.id ===
+          "documentationDomain"
+        ) {
+
+          refreshSchoolProjects();
+
+          refreshActivityCategories();
+
+          updateCommitteeVisibility();
+        }
+
+        if (
+          target.id ===
+          "activityCategory"
+        ) {
+
+          updateOtherCategoryVisibility();
+
+          updateCommitteeVisibility();
+        }
+
+        updatePreview();
+
+        scheduleDraft();
+      }
+    );
+  }
+
+  byId("images")
+    ?.addEventListener(
+      "change",
+      handleImageSelection
+    );
+
+  byId("saveBtn")
+    ?.addEventListener(
+      "click",
+      event => {
+
+        if (
+          event.currentTarget
+            ?.type !== "submit"
+        ) {
+
+          event.preventDefault();
+
+          saveActivity();
+        }
+      }
+    );
+
+  byId("deleteBtn")
+    ?.addEventListener(
+      "click",
+      event => {
+
+        event.preventDefault();
+
+        deleteActivity();
+      }
+    );
+
+  byId("resetBtn")
+    ?.addEventListener(
+      "click",
+      event => {
+
+        event.preventDefault();
+
+        resetForm();
+      }
+    );
+
+  byId("printBtn")
+    ?.addEventListener(
+      "click",
+      event => {
+
+        event.preventDefault();
+
+        printReport();
+      }
+    );
+
+  byId("downloadBtn")
+    ?.addEventListener(
+      "click",
+      event => {
+
+        event.preventDefault();
+
+        downloadReport();
+      }
+    );
+
+  byId("emailBtn")
+    ?.addEventListener(
+      "click",
+      event => {
+
+        event.preventDefault();
+
+        emailReport();
+      }
+    );
+}
+
+
+/* =========================================================
+   التهيئة
+   ========================================================= */
+
+async function init() {
+
+  currentId =
+    getRecordIdFromUrl();
+
+  bindEvents();
+
+  await loadCurrentUser();
+
+  if (!currentUser) {
+    return;
+  }
+
+  await loadSchoolYear();
+
+  await loadDepartments();
+
+  await loadActivityUsers();
+
+  refreshSchoolProjects();
+
+  refreshActivityCategories();
+
+  updateOtherCategoryVisibility();
+
+  updateCommitteeVisibility();
+
+  if (currentId) {
+
+    /*
+      سجل موجود:
+      لا نسترجع المسودة المحلية فوقه.
+    */
+    await loadExistingRecord();
+
+  } else {
+
+    loadedRecordOwnerId =
+      currentUser.id;
+
+    loadedRecordOwnerName =
+      currentProfile?.full_name ||
+      currentUser.email ||
+      "";
+
+    if (
+      byId("executor")
+    ) {
+
+      byId("executor").value =
+        loadedRecordOwnerName;
+    }
+
+    restoreDraft();
+
+    updatePreview();
+
+    renderImages();
+  }
+
+  updateDeleteButton();
+}
+
+
+/* =========================================================
+   بدء التشغيل
+   ========================================================= */
+
+if (
+  document.readyState ===
+  "loading"
+) {
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    init
+  );
+
+} else {
+
+  init();
+}

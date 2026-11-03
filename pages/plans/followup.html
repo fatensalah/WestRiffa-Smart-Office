@@ -316,6 +316,14 @@ textarea.control{
 
 }
 
+
+/* أدوات التصفية والمتابعة الجماعية */
+.bulk-followup-tools{display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin:15px 0;padding:16px;background:#f0f7f3;border:1px solid #cce4d5;border-radius:14px}
+.bulk-followup-tools label{display:block;font-weight:700;margin-bottom:5px;color:#075c40}
+.bulk-followup-tools select{min-width:210px;max-width:100%;padding:10px;border:1px solid #b8d3c4;border-radius:9px;background:white}
+.bulk-followup-tools button{padding:11px 16px;border:0;border-radius:10px;background:#075c40;color:white;font-weight:800;cursor:pointer}
+.bulk-followup-tools button:disabled{opacity:.5;cursor:not-allowed}
+.bulk-followup-hint{width:100%;font-size:13px;color:#52685e}
 </style>
 
 </head>
@@ -530,6 +538,14 @@ textarea.control{
     إجراءات الشهر
   </h2>
 
+
+<div class="bulk-followup-tools" id="bulkFollowupTools">
+ <div><label for="bulkDepartment">القسم</label><select id="bulkDepartment"><option value="">جميع الأقسام</option></select></div>
+ <div><label for="bulkPlan">الخطة</label><select id="bulkPlan"><option value="">جميع الخطط</option></select></div>
+ <div><label for="bulkTarget">تحديد جماعي</label><select id="bulkTarget"><option value="pending">غير المتتبعة فقط (الأنسب)</option><option value="all">كل الإجراءات الظاهرة، بما فيها المتتبعة</option></select></div>
+ <button type="button" id="bulkMarkCompleted" onclick="markFilteredCompleted()">✓ تحديد كمنفذ — بدون حفظ</button>
+ <div class="bulk-followup-hint">اختاري القسم والخطة والشهر أولًا. التحديد لا يحفظ تلقائيًا؛ راجعي التغييرات ثم اضغطي «حفظ جميع التغييرات». لا تحددي إجراءً لم يُنفذ فعلًا.</div>
+</div>
   <div class="bulk-save-bar">
     <button
       type="button"
@@ -705,6 +721,10 @@ const dirtyCount =
   );
 
 
+let allFollowupRows = [];
+let allDepartmentMap = new Map();
+let bulkPlans = [];
+
 const dirtyFollowupIds =
   new Set();
 
@@ -744,21 +764,6 @@ const MONTH_NAMES = {
 };
 
 
-const ENRICHMENT_SUBJECTS =
-  new Set([
-    "الحاسوب",
-    "الفن",
-    "التصميم والتقانة",
-    "التربية الأسرية",
-    "الاسرية",
-    "الأسرية"
-  ]);
-
-
-const ENRICHMENT_PLAN_NAME =
-  "المواد الإثرائية";
-
-
 let currentAccount =
   null;
 
@@ -791,56 +796,6 @@ function normalizeText(
 
 }
 
-
-/* =========================================================
-   هل منسقة المواد الإثرائية؟
-   ========================================================= */
-
-function isEnrichmentCoordinator(){
-
-  const email =
-    normalizeText(
-      currentAccount?.email
-    )
-      .toLowerCase();
-
-
-  if(
-    email ===
-    "marwa.i.khalifa@moe.bh"
-  ){
-
-    return true;
-
-  }
-
-
-  const names =
-    new Set(
-      (
-        currentUserProfile
-          ?.department_names ||
-        []
-      )
-        .map(
-          normalizeText
-        )
-    );
-
-
-  return (
-    names.has(
-      "الحاسوب"
-    ) &&
-    names.has(
-      "الفن"
-    ) &&
-    names.has(
-      "التصميم والتقانة"
-    )
-  );
-
-}
 
 
 /* =========================================================
@@ -912,80 +867,6 @@ async function loadPlanAccess(){
     return true;
 
   }
-
-
-  /*
-    منسقة المواد الإثرائية:
-    تتحول إلى قسم «المواد الإثرائية» الموحد.
-  */
-
-  if(
-    isEnrichmentCoordinator()
-  ){
-
-    const {
-      data: enrichment,
-      error
-    } =
-      await followupSupabase
-
-        .from(
-          "departments"
-        )
-
-        .select(
-          "id, name"
-        )
-
-        .eq(
-          "name",
-          ENRICHMENT_PLAN_NAME
-        )
-
-        .maybeSingle();
-
-
-    if(
-      error
-    ){
-
-      throw error;
-
-    }
-
-
-    if(
-      !enrichment
-    ){
-
-      showStatus(
-        "لم يتم العثور على قسم «المواد الإثرائية» في قاعدة البيانات.",
-        "error"
-      );
-
-
-      return false;
-
-    }
-
-
-    allowedPlanDepartmentIds = [
-      enrichment.id
-    ];
-
-
-    accessBox.style.display =
-      "block";
-
-
-    accessBox.textContent =
-      "منسقة المواد الإثرائية — يتم عرض خطة «المواد الإثرائية» الموحدة للحاسوب والفن والتصميم والتقانة.";
-
-
-    return true;
-
-  }
-
 
   /*
     باقي المنسقات:
@@ -1186,6 +1067,19 @@ schoolYear.addEventListener(
    تحميل المتابعة الشهرية
    ========================================================= */
 
+// Fetch every page: Supabase/PostgREST often limits a single request to 1,000 rows.
+async function fetchAllFollowupRows(makeQuery){
+  const result=[]; const pageSize=500;
+  for(let offset=0; ;offset+=pageSize){
+    const {data,error}=await makeQuery().range(offset,offset+pageSize-1);
+    if(error)throw error;
+    const page=data||[];
+    result.push(...page);
+    if(page.length<pageSize)break;
+  }
+  return result;
+}
+
 async function loadMonthlyFollowups(){
   const monthNo=Number(monthSelect.value), selectedYear=schoolYear.value;
   dirtyFollowupIds.clear();
@@ -1195,10 +1089,8 @@ async function loadMonthlyFollowups(){
   showStatus("جاري تحميل إجراءات المتابعة...","info");
   try{
     /* مصدر الحقيقة هنا هو إجراءات الخطة وأشهر تنفيذها، وليس وجود سجل متابعة مسبق. */
-    const {data:rawPlans,error:plansError}=await followupSupabase.from("plans")
-      .select("id,department_id,school_year,plan_title,status").eq("school_year",selectedYear);
-    if(plansError)throw plansError;
-    let plans=rawPlans||[];
+    let plans=await fetchAllFollowupRows(()=>followupSupabase.from("plans")
+      .select("id,department_id,school_year,plan_title,status").eq("school_year",selectedYear).order("id"));
     if(currentUserProfile.role==="coordinator"){
       const allowedIds=new Set(allowedPlanDepartmentIds.map(String));
       plans=plans.filter(plan=>allowedIds.has(String(plan.department_id)));
@@ -1209,11 +1101,11 @@ async function loadMonthlyFollowups(){
     let procedures=[];
     for(let i=0;i<planIds.length;i+=150){
       const batch=planIds.slice(i,i+150);
-      const {data,error}=await followupSupabase.from("plan_procedures").select(`
+      const data=await fetchAllFollowupRows(()=>followupSupabase.from("plan_procedures").select(`
         id,plan_id,sequence_no,path_code,domain_name,general_goal,specific_goal,success_criterion,
         program_name,procedure_text,target_group,implementers,execution_follower,planned_months
-      `).in("plan_id",batch);
-      if(error)throw error; procedures.push(...(data||[]));
+      `).in("plan_id",batch).order("id"));
+      procedures.push(...data);
     }
     const plannedForMonth=procedures.filter(pr=>{
       const a=Array.isArray(pr.planned_months)?pr.planned_months:[];
@@ -1225,28 +1117,20 @@ async function loadMonthlyFollowups(){
     let saved=[];
     for(let i=0;i<procedureIds.length;i+=150){
       const batch=procedureIds.slice(i,i+150);
-      const {data,error}=await followupSupabase.from("plan_monthly_followups")
+      const data=await fetchAllFollowupRows(()=>followupSupabase.from("plan_monthly_followups")
         .select("id,plan_id,procedure_id,month_no,execution_status,non_completion_reason,followup_notes,updated_at")
-        .eq("month_no",monthNo).in("procedure_id",batch);
-      if(error)throw error; saved.push(...(data||[]));
+        .eq("month_no",monthNo).in("procedure_id",batch).order("id"));
+      saved.push(...data);
     }
     const latest=new Map();
     saved.forEach(f=>{const k=String(f.procedure_id);const old=latest.get(k);if(!old||String(f.updated_at||"")>=String(old.updated_at||""))latest.set(k,f)});
 
-    /* نجلب قاموس الأقسام كاملًا حتى نستطيع توحيد الخطط القديمة للحاسوب/الفن/التقانة/الأسرية
-       تحت «المواد الإثرائية» حتى لو لم توجد بعد خطة مستقلة باسم القسم الموحد. */
+    /* قاموس الأقسام كما هو في قاعدة البيانات، بدون دمجها تحت قسم موحد. */
     let departments=[];
     {
-      const {data,error}=await followupSupabase.from("departments").select("id,name");
-      if(error)throw error; departments=data||[];
+      departments=await fetchAllFollowupRows(()=>followupSupabase.from("departments").select("id,name").order("id"));
     }
     const departmentMap=new Map(departments.map(d=>[d.id,d.name]));
-    const enrichmentDepartment=departments.find(item=>normalizeText(item.name)===ENRICHMENT_PLAN_NAME);
-    if(enrichmentDepartment){
-      /* لا نحذف بيانات الخطط القديمة؛ نوحّد اسم القسم في العرض والمتابعة. */
-      plans=plans.map(plan=>ENRICHMENT_SUBJECTS.has(normalizeText(departmentMap.get(plan.department_id)))
-        ? {...plan,department_id:enrichmentDepartment.id} : plan);
-    }
     const allowedPlanIds=new Set(plans.map(p=>String(p.id)));
     const procedureMap=new Map(procedures.map(p=>[String(p.id),p]));
     const planMap=new Map(plans.map(p=>[String(p.id),p]));
@@ -1256,7 +1140,8 @@ async function loadMonthlyFollowups(){
       return {...row,procedure:procedureMap.get(String(pr.id))||pr,plan:planMap.get(String(pr.plan_id))};
     }).filter(x=>x.procedure&&x.plan);
     rows.sort((a,b)=>(a.procedure.sequence_no||0)-(b.procedure.sequence_no||0));
-    renderRows(rows,departmentMap); updateSummary(rows);
+    allFollowupRows=rows; allDepartmentMap=departmentMap; bulkPlans=plans;
+     refreshBulkSelectors(); renderFilteredFollowups();
     showStatus(`تم تحميل ${rows.length} إجراء مخطط لشهر ${MONTH_NAMES[monthNo]}.`,"success");
   }catch(error){console.error("Monthly followups load error:",error);showStatus(`تعذر تحميل المتابعة الشهرية: ${error.message||"حدث خطأ غير متوقع."}`,"error");}
 }
@@ -1264,6 +1149,72 @@ async function loadMonthlyFollowups(){
 /* =========================================================
    عرض الصفوف
    ========================================================= */
+
+function refreshBulkSelectors(){
+ const dept=document.getElementById('bulkDepartment'), plan=document.getElementById('bulkPlan');
+ const previousDept=dept.value, previousPlan=plan.value;
+ const counts=new Map();
+ for(const row of allFollowupRows){
+   const id=String(row.plan_id ?? row.plan?.id ?? row.procedure?.plan_id ?? '');
+   if(id)counts.set(id,(counts.get(id)||0)+1);
+ }
+ // Show every department that has a plan in the selected school year, even if no actions this month.
+ const departments=[...new Map(bulkPlans.map(p=>[String(p.department_id),{
+   id:String(p.department_id),
+   name:allDepartmentMap.get(p.department_id)||allDepartmentMap.get(String(p.department_id))||'قسم غير محدد'
+ }])).values()].sort((a,b)=>a.name.localeCompare(b.name,'ar'));
+ dept.innerHTML='<option value="">جميع الأقسام</option>'+departments.map(d=>`<option value="${escapeHtml(d.id)}">${escapeHtml(d.name)}</option>`).join('');
+ dept.value=departments.some(d=>d.id===previousDept)?previousDept:'';
+ const candidates=bulkPlans.filter(p=>!dept.value||String(p.department_id)===dept.value);
+ plan.innerHTML='<option value="">جميع الخطط</option>'+candidates.map(p=>`<option value="${escapeHtml(String(p.id))}">${escapeHtml(p.plan_title||'خطة بدون عنوان')} (${counts.get(String(p.id))||0} إجراء)</option>`).join('');
+ plan.value=candidates.some(p=>String(p.id)===previousPlan)?previousPlan:'';
+}
+function renderFilteredFollowups(){
+ const department=document.getElementById('bulkDepartment').value;
+ const plan=document.getElementById('bulkPlan').value;
+ const filtered=allFollowupRows.filter(r=>(!department||String(r.plan.department_id)===department)&&(!plan||String(r.plan_id ?? r.plan.id)===plan));
+ renderRows(filtered,allDepartmentMap); updateSummary(filtered);
+ document.getElementById('bulkMarkCompleted').disabled=!filtered.length;
+ emptyState.style.display=filtered.length?'none':'block';
+ if(!filtered.length && allFollowupRows.length){
+   emptyState.textContent='لا توجد إجراءات مطابقة لهذا الاختيار في الشهر المحدد. اختاري «جميع الخطط» أو قسمًا آخر.';
+ }
+}
+function changeBulkDepartment(){
+ if(dirtyFollowupIds.size){
+   if(!confirm('هناك تغييرات غير محفوظة. هل تريدين إلغاءها وتغيير القسم؟'))return;
+   dirtyFollowupIds.clear();updateDirtyIndicator();
+ }
+ // Rebuild plans based on the newly selected department, without restoring the old department.
+ const dept=document.getElementById('bulkDepartment'), plan=document.getElementById('bulkPlan');
+ const selectedDept=dept.value;
+ const counts=new Map();
+ allFollowupRows.forEach(r=>{const id=String(r.plan_id ?? r.plan.id);counts.set(id,(counts.get(id)||0)+1)});
+ const candidates=bulkPlans.filter(p=>!selectedDept||String(p.department_id)===selectedDept);
+ plan.innerHTML='<option value="">جميع الخطط</option>'+candidates.map(p=>`<option value="${escapeHtml(String(p.id))}">${escapeHtml(p.plan_title||'خطة بدون عنوان')} (${counts.get(String(p.id))||0} إجراء)</option>`).join('');
+ plan.value='';
+ renderFilteredFollowups();
+}
+function changeBulkPlan(){
+ if(dirtyFollowupIds.size){
+   if(!confirm('هناك تغييرات غير محفوظة. هل تريدين إلغاءها وتغيير الخطة؟'))return;
+   dirtyFollowupIds.clear();updateDirtyIndicator();
+ }
+ renderFilteredFollowups();
+}
+document.getElementById('bulkDepartment').addEventListener('change',changeBulkDepartment);
+document.getElementById('bulkPlan').addEventListener('change',changeBulkPlan);
+function markFilteredCompleted(){
+ const rows=[...followupBody.querySelectorAll('tr[data-followup-id]')];
+ const pendingOnly=document.getElementById('bulkTarget').value==='pending';
+ const targets=rows.filter(tr=>{const select=document.getElementById('status-'+tr.dataset.followupId);return select&&select.value!=='completed'&&(!pendingOnly||select.value==='pending');});
+ if(!targets.length){showStatus('لا توجد إجراءات مطابقة تحتاج إلى تغيير.','info');return;}
+ const dept=document.getElementById('bulkDepartment'),plan=document.getElementById('bulkPlan');
+ if(!dept.value&&!plan.value){showStatus('اختاري قسمًا أو خطة أولًا حتى لا يتم تحديد إجراءات المدرسة كلها بالخطأ.','error');return;}
+ if(!confirm(`سيتم تحديد ${targets.length} إجراء كـ «نفذ» لشهر ${MONTH_NAMES[Number(monthSelect.value)]}، في النطاق الظاهر فقط. لن يتم الحفظ الآن. هل تم تنفيذ هذه الإجراءات فعلًا؟`))return;
+ for(const tr of targets){const id=tr.dataset.followupId;const select=document.getElementById('status-'+id);select.value='completed';handleLocalStatusChange(id);markDirty(id);}
+ showStatus(`تم تجهيز ${targets.length} إجراء كمنفذ. راجعي الإجراءات ثم اضغطي حفظ جميع التغييرات. لم يتم حفظ أي بيانات بعد.`,'success');
+}
 
 function renderRows(
   rows,

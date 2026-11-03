@@ -10,1058 +10,2688 @@
     content="width=device-width, initial-scale=1"
   >
 
-  <meta
-    name="theme-color"
-    content="#075c40"
-  >
-
   <title>
-    تقرير فعالية | منصة التوثيق الذكي
+    توثيق الفعاليات | WestRiffa Smart Office
   </title>
 
-  <link
-    rel="stylesheet"
-    href="../../css/app.css?v=20260810-2"
-  >
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --maroon: #741a3a;
+      --maroon-dark: #541027;
+      --maroon-soft: #f7edf1;
+
+      --gold: #b99752;
+      --gold-soft: #fbf7ed;
+
+      --text: #26322e;
+      --muted: #6f7c77;
+
+      --line: #e2e8e5;
+      --bg: #f4f7f6;
+      --white: #ffffff;
+
+      --shadow:
+        0 10px 30px
+        rgba(30, 50, 42, .08);
+
+      --radius: 18px;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+
+      background:
+        linear-gradient(
+          180deg,
+          #f7f9f8 0%,
+          #eef3f1 100%
+        );
+
+      color: var(--text);
+
+      font-family:
+        Tahoma,
+        Arial,
+        sans-serif;
+
+      direction: rtl;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* =========================================
+       Top Bar
+       ========================================= */
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+
+      background:
+        rgba(255,255,255,.96);
+
+      border-bottom:
+        1px solid var(--line);
+
+      box-shadow:
+        0 4px 16px
+        rgba(20,40,30,.05);
+
+      backdrop-filter:
+        blur(12px);
+    }
+
+    .topbar-inner {
+      max-width: 1500px;
+      margin: auto;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 14px;
+
+      padding: 11px 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+
+      border-radius: 14px;
+
+      display: grid;
+      place-items: center;
+
+      color: white;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--maroon),
+          var(--maroon-dark)
+        );
+
+      font-size: 21px;
+      font-weight: 900;
+
+      box-shadow:
+        0 6px 18px
+        rgba(116,26,58,.18);
+    }
+
+    .brand-title {
+      color: var(--maroon);
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .brand-subtitle {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .top-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .nav-link {
+      border: 1px solid var(--line);
+      background: white;
+
+      color: #44524d;
+
+      text-decoration: none;
+
+      padding: 8px 11px;
+
+      border-radius: 10px;
+
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    /* =========================================
+       Page
+       ========================================= */
+
+    .page {
+      max-width: 1500px;
+      margin: auto;
+      padding: 22px;
+    }
+
+    .page-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+
+      gap: 20px;
+
+      margin-bottom: 18px;
+    }
+
+    .page-heading h1 {
+      margin: 0;
+
+      color: var(--maroon);
+
+      font-size: 27px;
+      font-weight: 900;
+    }
+
+    .page-heading p {
+      margin: 7px 0 0;
+
+      color: var(--muted);
+
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    #draftState {
+      padding: 9px 12px;
+
+      border-radius: 12px;
+
+      background: var(--gold-soft);
+
+      border:
+        1px solid
+        rgba(185,151,82,.28);
+
+      color: #6e582a;
+
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    /* =========================================
+       Workspace
+       ========================================= */
+
+    .workspace {
+      display: grid;
+
+      grid-template-columns:
+        minmax(420px, .85fr)
+        minmax(520px, 1.15fr);
+
+      gap: 20px;
+
+      align-items: start;
+    }
+
+    .editor-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .preview-panel {
+      position: sticky;
+      top: 82px;
+    }
+
+    /* =========================================
+       Cards
+       ========================================= */
+
+    .form-card {
+      background: var(--white);
+
+      border:
+        1px solid var(--line);
+
+      border-radius:
+        var(--radius);
+
+      padding: 18px;
+
+      box-shadow:
+        var(--shadow);
+    }
+
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+
+      margin: 0 0 15px;
+
+      color: var(--maroon);
+
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .card-title span {
+      width: 30px;
+      height: 30px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 9px;
+
+      background:
+        var(--maroon-soft);
+
+      font-size: 15px;
+    }
+
+    .form-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(2,minmax(0,1fr));
+
+      gap: 13px;
+    }
+
+    .form-grid.one {
+      grid-template-columns: 1fr;
+    }
+
+    .field {
+      min-width: 0;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    .field-label {
+      display: block;
+
+      margin-bottom: 6px;
+
+      color: #44514c;
+
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .required {
+      color: #b6284d;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+
+      border:
+        1px solid #d9e2de;
+
+      outline: none;
+
+      background: white;
+
+      color: var(--text);
+
+      border-radius: 11px;
+
+      padding: 10px 11px;
+    }
+
+    select[multiple] {
+      min-height: 135px;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color:
+        rgba(116,26,58,.55);
+
+      box-shadow:
+        0 0 0 3px
+        rgba(116,26,58,.07);
+    }
+
+    select:disabled {
+      background: #f4f6f5;
+      color: #89928e;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+      line-height: 1.8;
+    }
+
+    .hint {
+      margin-top: 5px;
+
+      color: #7c8883;
+
+      font-size: 10px;
+      line-height: 1.6;
+    }
+
+    /* =========================================
+       Classification Flow
+       ========================================= */
+
+    .classification-flow {
+      padding: 14px;
+
+      margin-bottom: 14px;
+
+      border-radius: 14px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #fff9ec,
+          #fff
+        );
+
+      border:
+        1px solid
+        rgba(185,151,82,.25);
+    }
+
+    .flow-title {
+      color: #755b26;
+
+      font-size: 11px;
+      font-weight: 900;
+
+      margin-bottom: 9px;
+    }
+
+    .flow {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+
+      gap: 6px;
+
+      font-size: 11px;
+      font-weight: 800;
+
+      color: #6e7773;
+    }
+
+    .flow-step {
+      padding: 5px 8px;
+
+      background: white;
+
+      border:
+        1px solid #eee4cf;
+
+      border-radius: 8px;
+    }
+
+    .flow-arrow {
+      color: var(--gold);
+      font-size: 14px;
+    }
+
+    /* =========================================
+       Checks
+       ========================================= */
+
+    .check-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(2,minmax(0,1fr));
+
+      gap: 7px;
+    }
+
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+
+      border:
+        1px solid var(--line);
+
+      border-radius: 10px;
+
+      padding: 8px 9px;
+
+      background: #fbfcfb;
+
+      font-size: 11px;
+      font-weight: 700;
+
+      cursor: pointer;
+    }
+
+    .check-item input {
+      width: auto;
+      margin: 0;
+    }
+
+    #coExecutorsList {
+      max-height: 230px;
+
+      overflow-y: auto;
+
+      padding: 8px;
+
+      border:
+        1px solid var(--line);
+
+      border-radius: 11px;
+
+      background: #fafcfb;
+    }
+
+    /* =========================================
+       Beneficiary boxes
+       ========================================= */
+
+    .number-explanation {
+      margin-top: 10px;
+
+      padding: 11px 12px;
+
+      border-radius: 11px;
+
+      background: #f8faf9;
+
+      border: 1px solid var(--line);
+
+      color: #67736e;
+
+      font-size: 10px;
+      line-height: 1.8;
+    }
+
+    .number-explanation strong {
+      color: var(--maroon);
+    }
+
+    /* =========================================
+       Buttons
+       ========================================= */
+
+    .action-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+
+      background: white;
+
+      padding: 13px;
+
+      border:
+        1px solid var(--line);
+
+      border-radius: 15px;
+
+      box-shadow:
+        var(--shadow);
+    }
+
+    .btn {
+      border: 0;
+
+      border-radius: 10px;
+
+      padding: 9px 13px;
+
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .btn-primary {
+      background: var(--maroon);
+      color: white;
+    }
+
+    .btn-gold {
+      background: var(--gold);
+      color: white;
+    }
+
+    .btn-soft {
+      background: #eef3f1;
+      color: #40504a;
+    }
+
+    .btn-danger {
+      background: #fff0f2;
+      color: #a32646;
+
+      border:
+        1px solid #f0ccd5;
+    }
+
+    /* =========================================
+       Report
+       ========================================= */
+
+    .report-shell {
+      background: #dfe6e3;
+
+      padding: 14px;
+
+      border-radius: var(--radius);
+
+      box-shadow: var(--shadow);
+    }
+
+    .sheet {
+      width: 100%;
+      max-width: 850px;
+
+      margin: auto;
+
+      background: white;
+
+      border-radius: 4px;
+
+      padding: 22px 26px;
+
+      min-height: 1080px;
+
+      box-shadow:
+        0 8px 30px
+        rgba(30,45,40,.10);
+    }
+
+    .school-header {
+      display: block;
+
+      width: 100%;
+      max-height: 135px;
+
+      object-fit: contain;
+
+      margin: 0 auto 8px;
+    }
+
+    .report-hero {
+      text-align: center;
+
+      padding: 15px 10px 13px;
+
+      border-bottom:
+        3px solid var(--maroon);
+    }
+
+    .report-hero h1 {
+      margin: 0;
+
+      color: var(--maroon-dark);
+
+      font-size: 25px;
+      font-weight: 900;
+
+      line-height: 1.5;
+    }
+
+    .report-badges {
+      margin-top: 9px;
+
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+
+      gap: 6px;
+    }
+
+    .domain-badge,
+    .project-badge {
+      display: inline-block;
+
+      border-radius: 999px;
+
+      padding: 5px 11px;
+
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .domain-badge {
+      background: var(--maroon-soft);
+      color: var(--maroon);
+    }
+
+    .project-badge {
+      background: var(--gold-soft);
+      color: #775c25;
+
+      border:
+        1px solid
+        rgba(185,151,82,.22);
+    }
+
+    .report-meta {
+      display: grid;
+
+      grid-template-columns:
+        repeat(2,minmax(0,1fr));
+
+      gap: 8px;
+
+      margin: 17px 0;
+    }
+
+    .meta-item {
+      border:
+        1px solid #e5eae8;
+
+      border-radius: 10px;
+
+      background: #fbfcfc;
+
+      padding: 9px 10px;
+
+      font-size: 11px;
+      line-height: 1.7;
+    }
+
+    .meta-item strong {
+      display: block;
+
+      color: var(--maroon);
+
+      margin-bottom: 2px;
+
+      font-size: 10px;
+    }
+
+    .report-section {
+      margin-top: 16px;
+
+      break-inside: avoid;
+    }
+
+    .report-section h3 {
+      margin: 0 0 7px;
+
+      padding: 7px 10px;
+
+      border-right:
+        4px solid var(--gold);
+
+      border-radius: 7px;
+
+      background: var(--gold-soft);
+
+      color: #604a21;
+
+      font-size: 12px;
+    }
+
+    .report-section p {
+      margin: 0;
+
+      white-space: pre-wrap;
+
+      line-height: 1.9;
+
+      font-size: 11px;
+    }
+
+    .images-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(2,minmax(0,1fr));
+
+      gap: 9px;
+    }
+
+    .report-photo img {
+      display: block;
+
+      width: 100%;
+      height: 210px;
+
+      object-fit: cover;
+
+      border-radius: 9px;
+
+      border:
+        1px solid #e3e8e6;
+    }
+
+    #noImages {
+      text-align: center;
+
+      padding: 18px;
+
+      color: #8a9490;
+
+      font-size: 10px;
+    }
+
+    .report-footer {
+      margin-top: 24px;
+
+      padding-top: 13px;
+
+      border-top:
+        1px solid var(--line);
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(3,1fr);
+
+      gap: 12px;
+
+      text-align: center;
+
+      color: #596660;
+
+      font-size: 10px;
+      line-height: 1.8;
+    }
+
+    .signature {
+      min-height: 60px;
+    }
+
+    .signature strong {
+      color: var(--maroon);
+    }
+
+    /* =========================================
+       Responsive
+       ========================================= */
+
+    @media(max-width:1100px) {
+
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .preview-panel {
+        position: static;
+      }
+
+    }
+
+    @media(max-width:700px) {
+
+      .page {
+        padding: 12px;
+      }
+
+      .page-heading {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .form-grid,
+      .report-meta,
+      .check-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .sheet {
+        padding: 15px;
+        min-height: 0;
+      }
+
+      .report-footer {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar-inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+    }
+
+    /* =========================================
+       Print
+       ========================================= */
+
+    @media print {
+
+      body {
+        background: white;
+      }
+
+      .topbar,
+      .page-heading,
+      .editor-panel {
+        display: none !important;
+      }
+
+      .page {
+        max-width: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .workspace {
+        display: block;
+      }
+
+      .preview-panel {
+        position: static;
+      }
+
+      .report-shell {
+        padding: 0;
+
+        background: white;
+
+        box-shadow: none;
+      }
+
+      .sheet {
+        width: 100%;
+        max-width: none;
+
+        min-height: 0;
+
+        padding: 0;
+
+        box-shadow: none;
+
+        border-radius: 0;
+      }
+
+      @page {
+        size: A4;
+        margin: 10mm;
+      }
+
+    }
+
+  </style>
 
 </head>
 
 
 <body>
 
+  <!-- =========================================
+       Top bar
+       ========================================= -->
 
-<header class="topbar">
+  <header class="topbar">
 
-  <div class="brand">
+    <div class="topbar-inner">
 
-    <img
-      src="../../assets/school-header.jpg"
-      alt="شعار المدرسة"
-    >
+      <div class="brand">
 
-    <div>
+        <div class="brand-mark">
+          W
+        </div>
 
-      <h1>
-        تقرير فعالية
-      </h1>
+        <div>
 
-      <p>
-        تقرير متكامل بالصور وحفظ ذكي
-      </p>
+          <div class="brand-title">
+            WestRiffa Smart Office
+          </div>
+
+          <div class="brand-subtitle">
+            منظومة توثيق ومتابعة الفعاليات المدرسية
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <nav class="top-actions">
+
+        <a
+          class="nav-link"
+          href="../dashboard/index.html"
+        >
+          الرئيسية
+        </a>
+
+        <a
+          class="nav-link"
+          href="../archive/index.html"
+        >
+          الأرشيف
+        </a>
+
+        <a
+          class="nav-link"
+          href="../activities/index.html"
+        >
+          الفعاليات
+        </a>
+
+        <a
+          id="settingsNavLink"
+          class="nav-link"
+          href="../settings/index.html"
+          style="display:none"
+        >
+          الإعدادات
+        </a>
+
+      </nav>
 
     </div>
 
-  </div>
+  </header>
 
 
-  <div class="top-actions">
+  <main class="page">
 
-    <a
-      class="btn btn-soft"
-      href="../../index.html"
-    >
-      🏠 الرئيسية
-    </a>
+    <section class="page-heading">
 
-    <a
-      class="btn btn-soft"
-      href="../../pages/archive/index.html"
-    >
-      📂 الأرشيف
-    </a>
+      <div>
 
-  </div>
+        <h1 id="pageTitle">
+          توثيق فعالية جديدة
+        </h1>
 
-</header>
+        <p>
+          يُحفظ التوثيق مرة واحدة داخل المنظومة،
+          ثم يُستخدم في الأرشيف والمؤشرات والتقارير
+          وفق المجال والمشروع المدرسي.
+        </p>
 
+      </div>
 
-<main class="app-shell">
-
-
-<aside class="sidebar">
-
-  <h3 class="sidebar-title">
-    القائمة الرئيسية
-  </h3>
-
-  <a
-    class="nav-link"
-    href="../../index.html"
-  >
-    🏠 لوحة التحكم
-  </a>
-
-  <a
-    class="nav-link"
-    href="../../pages/meetings/index.html"
-  >
-    📅 الاجتماعات
-  </a>
-
-  <a
-    class="nav-link active"
-    href="../../pages/activities/index.html"
-  >
-    🎯 الفعاليات
-  </a>
-
-  <a
-    class="nav-link"
-    href="../../pages/certificates/index.html"
-  >
-    🏅 الشهادات
-  </a>
-
-  <a
-    class="nav-link"
-    href="../../pages/archive/index.html"
-  >
-    📂 الأرشيف الذكي
-  </a>
-
-  <a
-    id="settingsNavLink"
-    class="nav-link"
-    href="../../pages/settings/index.html"
-    style="display:none"
-  >
-    ⚙️ الإعدادات
-  </a>
-
-</aside>
-
-
-<section class="content">
-
-
-  <div class="page-head">
-
-    <div>
-
-      <h2 id="pageTitle">
-        إنشاء تقرير فعالية
-      </h2>
-
-      <p id="draftState">
+      <div id="draftState">
         يُحفظ العمل تلقائيًا كمسودة على هذا الجهاز.
-      </p>
+      </div>
 
-    </div>
-
-
-    <div class="page-actions">
-
-      <button
-        id="newBtn"
-        class="btn btn-soft"
-        type="button"
-      >
-        نموذج جديد
-      </button>
-
-    </div>
-
-  </div>
+    </section>
 
 
-  <div class="tool-layout">
+    <div class="workspace">
 
+      <!-- =========================================
+           Editor
+           ========================================= -->
 
-    <section class="panel form-panel">
+      <section class="editor-panel">
 
-      <h3>
-        بيانات الفعالية
-      </h3>
-
-
-      <label>
-        اسم الفعالية *
-      </label>
-
-      <input
-        id="name"
-        required
-      >
-
-
-      <label>
-        نوع الفعالية
-      </label>
-
-      <select id="activityType">
-
-        <option>فعالية</option>
-        <option>برنامج</option>
-        <option>مبادرة</option>
-        <option>ورشة عمل</option>
-        <option>احتفال</option>
-        <option>مسابقة</option>
-        <option>زيارة</option>
-        <option>اجتماع</option>
-        <option>تفعيل حصة احتياط</option>
-        <option>أخرى</option>
-
-      </select>
-
-
-      <label>
-        اسم المنفذ *
-      </label>
-
-      <input
-        id="executor"
-        required
-      >
-
-
-      <label>
-        القسم
-      </label>
-
-      <input id="department">
-
-
-      <label>
-        التاريخ *
-      </label>
-
-      <input
-        id="date"
-        type="date"
-        required
-      >
-
-
-      <!--
-        تم إلغاء وقت البداية والنهاية من واجهة التقرير.
-        نحتفظ بالعنصرين مخفيين حتى يظل activity-report.js
-        متوافقًا مع التقارير القديمة.
-      -->
-
-      <input
-        id="startTime"
-        type="hidden"
-        value=""
-      >
-
-      <input
-        id="endTime"
-        type="hidden"
-        value=""
-      >
-
-
-      <label>
-        المكان
-      </label>
-
-      <input id="place">
-
-
-      <div
-        style="
-          margin-top:20px;
-          padding:16px;
-          border:1px solid #d7dfda;
-          border-right:4px solid #087451;
-          border-radius:12px;
-          background:#f8faf9;
-        "
-      >
-
-        <h3 style="margin-top:0">
-          مؤشرات الفعالية
-        </h3>
-
-
-        <label>
-          هل الفعالية مدرجة ومعتمدة ضمن برنامج الفعاليات المدرسي؟
-        </label>
-
-        <select id="activityApproved">
-          <option value="">— اختاري —</option>
-          <option value="yes">نعم</option>
-          <option value="no">لا</option>
-        </select>
-
-
-        <label style="margin-top:16px">
-          المشاريع / المبادرات المرتبطة
-        </label>
-
-        <div
-          id="projectsGroup"
-          style="
-            display:grid;
-            grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-            gap:10px;
-            padding:12px;
-            border:1px solid #e1e8e4;
-            border-radius:10px;
-            background:#fff;
-          "
+        <form
+          id="activityForm"
+          autocomplete="off"
+          onsubmit="return false;"
         >
 
-          <label>
-            <input class="wr-project-check" type="checkbox" value="التعليم الأخضر">
-            التعليم الأخضر
-          </label>
+          <!-- حقول توافقية قديمة -->
 
-          <label>
-            <input class="wr-project-check" type="checkbox" value="اليونسكو">
-            اليونسكو
-          </label>
+          <input
+            type="hidden"
+            id="activityType"
+            value="فعالية"
+          >
 
-          <label>
-            <input class="wr-project-check" type="checkbox" value="الصحة والسلامة">
-            الصحة والسلامة
-          </label>
+          <input
+            type="hidden"
+            id="startTime"
+            value=""
+          >
 
-          <label>
-            <input class="wr-project-check" type="checkbox" value="PIRLS">
-            PIRLS
-          </label>
+          <input
+            type="hidden"
+            id="endTime"
+            value=""
+          >
 
-          <label>
-            <input class="wr-project-check" type="checkbox" value="تحدي القراءة">
-            تحدي القراءة
-          </label>
 
-          <label>
-            <input class="wr-project-check" type="checkbox" value="TIMSS">
-            TIMSS
-          </label>
+          <!-- =====================================
+               01 بيانات التوثيق
+               ===================================== -->
 
-          <label>
-            <input class="wr-project-check" type="checkbox" value="أخرى">
-            أخرى
-          </label>
+          <div class="form-card">
 
-          <label>
-            <input
-              class="wr-project-check"
-              type="checkbox"
-              value="غير مرتبطة بمشروع أو مبادرة"
+            <h2 class="card-title">
+
+              <span>01</span>
+
+              بيانات التوثيق
+
+            </h2>
+
+
+            <div class="classification-flow">
+
+              <div class="flow-title">
+                مسار التوثيق
+              </div>
+
+              <div class="flow">
+
+                <span class="flow-step">
+                  المجال الرئيسي
+                </span>
+
+                <span class="flow-arrow">
+                  ←
+                </span>
+
+                <span class="flow-step">
+                  المشروع المدرسي
+                </span>
+
+                <span class="flow-arrow">
+                  ←
+                </span>
+
+                <span class="flow-step">
+                  نوع التوثيق
+                </span>
+
+                <span class="flow-arrow">
+                  ←
+                </span>
+
+                <span class="flow-step">
+                  الفئة المستهدفة
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <div class="form-grid">
+
+              <!-- اسم الفعالية -->
+
+              <div class="field full">
+
+                <label
+                  class="field-label"
+                  for="name"
+                >
+                  اسم الفعالية
+                  <span class="required">*</span>
+                </label>
+
+                <input
+                  id="name"
+                  type="text"
+                  placeholder="مثال: برنامج دعم مهارات القراءة"
+                  required
+                >
+
+              </div>
+
+
+              <!-- المجال -->
+
+              <div class="field">
+
+                <label
+                  class="field-label"
+                  for="documentationDomain"
+                >
+                  المجال الرئيسي
+                  <span class="required">*</span>
+                </label>
+
+                <select
+                  id="documentationDomain"
+                  required
+                >
+
+                  <option value="">
+                    — اختاري المجال —
+                  </option>
+
+                  <option value="achievement">
+                    إنجاز الطلبة الأكاديمي
+                  </option>
+
+                  <option value="teaching_learning_assessment">
+                    التعليم والتعلم والتقويم
+                  </option>
+
+                  <option value="personal_development">
+                    التطور الشخصي للطلبة ورعايتهم
+                  </option>
+
+                  <option value="leadership_management">
+                    القيادة والإدارة والحوكمة
+                  </option>
+
+                </select>
+
+              </div>
+
+
+              <!-- المشروع -->
+
+              <div class="field">
+
+                <label
+                  class="field-label"
+                  for="schoolProject"
+                >
+                  المشروع المدرسي
+                  <span class="required">*</span>
+                </label>
+
+                <select
+                  id="schoolProject"
+                  disabled
+                  required
+                >
+
+                  <option value="">
+                    — اختاري المجال أولًا —
+                  </option>
+
+                </select>
+
+                <div class="hint">
+                  تظهر مشاريع آفاق أو مداد أو رايات أو خطى
+                  وفق المجال المختار.
+                </div>
+
+              </div>
+
+
+              <!-- نوع التوثيق -->
+
+              <div class="field">
+
+                <label
+                  class="field-label"
+                  for="activityCategory"
+                >
+                  نوع التوثيق
+                  <span class="required">*</span>
+                </label>
+
+                <select
+                  id="activityCategory"
+                  disabled
+                  required
+                >
+
+                  <option value="">
+                    — اختاري المجال أولًا —
+                  </option>
+
+                </select>
+
+              </div>
+
+
+              <!-- أخرى -->
+
+              <div
+                class="field"
+                id="otherCategoryWrap"
+                style="display:none"
+              >
+
+                <label
+                  class="field-label"
+                  for="otherActivityCategory"
+                >
+                  حددي نوع التوثيق
+                  <span class="required">*</span>
+                </label>
+
+                <input
+                  id="otherActivityCategory"
+                  type="text"
+                  placeholder="اكتبي نوع التوثيق..."
+                >
+
+                <div class="hint">
+                  سيظهر النص الذي تكتبينه هنا في التقرير
+                  والأرشيف بدل كلمة «أخرى».
+                </div>
+
+              </div>
+
+
+              <!-- التاريخ -->
+
+              <div class="field">
+
+                <label
+                  class="field-label"
+                  for="date"
+                >
+                  تاريخ التنفيذ
+                  <span class="required">*</span>
+                </label>
+
+                <input
+                  id="date"
+                  type="date"
+                  required
+                >
+
+              </div>
+
+
+              <!-- سياق التنفيذ -->
+
+              <div class="field">
+
+                <label
+                  class="field-label"
+                  for="executionContext"
+                >
+                  سياق التنفيذ
+                  <span class="required">*</span>
+                </label>
+
+                <select
+                  id="executionContext"
+                  required
+                >
+
+                  <option value="">
+                    — اختاري سياق التنفيذ —
+                  </option>
+
+                  <option value="classroom">
+                    داخل الصف
+                  </option>
+
+                  <option value="before_assembly">
+                    قبل الطابور
+                  </option>
+
+                  <option value="morning_assembly">
+                    الطابور الصباحي
+                  </option>
+
+                  <option value="break">
+                    الفسحة
+                  </option>
+
+                  <option value="learning_resources_center">
+                    مركز مصادر التعلم
+                  </option>
+
+                  <option value="outside_school">
+                    خارج المدرسة
+                  </option>
+
+                  <option value="other">
+                    أخرى
+                  </option>
+
+                </select>
+
+              </div>
+
+
+              <!-- المكان -->
+
+              <div class="field">
+
+                <label
+                  class="field-label"
+                  for="place"
+                >
+                  المكان
+                </label>
+
+                <input
+                  id="place"
+                  type="text"
+                  placeholder="اختياري"
+                >
+
+              </div>
+
+
+              <!-- اللجنة الطلابية -->
+
+              <div
+                class="field full"
+                id="studentCommitteeWrap"
+                style="display:none"
+              >
+
+                <label
+                  class="field-label"
+                  for="studentCommitteeName"
+                >
+                  اسم اللجنة الطلابية
+                  <span class="required">*</span>
+                </label>
+
+                <input
+                  id="studentCommitteeName"
+                  type="text"
+                  placeholder="اكتبي اسم اللجنة الطلابية"
+                >
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- =====================================
+               02 التنفيذ والمشاركة
+               ===================================== -->
+
+          <div
+            class="form-card"
+            style="margin-top:15px"
+          >
+
+            <h2 class="card-title">
+
+              <span>02</span>
+
+              التنفيذ والمشاركة
+
+            </h2>
+
+
+            <div class="form-grid">
+
+              <!-- المنفذة -->
+
+              <div class="field">
+
+                <label
+                  class="field-label"
+                  for="executor"
+                >
+                  المنفذة الرئيسية
+                  <span class="required">*</span>
+                </label>
+
+                <input
+                  id="executor"
+                  type="text"
+                  readonly
+                >
+
+                <div class="hint">
+                  تُحدد تلقائيًا من الحساب المسجل.
+                </div>
+
+              </div>
+
+
+              <!-- الأقسام -->
+
+              <div class="field">
+
+                <label
+                  class="field-label"
+                  for="department"
+                >
+                  القسم / الأقسام
+                  <span class="required">*</span>
+                </label>
+
+                <select
+                  id="department"
+                  multiple
+                  required
+                ></select>
+
+                <div class="hint">
+                  يمكن اختيار أكثر من قسم في حالة التنفيذ المشترك.
+                </div>
+
+              </div>
+
+
+              <!-- المشاركات -->
+
+              <div class="field full">
+
+                <label class="field-label">
+                  المشاركات في التنفيذ
+                </label>
+
+                <div id="coExecutorsList">
+                  جاري تحميل المعلمات...
+                </div>
+
+                <div class="hint">
+                  اختاري المعلمات المشاركات فقط.
+                  التوثيق سيظل فعالية واحدة ولن يتكرر عدد
+                  المستفيدين أو مرات الاستفادة بسبب تعدد المنفذات.
+                </div>
+
+              </div>
+
+
+              <!-- أولياء الأمور -->
+
+              <div class="field">
+
+                <label
+                  class="field-label"
+                  for="parentParticipation"
+                >
+                  مشاركة أولياء الأمور
+                </label>
+
+                <select id="parentParticipation">
+
+                  <option value="none">
+                    لا توجد مشاركة
+                  </option>
+
+                  <option value="attendance">
+                    حضور أولياء الأمور
+                  </option>
+
+                  <option value="implementation">
+                    مشاركة في التنفيذ
+                  </option>
+
+                  <option value="partnership_support">
+                    شراكة / دعم
+                  </option>
+
+                </select>
+
+              </div>
+
+
+              <!-- عدد المستفيدين -->
+
+              <div class="field">
+
+                <label
+                  class="field-label"
+                  for="beneficiaryCount"
+                >
+                  عدد المستفيدين
+                </label>
+
+                <input
+                  id="beneficiaryCount"
+                  type="number"
+                  min="0"
+                  step="1"
+                  inputmode="numeric"
+                  placeholder="مثال: 20"
+                >
+
+                <div class="hint">
+                  عدد الأشخاص الذين استفادوا من النشاط.
+                </div>
+
+              </div>
+
+
+              <!-- مرات الاستفادة -->
+
+              <div class="field">
+
+                <label
+                  class="field-label"
+                  for="benefitTimes"
+                >
+                  إجمالي مرات الاستفادة
+                </label>
+
+                <input
+                  id="benefitTimes"
+                  type="number"
+                  min="0"
+                  step="1"
+                  inputmode="numeric"
+                  placeholder="مثال: 80"
+                >
+
+                <div class="hint">
+                  يشمل تكرار استفادة الشخص نفسه في أكثر من لقاء.
+                </div>
+
+              </div>
+
+
+              <div class="field full">
+
+                <div class="number-explanation">
+
+                  <strong>
+                    مثال:
+                  </strong>
+
+                  إذا شارك 20 طالبًا في برنامج من 4 لقاءات،
+                  يكون
+
+                  <strong>
+                    عدد المستفيدين = 20
+                  </strong>
+
+                  و
+
+                  <strong>
+                    إجمالي مرات الاستفادة = 80.
+                  </strong>
+
+                  أما الفعالية التي نُفذت مرة واحدة لـ20 طالبًا،
+                  فيكون الرقمان 20.
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- =====================================
+               03 الفئة المستهدفة
+               ===================================== -->
+
+          <div
+            class="form-card"
+            style="margin-top:15px"
+          >
+
+            <h2 class="card-title">
+
+              <span>03</span>
+
+              الفئة المستهدفة والارتباط المدرسي
+
+            </h2>
+
+
+            <div class="field full">
+
+              <label class="field-label">
+                الفئة المستهدفة
+              </label>
+
+
+              <div class="check-grid">
+
+                <label class="check-item">
+
+                  <input
+                    class="wr-target-check"
+                    type="checkbox"
+                    value="جميع الطلبة"
+                  >
+
+                  جميع الطلبة
+
+                </label>
+
+
+                <label class="check-item">
+
+                  <input
+                    class="wr-target-check"
+                    type="checkbox"
+                    value="الطلبة المتعثرون"
+                  >
+
+                  الطلبة المتعثرون
+
+                </label>
+
+
+                <label class="check-item">
+
+                  <input
+                    class="wr-target-check"
+                    type="checkbox"
+                    value="منخفضو التحصيل"
+                  >
+
+                  منخفضو التحصيل
+
+                </label>
+
+
+                <label class="check-item">
+
+                  <input
+                    class="wr-target-check"
+                    type="checkbox"
+                    value="الطلبة المتفوقون"
+                  >
+
+                  الطلبة المتفوقون
+
+                </label>
+
+
+                <label class="check-item">
+
+                  <input
+                    class="wr-target-check"
+                    type="checkbox"
+                    value="الطلبة الموهوبون"
+                  >
+
+                  الطلبة الموهوبون
+
+                </label>
+
+
+                <label class="check-item">
+
+                  <input
+                    class="wr-target-check"
+                    type="checkbox"
+                    value="صعوبات التعلم"
+                  >
+
+                  صعوبات التعلم
+
+                </label>
+
+
+                <label class="check-item">
+
+                  <input
+                    class="wr-target-check"
+                    type="checkbox"
+                    value="الدمج"
+                  >
+
+                  الدمج
+
+                </label>
+
+
+                <label class="check-item">
+
+                  <input
+                    class="wr-target-check"
+                    type="checkbox"
+                    value="التوحد"
+                  >
+
+                  التوحد
+
+                </label>
+
+
+                <label class="check-item">
+
+                  <input
+                    class="wr-target-check"
+                    type="checkbox"
+                    value="غير الناطقين بالعربية"
+                  >
+
+                  غير الناطقين بالعربية
+
+                </label>
+
+
+                <label class="check-item">
+
+                  <input
+                    class="wr-target-check"
+                    type="checkbox"
+                    value="طلبة الحلقة الأولى"
+                  >
+
+                  طلبة الحلقة الأولى
+
+                </label>
+
+
+                <label class="check-item">
+
+                  <input
+                    class="wr-target-check"
+                    type="checkbox"
+                    value="طلبة الحلقة الثانية"
+                  >
+
+                  طلبة الحلقة الثانية
+
+                </label>
+
+
+                <label class="check-item">
+
+                  <input
+                    class="wr-target-check"
+                    type="checkbox"
+                    value="فئة محددة"
+                  >
+
+                  فئة محددة
+
+                </label>
+
+              </div>
+
+            </div>
+
+
+            <div
+              class="form-grid"
+              style="margin-top:14px"
             >
-            غير مرتبطة بمشروع أو مبادرة
-          </label>
 
-        </div>
+              <div class="field">
 
-        <input
-          id="projectLinks"
-          type="hidden"
-        >
+                <label
+                  class="field-label"
+                  for="activityApproved"
+                >
+                  اعتماد الفعالية
+                </label>
 
+                <select id="activityApproved">
 
-        <label style="margin-top:16px">
-          الفئات المستهدفة من الطلبة
-        </label>
+                  <option value="">
+                    — غير محدد —
+                  </option>
 
-        <div
-          id="targetGroups"
-          style="
-            display:grid;
-            grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-            gap:10px;
-            padding:12px;
-            border:1px solid #e1e8e4;
-            border-radius:10px;
-            background:#fff;
-          "
-        >
+                  <option value="yes">
+                    معتمدة
+                  </option>
 
-          <label>
-            <input class="wr-target-check" type="checkbox" value="الموهوبون">
-            الموهوبون
-          </label>
+                  <option value="no">
+                    غير معتمدة
+                  </option>
 
-          <label>
-            <input class="wr-target-check" type="checkbox" value="المتفوقون">
-            المتفوقون
-          </label>
+                </select>
 
-          <label>
-            <input class="wr-target-check" type="checkbox" value="ضعاف التحصيل">
-            ضعاف التحصيل
-          </label>
+              </div>
 
-          <label>
-            <input class="wr-target-check" type="checkbox" value="متوسطو التحصيل">
-            متوسطو التحصيل
-          </label>
-
-          <label>
-            <input class="wr-target-check" type="checkbox" value="الناطقون بغير العربية">
-            الناطقون بغير العربية
-          </label>
-
-          <label>
-            <input class="wr-target-check" type="checkbox" value="ذوو الاحتياجات الخاصة">
-            ذوو الاحتياجات الخاصة
-          </label>
-
-          <label>
-            <input class="wr-target-check" type="checkbox" value="طلبة التوحد">
-            طلبة التوحد
-          </label>
-
-          <label>
-            <input class="wr-target-check" type="checkbox" value="صعوبات التعلم">
-            صعوبات التعلم
-          </label>
-
-          <label>
-            <input class="wr-target-check" type="checkbox" value="جميع الفئات">
-            جميع الفئات
-          </label>
-
-        </div>
-
-        <input
-          id="target"
-          type="hidden"
-        >
-
-        <div
-          class="small"
-          style="margin-top:9px"
-        >
-          يمكن اختيار أكثر من مشروع وأكثر من فئة مستهدفة.
-        </div>
-
-      </div>
-
-
-      <label>
-        عدد المستفيدين
-      </label>
-
-      <input
-        id="count"
-        type="number"
-        min="0"
-      >
-
-
-      <label>
-        الهدف
-      </label>
-
-      <textarea id="goal"></textarea>
-
-
-      <label>
-        وصف التنفيذ
-      </label>
-
-      <textarea id="implementation"></textarea>
-
-
-      <label>
-        النتائج والأثر
-      </label>
-
-      <textarea id="results"></textarea>
-
-
-      <label>
-        التوصيات
-      </label>
-
-      <textarea id="recommendations"></textarea>
-
-
-      <label>
-        الملاحظات
-      </label>
-
-      <textarea id="notes"></textarea>
-
-<label>
-        الصور (حتى 10 صور)
-      </label>
-
-      <input
-        id="images"
-        type="file"
-        accept="image/png,image/jpeg,image/webp"
-        multiple
-      >
-
-
-      <div
-        id="imageHint"
-        class="small"
-      >
-        الصور تُحفظ داخل الأرشيف على الجهاز بعد الضغط على «حفظ ذكي».
-      </div>
-
-
-      <div class="form-actions">
-
-        <button
-          id="saveBtn"
-          class="btn btn-primary"
-          type="button"
-        >
-          💾 حفظ ذكي
-        </button>
-
-        <button
-          id="htmlBtn"
-          class="btn btn-soft"
-          type="button"
-        >
-          ⬇ تنزيل التقرير HTML
-        </button>
-
-        <button
-          id="printBtn"
-          class="btn btn-gold"
-          type="button"
-        >
-          🖨 طباعة / حفظ PDF
-        </button>
-
-        <button
-          id="emailBtn"
-          class="btn btn-primary"
-          type="button"
-        >
-          📧 إرسال التقرير بالبريد
-        </button>
-
-        <button
-          id="deleteBtn"
-          class="btn btn-danger hidden"
-          type="button"
-        >
-          حذف التقرير
-        </button>
-
-      </div>
-
-    </section>
-        <!-- ===============================================
-         معاينة التقرير
-         =============================================== -->
-
-    <section class="panel preview">
-
-
-      <div
-        id="reportSheet"
-        class="sheet"
-      >
-
-
-        <img
-          class="school-header"
-          src="../../assets/school-header.jpg"
-          alt="شعار المدرسة"
-        >
-
-
-        <div class="doc-title">
-
-          <h1 id="pName">
-            تقرير فعالية
-          </h1>
-
-          <p>
-            مدرسة الرفاع الغربي الابتدائية للبنين
-          </p>
-
-        </div>
-
-
-        <!-- ===========================================
-             البيانات الأساسية
-             =========================================== -->
-
-        <div class="summary">
-
-
-          <div class="summary-item">
-
-            <strong>
-              نوع الفعالية:
-            </strong>
-
-            <span id="pType">
-              —
-            </span>
+            </div>
 
           </div>
 
 
-          <div class="summary-item">
-
-            <strong>
-              المنفذ:
-            </strong>
-
-            <span id="pExecutor">
-              —
-            </span>
-
-          </div>
-
-
-          <div class="summary-item">
-
-            <strong>
-              القسم:
-            </strong>
-
-            <span id="pDepartment">
-              —
-            </span>
-
-          </div>
-
-
-          <div class="summary-item">
-
-            <strong>
-              التاريخ:
-            </strong>
-
-            <span id="pDate">
-              —
-            </span>
-
-          </div>
-
-
-          <!--
-            الوقت مخفي من التقرير،
-            لكن pTime يظل موجودًا حتى يبقى
-            activity-report.js متوافقًا.
-          -->
+          <!-- =====================================
+               04 محتوى التوثيق
+               ===================================== -->
 
           <div
-            class="summary-item"
-            style="display:none"
+            class="form-card"
+            style="margin-top:15px"
           >
 
-            <strong>
-              الوقت:
-            </strong>
+            <h2 class="card-title">
 
-            <span id="pTime">
-              —
-            </span>
+              <span>04</span>
+
+              محتوى التوثيق
+
+            </h2>
+
+
+            <div class="form-grid one">
+
+              <div class="field">
+
+                <label
+                  class="field-label"
+                  for="goal"
+                >
+                  الهدف
+                </label>
+
+                <textarea
+                  id="goal"
+                  placeholder="ما الهدف من التنفيذ؟"
+                ></textarea>
+
+              </div>
+
+
+              <div class="field">
+
+                <label
+                  class="field-label"
+                  for="implementation"
+                >
+                  وصف التنفيذ
+                </label>
+
+                <textarea
+                  id="implementation"
+                  placeholder="اكتبي وصفًا مختصرًا وواضحًا لما تم تنفيذه..."
+                ></textarea>
+
+              </div>
+
+
+              <div class="field">
+
+                <label
+                  class="field-label"
+                  for="results"
+                >
+                  النتائج / الأثر
+                </label>
+
+                <textarea
+                  id="results"
+                  placeholder="ما النتائج أو الأثر الذي تحقق؟"
+                ></textarea>
+
+              </div>
+
+
+              <div class="field">
+
+                <label
+                  class="field-label"
+                  for="recommendations"
+                >
+                  التوصيات
+                </label>
+
+                <textarea
+                  id="recommendations"
+                  placeholder="اختياري"
+                ></textarea>
+
+              </div>
+
+
+              <div class="field">
+
+                <label
+                  class="field-label"
+                  for="notes"
+                >
+                  الملاحظات
+                </label>
+
+                <textarea
+                  id="notes"
+                  placeholder="اختياري"
+                ></textarea>
+
+              </div>
+
+            </div>
 
           </div>
 
 
-          <div class="summary-item">
-
-            <strong>
-              المكان:
-            </strong>
-
-            <span id="pPlace">
-              —
-            </span>
-
-          </div>
-
-
-          <div class="summary-item">
-
-            <strong>
-              اعتماد الفعالية:
-            </strong>
-
-            <span id="pApproval">
-              —
-            </span>
-
-          </div>
-
-
-          <div class="summary-item">
-
-            <strong>
-              المشاريع / المبادرات:
-            </strong>
-
-            <span id="pProjects">
-              —
-            </span>
-
-          </div>
-
-
-          <div class="summary-item">
-
-            <strong>
-              الفئات المستهدفة:
-            </strong>
-
-            <span id="pTarget">
-              —
-            </span>
-
-          </div>
-
-
-          <div class="summary-item">
-
-            <strong>
-              العدد:
-            </strong>
-
-            <span id="pCount">
-              —
-            </span>
-
-          </div>
-
-
-        </div>
-
-
-        <!-- ===========================================
-             الهدف
-             =========================================== -->
-
-        <div class="doc-section">
-
-          <h3>
-            الهدف
-          </h3>
-
-          <p id="pGoal">
-            —
-          </p>
-
-        </div>
-
-
-        <!-- ===========================================
-             وصف التنفيذ
-             =========================================== -->
-
-        <div class="doc-section">
-
-          <h3>
-            وصف التنفيذ
-          </h3>
-
-          <p id="pImplementation">
-            —
-          </p>
-
-        </div>
-
-
-        <!-- ===========================================
-             النتائج والأثر
-             =========================================== -->
-
-        <div class="doc-section">
-
-          <h3>
-            النتائج والأثر
-          </h3>
-
-          <p id="pResults">
-            —
-          </p>
-
-        </div>
-
-
-        <!-- ===========================================
-             التوصيات
-             =========================================== -->
-
-        <div class="doc-section">
-
-          <h3>
-            التوصيات
-          </h3>
-
-          <p id="pRecommendations">
-            —
-          </p>
-
-        </div>
-
-
-        <!-- ===========================================
-             الملاحظات
-             =========================================== -->
-
-        <div class="doc-section">
-
-          <h3>
-            الملاحظات
-          </h3>
-
-          <p id="pNotes">
-            —
-          </p>
-
-        </div>
-
-
-        <!-- ===========================================
-             معرض الصور
-             =========================================== -->
-
-        <div class="doc-section">
-
-          <h3>
-            معرض الصور
-          </h3>
-
+          <!-- =====================================
+               05 الصور
+               ===================================== -->
 
           <div
-            id="pImages"
-            class="images-grid"
-          ></div>
-
-
-          <div
-            id="noImages"
-            class="empty"
+            class="form-card"
+            style="margin-top:15px"
           >
-            لم تُضف صور بعد.
+
+            <h2 class="card-title">
+
+              <span>05</span>
+
+              صور التوثيق
+
+            </h2>
+
+
+            <div class="field">
+
+              <label
+                class="field-label"
+                for="images"
+              >
+                إضافة الصور
+              </label>
+
+              <input
+                id="images"
+                type="file"
+                accept="image/*"
+                multiple
+              >
+
+              <div class="hint">
+                يمكن إضافة حتى 10 صور.
+              </div>
+
+            </div>
+
           </div>
 
+
+          <!-- =====================================
+               Buttons
+               ===================================== -->
+
+          <div
+            class="action-bar"
+            style="margin-top:15px"
+          >
+
+            <button
+              id="saveBtn"
+              class="btn btn-primary"
+              type="button"
+            >
+              💾 حفظ التوثيق
+            </button>
+
+
+            <button
+              id="newBtn"
+              class="btn btn-soft"
+              type="button"
+            >
+              ＋ توثيق جديد
+            </button>
+
+
+            <button
+              id="printBtn"
+              class="btn btn-gold"
+              type="button"
+            >
+              🖨 طباعة
+            </button>
+
+
+            <button
+              id="htmlBtn"
+              class="btn btn-soft"
+              type="button"
+            >
+              ⬇ تنزيل نسخة من التقرير
+            </button>
+
+
+            <button
+              id="emailBtn"
+              class="btn btn-soft"
+              type="button"
+            >
+              ✉ إرسال
+            </button>
+
+
+            <button
+              id="deleteBtn"
+              class="btn btn-danger hidden"
+              type="button"
+            >
+              🗑 حذف
+            </button>
+
+          </div>
+
+        </form>
+
+      </section>
+            <!-- =========================================
+           Preview
+           ========================================= -->
+
+      <aside class="preview-panel">
+
+        <div class="report-shell">
+
+          <article
+            class="sheet"
+            id="reportSheet"
+          >
+
+            <!-- الهيدر الرسمي -->
+
+            <img
+              class="school-header"
+              src="../../assets/school-header.jpg"
+              alt="مدرسة الرفاع الغربي الابتدائية للبنين"
+            >
+
+
+            <!-- =====================================
+                 عنوان التقرير
+                 ===================================== -->
+
+            <section class="report-hero">
+
+              <h1 id="pName">
+                تقرير فعالية
+              </h1>
+
+              <div class="report-badges">
+
+                <span
+                  class="domain-badge"
+                  id="pDocumentationDomain"
+                >
+                  غير مصنف
+                </span>
+
+                <span
+                  class="project-badge"
+                  id="pSchoolProject"
+                  data-field="schoolProject"
+                ></span>
+
+              </div>
+
+            </section>
+
+
+            <!-- =====================================
+                 البيانات الأساسية
+                 ===================================== -->
+
+            <section class="report-meta">
+
+              <!-- نوع التوثيق -->
+
+              <div
+                class="meta-item"
+                data-field="activityCategory"
+              >
+
+                <strong>
+                  نوع التوثيق
+                </strong>
+
+                <span id="pActivityCategory"></span>
+
+              </div>
+
+
+              <!-- التاريخ -->
+
+              <div
+                class="meta-item"
+                data-field="date"
+              >
+
+                <strong>
+                  تاريخ التنفيذ
+                </strong>
+
+                <span id="pDate"></span>
+
+              </div>
+
+
+              <!-- المنفذة الرئيسية -->
+
+              <div
+                class="meta-item"
+                data-field="executor"
+              >
+
+                <strong>
+                  المنفذة الرئيسية
+                </strong>
+
+                <span id="pExecutor"></span>
+
+              </div>
+
+
+              <!-- المشاركات -->
+
+              <div
+                class="meta-item"
+                data-field="coExecutors"
+              >
+
+                <strong>
+                  المشاركات في التنفيذ
+                </strong>
+
+                <span id="pCoExecutors"></span>
+
+              </div>
+
+
+              <!-- الأقسام -->
+
+              <div
+                class="meta-item"
+                data-field="department"
+              >
+
+                <strong>
+                  القسم / الأقسام
+                </strong>
+
+                <span id="pDepartment"></span>
+
+              </div>
+
+
+              <!-- سياق التنفيذ -->
+
+              <div
+                class="meta-item"
+                data-field="executionContext"
+              >
+
+                <strong>
+                  سياق التنفيذ
+                </strong>
+
+                <span id="pExecutionContext"></span>
+
+              </div>
+
+
+              <!-- المكان -->
+
+              <div
+                class="meta-item"
+                data-field="place"
+              >
+
+                <strong>
+                  المكان
+                </strong>
+
+                <span id="pPlace"></span>
+
+              </div>
+
+
+              <!-- أولياء الأمور -->
+
+              <div
+                class="meta-item"
+                data-field="parentParticipation"
+              >
+
+                <strong>
+                  مشاركة أولياء الأمور
+                </strong>
+
+                <span id="pParentParticipation"></span>
+
+              </div>
+
+
+              <!-- الفئة المستهدفة -->
+
+              <div
+                class="meta-item"
+                data-field="target"
+              >
+
+                <strong>
+                  الفئة المستهدفة
+                </strong>
+
+                <span id="pTarget"></span>
+
+              </div>
+
+
+              <!-- عدد المستفيدين -->
+
+              <div
+                class="meta-item"
+                data-field="beneficiaryCount"
+              >
+
+                <strong>
+                  عدد المستفيدين
+                </strong>
+
+                <span id="pBeneficiaryCount"></span>
+
+              </div>
+
+
+              <!-- إجمالي مرات الاستفادة -->
+
+              <div
+                class="meta-item"
+                data-field="benefitTimes"
+              >
+
+                <strong>
+                  إجمالي مرات الاستفادة
+                </strong>
+
+                <span id="pBenefitTimes"></span>
+
+              </div>
+
+
+              <!-- الاعتماد -->
+
+              <div
+                class="meta-item"
+                data-field="approval"
+              >
+
+                <strong>
+                  اعتماد الفعالية
+                </strong>
+
+                <span id="pApproval"></span>
+
+              </div>
+
+
+              <!-- اللجنة الطلابية -->
+
+              <div
+                class="meta-item"
+                id="pStudentCommitteeWrap"
+                style="display:none"
+              >
+
+                <strong>
+                  اللجنة الطلابية
+                </strong>
+
+                <span id="pStudentCommitteeName"></span>
+
+              </div>
+
+
+              <!-- =====================================
+                   عناصر توافقية قديمة
+                   لا تظهر في التقرير الجديد
+                   ===================================== -->
+
+              <div
+                class="meta-item"
+                data-field="count"
+                style="display:none"
+              >
+
+                <strong>
+                  إجمالي مرات الاستفادة
+                </strong>
+
+                <span id="pCount"></span>
+
+              </div>
+
+
+              <div
+                class="meta-item"
+                data-field="projects"
+                style="display:none"
+              >
+
+                <strong>
+                  الارتباطات
+                </strong>
+
+                <span id="pProjects"></span>
+
+              </div>
+
+
+              <div
+                class="meta-item"
+                data-field="activityType"
+                style="display:none"
+              >
+
+                <strong>
+                  نوع الفعالية
+                </strong>
+
+                <span id="pType"></span>
+
+              </div>
+
+
+              <div
+                class="meta-item"
+                data-field="time"
+                style="display:none"
+              >
+
+                <strong>
+                  الوقت
+                </strong>
+
+                <span id="pTime"></span>
+
+              </div>
+
+            </section>
+
+
+            <!-- =====================================
+                 الهدف
+                 ===================================== -->
+
+            <section
+              class="report-section"
+              data-section="goal"
+            >
+
+              <h3>
+                الهدف
+              </h3>
+
+              <p id="pGoal"></p>
+
+            </section>
+
+
+            <!-- =====================================
+                 وصف التنفيذ
+                 ===================================== -->
+
+            <section
+              class="report-section"
+              data-section="implementation"
+            >
+
+              <h3>
+                وصف التنفيذ
+              </h3>
+
+              <p id="pImplementation"></p>
+
+            </section>
+
+
+            <!-- =====================================
+                 النتائج والأثر
+                 ===================================== -->
+
+            <section
+              class="report-section"
+              data-section="results"
+            >
+
+              <h3>
+                النتائج والأثر
+              </h3>
+
+              <p id="pResults"></p>
+
+            </section>
+
+
+            <!-- =====================================
+                 التوصيات
+                 ===================================== -->
+
+            <section
+              class="report-section"
+              data-section="recommendations"
+            >
+
+              <h3>
+                التوصيات
+              </h3>
+
+              <p id="pRecommendations"></p>
+
+            </section>
+
+
+            <!-- =====================================
+                 الملاحظات
+                 ===================================== -->
+
+            <section
+              class="report-section"
+              data-section="notes"
+            >
+
+              <h3>
+                الملاحظات
+              </h3>
+
+              <p id="pNotes"></p>
+
+            </section>
+
+
+            <!-- =====================================
+                 الصور
+                 ===================================== -->
+
+            <section
+              class="report-section"
+              data-section="images"
+            >
+
+              <h3>
+                صور التوثيق
+              </h3>
+
+              <div
+                class="images-grid"
+                id="pImages"
+              ></div>
+
+              <div id="noImages">
+                لم تتم إضافة صور.
+              </div>
+
+            </section>
+
+
+            <!-- =====================================
+                 التوقيعات
+                 ===================================== -->
+
+            <footer class="report-footer">
+
+              <div class="signature">
+
+                <strong>
+                  المنفذة
+                </strong>
+
+                <br>
+
+                <span id="pExecutorFooter">
+                  ـــــــــــــــــــــــــ
+                </span>
+
+              </div>
+
+
+              <div class="signature">
+
+                <strong>
+                  مساعدة المديرة
+                </strong>
+
+                <br>
+
+                خلود الكعبي
+
+                <br>
+
+                التوقيع:
+                ـــــــــــــــــ
+
+              </div>
+
+
+              <div class="signature">
+
+                <strong>
+                  مديرة المدرسة
+                </strong>
+
+                <br>
+
+                أحلام السويدي
+
+                <br>
+
+                التوقيع:
+                ـــــــــــــــــ
+
+              </div>
+
+            </footer>
+
+          </article>
+
         </div>
 
+      </aside>
 
-        <!-- ===========================================
-             نهاية التقرير
-             =========================================== -->
+    </div>
 
-        <div class="report-footer">
-          تم إنشاء التقرير بواسطة منصة التوثيق الذكي — الرفاع الغربي
-        </div>
+  </main>
 
 
-      </div>
+  <!-- =========================================
+       Supabase
+       ========================================= -->
 
-    </section>
-
-
-  </div>
-
-</section>
-
-</main>
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
 
 
-<!-- =====================================================
-     Supabase
-     ===================================================== -->
+  <!-- =========================================
+       ملفات المنظومة
+       ========================================= -->
 
-<script
-  src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-></script>
+  <script
+    src="../../js/config.js?v=20260810-2"
+  ></script>
 
+  <script
+    src="../../js/graph.js?v=20260810-2"
+  ></script>
 
-<!-- =====================================================
-     ملفات JavaScript
-     ===================================================== -->
+  <script
+    src="../../js/common.js?v=20260810-2"
+  ></script>
 
-<script
-  src="../../js/config.js?v=20260810-2"
-></script>
+  <!--
+    غيرنا رقم النسخة حتى يجبر المتصفح
+    على تحميل activity-report.js الجديد
+    بدل النسخة القديمة من الكاش.
+  -->
 
-<script
-  src="../../js/graph.js?v=20260810-2"
-></script>
-
-<script
-  src="../../js/common.js?v=20260810-2"
-></script>
-
-<script
-  src="../../js/activity-report.js?v=20260815-1"
-></script>
-
-<script>
-
-"use strict";
+  <script
+    src="../../js/activity-report.js?v=20261103-final-1"
+  ></script>
 
 
-async function configureActivityReportRole(){
+  <!-- =========================================
+       مزامنة اسم المنفذة في التوقيع
+       ========================================= -->
 
-  try{
+  <script>
 
+    (function () {
 
-    if(
-      !window.WRGraph ||
-      typeof WRGraph.getAccount !==
-        "function"
-    ){
-      return;
-    }
+      function syncExecutorFooter() {
 
+        const executor =
+          document.getElementById(
+            "pExecutor"
+          );
 
-    const user =
-      await WRGraph
-        .getAccount();
+        const footer =
+          document.getElementById(
+            "pExecutorFooter"
+          );
 
-
-    if(!user){
-
-      location.href =
-        "../../index.html";
-
-      return;
-
-    }
-
-
-    let profile =
-      null;
-
-
-    try{
-
-      if(
-        typeof WRGraph.getUserProfile ===
-          "function"
-      ){
-
-        profile =
-          await WRGraph
-            .getUserProfile();
-
-      }
-
-    }catch(error){
-
-      console.warn(
-        "Activity report profile lookup:",
-        error
-      );
-
-    }
-
-
-    /*
-      دعم احتياطي للحسابات القديمة.
-      لا نغير أي شيء في منطق التقرير نفسه.
-    */
-
-    if(!profile?.role){
-
-      try{
-
-        const sbRole =
-          window.supabase
-            .createClient(
-              window.WR_CONFIG.supabaseUrl,
-              window.WR_CONFIG.supabaseKey
-            );
-
-
-        const {
-          data:legacyProfile
-        } =
-          await sbRole
-
-            .from(
-              "profiles"
-            )
-
-            .select(
-              "id, full_name, role"
-            )
-
-            .eq(
-              "id",
-              user.id
-            )
-
-            .maybeSingle();
-
-
-        if(legacyProfile){
-
-          profile = {
-
-            ...profile,
-
-            full_name:
-              profile?.full_name ||
-              legacyProfile.full_name ||
-              user.email,
-
-            role:
-              legacyProfile.role ||
-              "teacher"
-
-          };
-
+        if (
+          !executor ||
+          !footer
+        ) {
+          return;
         }
 
+        const value =
+          (
+            executor.textContent ||
+            ""
+          ).trim();
 
-      }catch(error){
-
-        console.warn(
-          "Activity report legacy role lookup:",
-          error
-        );
+        footer.textContent =
+          value ||
+          "ـــــــــــــــــــــــــ";
 
       }
 
-    }
 
+      document.addEventListener(
+        "DOMContentLoaded",
+        function () {
 
-    const role =
-      String(
-        profile?.role ||
-        "teacher"
-      )
-        .trim()
-        .toLowerCase();
+          const executor =
+            document.getElementById(
+              "pExecutor"
+            );
 
+          if (executor) {
 
-    const settingsNavLink =
-      document.getElementById(
-        "settingsNavLink"
+            const observer =
+              new MutationObserver(
+                syncExecutorFooter
+              );
+
+            observer.observe(
+              executor,
+              {
+                childList: true,
+                subtree: true,
+                characterData: true
+              }
+            );
+
+          }
+
+          syncExecutorFooter();
+
+        }
       );
 
+    })();
 
-    if(settingsNavLink){
-
-      settingsNavLink.style.display =
-        role === "admin"
-          ? ""
-          : "none";
-
-    }
-
-
-  }catch(error){
-
-    console.error(
-      "Activity report role setup:",
-      error
-    );
-
-  }
-
-}
-
-
-document.addEventListener(
-  "DOMContentLoaded",
-  configureActivityReportRole
-);
-
-</script>
-
+  </script>
 
 </body>
 

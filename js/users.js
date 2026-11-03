@@ -1176,10 +1176,10 @@ function renderUsers() {
                         <button
                           class="mini-btn mini-delete"
                           type="button"
-                          data-action="delete"
+                          data-action="archive"
                           data-id="${esc(user.id)}"
                         >
-                          حذف
+                          أرشفة
                         </button>
                       `
                       : ""
@@ -2046,10 +2046,10 @@ async function enableUser(userId) {
 
 
 /* =========================================================
-   حذف المستخدم
+   أرشفة المستخدم
    ========================================================= */
 
-async function deleteUser(userId) {
+async function archiveUser(userId) {
 
   const user =
     users.find(
@@ -2070,7 +2070,7 @@ async function deleteUser(userId) {
   ) {
 
     alert(
-      "لا يمكنك حذف حسابك الحالي."
+      "لا يمكنك أرشفة حسابك الحالي."
     );
 
     return;
@@ -2083,58 +2083,76 @@ async function deleteUser(userId) {
       : user.email;
 
 
-  const firstConfirm =
+  const ok =
     confirm(
-      `تحذير: هل تريدين حذف حساب "${name}" نهائيًا؟\n\nإذا كان للمستخدم سجلات سابقة، فالأفضل استخدام "تعطيل" بدل الحذف.`
+      `هل تريدين أرشفة حساب "${name}"؟\n\nسيتم إيقاف استخدام الحساب وإخفاؤه من المتابعة الحالية، مع الاحتفاظ بسجلات الحضور والانصراف السابقة.`
     );
 
 
-  if (!firstConfirm) {
-    return;
-  }
-
-
-  const secondConfirm =
-    confirm(
-      "تأكيد أخير: الحذف النهائي قد يؤثر في السجلات المرتبطة بالمستخدم. هل تريدين المتابعة؟"
-    );
-
-
-  if (!secondConfirm) {
+  if (!ok) {
     return;
   }
 
 
   try {
 
-    await invokeManageUsers({
-      action:
-        "delete",
+    /*
+      أولًا: تعطيل تسجيل الدخول للحساب.
+      هذا يحافظ على حساب Auth بدل حذفه نهائيًا.
+    */
+    if (!user.auth_missing && !user.disabled) {
 
-      user_id:
-        userId
-    });
+      await invokeManageUsers({
+        action:
+          "disable",
+
+        user_id:
+          userId
+      });
+    }
+
+
+    /*
+      ثانيًا: أرشفة ملف المستخدم في قاعدة البيانات.
+      archive_user_profile يسجل is_active=false
+      ويضع archived_at تلقائيًا.
+    */
+    const {
+      error: archiveError
+    } =
+      await sb.rpc(
+        "archive_user_profile",
+        {
+          p_user_id:
+            userId
+        }
+      );
+
+
+    if (archiveError) {
+      throw archiveError;
+    }
 
 
     await loadData();
 
 
     alert(
-      "تم حذف الحساب."
+      "تمت أرشفة الحساب بنجاح مع الاحتفاظ بسجلاته السابقة."
     );
 
 
   } catch (error) {
 
     console.error(
-      "delete user:",
+      "archive user:",
       error
     );
 
 
     alert(
       error.message ||
-      "تعذر حذف الحساب. قد توجد سجلات مرتبطة به."
+      "تعذرت أرشفة الحساب."
     );
   }
 }
@@ -2216,10 +2234,10 @@ usersTableBody.addEventListener(
 
 
     if (
-      action === "delete"
+      action === "archive"
     ) {
 
-      await deleteUser(
+      await archiveUser(
         userId
       );
     }

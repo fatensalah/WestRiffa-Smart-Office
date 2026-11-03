@@ -1,0 +1,7006 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>الحضور والانصراف | منصة الغربي</title>
+
+<link rel="stylesheet" href="../../css/app.css">
+
+<style>
+
+:root{
+  --green:#075c40;
+  --green-dark:#064632;
+  --green-light:#eaf7f0;
+
+  --gold:#c79a42;
+  --gold-light:#fff7e7;
+
+  --red:#a84040;
+  --red-light:#fff0f0;
+
+  --orange:#a85c00;
+  --orange-light:#fff4df;
+
+  --blue:#315f8c;
+  --blue-light:#edf5fc;
+
+  --purple:#76528d;
+  --purple-light:#f5eff9;
+
+  --border:#dce8e2;
+  --text:#17372d;
+  --muted:#718079;
+  --soft:#f5f8f6;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  background:#f5f7f6;
+}
+
+.attendance-wrap{
+  max-width:1250px;
+  margin:0 auto;
+}
+
+/* =========================
+   الترحيب
+========================= */
+
+.welcome-card{
+  position:relative;
+  overflow:hidden;
+
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(199,154,66,.22),
+      transparent 32%
+    ),
+    linear-gradient(
+      135deg,
+      #075c40,
+      #0b7655
+    );
+
+  color:white;
+
+  border-radius:26px;
+
+  padding:30px;
+
+  margin-bottom:22px;
+
+  box-shadow:
+    0 16px 38px
+    rgba(7,92,64,.18);
+}
+
+.welcome-card h2{
+  margin:0 0 8px;
+  font-size:28px;
+}
+
+.welcome-card p{
+  margin:5px 0;
+  line-height:1.9;
+}
+
+.today-line{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+
+  margin-top:12px;
+
+  background:
+    rgba(255,255,255,.13);
+
+  padding:8px 14px;
+
+  border-radius:30px;
+
+  font-size:14px;
+}
+
+/* =========================
+   البطاقات
+========================= */
+
+.attendance-grid{
+  display:grid;
+
+  grid-template-columns:
+    1.05fr .95fr;
+
+  gap:20px;
+
+  margin-bottom:22px;
+}
+
+.att-card{
+  background:white;
+
+  border:
+    1px solid var(--border);
+
+  border-radius:22px;
+
+  padding:24px;
+
+  box-shadow:
+    0 10px 28px
+    rgba(0,0,0,.05);
+}
+
+.att-card h3{
+  color:var(--green);
+  margin-top:0;
+}
+
+/* =========================
+   التسجيل
+========================= */
+
+.status-box{
+  text-align:center;
+  padding:12px;
+}
+
+.status-icon{
+  width:82px;
+  height:82px;
+
+  margin:
+    0 auto 14px;
+
+  border-radius:50%;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:38px;
+
+  background:#eef7f3;
+}
+
+.status-title{
+  font-size:21px;
+  font-weight:800;
+
+  color:var(--text);
+
+  margin-bottom:7px;
+}
+
+.status-sub{
+  color:var(--muted);
+  line-height:1.8;
+}
+
+.time-display{
+  font-size:32px;
+  font-weight:900;
+
+  color:var(--green);
+
+  margin:
+    12px 0 4px;
+
+  direction:ltr;
+}
+
+.action-btn{
+  width:100%;
+
+  border:0;
+  border-radius:15px;
+
+  padding:15px 18px;
+
+  font-family:inherit;
+  font-size:17px;
+  font-weight:800;
+
+  cursor:pointer;
+
+  transition:.2s;
+
+  margin-top:14px;
+}
+
+.action-btn:hover:not(:disabled){
+  transform:translateY(-2px);
+}
+
+.action-btn:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+}
+
+.checkin-btn{
+  background:var(--green);
+  color:white;
+}
+
+.checkout-btn{
+  background:var(--gold);
+  color:#33250c;
+}
+
+.mini-row{
+  display:grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap:12px;
+
+  margin-top:16px;
+}
+
+.mini-stat{
+  background:var(--soft);
+
+  border-radius:15px;
+
+  padding:14px;
+
+  text-align:center;
+}
+
+.mini-stat span{
+  display:block;
+
+  color:var(--muted);
+
+  font-size:13px;
+
+  margin-bottom:5px;
+}
+
+.mini-stat b{
+  color:var(--green);
+  font-size:17px;
+}
+
+/* =========================
+   BADGES
+========================= */
+
+.badge{
+  display:inline-block;
+
+  border-radius:30px;
+
+  padding:6px 11px;
+
+  font-size:12px;
+  font-weight:800;
+
+  white-space:nowrap;
+
+  margin:2px 1px;
+}
+
+.badge-green{
+  background:var(--green-light);
+  color:#087346;
+}
+
+.badge-orange{
+  background:var(--orange-light);
+  color:var(--orange);
+}
+
+.badge-red{
+  background:var(--red-light);
+  color:var(--red);
+}
+
+.badge-blue{
+  background:var(--blue-light);
+  color:var(--blue);
+}
+
+.badge-purple{
+  background:var(--purple-light);
+  color:var(--purple);
+}
+
+.badge-gray{
+  background:#f0f2f1;
+  color:#66716c;
+}
+
+.late-badge,
+.ontime-badge,
+.early-badge{
+  display:inline-block;
+
+  border-radius:30px;
+
+  padding:7px 13px;
+
+  font-weight:800;
+
+  margin-top:10px;
+}
+
+.late-badge{
+  background:var(--orange-light);
+  color:var(--orange);
+}
+
+.ontime-badge{
+  background:var(--green-light);
+  color:#087346;
+}
+
+.early-badge{
+  background:var(--purple-light);
+  color:var(--purple);
+}
+
+/* =========================
+   المعاينة
+========================= */
+
+.preview-box{
+  display:none;
+
+  margin-top:20px;
+
+  padding:18px;
+
+  background:#fffaf0;
+
+  border:
+    1px dashed #d9b86d;
+
+  border-radius:18px;
+}
+
+.preview-box.show{
+  display:block;
+}
+
+.preview-box h4{
+  margin:0 0 7px;
+  color:#72520e;
+}
+
+.preview-box p{
+  color:#806e47;
+
+  margin:
+    0 0 13px;
+
+  line-height:1.7;
+}
+
+.preview-buttons{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.preview-btn{
+  border:
+    1px solid #dfca98;
+
+  background:white;
+
+  color:#644b17;
+
+  padding:
+    9px 13px;
+
+  border-radius:11px;
+
+  cursor:pointer;
+
+  font-family:inherit;
+  font-weight:700;
+}
+
+/* =========================
+   الإدارة
+========================= */
+
+.admin-area{
+  display:none;
+  margin-top:22px;
+}
+
+.admin-area.show{
+  display:block;
+}
+
+.admin-heading{
+  display:flex;
+
+  align-items:flex-start;
+  justify-content:space-between;
+
+  gap:15px;
+
+  flex-wrap:wrap;
+
+  margin-bottom:20px;
+}
+
+.admin-heading h2{
+  margin:0 0 5px;
+  color:var(--green);
+}
+
+.admin-heading p{
+  margin:0;
+  color:var(--muted);
+}
+
+/* =========================
+   التبويبات
+========================= */
+
+.report-tabs{
+  display:flex;
+  gap:8px;
+
+  flex-wrap:wrap;
+
+  margin:
+    0 0 20px;
+}
+
+.report-tab{
+  border:
+    1px solid #d7e4de;
+
+  background:white;
+
+  color:var(--green);
+
+  padding:
+    10px 18px;
+
+  border-radius:12px;
+
+  font-family:inherit;
+  font-weight:800;
+
+  cursor:pointer;
+}
+
+.report-tab.active{
+  background:var(--green);
+  color:white;
+}
+
+/* =========================
+   المؤشرات
+========================= */
+
+.stats-grid{
+  display:grid;
+
+  grid-template-columns:
+    repeat(6,1fr);
+
+  gap:12px;
+
+  margin-bottom:22px;
+}
+
+.stat-card{
+  border-radius:18px;
+
+  padding:17px;
+
+  min-height:110px;
+
+  border:
+    1px solid transparent;
+}
+
+.stat-icon{
+  font-size:23px;
+  margin-bottom:8px;
+}
+
+.stat-number{
+  font-size:27px;
+  font-weight:900;
+
+  margin:
+    6px 0 3px;
+}
+
+.stat-label{
+  font-size:13px;
+  font-weight:700;
+}
+
+.stat-total{
+  background:#f4f6f5;
+  color:#43504a;
+}
+
+.stat-present{
+  background:var(--green-light);
+  color:#087346;
+}
+
+.stat-late{
+  background:var(--orange-light);
+  color:var(--orange);
+}
+
+.stat-missing{
+  background:var(--red-light);
+  color:var(--red);
+}
+
+.stat-no-out{
+  background:var(--blue-light);
+  color:var(--blue);
+}
+
+.stat-early{
+  background:var(--purple-light);
+  color:var(--purple);
+}
+
+/* =========================
+   الفلاتر
+========================= */
+
+.filters-box{
+  background:#f8faf9;
+
+  border:
+    1px solid #e5ece8;
+
+  border-radius:18px;
+
+  padding:17px;
+
+  margin-bottom:20px;
+}
+
+.filters-grid{
+  display:grid;
+
+  grid-template-columns:
+    repeat(5,1fr);
+
+  gap:12px;
+}
+
+.filter-group label{
+  display:block;
+
+  color:#52625b;
+
+  font-size:12px;
+  font-weight:800;
+
+  margin-bottom:6px;
+}
+
+.filter-control{
+  width:100%;
+  height:43px;
+
+  border:
+    1px solid #d9e3de;
+
+  background:white;
+
+  border-radius:11px;
+
+  padding:
+    0 11px;
+
+  font-family:inherit;
+
+  color:#34443d;
+
+  outline:none;
+}
+
+.filter-control:focus{
+  border-color:#78aa94;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(7,92,64,.07);
+}
+
+.filter-actions{
+  display:flex;
+
+  justify-content:space-between;
+  align-items:center;
+
+  gap:10px;
+
+  flex-wrap:wrap;
+
+  margin-top:13px;
+}
+
+.filter-count{
+  color:var(--muted);
+  font-size:13px;
+}
+
+.small-btn{
+  border:0;
+  border-radius:10px;
+
+  padding:
+    9px 14px;
+
+  font-family:inherit;
+  font-weight:700;
+
+  cursor:pointer;
+}
+
+.reset-btn{
+  background:#edf1ef;
+  color:#4d5d56;
+}
+
+.print-btn{
+  background:var(--green);
+  color:white;
+}
+
+/* =========================
+   الجداول
+========================= */
+
+.table-wrap{
+  overflow:auto;
+
+  border:
+    1px solid #e8eeeb;
+
+  border-radius:15px;
+}
+
+.history-table{
+  width:100%;
+
+  border-collapse:collapse;
+
+  min-width:800px;
+}
+
+.history-table th,
+.history-table td{
+  padding:
+    11px 12px;
+
+  border-bottom:
+    1px solid #edf0ee;
+
+  text-align:right;
+
+  vertical-align:middle;
+}
+
+.history-table th{
+  background:#f7faf8;
+
+  color:var(--green);
+
+  font-size:13px;
+
+  position:sticky;
+  top:0;
+
+  z-index:1;
+}
+
+.history-table td{
+  color:#44534d;
+  font-size:13px;
+}
+
+.history-table tbody tr:hover{
+  background:#fbfdfc;
+}
+
+.person-name{
+  font-weight:800;
+  color:#263b32;
+}
+
+.dept-text{
+  max-width:220px;
+
+  white-space:normal;
+
+  line-height:1.6;
+}
+
+.empty{
+  text-align:center !important;
+
+  color:#84918b !important;
+
+  padding:28px !important;
+}
+
+/* =========================
+   العطلات
+========================= */
+
+.holiday-banner{
+  display:none;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f5eff9,
+      #edf5fc
+    );
+
+  border:
+    1px solid #ded5e7;
+
+  border-radius:18px;
+
+  padding:18px;
+
+  margin-bottom:20px;
+
+  color:#604c70;
+}
+
+.holiday-banner.show{
+  display:block;
+}
+
+.holiday-banner b{
+  display:block;
+  margin-bottom:5px;
+  font-size:16px;
+}
+
+/* =========================
+   الشهري
+========================= */
+
+.monthly-area{
+  display:none;
+}
+
+.monthly-area.show{
+  display:block;
+}
+
+.daily-area.hide{
+  display:none;
+}
+
+.print-title{
+  display:none;
+
+  text-align:center;
+
+  margin-bottom:18px;
+}
+
+.print-title h2{
+  margin:0;
+  color:var(--green);
+}
+
+.print-title p{
+  margin:5px 0;
+  color:#555;
+}
+
+/* =========================
+   رسالة النجاح
+========================= */
+
+.message-overlay{
+  position:fixed;
+
+  inset:0;
+
+  background:
+    rgba(0,0,0,.44);
+
+  z-index:99999;
+
+  display:none;
+
+  align-items:center;
+  justify-content:center;
+
+  padding:20px;
+
+  backdrop-filter:
+    blur(5px);
+}
+
+.message-overlay.show{
+  display:flex;
+}
+
+.success-message{
+  width:
+    min(520px,100%);
+
+  background:white;
+
+  border-radius:28px;
+
+  padding:
+    35px 28px;
+
+  text-align:center;
+
+  box-shadow:
+    0 25px 70px
+    rgba(0,0,0,.25);
+}
+
+.big-icon{
+  font-size:58px;
+}
+
+.success-message h2{
+  color:var(--green);
+
+  margin:
+    8px 0 12px;
+}
+
+.success-message p{
+  color:#53645d;
+
+  line-height:2;
+
+  font-size:16px;
+}
+
+.success-time{
+  display:inline-block;
+
+  margin-top:15px;
+
+  padding:
+    9px 17px;
+
+  border-radius:30px;
+
+  background:#eef7f3;
+
+  color:var(--green);
+
+  font-weight:800;
+}
+
+.success-extra{
+  display:block;
+
+  width:max-content;
+  max-width:100%;
+
+  margin:
+    10px auto 0;
+
+  padding:
+    8px 15px;
+
+  border-radius:30px;
+
+  font-weight:800;
+}
+
+.success-extra.late{
+  background:var(--orange-light);
+  color:var(--orange);
+}
+
+.success-extra.early{
+  background:var(--purple-light);
+  color:var(--purple);
+}
+
+.close-message{
+  display:block;
+
+  margin:
+    22px auto 0;
+
+  border:0;
+
+  background:var(--green);
+  color:white;
+
+  border-radius:12px;
+
+  padding:
+    10px 30px;
+
+  font-family:inherit;
+  font-weight:700;
+
+  cursor:pointer;
+}
+
+
+/* =========================
+   التعديل الإداري
+========================= */
+
+.admin-edit-btn{
+  border:1px solid #cfded7;
+  background:#f7faf8;
+  color:var(--green);
+  border-radius:10px;
+  padding:7px 11px;
+  font-family:inherit;
+  font-weight:800;
+  cursor:pointer;
+  white-space:nowrap;
+}
+
+.admin-edit-btn:hover{
+  background:var(--green-light);
+}
+
+.admin-note{
+  max-width:230px;
+  white-space:normal;
+  line-height:1.7;
+  color:#5f6d67;
+}
+
+.admin-note-empty{
+  color:#9aa39f;
+}
+
+.admin-modified-label{
+  display:inline-block;
+  margin-top:5px;
+  font-size:11px;
+  font-weight:800;
+  color:var(--purple);
+}
+
+.admin-edit-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.46);
+  z-index:100000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  backdrop-filter:blur(5px);
+}
+
+.admin-edit-overlay.show{
+  display:flex;
+}
+
+.admin-edit-modal{
+  width:min(560px,100%);
+  background:white;
+  border-radius:24px;
+  padding:26px;
+  box-shadow:0 25px 70px rgba(0,0,0,.25);
+}
+
+.admin-edit-modal h2{
+  margin:0 0 6px;
+  color:var(--green);
+}
+
+.admin-edit-modal .edit-person{
+  color:#65746d;
+  margin-bottom:20px;
+  line-height:1.8;
+}
+
+.admin-edit-field{
+  margin-bottom:15px;
+}
+
+.admin-edit-field label{
+  display:block;
+  margin-bottom:7px;
+  color:#43534c;
+  font-size:13px;
+  font-weight:800;
+}
+
+.admin-edit-field select,
+.admin-edit-field textarea{
+  width:100%;
+  border:1px solid #d7e2dc;
+  border-radius:12px;
+  padding:11px 12px;
+  font-family:inherit;
+  color:#34443d;
+  background:white;
+  outline:none;
+}
+
+.admin-edit-field textarea{
+  min-height:105px;
+  resize:vertical;
+  line-height:1.8;
+}
+
+.admin-edit-field select:focus,
+.admin-edit-field textarea:focus{
+  border-color:#78aa94;
+  box-shadow:0 0 0 3px rgba(7,92,64,.07);
+}
+
+.admin-edit-actions{
+  display:flex;
+  gap:10px;
+  justify-content:flex-end;
+  margin-top:20px;
+}
+
+.admin-save-btn{
+  border:0;
+  background:var(--green);
+  color:white;
+  border-radius:11px;
+  padding:10px 18px;
+  font-family:inherit;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.admin-cancel-btn{
+  border:0;
+  background:#edf1ef;
+  color:#4d5d56;
+  border-radius:11px;
+  padding:10px 18px;
+  font-family:inherit;
+  font-weight:800;
+  cursor:pointer;
+}
+
+@media print{
+  .admin-edit-btn,
+  .admin-edit-overlay{
+    display:none !important;
+  }
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:1100px){
+
+  .stats-grid{
+    grid-template-columns:
+      repeat(3,1fr);
+  }
+
+  .filters-grid{
+    grid-template-columns:
+      repeat(2,1fr);
+  }
+
+}
+
+@media(max-width:850px){
+
+  .attendance-grid{
+    grid-template-columns:1fr;
+  }
+
+}
+
+@media(max-width:600px){
+
+  .stats-grid,
+  .filters-grid{
+    grid-template-columns:1fr;
+  }
+
+  .welcome-card{
+    padding:
+      22px 18px;
+  }
+
+  .welcome-card h2{
+    font-size:22px;
+  }
+
+}
+
+/* =========================
+   الطباعة
+========================= */
+
+@media print{
+
+  body{
+    background:white;
+  }
+
+  .topbar,
+  .sidebar,
+  .no-print,
+  .welcome-card,
+  .attendance-grid,
+  #myAttendanceCard{
+    display:none !important;
+  }
+
+  .shell,
+  .content,
+  .attendance-wrap{
+    display:block !important;
+
+    width:100% !important;
+
+    max-width:none !important;
+
+    margin:0 !important;
+    padding:0 !important;
+  }
+
+  .admin-area{
+    display:block !important;
+
+    border:0 !important;
+
+    box-shadow:none !important;
+
+    padding:0 !important;
+  }
+
+  .print-title{
+    display:block !important;
+  }
+
+  .filters-box,
+  .report-tabs{
+    display:none !important;
+  }
+
+  .table-wrap{
+    overflow:visible;
+    border:0;
+  }
+
+  .history-table{
+    min-width:0;
+    font-size:9px;
+  }
+
+  .history-table th,
+  .history-table td{
+    padding:5px;
+  }
+
+  .stats-grid{
+    grid-template-columns:
+      repeat(6,1fr);
+  }
+
+}
+
+
+/* =========================================================
+   تحسين التقرير الشهري والطباعة الرسمية
+========================================================= */
+
+.monthly-official-header,
+.monthly-signatures{
+  display:none;
+}
+
+@media print{
+
+  @page{
+    size:A4 landscape;
+    margin:9mm;
+  }
+
+  html,
+  body{
+    direction:rtl !important;
+  }
+
+  #monthlyArea.show{
+    display:block !important;
+  }
+
+  #monthlyArea.show .monthly-official-header,
+  #monthlyArea.show .monthly-signatures{
+    display:flex !important;
+  }
+
+  #monthlyArea.show .print-title{
+    display:none !important;
+  }
+
+  #monthlyArea.show .monthly-official-header{
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+    padding:0 0 10px;
+    margin-bottom:12px;
+    border-bottom:2px solid #075c40;
+  }
+
+  #monthlyArea.show .monthly-official-header img{
+    width:86px;
+    height:86px;
+    object-fit:contain;
+  }
+
+  #monthlyArea.show .monthly-official-center{
+    flex:1;
+    text-align:center;
+  }
+
+  #monthlyArea.show .monthly-official-center .school-name{
+    color:#075c40;
+    font-size:19px;
+    font-weight:900;
+    margin-bottom:5px;
+  }
+
+  #monthlyArea.show .monthly-official-center h2{
+    color:#075c40;
+    font-size:22px;
+    margin:4px 0;
+  }
+
+  #monthlyArea.show .monthly-official-center p{
+    margin:3px 0;
+    font-size:12px;
+    color:#45534d;
+  }
+
+  #monthlyArea.show .stats-grid{
+    grid-template-columns:repeat(8,1fr) !important;
+    gap:5px !important;
+    margin-bottom:10px !important;
+  }
+
+  #monthlyArea.show .stat-card{
+    min-height:auto !important;
+    padding:7px 4px !important;
+    text-align:center !important;
+    border:1px solid #dce8e2 !important;
+  }
+
+  #monthlyArea.show .stat-number{
+    font-size:18px !important;
+    margin:2px 0 !important;
+  }
+
+  #monthlyArea.show .stat-label{
+    font-size:8px !important;
+    line-height:1.35 !important;
+  }
+
+  #monthlyArea.show .history-table{
+    width:100% !important;
+    table-layout:fixed !important;
+    border-collapse:collapse !important;
+    font-size:7.4px !important;
+  }
+
+  #monthlyArea.show .history-table th,
+  #monthlyArea.show .history-table td{
+    border:1px solid #cfd8d3 !important;
+    padding:3px 2px !important;
+    text-align:center !important;
+    vertical-align:middle !important;
+    line-height:1.25 !important;
+    white-space:normal !important;
+    word-break:normal !important;
+  }
+
+  #monthlyArea.show .history-table th{
+    background:#eef5f1 !important;
+    color:#075c40 !important;
+    font-weight:900 !important;
+  }
+
+  #monthlyArea.show .history-table th:nth-child(2),
+  #monthlyArea.show .history-table td:nth-child(2){
+    width:12% !important;
+    text-align:right !important;
+  }
+
+  #monthlyArea.show .history-table th:nth-child(4),
+  #monthlyArea.show .history-table td:nth-child(4){
+    width:10% !important;
+    text-align:right !important;
+  }
+
+  #monthlyArea.show .monthly-signatures{
+    justify-content:space-between;
+    gap:20px;
+    margin-top:16px;
+    padding-top:10px;
+    border-top:1px solid #ccd8d2;
+    page-break-inside:avoid;
+  }
+
+  #monthlyArea.show .signature-box{
+    flex:1;
+    text-align:center;
+    line-height:1.8;
+    font-size:11px;
+    color:#243b31;
+  }
+
+  #monthlyArea.show .signature-box b{
+    display:block;
+    color:#075c40;
+    font-size:11px;
+  }
+}
+
+
+/* الترويسة الرسمية المعتمدة - الصورة المرسلة من المستخدم فقط */
+.monthly-approved-header{
+  display:none;
+}
+@media print{
+  #monthlyArea.show .monthly-approved-header{
+    display:block !important;
+    width:100% !important;
+    padding:0 0 7px !important;
+    margin:0 0 10px !important;
+    border-bottom:2px solid #075c40 !important;
+    text-align:center !important;
+  }
+  #monthlyArea.show .monthly-approved-header .approved-header-image{
+    display:block !important;
+    width:100% !important;
+    max-width:100% !important;
+    height:auto !important;
+    object-fit:contain !important;
+    margin:0 auto !important;
+  }
+}
+
+
+/* =========================================================
+   ضبط الترويسة الرسمية في التقرير اليومي والشهري
+========================================================= */
+.report-approved-header,
+.daily-approved-header{
+  display:none;
+}
+
+@media print{
+
+  /* الترويسة نفسها في التقريرين، بحجم متناسق وليس بعرض الصفحة بالكامل */
+  #dailyArea .daily-approved-header,
+  #monthlyArea.show .monthly-approved-header{
+    display:block !important;
+    width:100% !important;
+    padding:0 !important;
+    margin:0 auto 7mm !important;
+    border:0 !important;
+    text-align:center !important;
+  }
+
+  #dailyArea .daily-approved-header .approved-header-image,
+  #monthlyArea.show .monthly-approved-header .approved-header-image{
+    display:block !important;
+    width:auto !important;
+    max-width:185mm !important;
+    height:auto !important;
+    max-height:27mm !important;
+    object-fit:contain !important;
+    margin:0 auto !important;
+  }
+
+  /* عنوان التقرير تحت الترويسة بمسافة هادئة */
+  #dailyArea .print-title,
+  #monthlyArea.show .print-title{
+    margin-top:0 !important;
+    margin-bottom:7mm !important;
+  }
+
+  #dailyArea .print-title h2,
+  #monthlyArea.show .print-title h2{
+    font-size:20px !important;
+    margin:0 0 3px !important;
+  }
+
+  #dailyArea .print-title p,
+  #monthlyArea.show .print-title p{
+    font-size:11px !important;
+    margin:0 !important;
+  }
+}
+
+
+/* لوحة التسجيل الرئيسية */
+.attendance-hero{margin-bottom:22px}
+.attendance-hero .att-card{border:2px solid #b7dac9;box-shadow:0 18px 44px rgba(7,92,64,.13);background:linear-gradient(160deg,#ffffff 70%,#eff9f3)}
+.attendance-hero .att-card h3{font-size:23px}
+.attendance-hero .status-title{font-size:27px}
+.attendance-hero .action-btn{min-height:62px;font-size:20px}
+.attendance-window{margin:12px 0 18px;padding:14px 18px;border-radius:16px;background:#eaf7f0;border:1px solid #c6e7d5;color:#075c40;font-weight:800;text-align:center;line-height:1.9}
+.attendance-window.closed{background:#fff4df;border-color:#ead7a7;color:#805200}
+.attendance-window small{display:block;font-weight:500;font-size:13px}
+.attendance-hero .attendance-grid{margin-bottom:0}
+@media(min-width:851px){.attendance-hero .attendance-grid{grid-template-columns:1.25fr .75fr}}
+
+</style>
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+  <div class="brand">
+
+    <img
+      src="../../assets/school-header.jpg"
+      alt="شعار المدرسة"
+    >
+
+    <div>
+
+      <h1>
+        الحضور والانصراف
+      </h1>
+
+      <p>
+        مدرسة الرفاع الغربي الابتدائية للبنين
+      </p>
+
+    </div>
+
+  </div>
+
+  <div class="header-actions no-print">
+
+    <a
+      class="btn btn-soft"
+      href="../../index.html"
+    >
+      🏠 الرئيسية
+    </a>
+
+  </div>
+
+</header>
+
+
+<div class="shell">
+
+
+<aside class="sidebar no-print">
+
+  <h3 class="sidebar-title">
+    القائمة الرئيسية
+  </h3>
+
+  <a
+    class="nav-link"
+    href="../../index.html"
+  >
+    🏠 لوحة التحكم
+  </a>
+
+  <a
+    class="nav-link active"
+    href="index.html"
+  >
+    🕘 الحضور والانصراف
+  </a>
+
+  <a
+    class="nav-link"
+    href="../meetings/index.html"
+  >
+    📅 الاجتماعات
+  </a>
+
+  <a
+    class="nav-link"
+    href="../activities/index.html"
+  >
+    🎯 الفعاليات
+  </a>
+
+  <a
+    class="nav-link"
+    href="../archive/index.html"
+  >
+    📂 الأرشيف الذكي
+  </a>
+
+</aside>
+
+
+<main class="content">
+
+<div class="attendance-wrap">
+
+
+<!-- ======================
+     الترحيب
+======================= -->
+
+<!-- ======================
+     التسجيل
+======================= -->
+
+<section class="attendance-hero">
+<div id="attendanceWindow" class="attendance-window" role="status" aria-live="polite">جاري تحديد مواعيد التسجيل...</div>
+<div class="attendance-grid">
+
+
+<section class="att-card">
+
+  <h3>
+    🕘 تسجيل اليوم
+  </h3>
+
+  <div class="status-box">
+
+    <div
+      class="status-icon"
+      id="statusIcon"
+    >
+      🌷
+    </div>
+
+    <div
+      class="status-title"
+      id="statusTitle"
+    >
+      جاري التحقق...
+    </div>
+
+    <div
+      class="status-sub"
+      id="statusSub"
+    >
+      لحظات من فضلكِ
+    </div>
+
+    <div id="attendanceBadge"></div>
+
+    <div
+      class="time-display"
+      id="liveClock"
+    >
+      --:--:--
+    </div>
+
+  </div>
+
+
+  <button
+    id="checkInBtn"
+    class="action-btn checkin-btn"
+    type="button"
+    disabled
+  >
+    🌷 تسجيل الحضور
+  </button>
+
+
+  <button
+    id="checkOutBtn"
+    class="action-btn checkout-btn"
+    type="button"
+    disabled
+    style="display:none"
+  >
+    💛 تسجيل الانصراف
+  </button>
+
+
+  <div class="mini-row">
+
+    <div class="mini-stat">
+
+      <span>
+        وقت الحضور
+      </span>
+
+      <b id="checkInTime">
+        —
+      </b>
+
+    </div>
+
+
+    <div class="mini-stat">
+
+      <span>
+        وقت الانصراف
+      </span>
+
+      <b id="checkOutTime">
+        —
+      </b>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ======================
+     لمسة اليوم
+======================= -->
+
+<section class="att-card">
+
+  <h3>
+    ✨ لمسة اليوم
+  </h3>
+
+  <div
+    id="dayMessage"
+    style="
+      line-height:2.1;
+      color:#53645d;
+      font-size:16px;
+    "
+  >
+    كل يوم في المدرسة فرصة جديدة لأثر يبقى.
+  </div>
+
+
+  <hr
+    style="
+      border:0;
+      border-top:1px solid #edf1ef;
+      margin:22px 0;
+    "
+  >
+
+
+  <h3>
+    📌 آلية التسجيل
+  </h3>
+
+  <p
+    style="
+      color:#718079;
+      line-height:1.9;
+      margin-bottom:0;
+    "
+  >
+    يبدأ التسجيل الساعة 5:00 صباحًا ويُغلق الساعة 3:00 عصرًا بتوقيت البحرين.
+    الحضور حتى الساعة 7:05 صباحًا في الموعد،
+    وما بعد ذلك يُحتسب تأخيرًا.
+    والانصراف قبل الساعة 12:45 ظهرًا
+    يُحتسب انصرافًا مبكرًا.
+  </p>
+
+
+  <!-- معاينة الإدارة -->
+
+  <div
+    id="previewBox"
+    class="preview-box no-print"
+  >
+
+    <h4>
+      🧪 معاينة الإدارة
+    </h4>
+
+    <p>
+      للتجربة فقط — لا يتم حفظ أي بيانات في سجل الحضور.
+    </p>
+
+    <div class="preview-buttons">
+
+      <button
+        class="preview-btn"
+        type="button"
+        onclick="previewOnTime()"
+      >
+        🌷 حضور في الموعد
+      </button>
+
+      <button
+        class="preview-btn"
+        type="button"
+        onclick="previewLate()"
+      >
+        ⏰ حضور متأخر
+      </button>
+
+      <button
+        class="preview-btn"
+        type="button"
+        onclick="previewCheckoutOnTime()"
+      >
+        💛 انصراف في الموعد
+      </button>
+
+      <button
+        class="preview-btn"
+        type="button"
+        onclick="previewEarlyCheckout()"
+      >
+        🕐 انصراف مبكر
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+</div>
+
+
+</section>
+
+<section class="welcome-card">
+
+  <h2 id="welcomeName">
+    أهلًا بكِ 🌷
+  </h2>
+
+  <p id="dailyWelcome">
+    يوم جديد يحمل فرصة جديدة لصناعة أثر جميل.
+  </p>
+
+  <div class="today-line">
+
+    📅
+
+    <span id="todayText">
+      ...
+    </span>
+
+  </div>
+
+</section>
+
+
+
+<!-- ======================
+     سجلي الشخصي
+======================= -->
+
+<section
+  id="myAttendanceCard"
+  class="att-card"
+>
+
+  <h3>
+    📋 سجل حضوري
+  </h3>
+
+  <div class="table-wrap">
+
+    <table class="history-table">
+
+      <thead>
+
+        <tr>
+          <th>التاريخ</th>
+          <th>الحضور</th>
+          <th>الانصراف</th>
+          <th>الحالة</th>
+        </tr>
+
+      </thead>
+
+      <tbody id="myHistory">
+
+        <tr>
+
+          <td
+            colspan="4"
+            class="empty"
+          >
+            جاري تحميل السجل...
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</section>
+
+
+<!-- ======================
+     لوحة القيادة
+======================= -->
+
+<section
+  id="adminArea"
+  class="att-card admin-area"
+>
+
+  <div class="admin-heading">
+
+    <div>
+
+      <h2>
+        👩‍💼 لوحة متابعة الحضور والانصراف
+      </h2>
+
+      <p>
+        المتابعة اليومية والتقارير الشهرية للقيادة العليا
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <div class="report-tabs no-print">
+
+    <button
+      id="dailyTab"
+      class="report-tab active"
+      type="button"
+      onclick="showReport('daily')"
+    >
+      📅 المتابعة اليومية
+    </button>
+
+    <button
+      id="monthlyTab"
+      class="report-tab"
+      type="button"
+      onclick="showReport('monthly')"
+    >
+      📊 التقرير الشهري
+    </button>
+
+  </div>
+
+
+  <!-- ======================
+       اليومي
+  ======================= -->
+
+  <div
+    id="dailyArea"
+    class="daily-area"
+  >
+
+    <!-- الترويسة الرسمية المعتمدة للتقرير اليومي - تظهر في الطباعة فقط -->
+    <div class="report-approved-header daily-approved-header">
+      <img
+        src="../../assets/school-header.jpg"
+        alt="الترويسة الرسمية المعتمدة لمدرسة الرفاع الغربي الابتدائية للبنين"
+        class="approved-header-image"
+      >
+    </div>
+
+
+    <div class="print-title">
+
+      <h2>
+        التقرير اليومي للحضور والانصراف
+      </h2>
+
+      <p id="dailyPrintDate"></p>
+
+    </div>
+
+
+    <div
+      id="holidayBanner"
+      class="holiday-banner"
+    >
+
+      <b id="holidayTitle">
+        🌿 هذا التاريخ عطلة
+      </b>
+
+      <div id="holidayText">
+        لا يتطلب تسجيل حضور أو انصراف.
+      </div>
+
+    </div>
+
+
+    <div class="stats-grid">
+
+
+      <div class="stat-card stat-total">
+
+        <div class="stat-icon">
+          👥
+        </div>
+
+        <div
+          class="stat-number"
+          id="statTotal"
+        >
+          0
+        </div>
+
+        <div class="stat-label">
+          إجمالي المستخدمين
+        </div>
+
+      </div>
+
+
+      <div class="stat-card stat-present">
+
+        <div class="stat-icon">
+          ✅
+        </div>
+
+        <div
+          class="stat-number"
+          id="statPresent"
+        >
+          0
+        </div>
+
+        <div class="stat-label">
+          سجلوا الحضور
+        </div>
+
+      </div>
+
+
+      <div class="stat-card stat-late">
+
+        <div class="stat-icon">
+          ⏰
+        </div>
+
+        <div
+          class="stat-number"
+          id="statLate"
+        >
+          0
+        </div>
+
+        <div class="stat-label">
+          المتأخرون
+        </div>
+
+      </div>
+
+
+      <div class="stat-card stat-early">
+
+        <div class="stat-icon">
+          🕐
+        </div>
+
+        <div
+          class="stat-number"
+          id="statEarly"
+        >
+          0
+        </div>
+
+        <div class="stat-label">
+          انصراف مبكر
+        </div>
+
+      </div>
+
+
+      <div class="stat-card stat-missing">
+
+        <div class="stat-icon">
+          ○
+        </div>
+
+        <div
+          class="stat-number"
+          id="statMissing"
+        >
+          0
+        </div>
+
+        <div class="stat-label">
+          لم يسجلوا
+        </div>
+
+      </div>
+
+
+      <div class="stat-card stat-no-out">
+
+        <div class="stat-icon">
+          ↩️
+        </div>
+
+        <div
+          class="stat-number"
+          id="statNoCheckout"
+        >
+          0
+        </div>
+
+        <div class="stat-label">
+          دون تسجيل انصراف
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- فلاتر اليومي -->
+
+    <div class="filters-box no-print">
+
+      <div class="filters-grid">
+
+
+        <div class="filter-group">
+
+          <label>
+            التاريخ
+          </label>
+
+          <input
+            id="filterDate"
+            class="filter-control"
+            type="date"
+          >
+
+        </div>
+
+
+        <div class="filter-group">
+
+          <label>
+            الاسم
+          </label>
+
+          <input
+            id="filterName"
+            class="filter-control"
+            type="search"
+            placeholder="ابحثي بالاسم..."
+          >
+
+        </div>
+
+
+        <div class="filter-group">
+
+          <label>
+            الفئة
+          </label>
+
+          <select
+            id="filterRole"
+            class="filter-control"
+          >
+
+            <option value="">
+              الكل
+            </option>
+
+            <option value="admin">
+              القيادة العليا
+            </option>
+
+            <option value="coordinator">
+              منسقة
+            </option>
+
+            <option value="teacher">
+              معلمة
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="filter-group">
+
+          <label>
+            القسم
+          </label>
+
+          <select
+            id="filterDepartment"
+            class="filter-control"
+          >
+
+            <option value="">
+              جميع الأقسام
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="filter-group">
+
+          <label>
+            الحالة
+          </label>
+
+          <select
+            id="filterStatus"
+            class="filter-control"
+          >
+
+            <option value="">
+              جميع الحالات
+            </option>
+
+            <option value="on_time">
+              حضور في الموعد
+            </option>
+
+            <option value="late">
+              متأخر
+            </option>
+
+            <option value="early">
+              انصراف مبكر
+            </option>
+
+            <option value="not_registered">
+              لم يسجل
+            </option>
+
+            <option value="no_checkout">
+              لم يسجل انصراف
+            </option>
+
+            <option value="absent">
+              غياب
+            </option>
+
+            <option value="excused_absence">
+              غياب بعذر
+            </option>
+
+            <option value="official_leave">
+              إجازة / مأمورية
+            </option>
+
+            <option value="admin_present">
+              حضور معتمد إداريًا
+            </option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+
+      <div class="filter-actions">
+
+        <span
+          id="filteredCount"
+          class="filter-count"
+        >
+          —
+        </span>
+
+        <div>
+
+          <button
+            type="button"
+            class="small-btn reset-btn"
+            onclick="resetFilters()"
+          >
+            ↻ إعادة تعيين
+          </button>
+
+          <button
+            type="button"
+            class="small-btn print-btn"
+            onclick="printDaily()"
+          >
+            🖨️ طباعة التقرير اليومي
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="table-wrap">
+
+      <table class="history-table">
+
+        <thead>
+
+          <tr>
+            <th>#</th>
+            <th>الاسم</th>
+            <th>الفئة</th>
+            <th>القسم</th>
+            <th>الحضور</th>
+            <th>الانصراف</th>
+            <th>الحالة</th>
+            <th>ملاحظات الإدارة</th>
+            <th class="no-print">إجراء</th>
+          </tr>
+
+        </thead>
+
+        <tbody id="adminHistory">
+
+          <tr>
+
+            <td
+              colspan="7"
+              class="empty"
+            >
+              جاري تحميل البيانات...
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+
+  <!-- ======================
+       الشهري
+  ======================= -->
+
+  <div
+    id="monthlyArea"
+    class="monthly-area"
+  >
+
+    <!-- الترويسة الرسمية للتقرير الشهري - تظهر في الطباعة -->
+    <div class="monthly-official-header monthly-approved-header">
+      <img
+        src="../../assets/school-header.jpg"
+        alt="الترويسة الرسمية المعتمدة لمدرسة الرفاع الغربي الابتدائية للبنين"
+        class="approved-header-image"
+      >
+    </div>
+
+    <div class="print-title">
+
+      <h2>
+        التقرير الشهري للحضور والانصراف
+      </h2>
+
+      <p id="monthlyPrintDate"></p>
+
+    </div>
+
+
+    <div class="filters-box no-print">
+
+      <div
+        class="filters-grid"
+        style="
+          grid-template-columns:
+          1fr 1.5fr 1fr 1.2fr;
+        "
+      >
+
+
+        <div class="filter-group">
+
+          <label>
+            الشهر
+          </label>
+
+          <input
+            id="monthlyMonth"
+            class="filter-control"
+            type="month"
+          >
+
+        </div>
+
+
+        <div class="filter-group">
+
+          <label>
+            الاسم
+          </label>
+
+          <input
+            id="monthlyName"
+            class="filter-control"
+            type="search"
+            placeholder="ابحثي بالاسم..."
+          >
+
+        </div>
+
+
+        <div class="filter-group">
+
+          <label>
+            الفئة
+          </label>
+
+          <select
+            id="monthlyRole"
+            class="filter-control"
+          >
+
+            <option value="">
+              الكل
+            </option>
+
+            <option value="admin">
+              القيادة العليا
+            </option>
+
+            <option value="coordinator">
+              منسقة
+            </option>
+
+            <option value="teacher">
+              معلمة
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="filter-group">
+
+          <label>
+            القسم
+          </label>
+
+          <select
+            id="monthlyDepartment"
+            class="filter-control"
+          >
+
+            <option value="">
+              جميع الأقسام
+            </option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+
+      <div class="filter-actions">
+
+        <span
+          id="monthlyCount"
+          class="filter-count"
+        >
+          —
+        </span>
+
+        <button
+          type="button"
+          class="small-btn print-btn"
+          onclick="printMonthly()"
+        >
+          🖨️ طباعة التقرير الشهري
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- مؤشرات الشهر -->
+
+    <div class="stats-grid">
+
+      <div class="stat-card stat-total">
+        📅
+        <div class="stat-number" id="mWorkingDays">0</div>
+        <div class="stat-label">أيام الدوام المنقضية</div>
+      </div>
+
+      <div class="stat-card stat-present">
+        ✅
+        <div class="stat-number" id="mAttendance">0</div>
+        <div class="stat-label">إجمالي الحضور</div>
+      </div>
+
+      <div class="stat-card stat-missing">
+        🚫
+        <div class="stat-number" id="mAbsent">0</div>
+        <div class="stat-label">الغياب</div>
+      </div>
+
+      <div class="stat-card stat-no-out">
+        📝
+        <div class="stat-number" id="mExcused">0</div>
+        <div class="stat-label">غياب بعذر</div>
+      </div>
+
+      <div class="stat-card stat-total">
+        📄
+        <div class="stat-number" id="mOfficialLeave">0</div>
+        <div class="stat-label">إجازة / مأمورية</div>
+      </div>
+
+      <div class="stat-card stat-missing">
+        ○
+        <div class="stat-number" id="mMissing">0</div>
+        <div class="stat-label">لم يسجل</div>
+      </div>
+
+      <div class="stat-card stat-late">
+        ⏰
+        <div class="stat-number" id="mLate">0</div>
+        <div class="stat-label">مرات التأخير</div>
+      </div>
+
+      <div class="stat-card stat-early">
+        🕐
+        <div class="stat-number" id="mEarly">0</div>
+        <div class="stat-label">الانصراف المبكر</div>
+      </div>
+
+    </div>
+
+
+    <!-- جدول الشهر -->
+
+    <div class="table-wrap">
+
+      <table class="history-table">
+
+        <thead>
+
+          <tr>
+
+            <th>#</th>
+
+            <th>الاسم</th>
+
+            <th>الفئة</th>
+
+            <th>القسم</th>
+
+            <th>أيام الدوام</th>
+
+            <th>الحضور</th>
+
+            <th>غياب</th>
+
+            <th>غياب بعذر</th>
+
+            <th>إجازة / مأمورية</th>
+
+            <th>لم يسجل</th>
+
+            <th>التأخير</th>
+
+            <th>دقائق التأخير</th>
+
+            <th>انصراف مبكر</th>
+
+            <th>دقائق الانصراف المبكر</th>
+
+            <th>دون انصراف</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody id="monthlyHistory">
+
+          <tr>
+
+            <td
+              colspan="15"
+              class="empty"
+            >
+              اختاري الشهر لعرض التقرير.
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+    <!-- الاعتمادات الرسمية - تظهر في الطباعة -->
+    <div class="monthly-signatures">
+
+      <div class="signature-box">
+        <b>إعداد</b>
+        فاتن صلاح<br>
+        اختصاصية مركز مصادر التعلم
+      </div>
+
+      <div class="signature-box">
+        <b>مساعدة المديرة</b>
+        خلود الكعبي
+      </div>
+
+      <div class="signature-box">
+        <b>مديرة المدرسة</b>
+        أحلام السويدي
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+</div>
+
+</main>
+
+</div>
+
+
+
+<!-- ======================
+     التعديل الإداري
+======================= -->
+
+<div
+  id="adminEditOverlay"
+  class="admin-edit-overlay no-print"
+>
+  <div class="admin-edit-modal">
+
+    <h2>✏️ تعديل حالة الحضور</h2>
+
+    <div
+      id="adminEditPerson"
+      class="edit-person"
+    ></div>
+
+    <div class="admin-edit-field">
+      <label for="adminEditStatus">
+        الحالة المعتمدة
+      </label>
+
+      <select id="adminEditStatus">
+        <option value="present">حاضر</option>
+        <option value="absent">غياب</option>
+        <option value="excused_absence">غياب بعذر</option>
+        <option value="official_leave">إجازة / مأمورية</option>
+      </select>
+    </div>
+
+    <div class="admin-edit-field">
+      <label for="adminEditNote">
+        الملاحظة / سبب التعديل
+      </label>
+
+      <textarea
+        id="adminEditNote"
+        placeholder="مثال: تم تسجيل الحضور بالخطأ، والمعلمة غائبة اليوم."
+      ></textarea>
+    </div>
+
+    <div class="admin-edit-actions">
+
+      <button
+        type="button"
+        class="admin-cancel-btn"
+        onclick="closeAdminEdit()"
+      >
+        إلغاء
+      </button>
+
+      <button
+        id="adminEditSaveBtn"
+        type="button"
+        class="admin-save-btn"
+        onclick="saveAdminEdit()"
+      >
+        حفظ التعديل
+      </button>
+
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ======================
+     رسالة النجاح
+======================= -->
+
+<div
+  id="messageOverlay"
+  class="message-overlay"
+>
+
+  <div class="success-message">
+
+    <div
+      id="successIcon"
+      class="big-icon"
+    >
+      🌷
+    </div>
+
+    <h2 id="successTitle">
+      تم التسجيل
+    </h2>
+
+    <p id="successText"></p>
+
+    <div
+      id="successTime"
+      class="success-time"
+    ></div>
+
+    <div id="successExtra"></div>
+
+    <button
+      type="button"
+      class="close-message"
+      onclick="closeSuccessMessage()"
+    >
+      تم
+    </button>
+
+  </div>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="../../js/config.js"></script>
+<script src="../../js/graph.js"></script>
+<script src="../../js/common.js"></script>
+
+
+<script>
+
+"use strict";
+
+
+let currentProfile = null;
+let currentUser = null;
+let todayRecord = null;
+
+let todayIsWorkingDay = true;
+
+let leadershipRows = [];
+let leadershipFilteredRows = [];
+
+let monthlyRows = [];
+let monthlyFilteredRows = [];
+
+let adminEditTarget = null;
+
+
+/* =========================================================
+   أداة آمنة للوصول للعناصر
+   مهم: لا نستخدم $ حتى لا يحدث تعارض مع ملفات المنصة
+========================================================= */
+
+function attEl(id){
+
+  return document.getElementById(id);
+
+}
+
+
+/* =========================================================
+   أدوات
+========================================================= */
+
+function esc(value){
+
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
+
+
+function firstName(fullName){
+
+  const value =
+    String(fullName || "").trim();
+
+  if(!value){
+    return "";
+  }
+
+  return value.split(/\s+/)[0];
+
+}
+
+
+function randomFrom(list){
+
+  if(
+    !Array.isArray(list) ||
+    !list.length
+  ){
+    return "";
+  }
+
+  return list[
+    Math.floor(
+      Math.random() * list.length
+    )
+  ];
+
+}
+
+
+function getRoleLabel(role){
+
+  const value =
+    String(role || "")
+      .toLowerCase();
+
+  if(value === "admin"){
+    return "القيادة العليا";
+  }
+
+  if(value === "coordinator"){
+    return "منسقة";
+  }
+
+  if(value === "teacher"){
+    return "معلمة";
+  }
+
+  return value || "غير محدد";
+
+}
+
+
+function formatTime(value){
+
+  if(!value){
+    return "—";
+  }
+
+  return new Intl.DateTimeFormat(
+    "ar-BH",
+    {
+      timeZone:"Asia/Bahrain",
+      hour:"numeric",
+      minute:"2-digit",
+      hour12:true
+    }
+  ).format(
+    new Date(value)
+  );
+
+}
+
+
+function formatDate(value){
+
+  if(!value){
+    return "—";
+  }
+
+  const parts =
+    String(value)
+      .split("-");
+
+  if(parts.length !== 3){
+    return value;
+  }
+
+  const d =
+    new Date(
+      Number(parts[0]),
+      Number(parts[1]) - 1,
+      Number(parts[2])
+    );
+
+  return new Intl.DateTimeFormat(
+    "ar-BH",
+    {
+      weekday:"long",
+      year:"numeric",
+      month:"long",
+      day:"numeric"
+    }
+  ).format(d);
+
+}
+
+
+function getBahrainDateString(){
+
+  const parts =
+    new Intl.DateTimeFormat(
+      "en-GB",
+      {
+        timeZone:"Asia/Bahrain",
+        year:"numeric",
+        month:"2-digit",
+        day:"2-digit"
+      }
+    )
+    .formatToParts(
+      new Date()
+    );
+
+  const map =
+    Object.fromEntries(
+      parts
+        .filter(
+          x =>
+            x.type !== "literal"
+        )
+        .map(
+          x => [
+            x.type,
+            x.value
+          ]
+        )
+    );
+
+  return (
+    `${map.year}-${map.month}-${map.day}`
+  );
+
+}
+
+
+function getBahrainParts(){
+
+  const formatter =
+    new Intl.DateTimeFormat(
+      "en-GB",
+      {
+        timeZone:"Asia/Bahrain",
+        weekday:"short",
+        month:"2-digit",
+        day:"2-digit",
+        hour:"2-digit",
+        minute:"2-digit",
+        hour12:false
+      }
+    );
+
+  const parts =
+    Object.fromEntries(
+      formatter
+        .formatToParts(
+          new Date()
+        )
+        .filter(
+          x =>
+            x.type !== "literal"
+        )
+        .map(
+          x => [
+            x.type,
+            x.value
+          ]
+        )
+    );
+
+  return {
+    weekday:parts.weekday,
+    month:Number(parts.month),
+    day:Number(parts.day),
+    hour:Number(parts.hour),
+    minute:Number(parts.minute)
+  };
+
+}
+
+
+/* مواعيد العرض حسب توقيت البحرين - الخادم هو المرجع النهائي */
+function getAttendanceWindow(){
+  const p=getBahrainParts();
+  const minutes=p.hour*60+p.minute;
+  const open=5*60, close=15*60, onTime=7*60+5, normalOut=12*60+45;
+  return {minutes,open,close,onTime,normalOut,active:minutes>=open&&minutes<close};
+}
+function refreshAttendanceWindow(){
+  const box=attEl("attendanceWindow");
+  if(!box)return;
+  const w=getAttendanceWindow();
+  const hasIn=!!todayRecord?.check_in_at;
+  const hasOut=!!todayRecord?.check_out_at;
+  const openDay=todayIsWorkingDay && !!currentUser;
+  const available=openDay&&w.active;
+  let heading, detail;
+  if(!todayIsWorkingDay){heading="🌿 اليوم عطلة — التسجيل غير متاح";detail="لا يلزم تسجيل الحضور والانصراف اليوم.";}
+  else if(!currentUser){heading="🔒 جاري التحقق من حسابك";detail="التسجيل لا يتاح قبل التحقق من تسجيل الدخول.";}
+  else if(w.minutes<w.open){heading="🔒 التسجيل مغلق حاليًا";detail="يبدأ التسجيل الساعة 5:00 صباحًا بتوقيت البحرين.";}
+  else if(w.minutes>=w.close){heading="🔒 انتهى وقت التسجيل اليوم";detail="تُغلق عمليات التسجيل الساعة 3:00 عصرًا.";}
+  else if(hasOut){heading="✅ اكتمل تسجيل اليوم";detail="تم تسجيل الحضور والانصراف.";}
+  else if(hasIn){heading="💛 تسجيل الانصراف متاح الآن";detail=w.minutes<w.normalOut?"الانصراف قبل 12:45 ظهرًا يُحتسب مبكرًا.":"الانصراف في الموعد حتى 3:00 عصرًا.";}
+  else {heading="🌷 تسجيل الحضور متاح الآن";detail=w.minutes<=w.onTime?"الحضور في الموعد حتى 7:05 صباحًا.":"الحضور بعد 7:05 صباحًا يُحتسب تأخيرًا.";}
+  box.classList.toggle("closed",!available);
+  box.innerHTML="";
+  const strong=document.createElement("div");strong.textContent=heading;
+  const small=document.createElement("small");small.textContent=detail;
+  box.append(strong,small);
+  const inBtn=attEl("checkInBtn"),outBtn=attEl("checkOutBtn");
+  if(inBtn && inBtn.style.display!=="none")inBtn.disabled=!available||hasIn;
+  if(outBtn && outBtn.style.display!=="none")outBtn.disabled=!available||!hasIn||hasOut;
+}
+
+/* =========================================================
+   الساعة والتاريخ
+========================================================= */
+
+function startClock(){
+
+  const draw = ()=>{
+
+    const element =
+      attEl("liveClock");
+
+    if(!element){
+      return;
+    }
+
+    element.textContent =
+      new Intl.DateTimeFormat(
+        "ar-BH",
+        {
+          timeZone:"Asia/Bahrain",
+          hour:"2-digit",
+          minute:"2-digit",
+          second:"2-digit",
+          hour12:true
+        }
+      ).format(
+        new Date()
+      );
+
+  };
+
+  draw();
+
+  setInterval(
+    draw,
+    1000
+  );
+
+}
+
+
+function showToday(){
+
+  const element =
+    attEl("todayText");
+
+  if(!element){
+    return;
+  }
+
+  element.textContent =
+    new Intl.DateTimeFormat(
+      "ar-BH",
+      {
+        timeZone:"Asia/Bahrain",
+        weekday:"long",
+        year:"numeric",
+        month:"long",
+        day:"numeric"
+      }
+    ).format(
+      new Date()
+    );
+
+}
+
+
+/* =========================================================
+   الرسائل المتنوعة
+========================================================= */
+
+function getDailyMessage(){
+
+  const p =
+    getBahrainParts();
+
+  if(p.weekday === "Sun"){
+
+    return randomFrom([
+
+      "أسبوع جديد يبدأ بخطوة جميلة… جعل الله أيامكِ مليئة بالإنجاز والأثر الطيب 🌷",
+
+      "بداية أسبوع جديدة، وفرصة جديدة لصناعة أثر يستحق أن يُذكر ✨",
+
+      "أسبوع جديد… ومساحة جديدة للعطاء والتعلّم وصناعة الفرق 💛"
+
+    ]);
+
+  }
+
+
+  if(p.weekday === "Thu"){
+
+    return randomFrom([
+
+      "الخميس يحمل معه حصاد أسبوع كامل… شكرًا لكل أثر جميل صنعتِه 💛",
+
+      "نهاية أسبوع العمل لا تعني نهاية الأثر… فما زرعتِه يبقى 🌷",
+
+      "أسبوع آخر من العطاء يقترب من نهايته… دمتِ صاحبة أثر جميل ✨"
+
+    ]);
+
+  }
+
+
+  return randomFrom([
+
+    "كل يوم في المدرسة فرصة جديدة لصناعة أثر يبقى 🌷",
+
+    "قد تكون كلمة صغيرة أو فكرة بسيطة سببًا في فرق كبير اليوم ✨",
+
+    "العطاء اليومي يصنع إنجازات لا تُرى كلها في اللحظة نفسها 🌿",
+
+    "يوم جديد… ومساحة جديدة للإنجاز والتعلّم وصناعة الفرق 💛",
+
+    "وجودكِ وعطاؤكِ جزء من قصة نجاح تُكتب كل يوم ✨"
+
+  ]);
+
+}
+
+
+function getCheckInMessage(){
+
+  const p =
+    getBahrainParts();
+
+  if(p.weekday === "Sun"){
+
+    return randomFrom([
+
+      "أسبوع جديد، وأثر جديد يبدأ بحضوركِ 🌷",
+
+      "بداية أسبوع موفقة… دمتِ بداية جميلة لكل إنجاز ✨",
+
+      "مرحبًا بأسبوع جديد من العطاء وصناعة الفرق 🌿"
+
+    ]);
+
+  }
+
+
+  if(p.weekday === "Thu"){
+
+    return randomFrom([
+
+      "صباح الخميس الجميل… ختام أسبوع مليء بالعطاء 🌷",
+
+      "أهلًا بخميس يحمل معه حصاد أيام من الإنجاز 💛"
+
+    ]);
+
+  }
+
+
+  return randomFrom([
+
+    "صباحٌ جميل يبدأ بكِ… يومًا مليئًا بالإنجاز والأثر الجميل 🌷",
+
+    "أهلًا بيوم جديد من العطاء… وجودكِ يصنع فرقًا ✨",
+
+    "صباح الإنجاز… لتكن خطوات اليوم خفيفة وأثرها كبيرًا 🌿",
+
+    "صباحكِ عطاء وطمأنينة وإنجاز يليق بكِ 🌷"
+
+  ]);
+
+}
+
+
+function getCheckOutMessage(){
+
+  const p =
+    getBahrainParts();
+
+  if(p.weekday === "Thu"){
+
+    return randomFrom([
+
+      "أسبوع حافل انتهى… شكرًا لكل أثر جميل صنعتِه، وعطلة هادئة تستحقينها 💛",
+
+      "انتهى أسبوع العمل، وبقي أثر العطاء… دمتِ بخير وراحة 🌷",
+
+      "ختام أسبوع جميل… شكرًا لكل فكرة وابتسامة وأثر صنعتِه ✨"
+
+    ]);
+
+  }
+
+
+  return randomFrom([
+
+    "شكرًا لأثرٍ تركتِه اليوم… ينتهي الدوام ويبقى الجميل مما صنعتِه 💛",
+
+    "انتهى يوم العمل، لكن أثر العطاء يبقى… نراكِ بكل خير 🌷",
+
+    "شكرًا لعطائكِ اليوم… خذي معكِ رضا الإنجاز واتركي تعب اليوم خلفكِ ✨",
+
+    "يوم آخر اكتمل بعطائكِ… راحة هادئة وغدٌ أجمل بإذن الله 🌿"
+
+  ]);
+
+}
+
+
+/* =========================================================
+   هل المستخدم إدارة؟
+========================================================= */
+
+function isAdmin(){
+
+  return (
+    ["admin", "principal", "assistant", "leadership"].includes(
+      String(currentProfile?.role || "").trim().toLowerCase()
+    )
+  );
+
+}
+
+
+/* =========================================================
+   يوم دوام أم عطلة؟
+========================================================= */
+
+async function isWorkingDay(dateValue){
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await wrSupabase.rpc(
+        "is_attendance_working_day",
+        {
+          p_date:dateValue
+        }
+      );
+
+    if(error){
+      throw error;
+    }
+
+    return data === true;
+
+  }catch(error){
+
+    console.error(
+      "Working day error:",
+      error
+    );
+
+    /*
+      عند تعذر التحقق لا نوقف الصفحة.
+      قاعدة البيانات نفسها ما زالت تمنع
+      التسجيل في يوم العطلة.
+    */
+
+    return true;
+
+  }
+
+}
+
+
+/* =========================================================
+   بيانات استثناء العطلة
+========================================================= */
+
+async function getCalendarInfo(dateValue){
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await wrSupabase
+        .from(
+          "attendance_calendar"
+        )
+        .select(
+          "calendar_date,day_type,title,notes"
+        )
+        .eq(
+          "calendar_date",
+          dateValue
+        )
+        .maybeSingle();
+
+    if(error){
+      throw error;
+    }
+
+    return data || null;
+
+  }catch(error){
+
+    console.error(
+      "Calendar info error:",
+      error
+    );
+
+    return null;
+
+  }
+
+}
+
+
+/* =========================================================
+   نافذة النجاح
+========================================================= */
+
+function showSuccessMessage(
+  type,
+  timeValue,
+  options = {}
+){
+
+  const {
+    lateMinutes = 0,
+    earlyMinutes = 0,
+    isPreview = false
+  } = options;
+
+
+  const name =
+    firstName(
+      currentProfile?.full_name
+    ) || "";
+
+
+  const isIn =
+    type === "in";
+
+
+  attEl(
+    "successIcon"
+  ).textContent =
+    isIn
+      ? "🌷"
+      : "💛";
+
+
+  attEl(
+    "successTitle"
+  ).textContent =
+    isIn
+      ? (
+          `صباح العطاء${
+            name
+              ? ` يا أ. ${name}`
+              : ""
+          }`
+        )
+      : (
+          `شكرًا لعطائكِ اليوم${
+            name
+              ? ` يا أ. ${name}`
+              : ""
+          }`
+        );
+
+
+  attEl(
+    "successText"
+  ).textContent =
+    isIn
+      ? getCheckInMessage()
+      : getCheckOutMessage();
+
+
+  attEl(
+    "successTime"
+  ).textContent =
+    isPreview
+      ? (
+          isIn
+            ? "معاينة رسالة تسجيل الحضور — لا يتم حفظ بيانات"
+            : "معاينة رسالة تسجيل الانصراف — لا يتم حفظ بيانات"
+        )
+      : (
+          isIn
+            ? (
+                `تم تسجيل حضوركِ الساعة ${
+                  formatTime(timeValue)
+                }`
+              )
+            : (
+                `تم تسجيل انصرافكِ الساعة ${
+                  formatTime(timeValue)
+                }`
+              )
+        );
+
+
+  const extra =
+    attEl(
+      "successExtra"
+    );
+
+  extra.className = "";
+  extra.textContent = "";
+
+
+  if(
+    isIn &&
+    Number(lateMinutes) > 0
+  ){
+
+    extra.className =
+      "success-extra late";
+
+    extra.textContent =
+      `⏰ ${
+        isPreview
+          ? "مثال: "
+          : ""
+      }تأخير ${lateMinutes} دقيقة`;
+
+  }
+
+
+  if(
+    !isIn &&
+    Number(earlyMinutes) > 0
+  ){
+
+    extra.className =
+      "success-extra early";
+
+    extra.textContent =
+      `🕐 ${
+        isPreview
+          ? "مثال: "
+          : ""
+      }انصراف مبكر ${earlyMinutes} دقيقة`;
+
+  }
+
+
+  attEl(
+    "messageOverlay"
+  ).classList.add(
+    "show"
+  );
+
+}
+
+
+function closeSuccessMessage(){
+
+  attEl(
+    "messageOverlay"
+  ).classList.remove(
+    "show"
+  );
+
+}
+
+
+/* =========================================================
+   معاينة الإدارة - لا تحفظ
+========================================================= */
+
+function previewOnTime(){
+
+  showSuccessMessage(
+    "in",
+    null,
+    {
+      isPreview:true
+    }
+  );
+
+}
+
+
+function previewLate(){
+
+  showSuccessMessage(
+    "in",
+    null,
+    {
+      lateMinutes:12,
+      isPreview:true
+    }
+  );
+
+}
+
+
+function previewCheckoutOnTime(){
+
+  showSuccessMessage(
+    "out",
+    null,
+    {
+      isPreview:true
+    }
+  );
+
+}
+
+
+function previewEarlyCheckout(){
+
+  showSuccessMessage(
+    "out",
+    null,
+    {
+      earlyMinutes:15,
+      isPreview:true
+    }
+  );
+
+}
+
+
+/* =========================================================
+   حالة اليوم
+========================================================= */
+
+async function loadTodayRecord(){
+
+  const today =
+    getBahrainDateString();
+
+
+  todayIsWorkingDay =
+    await isWorkingDay(
+      today
+    );
+
+
+  if(!todayIsWorkingDay){
+
+    todayRecord = null;
+
+    renderTodayStatus();
+
+    return;
+
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await wrSupabase
+      .from(
+        "staff_attendance"
+      )
+      .select("*")
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .eq(
+        "work_date",
+        today
+      )
+      .maybeSingle();
+
+
+  if(error){
+
+    console.error(error);
+
+    attEl(
+      "statusTitle"
+    ).textContent =
+      "تعذر قراءة حالة الحضور";
+
+    attEl(
+      "statusSub"
+    ).textContent =
+      error.message;
+
+    refreshAttendanceWindow();
+    return;
+
+  }
+
+
+  todayRecord =
+    data || null;
+
+
+  renderTodayStatus();
+
+}
+
+
+/* =========================================================
+   عرض حالة اليوم
+========================================================= */
+
+function renderTodayStatus(){
+
+  const inBtn =
+    attEl(
+      "checkInBtn"
+    );
+
+  const outBtn =
+    attEl(
+      "checkOutBtn"
+    );
+
+  const badge =
+    attEl(
+      "attendanceBadge"
+    );
+
+
+  badge.innerHTML = "";
+
+
+  attEl(
+    "checkInTime"
+  ).textContent =
+    formatTime(
+      todayRecord?.check_in_at
+    );
+
+
+  attEl(
+    "checkOutTime"
+  ).textContent =
+    formatTime(
+      todayRecord?.check_out_at
+    );
+
+
+  /* عطلة */
+
+  if(!todayIsWorkingDay){
+
+    attEl(
+      "statusIcon"
+    ).textContent =
+      "🌿";
+
+    attEl(
+      "statusTitle"
+    ).textContent =
+      "اليوم عطلة";
+
+    attEl(
+      "statusSub"
+    ).textContent =
+      "يوم هادئ وجميل 🌷 لا يتطلب اليوم تسجيل حضور أو انصراف.";
+
+    inBtn.style.display =
+      "none";
+
+    outBtn.style.display =
+      "none";
+
+    refreshAttendanceWindow();
+    return;
+
+  }
+
+
+  /* لا يوجد حضور */
+
+  if(!todayRecord){
+
+    attEl(
+      "statusIcon"
+    ).textContent =
+      "🌷";
+
+    attEl(
+      "statusTitle"
+    ).textContent =
+      "صباح الخير";
+
+    attEl(
+      "statusSub"
+    ).textContent =
+      "لم يتم تسجيل حضوركِ اليوم بعد.";
+
+    inBtn.style.display =
+      "";
+
+    inBtn.disabled =
+      false;
+
+    outBtn.style.display =
+      "none";
+
+    refreshAttendanceWindow();
+    return;
+
+  }
+
+
+  const late =
+    Number(
+      todayRecord.late_minutes || 0
+    );
+
+  const early =
+    Number(
+      todayRecord.early_leave_minutes || 0
+    );
+
+
+  /* حضور بدون انصراف */
+
+  if(
+    todayRecord.check_in_at &&
+    !todayRecord.check_out_at
+  ){
+
+    attEl(
+      "statusIcon"
+    ).textContent =
+      late > 0
+        ? "⏰"
+        : "✅";
+
+
+    attEl(
+      "statusTitle"
+    ).textContent =
+      "تم تسجيل حضوركِ";
+
+
+    attEl(
+      "statusSub"
+    ).textContent =
+      late > 0
+        ? (
+            `تم تسجيل الحضور — تأخير ${late} دقيقة.`
+          )
+        : (
+            "تم تسجيل الحضور في الموعد 🌷"
+          );
+
+
+    badge.innerHTML =
+      late > 0
+        ? (
+            `<span class="late-badge">
+              ⏰ متأخر ${late} دقيقة
+            </span>`
+          )
+        : (
+            `<span class="ontime-badge">
+              ✓ حضور في الموعد
+            </span>`
+          );
+
+
+    inBtn.style.display =
+      "none";
+
+    outBtn.style.display =
+      "";
+
+    outBtn.disabled =
+      false;
+
+    refreshAttendanceWindow();
+    return;
+
+  }
+
+
+  /* اكتمل اليوم */
+
+  attEl(
+    "statusIcon"
+  ).textContent =
+    early > 0
+      ? "🕐"
+      : "💛";
+
+
+  attEl(
+    "statusTitle"
+  ).textContent =
+    "اكتمل تسجيل اليوم";
+
+
+  const parts = [];
+
+
+  if(late > 0){
+
+    parts.push(
+      `تأخير ${late} دقيقة`
+    );
+
+  }else{
+
+    parts.push(
+      "حضور في الموعد"
+    );
+
+  }
+
+
+  if(early > 0){
+
+    parts.push(
+      `انصراف مبكر ${early} دقيقة`
+    );
+
+  }else{
+
+    parts.push(
+      "انصراف في الموعد"
+    );
+
+  }
+
+
+  attEl(
+    "statusSub"
+  ).textContent =
+    parts.join(" • ");
+
+
+  let badges = "";
+
+
+  if(late > 0){
+
+    badges +=
+      `<span class="late-badge">
+        ⏰ متأخر ${late} دقيقة
+      </span>`;
+
+  }else{
+
+    badges +=
+      `<span class="ontime-badge">
+        ✓ حضور في الموعد
+      </span>`;
+
+  }
+
+
+  if(early > 0){
+
+    badges +=
+      `<span class="early-badge">
+        🕐 انصراف مبكر ${early} دقيقة
+      </span>`;
+
+  }
+
+
+  badge.innerHTML =
+    badges;
+
+
+  inBtn.style.display =
+    "none";
+
+  outBtn.style.display =
+    "none";
+  refreshAttendanceWindow();
+
+}
+
+
+/* =========================================================
+   تسجيل الحضور
+========================================================= */
+
+async function registerCheckIn(){
+  if(!todayIsWorkingDay || !currentUser || !getAttendanceWindow().active){
+    refreshAttendanceWindow();
+    alert("تسجيل الحضور غير متاح حاليًا. المواعيد من 5:00 صباحًا حتى 3:00 عصرًا بتوقيت البحرين.");
+    return;
+  }
+
+
+  const btn =
+    attEl(
+      "checkInBtn"
+    );
+
+
+  btn.disabled =
+    true;
+
+  btn.textContent =
+    "جاري تسجيل الحضور...";
+
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await wrSupabase.rpc(
+        "register_check_in"
+      );
+
+
+    if(error){
+      throw error;
+    }
+
+
+    todayRecord =
+      Array.isArray(data)
+        ? data[0]
+        : data;
+
+
+    showSuccessMessage(
+      "in",
+      todayRecord?.check_in_at,
+      {
+        lateMinutes:
+          Number(
+            todayRecord?.late_minutes || 0
+          )
+      }
+    );
+
+
+    await refreshPersonalData();
+
+
+    if(isAdmin()){
+      await loadLeadershipData();
+    }
+
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(
+      error?.message ||
+      "تعذر تسجيل الحضور."
+    );
+
+    await loadTodayRecord();
+
+  }finally{
+
+    btn.textContent =
+      "🌷 تسجيل الحضور";
+
+  }
+
+}
+
+
+/* =========================================================
+   تسجيل الانصراف
+========================================================= */
+
+async function registerCheckOut(){
+  if(!todayIsWorkingDay || !currentUser || !getAttendanceWindow().active){
+    refreshAttendanceWindow();
+    alert("تسجيل الانصراف غير متاح حاليًا. المواعيد من 5:00 صباحًا حتى 3:00 عصرًا بتوقيت البحرين.");
+    return;
+  }
+
+
+  const btn =
+    attEl(
+      "checkOutBtn"
+    );
+
+
+  btn.disabled =
+    true;
+
+  btn.textContent =
+    "جاري تسجيل الانصراف...";
+
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await wrSupabase.rpc(
+        "register_check_out"
+      );
+
+
+    if(error){
+      throw error;
+    }
+
+
+    todayRecord =
+      Array.isArray(data)
+        ? data[0]
+        : data;
+
+
+    showSuccessMessage(
+      "out",
+      todayRecord?.check_out_at,
+      {
+        earlyMinutes:
+          Number(
+            todayRecord?.early_leave_minutes || 0
+          )
+      }
+    );
+
+
+    await refreshPersonalData();
+
+
+    if(isAdmin()){
+      await loadLeadershipData();
+    }
+
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(
+      error?.message ||
+      "تعذر تسجيل الانصراف."
+    );
+
+    await loadTodayRecord();
+
+  }finally{
+
+    btn.textContent =
+      "💛 تسجيل الانصراف";
+
+  }
+
+}
+
+
+/* =========================================================
+   تكوين الحالة
+========================================================= */
+
+function buildHistoryStatus(row){
+
+  const adminStatus =
+    String(
+      row.admin_status || ""
+    );
+
+  if(adminStatus === "absent"){
+    return "غياب — تعديل إداري";
+  }
+
+  if(adminStatus === "excused_absence"){
+    return "غياب بعذر — تعديل إداري";
+  }
+
+  if(adminStatus === "official_leave"){
+    return "إجازة / مأمورية — تعديل إداري";
+  }
+
+  if(adminStatus === "present" && !row.check_in_at){
+    return "حضور معتمد إداريًا";
+  }
+
+  if(!row.check_in_at){
+    return "لم يسجل";
+  }
+
+
+  const late =
+    Number(
+      row.late_minutes || 0
+    );
+
+  const early =
+    Number(
+      row.early_leave_minutes || 0
+    );
+
+
+  const parts = [];
+
+
+  if(late > 0){
+
+    parts.push(
+      `متأخر ${late} دقيقة`
+    );
+
+  }else{
+
+    parts.push(
+      "حضور في الموعد"
+    );
+
+  }
+
+
+  if(!row.check_out_at){
+
+    parts.push(
+      "لم يسجل انصراف"
+    );
+
+  }else if(early > 0){
+
+    parts.push(
+      `انصراف مبكر ${early} دقيقة`
+    );
+
+  }else{
+
+    parts.push(
+      "انصراف في الموعد"
+    );
+
+  }
+
+
+  if(adminStatus === "present"){
+    parts.push("معتمد إداريًا");
+  }
+
+
+  return parts.join(" • ");
+
+}
+
+
+/* =========================================================
+   السجل الشخصي
+========================================================= */
+
+async function loadMyHistory(){
+
+  const tbody =
+    attEl(
+      "myHistory"
+    );
+
+
+  const {
+    data,
+    error
+  } =
+    await wrSupabase
+      .from(
+        "staff_attendance"
+      )
+      .select("*")
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .order(
+        "work_date",
+        {
+          ascending:false
+        }
+      )
+      .limit(60);
+
+
+  if(error){
+
+    console.error(error);
+
+    tbody.innerHTML =
+      `
+        <tr>
+          <td
+            colspan="4"
+            class="empty"
+          >
+            تعذر تحميل السجل.
+          </td>
+        </tr>
+      `;
+
+    return;
+
+  }
+
+
+  if(!data?.length){
+
+    tbody.innerHTML =
+      `
+        <tr>
+          <td
+            colspan="4"
+            class="empty"
+          >
+            لا توجد سجلات حضور حتى الآن.
+          </td>
+        </tr>
+      `;
+
+    return;
+
+  }
+
+
+  tbody.innerHTML =
+    data
+      .map(
+        row => {
+
+          return `
+            <tr>
+
+              <td>
+                ${esc(
+                  formatDate(
+                    row.work_date
+                  )
+                )}
+              </td>
+
+              <td>
+                ${esc(
+                  formatTime(
+                    row.check_in_at
+                  )
+                )}
+              </td>
+
+              <td>
+                ${esc(
+                  formatTime(
+                    row.check_out_at
+                  )
+                )}
+              </td>
+
+              <td>
+                ${esc(
+                  buildHistoryStatus(
+                    row
+                  )
+                )}
+
+                ${
+                  row.admin_note
+                    ? `
+                        <div class="admin-note">
+                          📝 ${esc(row.admin_note)}
+                        </div>
+                      `
+                    : ""
+                }
+              </td>
+
+            </tr>
+          `;
+
+        }
+      )
+      .join("");
+
+}
+
+
+/* =========================================================
+   تحميل المتابعة اليومية
+========================================================= */
+
+async function loadLeadershipData(){
+
+  if(!isAdmin()){
+    return;
+  }
+
+
+  const selectedDate =
+    attEl(
+      "filterDate"
+    ).value ||
+    getBahrainDateString();
+
+
+  const tbody =
+    attEl(
+      "adminHistory"
+    );
+
+
+  attEl(
+    "dailyPrintDate"
+  ).textContent =
+    formatDate(
+      selectedDate
+    );
+
+
+  tbody.innerHTML =
+    `
+      <tr>
+
+        <td
+          colspan="9"
+          class="empty"
+        >
+          جاري تحميل بيانات
+          ${esc(
+            formatDate(
+              selectedDate
+            )
+          )}...
+        </td>
+
+      </tr>
+    `;
+
+
+  try{
+
+    const working =
+      await isWorkingDay(
+        selectedDate
+      );
+
+
+    const calendarInfo =
+      await getCalendarInfo(
+        selectedDate
+      );
+
+
+    const holidayBanner =
+      attEl(
+        "holidayBanner"
+      );
+
+
+    holidayBanner.classList.toggle(
+      "show",
+      !working
+    );
+
+
+    if(!working){
+
+      attEl(
+        "holidayTitle"
+      ).textContent =
+        calendarInfo?.title
+          ? `🌿 عطلة: ${calendarInfo.title}`
+          : "🌿 هذا التاريخ عطلة";
+
+
+      attEl(
+        "holidayText"
+      ).textContent =
+        calendarInfo?.notes ||
+        "لا توجد متابعة حضور أو انصراف مطلوبة في هذا اليوم.";
+
+    }
+
+
+    /* المستخدمون */
+
+    const {
+      data:viewRows,
+      error:viewError
+    } =
+      await wrSupabase
+        .from(
+          "attendance_leadership_view"
+        )
+        .select(
+          "user_id,full_name,role,departments,is_active,archived_at"
+        );
+
+
+    if(viewError){
+      throw viewError;
+    }
+
+
+    const usersMap =
+      new Map();
+
+
+    (viewRows || [])
+      .forEach(
+        row => {
+
+          if(
+            attendanceProfileWasActiveOnDate(row, selectedDate) &&
+            !usersMap.has(
+              row.user_id
+            )
+          ){
+
+            usersMap.set(
+              row.user_id,
+              {
+                user_id:
+                  row.user_id,
+
+                full_name:
+                  row.full_name,
+
+                role:
+                  row.role,
+
+                departments:
+                  row.departments ||
+                  "غير محدد"
+              }
+            );
+
+          }
+
+        }
+      );
+
+
+    const users =
+      Array.from(
+        usersMap.values()
+      );
+
+
+    /* حضور التاريخ */
+
+    const {
+      data:attendanceRows,
+      error:attendanceError
+    } =
+      await wrSupabase
+        .from(
+          "staff_attendance"
+        )
+        .select(
+          `
+            user_id,
+            work_date,
+            check_in_at,
+            check_out_at,
+            late_minutes,
+            attendance_status,
+            early_leave_minutes,
+            departure_status,
+            admin_status,
+            admin_note,
+            admin_modified_at,
+            admin_modified_by
+          `
+        )
+        .eq(
+          "work_date",
+          selectedDate
+        );
+
+
+    if(attendanceError){
+      throw attendanceError;
+    }
+
+
+    const attendanceMap =
+      new Map(
+        (attendanceRows || [])
+          .map(
+            row => [
+              row.user_id,
+              row
+            ]
+          )
+      );
+
+
+    leadershipRows =
+      users
+        .map(
+          user => {
+
+            const attendance =
+              attendanceMap.get(
+                user.user_id
+              ) || null;
+
+
+            return {
+
+              ...user,
+
+              work_date:
+                selectedDate,
+
+              is_working_day:
+                working,
+
+              check_in_at:
+                attendance?.check_in_at ||
+                null,
+
+              check_out_at:
+                attendance?.check_out_at ||
+                null,
+
+              late_minutes:
+                Number(
+                  attendance?.late_minutes ||
+                  0
+                ),
+
+              attendance_status:
+                attendance?.attendance_status ||
+                null,
+
+              early_leave_minutes:
+                Number(
+                  attendance?.early_leave_minutes ||
+                  0
+                ),
+
+              departure_status:
+                attendance?.departure_status ||
+                null,
+
+              admin_status:
+                attendance?.admin_status ||
+                null,
+
+              admin_note:
+                attendance?.admin_note ||
+                null,
+
+              admin_modified_at:
+                attendance?.admin_modified_at ||
+                null,
+
+              admin_modified_by:
+                attendance?.admin_modified_by ||
+                null,
+
+              effective_status:
+                attendance?.admin_status ||
+                (
+                  attendance?.check_in_at
+                    ? "present"
+                    : "not_registered"
+                )
+
+            };
+
+          }
+        )
+        .sort(
+          (a,b) =>
+            String(
+              a.full_name || ""
+            ).localeCompare(
+              String(
+                b.full_name || ""
+              ),
+              "ar"
+            )
+        );
+
+
+    populateDepartmentFilter();
+
+    applyLeadershipFilters();
+
+
+  }catch(error){
+
+    console.error(
+      "Leadership error:",
+      error
+    );
+
+
+    tbody.innerHTML =
+      `
+        <tr>
+
+          <td
+            colspan="9"
+            class="empty"
+          >
+            تعذر تحميل لوحة القيادة:
+            ${esc(
+              error?.message || ""
+            )}
+          </td>
+
+        </tr>
+      `;
+
+  }
+
+}
+
+
+/* =========================================================
+   الأقسام
+========================================================= */
+
+function getDepartmentsFromRows(rows){
+
+  const set =
+    new Set();
+
+
+  (rows || [])
+    .forEach(
+      row => {
+
+        const text =
+          String(
+            row.departments || ""
+          ).trim();
+
+
+        if(
+          text &&
+          text !== "غير محدد"
+        ){
+
+          text
+            .split("،")
+            .map(
+              x =>
+                x.trim()
+            )
+            .filter(Boolean)
+            .forEach(
+              dept =>
+                set.add(dept)
+            );
+
+        }
+
+      }
+    );
+
+
+  return Array.from(set)
+    .sort(
+      (a,b) =>
+        a.localeCompare(
+          b,
+          "ar"
+        )
+    );
+
+}
+
+
+function fillDepartmentSelect(
+  selectId,
+  rows
+){
+
+  const select =
+    attEl(
+      selectId
+    );
+
+
+  if(!select){
+    return;
+  }
+
+
+  const oldValue =
+    select.value;
+
+
+  const departments =
+    getDepartmentsFromRows(
+      rows
+    );
+
+
+  select.innerHTML =
+    `
+      <option value="">
+        جميع الأقسام
+      </option>
+    `
+    +
+    departments
+      .map(
+        dept =>
+          `
+            <option
+              value="${esc(dept)}"
+            >
+              ${esc(dept)}
+            </option>
+          `
+      )
+      .join("");
+
+
+  if(
+    departments.includes(
+      oldValue
+    )
+  ){
+
+    select.value =
+      oldValue;
+
+  }
+
+}
+
+
+function populateDepartmentFilter(){
+
+  fillDepartmentSelect(
+    "filterDepartment",
+    leadershipRows
+  );
+
+}
+
+
+/* =========================================================
+   فلاتر اليومي
+========================================================= */
+
+function rowMatchesBaseFilters(row){
+
+  const nameValue =
+    String(
+      attEl(
+        "filterName"
+      ).value || ""
+    )
+    .trim()
+    .toLowerCase();
+
+
+  const roleValue =
+    attEl(
+      "filterRole"
+    ).value;
+
+
+  const deptValue =
+    attEl(
+      "filterDepartment"
+    ).value;
+
+
+  const nameOk =
+    !nameValue ||
+    String(
+      row.full_name || ""
+    )
+    .toLowerCase()
+    .includes(
+      nameValue
+    );
+
+
+  const roleOk =
+    !roleValue ||
+    row.role === roleValue;
+
+
+  const deptOk =
+    !deptValue ||
+    String(
+      row.departments || ""
+    )
+    .includes(
+      deptValue
+    );
+
+
+  return (
+    nameOk &&
+    roleOk &&
+    deptOk
+  );
+
+}
+
+
+function applyLeadershipFilters(){
+
+  const statusValue =
+    attEl(
+      "filterStatus"
+    ).value;
+
+
+  leadershipFilteredRows =
+    leadershipRows
+      .filter(
+        row => {
+
+          if(
+            !rowMatchesBaseFilters(
+              row
+            )
+          ){
+            return false;
+          }
+
+
+          if(
+            row.is_working_day === false
+          ){
+            return !statusValue;
+          }
+
+
+          if(!statusValue){
+            return true;
+          }
+
+
+          if(statusValue === "absent"){
+            return row.admin_status === "absent";
+          }
+
+          if(statusValue === "excused_absence"){
+            return row.admin_status === "excused_absence";
+          }
+
+          if(statusValue === "official_leave"){
+            return row.admin_status === "official_leave";
+          }
+
+          if(statusValue === "admin_present"){
+            return row.admin_status === "present";
+          }
+
+
+          const isAdministrativelyNotPresent =
+            [
+              "absent",
+              "excused_absence",
+              "official_leave"
+            ].includes(
+              row.admin_status
+            );
+
+
+          if(
+            statusValue === "on_time"
+          ){
+
+            return (
+              !isAdministrativelyNotPresent &&
+              row.check_in_at &&
+              Number(
+                row.late_minutes
+              ) === 0
+            );
+
+          }
+
+
+          if(
+            statusValue === "late"
+          ){
+
+            return (
+              !isAdministrativelyNotPresent &&
+              row.check_in_at &&
+              Number(
+                row.late_minutes
+              ) > 0
+            );
+
+          }
+
+
+          if(
+            statusValue === "early"
+          ){
+
+            return (
+              !isAdministrativelyNotPresent &&
+              row.check_out_at &&
+              Number(
+                row.early_leave_minutes
+              ) > 0
+            );
+
+          }
+
+
+          if(
+            statusValue ===
+            "not_registered"
+          ){
+
+            return (
+              !row.admin_status &&
+              !row.check_in_at
+            );
+
+          }
+
+
+          if(
+            statusValue ===
+            "no_checkout"
+          ){
+
+            return (
+              !isAdministrativelyNotPresent &&
+              row.check_in_at &&
+              !row.check_out_at
+            );
+
+          }
+
+
+          return true;
+
+        }
+      );
+
+
+  renderLeadershipTable();
+
+  renderLeadershipStats();
+
+}
+
+
+/* =========================================================
+   مؤشرات اليومي
+========================================================= */
+
+function renderLeadershipStats(){
+
+  const baseRows =
+    leadershipRows
+      .filter(
+        row =>
+          rowMatchesBaseFilters(
+            row
+          )
+      );
+
+
+  const total =
+    baseRows.length;
+
+
+  const working =
+    baseRows.length
+      ? (
+          baseRows[0]
+            .is_working_day !== false
+        )
+      : true;
+
+
+  const countsAsPresent =
+    row =>
+      ![
+        "absent",
+        "excused_absence",
+        "official_leave"
+      ].includes(
+        row.admin_status
+      )
+      &&
+      (
+        !!row.check_in_at ||
+        row.admin_status === "present"
+      );
+
+
+  const present =
+    working
+      ? baseRows.filter(countsAsPresent).length
+      : 0;
+
+
+  const late =
+    working
+      ? (
+          baseRows
+            .filter(
+              row =>
+                countsAsPresent(row) &&
+                row.check_in_at &&
+                Number(
+                  row.late_minutes
+                ) > 0
+            )
+            .length
+        )
+      : 0;
+
+
+  const early =
+    working
+      ? (
+          baseRows
+            .filter(
+              row =>
+                countsAsPresent(row) &&
+                row.check_out_at &&
+                Number(
+                  row.early_leave_minutes
+                ) > 0
+            )
+            .length
+        )
+      : 0;
+
+
+  const missing =
+    working
+      ? (
+          baseRows
+            .filter(
+              row =>
+                !row.admin_status &&
+                !row.check_in_at
+            )
+            .length
+        )
+      : 0;
+
+
+  const noCheckout =
+    working
+      ? (
+          baseRows
+            .filter(
+              row =>
+                countsAsPresent(row) &&
+                row.check_in_at &&
+                !row.check_out_at
+            )
+            .length
+        )
+      : 0;
+
+
+  attEl("statTotal").textContent = total;
+  attEl("statPresent").textContent = present;
+  attEl("statLate").textContent = late;
+  attEl("statEarly").textContent = early;
+  attEl("statMissing").textContent = missing;
+  attEl("statNoCheckout").textContent = noCheckout;
+
+  attEl(
+    "filteredCount"
+  ).textContent =
+    `يظهر ${
+      leadershipFilteredRows.length
+    } من أصل ${total}`;
+
+}
+
+
+/* =========================================================
+   حالة المستخدم في اليومي
+========================================================= */
+
+function getLeadershipStatusHtml(row){
+
+  if(
+    row.is_working_day === false
+  ){
+
+    return `
+      <span class="badge badge-purple">
+        🌿 عطلة
+      </span>
+    `;
+
+  }
+
+
+  if(row.admin_status === "absent"){
+
+    return `
+      <span class="badge badge-red">
+        غياب
+      </span>
+      <span class="admin-modified-label">
+        ✏️ تعديل إداري
+      </span>
+    `;
+
+  }
+
+
+  if(row.admin_status === "excused_absence"){
+
+    return `
+      <span class="badge badge-blue">
+        غياب بعذر
+      </span>
+      <span class="admin-modified-label">
+        ✏️ تعديل إداري
+      </span>
+    `;
+
+  }
+
+
+  if(row.admin_status === "official_leave"){
+
+    return `
+      <span class="badge badge-purple">
+        إجازة / مأمورية
+      </span>
+      <span class="admin-modified-label">
+        ✏️ تعديل إداري
+      </span>
+    `;
+
+  }
+
+
+  if(
+    row.admin_status === "present" &&
+    !row.check_in_at
+  ){
+
+    return `
+      <span class="badge badge-green">
+        حاضر
+      </span>
+      <span class="admin-modified-label">
+        ✏️ اعتماد إداري
+      </span>
+    `;
+
+  }
+
+
+  if(!row.check_in_at){
+
+    return `
+      <span class="badge badge-red">
+        لم يسجل
+      </span>
+    `;
+
+  }
+
+
+  const late =
+    Number(
+      row.late_minutes || 0
+    );
+
+
+  const early =
+    Number(
+      row.early_leave_minutes || 0
+    );
+
+
+  let html = "";
+
+
+  if(late > 0){
+
+    html += `
+      <span class="badge badge-orange">
+        متأخر ${late} دقيقة
+      </span>
+    `;
+
+  }else{
+
+    html += `
+      <span class="badge badge-green">
+        حضور في الموعد
+      </span>
+    `;
+
+  }
+
+
+  if(!row.check_out_at){
+
+    html += `
+      <span class="badge badge-blue">
+        لم يسجل انصراف
+      </span>
+    `;
+
+  }else if(early > 0){
+
+    html += `
+      <span class="badge badge-purple">
+        انصراف مبكر ${early} دقيقة
+      </span>
+    `;
+
+  }else{
+
+    html += `
+      <span class="badge badge-green">
+        انصراف في الموعد
+      </span>
+    `;
+
+  }
+
+
+  if(row.admin_status === "present"){
+
+    html += `
+      <span class="admin-modified-label">
+        ✏️ معتمد إداريًا
+      </span>
+    `;
+
+  }
+
+
+  return html;
+
+}
+
+
+/* =========================================================
+   جدول اليومي
+========================================================= */
+
+function renderLeadershipTable(){
+
+  const tbody =
+    attEl(
+      "adminHistory"
+    );
+
+
+  if(
+    !leadershipFilteredRows.length
+  ){
+
+    tbody.innerHTML =
+      `
+        <tr>
+
+          <td
+            colspan="9"
+            class="empty"
+          >
+            لا توجد نتائج مطابقة للفلاتر المختارة.
+          </td>
+
+        </tr>
+      `;
+
+    return;
+
+  }
+
+
+  tbody.innerHTML =
+    leadershipFilteredRows
+      .map(
+        (row,index) => {
+
+          const working =
+            row.is_working_day !== false;
+
+
+          return `
+            <tr>
+
+              <td>
+                ${index + 1}
+              </td>
+
+              <td>
+                <span class="person-name">
+                  ${esc(
+                    row.full_name
+                  )}
+                </span>
+              </td>
+
+              <td>
+                <span class="badge badge-gray">
+                  ${esc(
+                    getRoleLabel(
+                      row.role
+                    )
+                  )}
+                </span>
+              </td>
+
+              <td class="dept-text">
+                ${esc(
+                  row.departments ||
+                  "غير محدد"
+                )}
+              </td>
+
+              <td>
+                ${
+                  working
+                    ? esc(
+                        formatTime(
+                          row.check_in_at
+                        )
+                      )
+                    : "عطلة"
+                }
+              </td>
+
+              <td>
+                ${
+                  working
+                    ? esc(
+                        formatTime(
+                          row.check_out_at
+                        )
+                      )
+                    : "عطلة"
+                }
+              </td>
+
+              <td>
+                ${
+                  getLeadershipStatusHtml(
+                    row
+                  )
+                }
+              </td>
+
+              <td class="admin-note">
+                ${
+                  row.admin_note
+                    ? `📝 ${esc(row.admin_note)}`
+                    : `<span class="admin-note-empty">—</span>`
+                }
+              </td>
+
+              <td class="no-print">
+                ${
+                  working
+                    ? `
+                        <button
+                          type="button"
+                          class="admin-edit-btn"
+                          onclick="openAdminEdit('${esc(row.user_id)}')"
+                        >
+                          ✏️ تعديل
+                        </button>
+                      `
+                    : "—"
+                }
+              </td>
+
+            </tr>
+          `;
+
+        }
+      )
+      .join("");
+
+}
+
+
+
+/* =========================================================
+   التعديل الإداري
+========================================================= */
+
+function getAdminStatusLabel(value){
+
+  const labels = {
+    present:"حاضر",
+    absent:"غياب",
+    excused_absence:"غياب بعذر",
+    official_leave:"إجازة / مأمورية"
+  };
+
+  return labels[value] || value || "غير محدد";
+
+}
+
+
+function openAdminEdit(userId){
+
+  if(!isAdmin()){
+    return;
+  }
+
+
+  const row =
+    leadershipRows.find(
+      item =>
+        item.user_id === userId
+    );
+
+
+  if(!row){
+    alert("تعذر العثور على بيانات المستخدم.");
+    return;
+  }
+
+
+  adminEditTarget = row;
+
+
+  attEl(
+    "adminEditPerson"
+  ).textContent =
+    `${row.full_name} — ${formatDate(row.work_date)}`;
+
+
+  attEl(
+    "adminEditStatus"
+  ).value =
+    row.admin_status ||
+    (
+      row.check_in_at
+        ? "present"
+        : "absent"
+    );
+
+
+  attEl(
+    "adminEditNote"
+  ).value =
+    row.admin_note || "";
+
+
+  attEl(
+    "adminEditOverlay"
+  ).classList.add(
+    "show"
+  );
+
+
+  setTimeout(
+    ()=>{
+      attEl(
+        "adminEditNote"
+      ).focus();
+    },
+    50
+  );
+
+}
+
+
+function closeAdminEdit(){
+
+  attEl(
+    "adminEditOverlay"
+  ).classList.remove(
+    "show"
+  );
+
+  adminEditTarget = null;
+
+}
+
+
+async function saveAdminEdit(){
+
+  if(
+    !isAdmin() ||
+    !adminEditTarget
+  ){
+    return;
+  }
+
+
+  const status =
+    attEl(
+      "adminEditStatus"
+    ).value;
+
+
+  const note =
+    String(
+      attEl(
+        "adminEditNote"
+      ).value || ""
+    ).trim();
+
+
+  if(!note){
+
+    alert(
+      "اكتبي سبب أو ملاحظة للتعديل الإداري."
+    );
+
+    attEl(
+      "adminEditNote"
+    ).focus();
+
+    return;
+  }
+
+
+  const btn =
+    attEl(
+      "adminEditSaveBtn"
+    );
+
+
+  btn.disabled = true;
+  btn.textContent = "جاري الحفظ...";
+
+
+  try{
+
+    const {
+      error
+    } =
+      await wrSupabase.rpc(
+        "admin_update_attendance",
+        {
+          p_user_id:
+            adminEditTarget.user_id,
+
+          p_work_date:
+            adminEditTarget.work_date,
+
+          p_admin_status:
+            status,
+
+          p_admin_note:
+            note,
+
+          p_check_in_at:
+            adminEditTarget.check_in_at ||
+            null,
+
+          p_check_out_at:
+            adminEditTarget.check_out_at ||
+            null
+        }
+      );
+
+
+    if(error){
+      throw error;
+    }
+
+
+    const personName =
+      adminEditTarget.full_name;
+
+    const editedUserId =
+      adminEditTarget.user_id;
+
+
+    closeAdminEdit();
+
+
+    alert(
+      `تم اعتماد حالة ${getAdminStatusLabel(status)} لـ ${personName} وحفظ الملاحظة في السجل.`
+    );
+
+
+    await loadLeadershipData();
+
+    await loadMonthlyReport();
+
+
+    if(
+      currentUser?.id ===
+      editedUserId
+    ){
+      await refreshPersonalData();
+    }
+
+
+  }catch(error){
+
+    console.error(
+      "Admin attendance edit error:",
+      error
+    );
+
+    alert(
+      error?.message ||
+      "تعذر حفظ التعديل الإداري."
+    );
+
+  }finally{
+
+    btn.disabled = false;
+    btn.textContent = "حفظ التعديل";
+
+  }
+
+}
+
+
+
+/* =========================================================
+   إعادة فلاتر اليومي
+========================================================= */
+
+function resetFilters(){
+
+  attEl(
+    "filterName"
+  ).value = "";
+
+  attEl(
+    "filterRole"
+  ).value = "";
+
+  attEl(
+    "filterDepartment"
+  ).value = "";
+
+  attEl(
+    "filterStatus"
+  ).value = "";
+
+  applyLeadershipFilters();
+
+}
+
+
+/* =========================================================
+   التقرير الشهري
+========================================================= */
+
+
+function attendanceProfileWasActiveOnDate(row, dateValue) {
+  if (!row) return false;
+
+  // الحساب النشط حاليًا يظهر طبيعيًا.
+  if (row.is_active !== false) return true;
+
+  // الحساب المؤرشف يظل ظاهرًا في الأيام السابقة لتاريخ الأرشفة فقط.
+  if (!row.archived_at) return false;
+
+  const archivedDate =
+    new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Bahrain",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    }).format(new Date(row.archived_at));
+
+  return String(dateValue) < archivedDate;
+}
+
+function attendanceProfileWasActiveDuringMonth(row, monthValue) {
+  if (!row) return false;
+  if (row.is_active !== false) return true;
+  if (!row.archived_at) return false;
+
+  const archivedMonth =
+    new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Bahrain",
+      year: "numeric",
+      month: "2-digit"
+    }).format(new Date(row.archived_at)).slice(0, 7);
+
+  // يظهر في شهر الأرشفة وفي كل الشهور السابقة، ويختفي من الشهور التالية.
+  return String(monthValue) <= archivedMonth;
+}
+
+
+async function loadMonthlyReport(){
+
+  if(!isAdmin()){
+    return;
+  }
+
+  const monthValue =
+    attEl(
+      "monthlyMonth"
+    ).value;
+
+  if(!monthValue){
+    return;
+  }
+
+  const [
+    year,
+    month
+  ] =
+    monthValue
+      .split("-")
+      .map(Number);
+
+  const monthLabel =
+    new Intl.DateTimeFormat(
+      "ar-BH",
+      {
+        year:"numeric",
+        month:"long"
+      }
+    ).format(
+      new Date(
+        year,
+        month - 1,
+        1
+      )
+    );
+
+  attEl(
+    "monthlyPrintDate"
+  ).textContent =
+    monthLabel;
+
+  if(
+    attEl(
+      "monthlyOfficialDate"
+    )
+  ){
+    attEl(
+      "monthlyOfficialDate"
+    ).textContent =
+      monthLabel;
+  }
+
+  attEl(
+    "monthlyHistory"
+  ).innerHTML =
+    `
+      <tr>
+        <td
+          colspan="15"
+          class="empty"
+        >
+          جاري إعداد التقرير الشهري...
+        </td>
+      </tr>
+    `;
+
+  try{
+
+    /*
+      مهم:
+      في الشهر الحالي لا نحسب الأيام المستقبلية.
+      التقرير يقف عند تاريخ اليوم بتوقيت البحرين.
+    */
+
+    const today =
+      getBahrainDateString();
+
+    const todayParts =
+      today
+        .split("-")
+        .map(Number);
+
+    const selectedMonthStart =
+      `${year}-${String(month).padStart(2,"0")}-01`;
+
+    const lastDayOfSelectedMonth =
+      new Date(
+        year,
+        month,
+        0
+      ).getDate();
+
+    let reportEndDay =
+      lastDayOfSelectedMonth;
+
+    const selectedKey =
+      year * 100 + month;
+
+    const currentKey =
+      todayParts[0] * 100 +
+      todayParts[1];
+
+    if(selectedKey > currentKey){
+
+      monthlyRows = [];
+
+      attEl(
+        "monthlyHistory"
+      ).innerHTML =
+        `
+          <tr>
+            <td
+              colspan="15"
+              class="empty"
+            >
+              هذا الشهر لم يبدأ بعد.
+            </td>
+          </tr>
+        `;
+
+      applyMonthlyFilters();
+
+      return;
+    }
+
+    if(selectedKey === currentKey){
+
+      // لا نحسب اليوم الجاري قبل إغلاق التسجيل (3 عصرًا بتوقيت البحرين).
+      // بذلك لا تظهر المعلمات «لم يسجل» بينما يوم الدوام ما زال مفتوحًا.
+      const nowBahrain = getBahrainParts();
+      const todayFinished =
+        Number(nowBahrain.hour) >= 15;
+
+      reportEndDay = Math.max(
+        0,
+        todayParts[2] - (todayFinished ? 0 : 1)
+      );
+
+    }
+
+    const reportEndDate =
+      `${year}-${String(month).padStart(2,"0")}-${String(reportEndDay).padStart(2,"0")}`;
+
+    /*
+      نحصر أيام الدوام الفعلية المنقضية فقط
+      باستخدام دالة تقويم الحضور الموجودة في قاعدة البيانات.
+    */
+
+    const workingDates = [];
+
+    for(
+      let day = 1;
+      day <= reportEndDay;
+      day++
+    ){
+
+      const dateValue =
+        `${year}-${String(month).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+
+      const working =
+        await isWorkingDay(
+          dateValue
+        );
+
+      if(working){
+        workingDates.push(
+          dateValue
+        );
+      }
+
+    }
+
+    const workingDateSet =
+      new Set(
+        workingDates
+      );
+
+    /*
+      نستخدم الـ View فقط للحصول على جميع مستخدمي المدرسة
+      وأسمائهم وفئاتهم وأقسامهم، ثم نحسب الشهر هنا
+      حتى لا تدخل الأيام المستقبلية في "لم يسجل".
+    */
+
+    const {
+      data:profileRows,
+      error:profileError
+    } =
+      await wrSupabase
+        .from(
+          "attendance_leadership_view"
+        )
+        .select(
+          "user_id,full_name,role,departments,is_active,archived_at"
+        );
+
+    if(profileError){
+      throw profileError;
+    }
+
+    const profilesMap =
+      new Map();
+
+    (
+      profileRows || []
+    ).forEach(
+      row => {
+
+        if(
+          attendanceProfileWasActiveDuringMonth(row, monthValue) &&
+          !profilesMap.has(
+            row.user_id
+          )
+        ){
+
+          profilesMap.set(
+            row.user_id,
+            {
+              user_id:
+                row.user_id,
+
+              full_name:
+                row.full_name,
+
+              role:
+                row.role,
+
+              departments:
+                row.departments ||
+                "غير محدد"
+            }
+          );
+
+        }
+
+      }
+    );
+
+    const {
+      data:attendanceRows,
+      error:attendanceError
+    } =
+      await wrSupabase
+        .from(
+          "staff_attendance"
+        )
+        .select(
+          `
+            user_id,
+            work_date,
+            check_in_at,
+            check_out_at,
+            late_minutes,
+            attendance_status,
+            early_leave_minutes,
+            departure_status,
+            admin_status,
+            admin_note
+          `
+        )
+        .gte(
+          "work_date",
+          selectedMonthStart
+        )
+        .lte(
+          "work_date",
+          reportEndDate
+        );
+
+    if(attendanceError){
+      throw attendanceError;
+    }
+
+    const recordsByUser =
+      new Map();
+
+    (
+      attendanceRows || []
+    ).forEach(
+      record => {
+
+        if(
+          !workingDateSet.has(
+            record.work_date
+          )
+        ){
+          return;
+        }
+
+        if(
+          !recordsByUser.has(
+            record.user_id
+          )
+        ){
+          recordsByUser.set(
+            record.user_id,
+            new Map()
+          );
+        }
+
+        recordsByUser
+          .get(
+            record.user_id
+          )
+          .set(
+            record.work_date,
+            record
+          );
+
+      }
+    );
+
+    monthlyRows =
+      [
+        ...profilesMap.values()
+      ]
+      .map(
+        profile => {
+
+          const userRecords =
+            recordsByUser.get(
+              profile.user_id
+            ) ||
+            new Map();
+
+          let attendanceDays = 0;
+          let absentDays = 0;
+          let excusedAbsenceDays = 0;
+          let officialLeaveDays = 0;
+          let missingDays = 0;
+          let lateDays = 0;
+          let totalLateMinutes = 0;
+          let earlyLeaveDays = 0;
+          let totalEarlyLeaveMinutes = 0;
+          let noCheckoutDays = 0;
+
+          workingDates.forEach(
+            dateValue => {
+
+              const record =
+                userRecords.get(
+                  dateValue
+                );
+
+              if(!record){
+
+                missingDays += 1;
+
+                return;
+
+              }
+
+              const adminStatus =
+                String(
+                  record.admin_status ||
+                  ""
+                );
+
+              /*
+                الحالة الإدارية لها الأولوية.
+              */
+
+              if(
+                adminStatus ===
+                "absent"
+              ){
+
+                absentDays += 1;
+
+                return;
+
+              }
+
+              if(
+                adminStatus ===
+                "excused_absence"
+              ){
+
+                excusedAbsenceDays += 1;
+
+                return;
+
+              }
+
+              if(
+                adminStatus ===
+                "official_leave"
+              ){
+
+                officialLeaveDays += 1;
+
+                return;
+
+              }
+
+              const isPresent =
+                !!record.check_in_at ||
+                adminStatus ===
+                  "present";
+
+              if(!isPresent){
+
+                missingDays += 1;
+
+                return;
+
+              }
+
+              attendanceDays += 1;
+
+              /*
+                التأخير والانصراف المبكر لا يُحسبان
+                إلا للحالات المحتسبة حضورًا.
+              */
+
+              if(
+                record.check_in_at &&
+                Number(
+                  record.late_minutes ||
+                  0
+                ) > 0
+              ){
+
+                lateDays += 1;
+
+                totalLateMinutes +=
+                  Number(
+                    record.late_minutes ||
+                    0
+                  );
+
+              }
+
+              if(
+                record.check_out_at &&
+                Number(
+                  record.early_leave_minutes ||
+                  0
+                ) > 0
+              ){
+
+                earlyLeaveDays += 1;
+
+                totalEarlyLeaveMinutes +=
+                  Number(
+                    record.early_leave_minutes ||
+                    0
+                  );
+
+              }
+
+              if(
+                record.check_in_at &&
+                !record.check_out_at
+              ){
+
+                noCheckoutDays += 1;
+
+              }
+
+            }
+          );
+
+          return {
+
+            ...profile,
+
+            working_days:
+              workingDates.length,
+
+            attendance_days:
+              attendanceDays,
+
+            absent_days:
+              absentDays,
+
+            excused_absence_days:
+              excusedAbsenceDays,
+
+            official_leave_days:
+              officialLeaveDays,
+
+            missing_days:
+              missingDays,
+
+            late_days:
+              lateDays,
+
+            total_late_minutes:
+              totalLateMinutes,
+
+            early_leave_days:
+              earlyLeaveDays,
+
+            total_early_leave_minutes:
+              totalEarlyLeaveMinutes,
+
+            no_checkout_days:
+              noCheckoutDays
+
+          };
+
+        }
+      )
+      .sort(
+        (a,b) =>
+          String(
+            a.full_name || ""
+          )
+          .localeCompare(
+            String(
+              b.full_name || ""
+            ),
+            "ar"
+          )
+      );
+
+    fillDepartmentSelect(
+      "monthlyDepartment",
+      monthlyRows
+    );
+
+    applyMonthlyFilters();
+
+  }catch(error){
+
+    console.error(
+      "Monthly report error:",
+      error
+    );
+
+    attEl(
+      "monthlyHistory"
+    ).innerHTML =
+      `
+        <tr>
+          <td
+            colspan="15"
+            class="empty"
+          >
+            تعذر تحميل التقرير الشهري:
+            ${esc(
+              error?.message || ""
+            )}
+          </td>
+        </tr>
+      `;
+
+  }
+
+}
+
+
+/* =========================================================
+   فلاتر الشهري
+========================================================= */
+
+function applyMonthlyFilters(){
+
+  const nameValue =
+    String(
+      attEl(
+        "monthlyName"
+      ).value || ""
+    )
+    .trim()
+    .toLowerCase();
+
+
+  const roleValue =
+    attEl(
+      "monthlyRole"
+    ).value;
+
+
+  const deptValue =
+    attEl(
+      "monthlyDepartment"
+    ).value;
+
+
+  monthlyFilteredRows =
+    monthlyRows
+      .filter(
+        row => {
+
+          const nameOk =
+            !nameValue ||
+            String(
+              row.full_name || ""
+            )
+            .toLowerCase()
+            .includes(
+              nameValue
+            );
+
+
+          const roleOk =
+            !roleValue ||
+            row.role === roleValue;
+
+
+          const deptOk =
+            !deptValue ||
+            String(
+              row.departments || ""
+            )
+            .includes(
+              deptValue
+            );
+
+
+          return (
+            nameOk &&
+            roleOk &&
+            deptOk
+          );
+
+        }
+      );
+
+
+  renderMonthlyReport();
+
+}
+
+
+/* =========================================================
+   عرض الشهري
+========================================================= */
+
+function renderMonthlyReport(){
+
+  const rows =
+    monthlyFilteredRows;
+
+
+  const workingDays =
+    monthlyRows.length
+      ? Math.max(
+          ...monthlyRows.map(
+            row =>
+              Number(
+                row.working_days
+              ) || 0
+          )
+        )
+      : 0;
+
+
+  const sum =
+    key =>
+      rows.reduce(
+        (total,row) =>
+          total +
+          (
+            Number(
+              row[key]
+            ) || 0
+          ),
+        0
+      );
+
+
+  attEl(
+    "mWorkingDays"
+  ).textContent =
+    workingDays;
+
+
+  attEl(
+    "mAttendance"
+  ).textContent =
+    sum(
+      "attendance_days"
+    );
+
+
+  attEl(
+    "mAbsent"
+  ).textContent =
+    sum(
+      "absent_days"
+    );
+
+
+  attEl(
+    "mExcused"
+  ).textContent =
+    sum(
+      "excused_absence_days"
+    );
+
+
+  attEl(
+    "mOfficialLeave"
+  ).textContent =
+    sum(
+      "official_leave_days"
+    );
+
+
+  attEl(
+    "mMissing"
+  ).textContent =
+    sum(
+      "missing_days"
+    );
+
+
+  attEl(
+    "mLate"
+  ).textContent =
+    sum(
+      "late_days"
+    );
+
+
+  attEl(
+    "mEarly"
+  ).textContent =
+    sum(
+      "early_leave_days"
+    );
+
+
+  attEl(
+    "mNoOut"
+  ).textContent =
+    sum(
+      "no_checkout_days"
+    );
+
+
+  attEl(
+    "monthlyCount"
+  ).textContent =
+    `يظهر ${
+      rows.length
+    } من أصل ${
+      monthlyRows.length
+    }`;
+
+
+  const tbody =
+    attEl(
+      "monthlyHistory"
+    );
+
+
+  if(!rows.length){
+
+    tbody.innerHTML =
+      `
+        <tr>
+
+          <td
+            colspan="15"
+            class="empty"
+          >
+            لا توجد نتائج مطابقة.
+          </td>
+
+        </tr>
+      `;
+
+    return;
+
+  }
+
+
+  tbody.innerHTML =
+    rows
+      .map(
+        (row,index) => {
+
+          return `
+            <tr>
+
+              <td>
+                ${index + 1}
+              </td>
+
+              <td>
+                <span class="person-name">
+                  ${esc(
+                    row.full_name
+                  )}
+                </span>
+              </td>
+
+              <td>
+                ${esc(
+                  getRoleLabel(
+                    row.role
+                  )
+                )}
+              </td>
+
+              <td class="dept-text">
+                ${esc(
+                  row.departments ||
+                  "غير محدد"
+                )}
+              </td>
+
+              <td>
+                ${
+                  Number(
+                    row.working_days
+                  ) || 0
+                }
+              </td>
+
+              <td>
+                ${
+                  Number(
+                    row.attendance_days
+                  ) || 0
+                }
+              </td>
+
+              <td>
+                ${
+                  Number(
+                    row.absent_days
+                  ) || 0
+                }
+              </td>
+
+              <td>
+                ${
+                  Number(
+                    row.excused_absence_days
+                  ) || 0
+                }
+              </td>
+
+              <td>
+                ${
+                  Number(
+                    row.official_leave_days
+                  ) || 0
+                }
+              </td>
+
+              <td>
+                ${
+                  Number(
+                    row.missing_days
+                  ) || 0
+                }
+              </td>
+
+              <td>
+                ${
+                  Number(
+                    row.late_days
+                  ) || 0
+                }
+              </td>
+
+              <td>
+                ${
+                  Number(
+                    row.total_late_minutes
+                  ) || 0
+                }
+              </td>
+
+              <td>
+                ${
+                  Number(
+                    row.early_leave_days
+                  ) || 0
+                }
+              </td>
+
+              <td>
+                ${
+                  Number(
+                    row.total_early_leave_minutes
+                  ) || 0
+                }
+              </td>
+
+              <td>
+                ${
+                  Number(
+                    row.no_checkout_days
+                  ) || 0
+                }
+              </td>
+
+            </tr>
+          `;
+
+        }
+      )
+      .join("");
+
+}
+
+
+/* =========================================================
+   التبديل بين اليومي والشهري
+========================================================= */
+
+function showReport(type){
+
+  const monthly =
+    type === "monthly";
+
+
+  attEl(
+    "dailyArea"
+  ).classList.toggle(
+    "hide",
+    monthly
+  );
+
+
+  attEl(
+    "monthlyArea"
+  ).classList.toggle(
+    "show",
+    monthly
+  );
+
+
+  attEl(
+    "dailyTab"
+  ).classList.toggle(
+    "active",
+    !monthly
+  );
+
+
+  attEl(
+    "monthlyTab"
+  ).classList.toggle(
+    "active",
+    monthly
+  );
+
+
+  if(
+    monthly &&
+    !monthlyRows.length
+  ){
+
+    loadMonthlyReport();
+
+  }
+
+}
+
+
+/* =========================================================
+   الطباعة
+========================================================= */
+
+function printDaily(){
+
+  showReport(
+    "daily"
+  );
+
+  setTimeout(
+    ()=>{
+      window.print();
+    },
+    100
+  );
+
+}
+
+
+function printMonthly(){
+
+  showReport(
+    "monthly"
+  );
+
+  setTimeout(
+    ()=>{
+      window.print();
+    },
+    100
+  );
+
+}
+
+
+/* =========================================================
+   تحديث الشخصي
+========================================================= */
+
+async function refreshPersonalData(){
+
+  await loadTodayRecord();
+
+  await loadMyHistory();
+
+}
+
+
+/* =========================================================
+   تشغيل الصفحة
+========================================================= */
+
+async function initAttendance(){
+
+  /*
+    مهم جدًا:
+    الساعة والتاريخ والرسالة تبدأ أولًا
+    قبل أي اتصال بقاعدة البيانات.
+    وبالتالي الصفحة لن تبقى على
+    --:--:--
+    حتى لو تأخر الاتصال.
+  */
+
+  startClock();
+  refreshAttendanceWindow();
+  setInterval(refreshAttendanceWindow,15000);
+  window.addEventListener("focus",refreshAttendanceWindow);
+
+  showToday();
+
+
+  const firstDailyMessage =
+    getDailyMessage();
+
+
+  attEl(
+    "dayMessage"
+  ).textContent =
+    firstDailyMessage;
+
+
+  attEl(
+    "dailyWelcome"
+  ).textContent =
+    firstDailyMessage;
+
+
+  const today =
+    getBahrainDateString();
+
+
+  attEl(
+    "filterDate"
+  ).value =
+    today;
+
+
+  attEl(
+    "monthlyMonth"
+  ).value =
+    today.slice(
+      0,
+      7
+    );
+
+
+  try{
+
+    /*
+      نفس طريقة التهيئة الأصلية
+      الموجودة في المنصة
+    */
+
+    await WRGraph.init();
+
+
+    const {
+      data:userData,
+      error:userError
+    } =
+      await wrSupabase.auth
+        .getUser();
+
+
+    if(
+      userError ||
+      !userData?.user
+    ){
+
+      window.location.href =
+        "../../index.html";
+
+      return;
+
+    }
+
+
+    currentUser =
+      userData.user;
+
+
+    currentProfile =
+      await WRGraph
+        .getUserProfile();
+
+
+    if(!currentProfile){
+
+      throw new Error(
+        "تعذر قراءة بيانات المستخدم."
+      );
+
+    }
+
+
+    /*
+      الاسم
+    */
+
+    const name =
+      firstName(
+        currentProfile.full_name
+      );
+
+
+    attEl(
+      "welcomeName"
+    ).textContent =
+      name
+        ? `أهلًا بكِ يا أ. ${name} 🌷`
+        : "أهلًا بكِ 🌷";
+
+
+    /*
+      تحميل البيانات الشخصية
+    */
+
+    await refreshPersonalData();
+
+
+    /*
+      الإدارة فقط
+    */
+
+    if(isAdmin()){
+
+      attEl(
+        "previewBox"
+      ).classList.add(
+        "show"
+      );
+
+
+      attEl(
+        "adminArea"
+      ).classList.add(
+        "show"
+      );
+
+
+      await loadLeadershipData();
+
+    }
+
+
+  }catch(error){
+
+    console.error(
+      "Attendance init error:",
+      error
+    );
+
+
+    attEl(
+      "statusTitle"
+    ).textContent =
+      "تعذر تشغيل الحضور والانصراف";
+
+
+    attEl(
+      "statusSub"
+    ).textContent =
+      error?.message ||
+      "حدث خطأ غير متوقع.";
+
+  }
+
+}
+
+
+/* =========================================================
+   الأحداث
+========================================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    /*
+      نربط الأحداث أولًا
+    */
+
+    attEl(
+      "checkInBtn"
+    ).addEventListener(
+      "click",
+      registerCheckIn
+    );
+
+
+    attEl(
+      "checkOutBtn"
+    ).addEventListener(
+      "click",
+      registerCheckOut
+    );
+
+
+    attEl(
+      "filterDate"
+    ).addEventListener(
+      "change",
+      loadLeadershipData
+    );
+
+
+    attEl(
+      "filterName"
+    ).addEventListener(
+      "input",
+      applyLeadershipFilters
+    );
+
+
+    attEl(
+      "filterRole"
+    ).addEventListener(
+      "change",
+      applyLeadershipFilters
+    );
+
+
+    attEl(
+      "filterDepartment"
+    ).addEventListener(
+      "change",
+      applyLeadershipFilters
+    );
+
+
+    attEl(
+      "filterStatus"
+    ).addEventListener(
+      "change",
+      applyLeadershipFilters
+    );
+
+
+    attEl(
+      "monthlyMonth"
+    ).addEventListener(
+      "change",
+      loadMonthlyReport
+    );
+
+
+    attEl(
+      "monthlyName"
+    ).addEventListener(
+      "input",
+      applyMonthlyFilters
+    );
+
+
+    attEl(
+      "monthlyRole"
+    ).addEventListener(
+      "change",
+      applyMonthlyFilters
+    );
+
+
+    attEl(
+      "monthlyDepartment"
+    ).addEventListener(
+      "change",
+      applyMonthlyFilters
+    );
+
+
+    attEl(
+      "messageOverlay"
+    ).addEventListener(
+      "click",
+      function(event){
+
+        if(
+          event.target === this
+        ){
+
+          closeSuccessMessage();
+
+        }
+
+      }
+    );
+
+
+    attEl(
+      "adminEditOverlay"
+    ).addEventListener(
+      "click",
+      function(event){
+
+        if(
+          event.target === this
+        ){
+          closeAdminEdit();
+        }
+
+      }
+    );
+
+
+    /*
+      ثم نشغل الصفحة
+    */
+
+    initAttendance();
+
+  }
+);
+
+</script>
+
+</body>
+
+</html>

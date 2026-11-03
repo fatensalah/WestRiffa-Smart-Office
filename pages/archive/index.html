@@ -1,29 +1,14 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-
 <head>
-
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>الأرشيف الذكي | WestRiffa Smart Office</title>
 
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1"
->
-
-<title>
-الأرشيف الذكي | WestRiffa Smart Office
-</title>
-
-<link
-  rel="stylesheet"
-  href="../../css/app.css?v=20260816-archive4"
->
+<link rel="stylesheet" href="../../css/app.css?v=20261103-archive-manage">
 
 <style>
-
-*{
-  box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 body{
   margin:0;
@@ -32,8 +17,10 @@ body{
   color:#173c34;
 }
 
+button,input,select{font-family:inherit}
+
 .archive-page{
-  width:min(1250px,94%);
+  width:min(1280px,94%);
   margin:28px auto 60px;
 }
 
@@ -54,33 +41,38 @@ body{
 .archive-head p{
   margin:0;
   color:#6b7a72;
+  line-height:1.8;
+}
+
+.year-filter-box,
+.scope-box,
+.records-area,
+.classification-toolbar{
+  background:#fff;
+  border:1px solid #dce8e3;
+  border-radius:14px;
+  box-shadow:0 5px 16px rgba(0,0,0,.035);
 }
 
 .year-filter-box{
   min-width:230px;
   padding:12px 14px;
-  border:1px solid #dce8e3;
-  border-radius:14px;
-  background:#fff;
-  box-shadow:0 5px 16px rgba(0,0,0,.035);
 }
 
 .year-filter-box label{
   display:block;
   margin-bottom:7px;
-  color:#45645a;
   font-size:12px;
   font-weight:700;
 }
 
 .year-filter-box select{
   width:100%;
-  padding:10px 11px;
+  padding:10px;
   border:1px solid #d4ded9;
   border-radius:10px;
   background:#fff;
   color:#075c40;
-  font-family:inherit;
   font-weight:700;
 }
 
@@ -92,24 +84,72 @@ body{
 }
 
 .scope-box{
-  margin:0 0 18px;
   padding:13px 15px;
-  border:1px solid #dce8e3;
-  border-radius:12px;
-  background:#fff;
+  margin-bottom:18px;
   color:#45645a;
   font-size:13px;
   line-height:1.8;
 }
 
-.folder-grid{
+.archive-breadcrumb{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  flex-wrap:wrap;
+  margin-bottom:18px;
+  color:#73827b;
+  font-size:13px;
+}
+
+.archive-breadcrumb button{
+  border:0;
+  background:none;
+  padding:0;
+  color:#075c40;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.archive-breadcrumb .current{
+  color:#741a3a;
+  font-weight:700;
+}
+
+.archive-view{display:none}
+.archive-view.active{display:block}
+
+.view-heading{margin-bottom:17px}
+
+.view-heading h2{
+  margin:0 0 5px;
+  color:#075c40;
+}
+
+.view-heading p{
+  margin:0;
+  color:#728079;
+  font-size:13px;
+  line-height:1.8;
+}
+
+.folder-grid,
+.project-grid{
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
   gap:16px;
   margin-bottom:26px;
 }
 
-.folder-card{
+.domain-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:16px;
+  margin-bottom:25px;
+}
+
+.folder-card,
+.domain-card,
+.project-card{
   border:1px solid #e1e9e5;
   border-radius:18px;
   background:#fff;
@@ -117,24 +157,53 @@ body{
   cursor:pointer;
   box-shadow:0 7px 22px rgba(0,0,0,.045);
   transition:.2s ease;
-  min-height:150px;
   text-align:right;
-  font-family:inherit;
 }
 
-.folder-card:hover{
+.folder-card:hover,
+.domain-card:hover,
+.project-card:hover{
   transform:translateY(-3px);
   box-shadow:0 12px 28px rgba(15,81,63,.10);
 }
 
-.folder-icon{
-  font-size:34px;
-  margin-bottom:12px;
+.folder-card{min-height:150px}
+.domain-card{min-height:175px}
+.project-card{min-height:125px}
+
+.folder-icon,
+.project-icon{
+  font-size:30px;
+  margin-bottom:10px;
 }
 
-.folder-card h3{
+.domain-number{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  background:#f2f7f5;
+  color:#075c40;
+  font-weight:900;
+  margin-bottom:11px;
+}
+
+.folder-card h3,
+.domain-card h3,
+.project-card h3{
   margin:0 0 8px;
   color:#075c40;
+  line-height:1.6;
+}
+
+.folder-card p,
+.domain-card p{
+  margin:0 0 12px;
+  color:#7a8982;
+  font-size:12px;
+  line-height:1.7;
 }
 
 .folder-count{
@@ -143,22 +212,27 @@ body{
 }
 
 .folder-count strong{
-  color:#075c40;
+  color:#741a3a;
   font-size:22px;
   margin-left:5px;
 }
 
-.records-area{
-  display:none;
-  background:#fff;
-  border:1px solid #e1e9e5;
-  border-radius:18px;
-  padding:22px;
-  box-shadow:0 7px 22px rgba(0,0,0,.04);
+.domain-card.unclassified{
+  border-style:dashed;
+  background:#fffdf9;
 }
 
-.records-area.open{
-  display:block;
+.domain-card.unclassified h3{
+  color:#8a6424;
+}
+
+.domain-card.unclassified .domain-number{
+  background:#fbf3df;
+  color:#8a6424;
+}
+
+.records-area{
+  padding:22px;
 }
 
 .records-head{
@@ -175,13 +249,12 @@ body{
   color:#075c40;
 }
 
-.back-folders{
+.back-button{
   border:0;
   background:#eef4f2;
   color:#075c40;
   border-radius:10px;
   padding:10px 14px;
-  font-family:inherit;
   font-weight:700;
   cursor:pointer;
 }
@@ -198,8 +271,6 @@ body{
   padding:11px 12px;
   border:1px solid #d4ded9;
   border-radius:10px;
-  font-family:inherit;
-  background:#fff;
 }
 
 .records-list{
@@ -217,30 +288,153 @@ body{
 .record-card h3{
   margin:0 0 8px;
   color:#075c40;
+  line-height:1.7;
+}
+
+.record-badges{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
+
+.record-badge{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:700;
+  background:#edf5f2;
+  color:#075c40;
+}
+
+.record-badge.domain{
+  background:#f7edf1;
+  color:#741a3a;
+}
+
+.record-badge.project{
+  background:#fbf5e8;
+  color:#7b6027;
+}
+
+.record-badge.unclassified{
+  background:#fff1d8;
+  color:#8a6424;
 }
 
 .record-meta{
   color:#6b7a72;
   font-size:13px;
-  line-height:1.8;
+  line-height:1.9;
 }
 
 .record-actions{
-  margin-top:12px;
+  margin-top:14px;
   display:flex;
   gap:8px;
   flex-wrap:wrap;
 }
 
-.btn-open{
-  display:inline-block;
-  text-decoration:none;
-  background:#075c40;
-  color:#fff;
+.btn-report,
+.btn-edit,
+.btn-delete,
+.btn-classify{
+  border:0;
   border-radius:9px;
   padding:9px 13px;
   font-size:13px;
   font-weight:700;
+  cursor:pointer;
+  text-decoration:none;
+  display:inline-block;
+}
+
+.btn-report{
+  background:#075c40;
+  color:#fff;
+}
+
+.btn-edit{
+  background:#eef4f1;
+  color:#075c40;
+  border:1px solid #cddbd4;
+}
+
+.btn-delete{
+  background:#fff0f0;
+  color:#a51f1f;
+  border:1px solid #f0caca;
+}
+
+.btn-classify{
+  background:#741a3a;
+  color:#fff;
+}
+
+.record-select-wrap{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:10px;
+  font-weight:700;
+  color:#52645b;
+}
+
+.record-select{
+  width:18px;
+  height:18px;
+}
+
+.classification-toolbar{
+  display:none;
+  padding:14px;
+  margin-bottom:16px;
+}
+
+.classification-toolbar.active{
+  display:block;
+}
+
+.classification-row{
+  display:grid;
+  grid-template-columns:auto 1fr 1fr 1fr auto;
+  gap:10px;
+  align-items:end;
+}
+
+.classification-row label{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  font-size:12px;
+  font-weight:700;
+  color:#52645b;
+}
+
+.classification-row select,
+.classification-row input{
+  min-height:42px;
+  border:1px solid #ccd8d2;
+  border-radius:9px;
+  padding:8px;
+  background:#fff;
+}
+
+.select-all-box{
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:center;
+  gap:6px!important;
+  white-space:nowrap;
+  padding-bottom:10px;
+}
+
+.classification-note{
+  margin-top:9px;
+  color:#6b7a72;
+  font-size:12px;
+  line-height:1.7;
 }
 
 .empty{
@@ -265,623 +459,533 @@ body{
 }
 
 @media(max-width:900px){
-
-  .folder-grid{
-    grid-template-columns:repeat(2,1fr);
-  }
-
-  .archive-tools{
+  .folder-grid,
+  .project-grid,
+  .domain-grid{
     grid-template-columns:1fr;
   }
 
-}
-
-@media(max-width:600px){
-
-  .folder-grid{
+  .archive-tools,
+  .classification-row{
     grid-template-columns:1fr;
   }
 
+  .select-all-box{
+    padding-bottom:0;
+  }
 }
-
 </style>
-
 </head>
-
 
 <body>
 
-
-<div
-  id="accessLoader"
-  class="access-loader"
->
+<div id="accessLoader" class="access-loader">
   جاري تحميل صلاحيات الأرشيف...
 </div>
 
-
 <header class="topbar">
-
   <div class="brand">
-
-    <img
-      src="../../assets/school-header.jpg"
-      alt="شعار المدرسة"
-    >
+    <img src="../../assets/school-header.jpg" alt="شعار المدرسة">
 
     <div>
+      <h1>الأرشيف الذكي</h1>
+      <p>WestRiffa Smart Office</p>
+    </div>
+  </div>
 
-      <h1>
-        الأرشيف الذكي
-      </h1>
+  <div class="header-actions">
+    <a class="btn btn-soft" href="../../index.html">
+      🏠 الرئيسية
+    </a>
+  </div>
+</header>
 
+<main class="archive-page">
+
+  <div class="archive-head">
+
+    <div>
+      <h1>📁 الأرشيف المدرسي الذكي</h1>
       <p>
-        أرشيف منظم حسب نوع السجل
+        أرشيف موحد للسجلات والتوثيقات المدرسية مع تصنيف الفعاليات
+        وفق مجالات التقييم المدرسي.
       </p>
+    </div>
 
+    <div class="year-filter-box">
+      <label for="schoolYearFilter">العام الدراسي</label>
+
+      <select id="schoolYearFilter">
+        <option value="">جاري تحميل الأعوام...</option>
+      </select>
+
+      <small id="schoolYearHint">
+        يُعرض العام الدراسي النشط تلقائيًا.
+      </small>
     </div>
 
   </div>
 
-
-  <div class="header-actions">
-
-    <a
-      class="btn btn-soft"
-      href="../../index.html"
-    >
-      🏠 الرئيسية
-    </a>
-
+  <div id="scopeBox" class="scope-box">
+    جارٍ التحقق من صلاحية الحساب...
   </div>
 
-</header>
-
-
-<main class="archive-page">
-
-
-<div class="archive-head">
-
-  <div>
-
-    <h1>
-      📁 مجلدات الأرشيف
-    </h1>
-
-    <p>
-      اختاري المجلد المطلوب للوصول إلى السجلات المحفوظة.
-    </p>
-
-  </div>
-
-
-  <div class="year-filter-box">
-
-    <label for="schoolYearFilter">
-      العام الدراسي
-    </label>
-
-    <select id="schoolYearFilter">
-
-      <option value="">
-        جاري تحميل الأعوام...
-      </option>
-
-    </select>
-
-    <small id="schoolYearHint">
-      يُعرض العام الدراسي النشط تلقائيًا.
-    </small>
-
-  </div>
-
-</div>
-
-
-<div
-  id="scopeBox"
-  class="scope-box"
->
-  جارٍ التحقق من صلاحية الحساب...
-</div>
-
-
-<section
-  id="foldersView"
-  class="folder-grid"
->
-
-
-<button
-  class="folder-card"
-  data-folder="activities"
->
-
-  <div class="folder-icon">
-    🎯
-  </div>
-
-  <h3>
-    الفعاليات
-  </h3>
-
-  <div class="folder-count">
-
-    <strong id="countActivities">
-      0
-    </strong>
-
-    سجل
-
-  </div>
-
-</button>
-
-
-<button
-  class="folder-card"
-  data-folder="meetings"
->
-
-  <div class="folder-icon">
-    📅
-  </div>
-
-  <h3>
-    الاجتماعات
-  </h3>
-
-  <div class="folder-count">
-
-    <strong id="countMeetings">
-      0
-    </strong>
-
-    سجل
-
-  </div>
-
-</button>
-
-
-<button
-  class="folder-card"
-  data-folder="certificates"
->
-
-  <div class="folder-icon">
-    🏅
-  </div>
-
-  <h3>
-    الشهادات
-  </h3>
-
-  <div class="folder-count">
-
-    <strong id="countCertificates">
-      0
-    </strong>
-
-    سجل
-
-  </div>
-
-</button>
-
-
-<button
-  class="folder-card"
-  data-folder="exchange"
->
-
-  <div class="folder-icon">
-    🤝
-  </div>
-
-  <h3>
-    الزيارات التبادلية
-  </h3>
-
-  <div class="folder-count">
-
-    <strong id="countExchange">
-      0
-    </strong>
-
-    سجل
-
-  </div>
-
-</button>
-
-
-<button
-  class="folder-card"
-  data-folder="classroom"
->
-
-  <div class="folder-icon">
-    👁
-  </div>
-
-  <h3>
-    الزيارات الصفية
-  </h3>
-
-  <div class="folder-count">
-
-    <strong id="countClassroom">
-      0
-    </strong>
-
-    سجل
-
-  </div>
-
-</button>
-
-
-<button
-  class="folder-card"
-  data-folder="permissions"
->
-
-  <div class="folder-icon">
-    🕒
-  </div>
-
-  <h3>
-    طلبات الاستئذان
-  </h3>
-
-  <div class="folder-count">
-
-    <strong id="countPermissions">
-      0
-    </strong>
-
-    سجل
-
-  </div>
-
-</button>
-
-
-<button
-  class="folder-card"
-  data-folder="lessonPlans"
->
-
-  <div class="folder-icon">
-    📚
-  </div>
-
-  <h3>
-    دفتر التحضير الإلكتروني
-  </h3>
-
-  <div class="folder-count">
-
-    <strong id="countLessonPlans">
-      0
-    </strong>
-
-    سجل
-
-  </div>
-
-</button>
-
-
-<button
-  class="folder-card"
-  data-folder="grades"
->
-
-  <div class="folder-icon">
-    📊
-  </div>
-
-  <h3>
-    الدرجات والاختبارات
-  </h3>
-
-  <div class="folder-count">
-
-    <strong id="countGrades">
-      0
-    </strong>
-
-    سجل
-
-  </div>
-
-</button>
-
-
-</section>
-
-
-<section
-  id="recordsArea"
-  class="records-area"
->
-
-
-<div class="records-head">
-
-  <h2 id="folderTitle">
-    السجلات
-  </h2>
-
-  <button
-    id="backFoldersBtn"
-    class="back-folders"
-    type="button"
-  >
-    ← الرجوع للمجلدات
-  </button>
-
-</div>
-
-
-<div class="archive-tools">
-
-  <input
-    id="searchInput"
-    type="search"
-    placeholder="بحث داخل هذا المجلد..."
-  >
-
-  <input
-    id="dateFrom"
-    type="date"
-    title="من تاريخ"
-  >
-
-  <input
-    id="dateTo"
-    type="date"
-    title="إلى تاريخ"
-  >
-
-</div>
-
-
-<div
-  id="recordsList"
-  class="records-list"
-></div>
-
-
-</section>
-
+  <div id="archiveBreadcrumb" class="archive-breadcrumb"></div>
+
+  <!-- المجلدات الرئيسية -->
+  <section id="mainFoldersView" class="archive-view active">
+
+    <div class="view-heading">
+      <h2>مجلدات الأرشيف</h2>
+      <p>اختاري نوع السجل المطلوب.</p>
+    </div>
+
+    <div class="folder-grid">
+
+      <button type="button" class="folder-card" data-main-folder="activities">
+        <div class="folder-icon">🎯</div>
+        <h3>التوثيقات والفعاليات</h3>
+        <p>مصنفة وفق المجالات الأربعة والمشاريع المدرسية الرسمية.</p>
+        <div class="folder-count">
+          <strong id="countActivities">0</strong> توثيق
+        </div>
+      </button>
+
+      <button type="button" class="folder-card" data-main-folder="meetings">
+        <div class="folder-icon">📅</div>
+        <h3>الاجتماعات</h3>
+        <p>محاضر الاجتماعات والدعوات المحفوظة.</p>
+        <div class="folder-count">
+          <strong id="countMeetings">0</strong> سجل
+        </div>
+      </button>
+
+      <button type="button" class="folder-card" data-main-folder="certificates">
+        <div class="folder-icon">🏅</div>
+        <h3>الشهادات</h3>
+        <p>الشهادات والتكريمات المحفوظة بالمنصة.</p>
+        <div class="folder-count">
+          <strong id="countCertificates">0</strong> سجل
+        </div>
+      </button>
+
+      <button type="button" class="folder-card" data-main-folder="exchange">
+        <div class="folder-icon">🤝</div>
+        <h3>الزيارات التبادلية</h3>
+        <p>الزيارات المهنية والتبادلية المسجلة.</p>
+        <div class="folder-count">
+          <strong id="countExchange">0</strong> سجل
+        </div>
+      </button>
+
+      <button type="button" class="folder-card" data-main-folder="classroom">
+        <div class="folder-icon">👁</div>
+        <h3>الزيارات الصفية</h3>
+        <p>سجلات الزيارات الصفية المحفوظة.</p>
+        <div class="folder-count">
+          <strong id="countClassroom">0</strong> سجل
+        </div>
+      </button>
+
+      <button type="button" class="folder-card" data-main-folder="permissions">
+        <div class="folder-icon">🕒</div>
+        <h3>طلبات الاستئذان</h3>
+        <p>طلبات الاستئذان المسجلة بالمنصة.</p>
+        <div class="folder-count">
+          <strong id="countPermissions">0</strong> سجل
+        </div>
+      </button>
+
+      <button type="button" class="folder-card" data-main-folder="lessonPlans">
+        <div class="folder-icon">📚</div>
+        <h3>دفتر التحضير الإلكتروني</h3>
+        <p>تحاضير الدروس الإلكترونية المحفوظة.</p>
+        <div class="folder-count">
+          <strong id="countLessonPlans">0</strong> سجل
+        </div>
+      </button>
+
+      <button type="button" class="folder-card" data-main-folder="grades">
+        <div class="folder-icon">📊</div>
+        <h3>الدرجات والاختبارات</h3>
+        <p>سجلات الدرجات والاختبارات المرفوعة.</p>
+        <div class="folder-count">
+          <strong id="countGrades">0</strong> سجل
+        </div>
+      </button>
+
+    </div>
+  </section>
+
+  <!-- المجالات -->
+  <section id="activityDomainsView" class="archive-view">
+
+    <div class="view-heading">
+      <h2>🎯 التوثيقات والفعاليات</h2>
+      <p>اختاري المجال الرئيسي لعرض مشاريعه وتوثيقاته.</p>
+    </div>
+
+    <div class="domain-grid">
+
+      <button type="button" class="domain-card" data-domain="achievement">
+        <div class="domain-number">1</div>
+        <h3>إنجاز الطلبة الأكاديمي</h3>
+        <p>برامج التحصيل والمهارات والإنجاز الأكاديمي.</p>
+        <div class="folder-count">
+          <strong id="countDomainAchievement">0</strong> توثيق
+        </div>
+      </button>
+
+      <button type="button" class="domain-card" data-domain="teaching_learning_assessment">
+        <div class="domain-number">2</div>
+        <h3>التعليم والتعلم والتقويم</h3>
+        <p>التعليم والتخطيط والتقويم والدعم.</p>
+        <div class="folder-count">
+          <strong id="countDomainTeaching">0</strong> توثيق
+        </div>
+      </button>
+
+      <button type="button" class="domain-card" data-domain="personal_development">
+        <div class="domain-number">3</div>
+        <h3>التطور الشخصي للطلبة ورعايتهم</h3>
+        <p>السلوك والقيم والرعاية والمشاركة الطلابية.</p>
+        <div class="folder-count">
+          <strong id="countDomainPersonal">0</strong> توثيق
+        </div>
+      </button>
+
+      <button type="button" class="domain-card" data-domain="leadership_management">
+        <div class="domain-number">4</div>
+        <h3>القيادة والإدارة والحوكمة</h3>
+        <p>التطوير المؤسسي والشراكة والأمان والابتكار.</p>
+        <div class="folder-count">
+          <strong id="countDomainLeadership">0</strong> توثيق
+        </div>
+      </button>
+
+      <button type="button" class="domain-card unclassified" data-domain="unclassified">
+        <div class="domain-number">؟</div>
+        <h3>غير مصنف</h3>
+        <p>
+          التوثيقات القديمة التي لم يُحدد لها مجال بعد.
+          يمكن تصنيف سجل واحد أو مجموعة سجلات معًا.
+        </p>
+        <div class="folder-count">
+          <strong id="countDomainUnclassified">0</strong> توثيق
+        </div>
+      </button>
+
+    </div>
+  </section>
+
+  <!-- المشاريع -->
+  <section id="projectsView" class="archive-view">
+
+    <div class="view-heading">
+      <h2 id="projectsViewTitle">المشاريع</h2>
+      <p id="projectsViewHint">اختاري المشروع المطلوب.</p>
+    </div>
+
+    <div id="projectsGrid" class="project-grid"></div>
+
+  </section>
+
+  <!-- السجلات -->
+  <section id="recordsView" class="archive-view">
+
+    <div class="records-area">
+
+      <div class="records-head">
+        <h2 id="recordsTitle">السجلات</h2>
+
+        <button id="backButton" class="back-button" type="button">
+          ← رجوع
+        </button>
+      </div>
+
+      <div id="classificationToolbar" class="classification-toolbar">
+
+        <div class="classification-row">
+
+          <label class="select-all-box">
+            <input id="selectAllUnclassified" type="checkbox">
+            تحديد الكل
+          </label>
+
+          <label>
+            المجال الرئيسي
+            <select id="bulkDomain">
+              <option value="">اختاري المجال</option>
+            </select>
+          </label>
+
+          <label>
+            المشروع المدرسي
+            <select id="bulkProject">
+              <option value="">اختاري المشروع</option>
+            </select>
+          </label>
+
+          <label>
+            نوع التوثيق
+            <input
+              id="bulkCategory"
+              type="text"
+              placeholder="مثال: مبادرة / برنامج / فعالية"
+            >
+          </label>
+
+          <button
+            id="bulkClassifyButton"
+            class="btn-classify"
+            type="button"
+          >
+            تصنيف ونقل المحدد
+          </button>
+
+        </div>
+
+        <div class="classification-note">
+          يتم تعديل التصنيف فقط، مع بقاء السجل نفسه وصوره وتاريخه
+          والمنفذة الرئيسية وجميع بياناته كما هي.
+        </div>
+
+      </div>
+
+      <div class="archive-tools">
+
+        <input
+          id="searchInput"
+          type="search"
+          placeholder="بحث داخل السجلات..."
+        >
+
+        <input id="dateFrom" type="date" title="من تاريخ">
+
+        <input id="dateTo" type="date" title="إلى تاريخ">
+
+      </div>
+
+      <div id="recordsList" class="records-list"></div>
+
+    </div>
+  </section>
 
 </main>
 
-
-<script
-  src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-></script>
-
-<script src="../../js/config.js?v=20260816-archive4"></script>
-<script src="../../js/graph.js?v=20260816-archive4"></script>
-<script src="../../js/common.js?v=20260816-archive4"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../../js/config.js?v=20261103-archive-manage"></script>
+<script src="../../js/graph.js?v=20261103-archive-manage"></script>
+<script src="../../js/common.js?v=20261103-archive-manage"></script>
 
 <script>
-
 "use strict";
 
+const sb = window.supabase.createClient(
+  window.WR_CONFIG.supabaseUrl,
+  window.WR_CONFIG.supabaseKey
+);
 
-const sb =
-  window.supabase.createClient(
-    window.WR_CONFIG.supabaseUrl,
-    window.WR_CONFIG.supabaseKey
-  );
+let allRecords = [];
+let currentUser = null;
+let currentProfile = null;
+let currentRole = "teacher";
+
+let coordinatorDepartmentIds = [];
+let coordinatorVisibleUserIds = [];
+
+let activeSchoolYear = "";
+let selectedSchoolYear = "";
+
+let currentMainFolder = null;
+let currentActivityDomain = null;
+let currentActivityProject = null;
+let recordsReturnLevel = "main";
+
+const DOMAIN_LABELS = {
+  achievement:"إنجاز الطلبة الأكاديمي",
+  teaching_learning_assessment:"التعليم والتعلم والتقويم",
+  personal_development:"التطور الشخصي للطلبة ورعايتهم",
+  leadership_management:"القيادة والإدارة والحوكمة",
+  unclassified:"غير مصنف"
+};
+
+const DOMAIN_PROJECTS = {
+
+  achievement:[
+    "آفاق الإتقان",
+    "آفاق المهارات",
+    "آفاق المستقبل",
+    "آفاق وطنية",
+    "آفاق كتابية"
+  ],
+
+  teaching_learning_assessment:[
+    "مداد الاستراتيجيات",
+    "مداد التخطيط",
+    "مداد التقويم",
+    "مداد الدعم"
+  ],
+
+  personal_development:[
+    "رايات التحدي",
+    "رايات السلوك الواعي",
+    "رايات الاستدامة"
+  ],
+
+  leadership_management:[
+    "خطى التقييم والتطوير",
+    "خطى نحو التميز",
+    "خطى الشراكة",
+    "خطى الأمان",
+    "خطى الابتكار"
+  ]
+};
+
+const folderConfig = {
+
+  activities:{
+    title:"🎯 التوثيقات والفعاليات",
+    types:["activity"]
+  },
+
+  meetings:{
+    title:"📅 الاجتماعات",
+    types:["meeting","invitation"]
+  },
+
+  certificates:{
+    title:"🏅 الشهادات",
+    types:["certificate"]
+  },
+
+  exchange:{
+    title:"🤝 الزيارات التبادلية",
+    types:["exchange_visit"]
+  },
+
+  classroom:{
+    title:"👁 الزيارات الصفية",
+    types:["classroom_visit"]
+  },
+
+  permissions:{
+    title:"🕒 طلبات الاستئذان",
+    types:["permission_request"]
+  },
+
+  lessonPlans:{
+    title:"📚 دفتر التحضير الإلكتروني",
+    types:["lesson_plan"]
+  },
+
+  grades:{
+    title:"📊 الدرجات والاختبارات",
+    types:["grade_sheet"]
+  }
+};
+
+const mainFoldersView = document.getElementById("mainFoldersView");
+const activityDomainsView = document.getElementById("activityDomainsView");
+const projectsView = document.getElementById("projectsView");
+const recordsView = document.getElementById("recordsView");
+
+const projectsGrid = document.getElementById("projectsGrid");
+const projectsViewTitle = document.getElementById("projectsViewTitle");
+const projectsViewHint = document.getElementById("projectsViewHint");
+
+const recordsTitle = document.getElementById("recordsTitle");
+const recordsList = document.getElementById("recordsList");
+
+const searchInput = document.getElementById("searchInput");
+const dateFrom = document.getElementById("dateFrom");
+const dateTo = document.getElementById("dateTo");
+
+const schoolYearFilter = document.getElementById("schoolYearFilter");
+const schoolYearHint = document.getElementById("schoolYearHint");
+
+const archiveBreadcrumb = document.getElementById("archiveBreadcrumb");
+const backButton = document.getElementById("backButton");
+const accessLoader = document.getElementById("accessLoader");
+
+const classificationToolbar =
+  document.getElementById("classificationToolbar");
+
+const bulkDomain =
+  document.getElementById("bulkDomain");
+
+const bulkProject =
+  document.getElementById("bulkProject");
+
+const bulkCategory =
+  document.getElementById("bulkCategory");
+
+const selectAllUnclassified =
+  document.getElementById("selectAllUnclassified");
+
+const bulkClassifyButton =
+  document.getElementById("bulkClassifyButton");
 
 
-let allRecords =
-  [];
+function esc(value){
 
-let currentFolder =
-  null;
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
 
-let currentUser =
-  null;
-
-let currentProfile =
-  null;
-
-let currentRole =
-  "teacher";
-
-let coordinatorDepartmentIds =
-  [];
-
-let coordinatorVisibleUserIds =
-  [];
-
-let activeSchoolYear =
-  "";
-
-let selectedSchoolYear =
-  "";
-
-
-const foldersView =
-  document.getElementById(
-    "foldersView"
-  );
-
-
-const recordsArea =
-  document.getElementById(
-    "recordsArea"
-  );
-
-
-const folderTitle =
-  document.getElementById(
-    "folderTitle"
-  );
-
-
-const recordsList =
-  document.getElementById(
-    "recordsList"
-  );
-
-
-const searchInput =
-  document.getElementById(
-    "searchInput"
-  );
-
-
-const dateFrom =
-  document.getElementById(
-    "dateFrom"
-  );
-
-
-const dateTo =
-  document.getElementById(
-    "dateTo"
-  );
-
-
-const schoolYearFilter =
-  document.getElementById(
-    "schoolYearFilter"
-  );
-
-
-const schoolYearHint =
-  document.getElementById(
-    "schoolYearHint"
-  );
-
-
-const backFoldersBtn =
-  document.getElementById(
-    "backFoldersBtn"
-  );
-
-
-const accessLoader =
-  document.getElementById(
-    "accessLoader"
-  );
-
-
-/* =========================================================
-   العام الدراسي
-   ========================================================= */
 
 function schoolYearFromDate(value){
 
-  const raw =
-    String(
-      value ||
-      ""
-    ).trim();
-
+  const raw = String(value || "").trim();
 
   if(!raw){
-
     return "";
-
   }
 
-
-  const match =
-    raw.match(
-      /^(\d{4})-(\d{2})-(\d{2})/
-    );
-
+  const match = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
 
   let year;
   let month;
 
-
   if(match){
 
-    year =
-      Number(
-        match[1]
-      );
-
-    month =
-      Number(
-        match[2]
-      );
+    year = Number(match[1]);
+    month = Number(match[2]);
 
   }else{
 
-    const date =
-      new Date(
-        raw
-      );
+    const date = new Date(raw);
 
-
-    if(
-      Number.isNaN(
-        date.getTime()
-      )
-    ){
-
+    if(Number.isNaN(date.getTime())){
       return "";
-
     }
 
-
-    year =
-      date.getFullYear();
-
-    month =
-      date.getMonth() + 1;
-
+    year = date.getFullYear();
+    month = date.getMonth() + 1;
   }
 
-
-  if(
-    month >= 8
-  ){
-
-    return (
-      `${year}/${year + 1}`
-    );
-
-  }
-
-
-  return (
-    `${year - 1}/${year}`
-  );
-
+  return month >= 8
+    ? `${year}/${year + 1}`
+    : `${year - 1}/${year}`;
 }
 
 
 function recordSchoolYear(record){
 
-  const explicit =
-    String(
-      record?.school_year ||
-      record?.payload?.school_year ||
-      record?.payload?.schoolYear ||
-      ""
-    ).trim();
-
+  const explicit = String(
+    record?.school_year ||
+    record?.payload?.school_year ||
+    record?.payload?.schoolYear ||
+    ""
+  ).trim();
 
   if(explicit){
-
     return explicit;
-
   }
-
 
   return schoolYearFromDate(
     record?.record_date ||
@@ -893,27 +997,17 @@ function recordSchoolYear(record){
     record?.payload?.exam_date ||
     ""
   );
-
 }
 
 
 function schoolYearStart(value){
 
   const match =
-    String(
-      value ||
-      ""
-    ).match(
-      /^(\d{4})/
-    );
-
+    String(value || "").match(/^(\d{4})/);
 
   return match
-    ? Number(
-        match[1]
-      )
+    ? Number(match[1])
     : 0;
-
 }
 
 
@@ -923,18 +1017,12 @@ async function loadActiveSchoolYear(){
 
     if(
       window.WRGraph &&
-      typeof WRGraph.getActiveSchoolYear ===
-        "function"
+      typeof WRGraph.getActiveSchoolYear === "function"
     ){
 
-      activeSchoolYear =
-        String(
-          await WRGraph.getActiveSchoolYear(
-            true
-          ) ||
-          ""
-        ).trim();
-
+      activeSchoolYear = String(
+        await WRGraph.getActiveSchoolYear(true) || ""
+      ).trim();
     }
 
   }catch(error){
@@ -943,341 +1031,135 @@ async function loadActiveSchoolYear(){
       "تعذر قراءة العام الدراسي النشط:",
       error
     );
-
   }
-
 
   if(!activeSchoolYear){
 
     activeSchoolYear =
       schoolYearFromDate(
-        new Date()
-          .toISOString()
+        new Date().toISOString()
       );
-
   }
 
-
-  selectedSchoolYear =
-    activeSchoolYear;
-
+  selectedSchoolYear = activeSchoolYear;
 }
 
 
 function setupSchoolYearFilter(){
 
-  if(
-    !schoolYearFilter
-  ){
-
-    return;
-
-  }
-
-
-  const years =
-    new Set();
-
+  const years = new Set();
 
   if(activeSchoolYear){
-
-    years.add(
-      activeSchoolYear
-    );
-
+    years.add(activeSchoolYear);
   }
 
+  allRecords.forEach(record=>{
 
-  (
-    allRecords ||
-    []
-  )
-    .forEach(
-      record => {
+    const year = recordSchoolYear(record);
 
-        const year =
-          recordSchoolYear(
-            record
-          );
-
-
-        if(year){
-
-          years.add(
-            year
-          );
-
-        }
-
-      }
-    );
-
+    if(year){
+      years.add(year);
+    }
+  });
 
   const sortedYears =
-    [
-      ...years
-    ]
+    [...years]
       .sort(
-        (
-          a,
-          b
-        ) =>
+        (a,b)=>
           schoolYearStart(b) -
           schoolYearStart(a)
       );
 
+  schoolYearFilter.innerHTML = [
+    '<option value="all">كل الأعوام الدراسية</option>',
 
-  schoolYearFilter.innerHTML =
-    [
-      '<option value="all">كل الأعوام الدراسية</option>',
+    ...sortedYears.map(
+      year=>
+        `<option value="${esc(year)}">
+          ${esc(year)}
+          ${year === activeSchoolYear ? " — الحالي" : ""}
+        </option>`
+    )
 
-      ...sortedYears.map(
-        year =>
-          `<option value="${esc(year)}">${esc(year)}${year === activeSchoolYear ? " — الحالي" : ""}</option>`
-      )
-    ]
-      .join(
-        ""
-      );
-
+  ].join("");
 
   if(
     activeSchoolYear &&
-    sortedYears.includes(
-      activeSchoolYear
-    )
+    sortedYears.includes(activeSchoolYear)
   ){
 
-    schoolYearFilter.value =
-      activeSchoolYear;
-
-    selectedSchoolYear =
-      activeSchoolYear;
+    schoolYearFilter.value = activeSchoolYear;
+    selectedSchoolYear = activeSchoolYear;
 
   }else{
 
-    schoolYearFilter.value =
-      "all";
-
-    selectedSchoolYear =
-      "all";
-
+    schoolYearFilter.value = "all";
+    selectedSchoolYear = "all";
   }
 
-
   updateSchoolYearHint();
-
 }
 
 
 function updateSchoolYearHint(){
 
-  if(
-    !schoolYearHint
-  ){
-
-    return;
-
-  }
-
-
-  if(
-    selectedSchoolYear ===
-    "all"
-  ){
+  if(selectedSchoolYear === "all"){
 
     schoolYearHint.textContent =
       "يتم عرض جميع الأعوام الدراسية.";
 
     return;
-
   }
 
-
-  if(
-    selectedSchoolYear ===
-    activeSchoolYear
-  ){
+  if(selectedSchoolYear === activeSchoolYear){
 
     schoolYearHint.textContent =
       `العام الدراسي النشط: ${activeSchoolYear}`;
 
     return;
-
   }
-
 
   schoolYearHint.textContent =
     `أرشيف العام الدراسي: ${selectedSchoolYear}`;
-
 }
 
 
-function recordMatchesSelectedSchoolYear(
-  record
-){
+function recordMatchesSelectedSchoolYear(record){
 
   if(
     !selectedSchoolYear ||
-    selectedSchoolYear ===
-    "all"
+    selectedSchoolYear === "all"
   ){
-
     return true;
-
   }
-
 
   return (
-    recordSchoolYear(
-      record
-    ) ===
+    recordSchoolYear(record) ===
     selectedSchoolYear
   );
-
 }
 
-
-/* =========================================================
-   أنواع الأرشيف
-   ========================================================= */
-
-const folderConfig = {
-
-  activities:{
-    title:"🎯 الفعاليات",
-    types:[
-      "activity"
-    ]
-  },
-
-  meetings:{
-    title:"📅 الاجتماعات",
-    types:[
-      "meeting",
-      "invitation"
-    ]
-  },
-
-  certificates:{
-    title:"🏅 الشهادات",
-    types:[
-      "certificate"
-    ]
-  },
-
-  exchange:{
-    title:"🤝 الزيارات التبادلية",
-    types:[
-      "exchange_visit"
-    ]
-  },
-
-  classroom:{
-    title:"👁 الزيارات الصفية",
-    types:[
-      "classroom_visit"
-    ]
-  },
-
-  permissions:{
-    title:"🕒 طلبات الاستئذان",
-    types:[
-      "permission_request"
-    ]
-  },
-
-  lessonPlans:{
-    title:"📚 دفتر التحضير الإلكتروني",
-    types:[
-      "lesson_plan"
-    ]
-  },
-
-  grades:{
-    title:"📊 الدرجات والاختبارات",
-    types:[
-      "grade_sheet"
-    ]
-  }
-
-};
-
-
-/* =========================================================
-   Escape
-   ========================================================= */
-
-function esc(value){
-
-  return String(
-    value ??
-    ""
-  )
-
-    .replaceAll(
-      "&",
-      "&amp;"
-    )
-
-    .replaceAll(
-      "<",
-      "&lt;"
-    )
-
-    .replaceAll(
-      ">",
-      "&gt;"
-    )
-
-    .replaceAll(
-      '"',
-      "&quot;"
-    )
-
-    .replaceAll(
-      "'",
-      "&#039;"
-    );
-
-}
-
-
-/* =========================================================
-   صلاحيات الأرشيف
-   ========================================================= */
 
 async function loadArchiveAccess(){
 
   currentUser =
     await WRGraph.getAccount();
 
-
   if(!currentUser){
 
-    location.replace(
-      "../../index.html"
-    );
-
+    location.replace("../../index.html");
     return false;
-
   }
 
-
   currentProfile =
-    await WRAccess.getProfile(
-      true
-    );
-
+    await WRAccess.getProfile(true);
 
   if(!currentProfile){
 
     throw new Error(
       "تعذر قراءة صلاحيات المستخدم"
     );
-
   }
-
 
   currentRole =
     String(
@@ -1287,103 +1169,62 @@ async function loadArchiveAccess(){
       .trim()
       .toLowerCase();
 
-
-  if(
-    currentRole ===
-    "coordinator"
-  ){
-
+  if(currentRole === "coordinator"){
     await loadCoordinatorArchiveScope();
-
   }
 
-
   const scopeBox =
-    document.getElementById(
-      "scopeBox"
-    );
-
+    document.getElementById("scopeBox");
 
   if(
-    currentRole ===
-    "admin"
+    currentRole === "admin" ||
+    currentRole === "system_admin"
   ){
 
     scopeBox.textContent =
-      "صلاحية القيادة العليا — يعرض الأرشيف جميع سجلات المنصة.";
+      "صلاحية القيادة العليا — يعرض الأرشيف جميع السجلات المسموح بها.";
 
-  }
-
-
-  else if(
-    currentRole ===
-    "coordinator"
+  }else if(
+    currentRole === "coordinator"
   ){
 
     const departmentText =
-
-      Array.isArray(
-        currentProfile.department_names
-      ) &&
+      Array.isArray(currentProfile.department_names) &&
       currentProfile.department_names.length
 
-        ? currentProfile
-            .department_names
-            .join("، ")
+        ? currentProfile.department_names.join("، ")
 
         : currentProfile.department_name ||
           "الأقسام المرتبطة بحسابك";
 
-
     scopeBox.textContent =
-
       "صلاحية المنسقة — يظهر أرشيفكِ وسجلات معلمات أقسامك فقط: " +
-
       departmentText +
-
       ".";
 
-  }
-
-
-  else{
+  }else{
 
     scopeBox.textContent =
       "أرشيفكِ الشخصي — تظهر سجلات حسابك فقط.";
-
   }
 
-
   return true;
-
 }
 
 
-/* =========================================================
-   أقسام ومعلمات المنسقة
-   ========================================================= */
-
 async function loadCoordinatorArchiveScope(){
 
-  coordinatorDepartmentIds =
-    [];
-
+  coordinatorDepartmentIds = [];
 
   coordinatorVisibleUserIds = [
-    String(
-      currentUser.id
-    )
+    String(currentUser.id)
   ];
 
-
-  let scope =
-    null;
-
+  let scope = null;
 
   if(
     window.WRAccess &&
-    typeof WRAccess.getScope ===
-      "function"
+    typeof WRAccess.getScope === "function"
   ){
 
     try{
@@ -1397,42 +1238,27 @@ async function loadCoordinatorArchiveScope(){
         "تعذر قراءة نطاق المنسقة:",
         error
       );
-
     }
-
   }
 
-
-  if(
-    Array.isArray(
-      scope?.department_ids
-    )
-  ){
+  if(Array.isArray(scope?.department_ids)){
 
     coordinatorDepartmentIds =
-      scope
-        .department_ids
+      scope.department_ids
         .filter(Boolean)
         .map(String);
-
   }
-
 
   if(
     !coordinatorDepartmentIds.length &&
-    Array.isArray(
-      currentProfile?.department_ids
-    )
+    Array.isArray(currentProfile?.department_ids)
   ){
 
     coordinatorDepartmentIds =
-      currentProfile
-        .department_ids
+      currentProfile.department_ids
         .filter(Boolean)
         .map(String);
-
   }
-
 
   if(
     !coordinatorDepartmentIds.length &&
@@ -1440,52 +1266,32 @@ async function loadCoordinatorArchiveScope(){
   ){
 
     coordinatorDepartmentIds = [
-      String(
-        currentProfile.department_id
-      )
+      String(currentProfile.department_id)
     ];
-
   }
 
-
-  if(
-    !coordinatorDepartmentIds.length
-  ){
-
+  if(!coordinatorDepartmentIds.length){
     return;
-
   }
-
 
   const visibleIds =
-    new Set(
-      coordinatorVisibleUserIds
-    );
-
+    new Set(coordinatorVisibleUserIds);
 
   const {
     data:assignments,
     error:assignmentsError
   } =
     await sb
-
-      .from(
-        "profile_departments"
-      )
-
-      .select(
-        `
+      .from("profile_departments")
+      .select(`
         profile_id,
         department_id,
         assignment_type
-        `
-      )
-
+      `)
       .in(
         "department_id",
         coordinatorDepartmentIds
       );
-
 
   if(assignmentsError){
 
@@ -1496,1201 +1302,1650 @@ async function loadCoordinatorArchiveScope(){
 
   }else{
 
+    (assignments || [])
+      .forEach(row=>{
 
-    (
-      assignments ||
-      []
-    )
-      .forEach(
-        row => {
+        const assignmentType =
+          String(
+            row.assignment_type || ""
+          )
+            .trim()
+            .toLowerCase();
 
+        if(
+          row.profile_id &&
+          (
+            !assignmentType ||
+            assignmentType === "teacher"
+          )
+        ){
 
-          const assignmentType =
-            String(
-              row.assignment_type ||
-              ""
-            )
-              .trim()
-              .toLowerCase();
-
-
-          if(
-            row.profile_id &&
-            (
-              !assignmentType ||
-              assignmentType ===
-                "teacher"
-            )
-          ){
-
-            visibleIds.add(
-              String(
-                row.profile_id
-              )
-            );
-
-          }
-
+          visibleIds.add(
+            String(row.profile_id)
+          );
         }
-      );
-
+      });
   }
-
 
   const {
     data:legacyTeachers,
     error:legacyError
   } =
     await sb
-
-      .from(
-        "user_profiles"
-      )
-
-      .select(
-        `
+      .from("user_profiles")
+      .select(`
         user_id,
         role,
         department_id
-        `
-      )
-
-      .eq(
-        "role",
-        "teacher"
-      )
-
+      `)
+      .eq("role","teacher")
       .in(
         "department_id",
         coordinatorDepartmentIds
       );
 
+  if(!legacyError){
 
-  if(legacyError){
+    (legacyTeachers || [])
+      .forEach(row=>{
 
-    console.warn(
-      "Legacy departments:",
-      legacyError
-    );
+        if(row.user_id){
 
-  }else{
-
-
-    (
-      legacyTeachers ||
-      []
-    )
-      .forEach(
-        row => {
-
-
-          if(
-            row.user_id
-          ){
-
-            visibleIds.add(
-              String(
-                row.user_id
-              )
-            );
-
-          }
-
+          visibleIds.add(
+            String(row.user_id)
+          );
         }
-      );
-
+      });
   }
 
-
   coordinatorVisibleUserIds =
-    [
-      ...visibleIds
-    ];
-
+    [...visibleIds];
 }
 
-
-/* =========================================================
-   معرفة صاحبة السجل
-   ========================================================= */
 
 function recordOwnerId(record){
 
   return (
-
     record?.visitor_id ||
-
     record?.teacher_id ||
-
     record?.user_id ||
-
     record?.created_by ||
-
     record?.owner_id ||
-
     record?.payload?.visitor_id ||
-
     record?.payload?.teacher_id ||
-
     record?.payload?.user_id ||
-
     record?.payload?.created_by ||
-
     record?.payload?.owner_id ||
-
     null
-
   );
-
 }
 
-
-/* =========================================================
-   فلترة السجلات حسب الحساب
-   ========================================================= */
 
 function applyClientScope(records){
 
   if(
-    currentRole ===
-    "admin"
+    currentRole === "admin" ||
+    currentRole === "system_admin"
   ){
-
     return records;
-
   }
 
-
   const visibleIds =
-
-    currentRole ===
-    "coordinator"
+    currentRole === "coordinator"
 
       ? new Set(
-          coordinatorVisibleUserIds
-            .map(String)
+          coordinatorVisibleUserIds.map(String)
         )
 
       : new Set([
-          String(
-            currentUser.id
-          )
+          String(currentUser.id)
         ]);
 
+  return records.filter(record=>{
 
-  return records
-    .filter(
-      record => {
+    const ownerId =
+      recordOwnerId(record);
 
+    if(!ownerId){
+      return false;
+    }
 
-        const ownerId =
-          recordOwnerId(
-            record
-          );
-
-
-        if(!ownerId){
-
-          return false;
-
-        }
-
-
-        return visibleIds.has(
-          String(
-            ownerId
-          )
-        );
-
-      }
+    return visibleIds.has(
+      String(ownerId)
     );
-
+  });
 }
-/* =========================================================
-   رابط فتح السجل
-   ========================================================= */
+
+
+function canManageArchiveRecord(record){
+
+  if(
+    currentRole === "admin" ||
+    currentRole === "system_admin"
+  ){
+    return true;
+  }
+
+  const ownerId =
+    recordOwnerId(record);
+
+  if(!ownerId){
+    return false;
+  }
+
+  if(currentRole === "coordinator"){
+
+    return coordinatorVisibleUserIds
+      .map(String)
+      .includes(
+        String(ownerId)
+      );
+  }
+
+  return (
+    String(ownerId) ===
+    String(currentUser.id)
+  );
+}
+
+
+function getActivityDomain(record){
+
+  const value =
+    String(
+      record?.documentation_domain ||
+      record?.payload?.documentationDomain ||
+      record?.payload?.documentation_domain ||
+      ""
+    ).trim();
+
+  if(
+    value &&
+    DOMAIN_LABELS[value]
+  ){
+    return value;
+  }
+
+  return "unclassified";
+}
+
+
+function getActivityProject(record){
+
+  return String(
+    record?.school_project ||
+    record?.payload?.schoolProject ||
+    record?.payload?.school_project ||
+    ""
+  ).trim();
+}
+
+
+function getActivityCategory(record){
+
+  const payload =
+    record?.payload || {};
+
+  let category =
+    String(
+      record?.activity_category ||
+      payload?.activityCategory ||
+      payload?.activity_category ||
+      ""
+    ).trim();
+
+  if(
+    !category ||
+    category === "أخرى"
+  ){
+
+    const custom =
+      String(
+        payload?.otherActivityCategory ||
+        ""
+      ).trim();
+
+    if(custom){
+      category = custom;
+    }
+  }
+
+  return category;
+}
+
+
+function getAllActivityRecords(){
+
+  return allRecords.filter(
+    record=>
+      record.type === "activity" &&
+      recordMatchesSelectedSchoolYear(record)
+  );
+}
+
+
+function getActivityDomainRecords(domain){
+
+  return getAllActivityRecords()
+    .filter(
+      record=>
+        getActivityDomain(record) === domain
+    );
+}
+
+
+function getActivityProjectRecords(
+  domain,
+  project
+){
+
+  return getActivityDomainRecords(domain)
+    .filter(
+      record=>
+        getActivityProject(record) === project
+    );
+}
+
+
+function showArchiveView(viewName){
+
+  [
+    mainFoldersView,
+    activityDomainsView,
+    projectsView,
+    recordsView
+  ].forEach(view=>{
+
+    view?.classList.remove("active");
+  });
+
+  const mapping = {
+    main:mainFoldersView,
+    domains:activityDomainsView,
+    projects:projectsView,
+    records:recordsView
+  };
+
+  mapping[viewName]
+    ?.classList.add("active");
+}
+
+
+function clearRecordFilters(){
+
+  searchInput.value = "";
+  dateFrom.value = "";
+  dateTo.value = "";
+
+  if(selectAllUnclassified){
+    selectAllUnclassified.checked = false;
+  }
+}
+
+
+function renderBreadcrumb(){
+
+  const parts = [];
+
+  parts.push(`
+    <button
+      type="button"
+      data-breadcrumb="main"
+    >
+      الأرشيف
+    </button>
+  `);
+
+  if(currentMainFolder === "activities"){
+
+    parts.push("<span>←</span>");
+
+    if(!currentActivityDomain){
+
+      parts.push(
+        '<span class="current">التوثيقات والفعاليات</span>'
+      );
+
+    }else{
+
+      parts.push(`
+        <button
+          type="button"
+          data-breadcrumb="domains"
+        >
+          التوثيقات والفعاليات
+        </button>
+      `);
+
+      parts.push("<span>←</span>");
+
+      if(!currentActivityProject){
+
+        parts.push(`
+          <span class="current">
+            ${esc(
+              DOMAIN_LABELS[currentActivityDomain] ||
+              ""
+            )}
+          </span>
+        `);
+
+      }else{
+
+        parts.push(`
+          <button
+            type="button"
+            data-breadcrumb="projects"
+          >
+            ${esc(
+              DOMAIN_LABELS[currentActivityDomain] ||
+              ""
+            )}
+          </button>
+        `);
+
+        parts.push("<span>←</span>");
+
+        parts.push(`
+          <span class="current">
+            ${esc(currentActivityProject)}
+          </span>
+        `);
+      }
+    }
+
+  }else if(currentMainFolder){
+
+    parts.push("<span>←</span>");
+
+    parts.push(`
+      <span class="current">
+        ${esc(
+          folderConfig[currentMainFolder]?.title ||
+          ""
+        )}
+      </span>
+    `);
+  }
+
+  archiveBreadcrumb.innerHTML =
+    parts.join("");
+
+  archiveBreadcrumb
+    .querySelectorAll("[data-breadcrumb]")
+    .forEach(button=>{
+
+      button.addEventListener(
+        "click",
+        ()=>{
+
+          const target =
+            button.dataset.breadcrumb;
+
+          if(target === "main"){
+            openMainArchive();
+          }
+
+          if(target === "domains"){
+            openActivityDomains();
+          }
+
+          if(target === "projects"){
+            openActivityDomain(
+              currentActivityDomain
+            );
+          }
+        }
+      );
+    });
+}
+
+
+function openMainArchive(){
+
+  currentMainFolder = null;
+  currentActivityDomain = null;
+  currentActivityProject = null;
+  recordsReturnLevel = "main";
+
+  classificationToolbar
+    ?.classList.remove("active");
+
+  clearRecordFilters();
+
+  showArchiveView("main");
+  renderBreadcrumb();
+}
+
+
+function openActivityDomains(){
+
+  currentMainFolder = "activities";
+  currentActivityDomain = null;
+  currentActivityProject = null;
+  recordsReturnLevel = "domains";
+
+  classificationToolbar
+    ?.classList.remove("active");
+
+  clearRecordFilters();
+
+  updateDomainCounts();
+
+  showArchiveView("domains");
+  renderBreadcrumb();
+}
+
+
+function openActivityDomain(domain){
+
+  currentMainFolder = "activities";
+  currentActivityDomain = domain;
+  currentActivityProject = null;
+
+  clearRecordFilters();
+
+  if(domain === "unclassified"){
+
+    recordsReturnLevel = "domains";
+
+    recordsTitle.textContent =
+      "📂 التوثيقات غير المصنفة";
+
+    setupClassificationToolbar();
+
+    showArchiveView("records");
+
+    renderCurrentRecords();
+    renderBreadcrumb();
+
+    return;
+  }
+
+  classificationToolbar
+    ?.classList.remove("active");
+
+  recordsReturnLevel = "projects";
+
+  renderProjects(domain);
+
+  showArchiveView("projects");
+  renderBreadcrumb();
+}
+
+
+function renderProjects(domain){
+
+  const label =
+    DOMAIN_LABELS[domain] ||
+    "المجال";
+
+  projectsViewTitle.textContent =
+    label;
+
+  projectsViewHint.textContent =
+    "اختاري المشروع لعرض التوثيقات والفعاليات التابعة له.";
+
+  const projects =
+    DOMAIN_PROJECTS[domain] ||
+    [];
+
+  projectsGrid.innerHTML =
+    projects.map(project=>{
+
+      const count =
+        getActivityProjectRecords(
+          domain,
+          project
+        ).length;
+
+      return `
+        <button
+          type="button"
+          class="project-card"
+          data-project="${esc(project)}"
+        >
+          <div class="project-icon">📁</div>
+
+          <h3>${esc(project)}</h3>
+
+          <div class="folder-count">
+            <strong>${count}</strong>
+            توثيق
+          </div>
+        </button>
+      `;
+
+    }).join("");
+
+  projectsGrid
+    .querySelectorAll("[data-project]")
+    .forEach(button=>{
+
+      button.addEventListener(
+        "click",
+        ()=>{
+
+          openActivityProject(
+            button.dataset.project
+          );
+        }
+      );
+    });
+}
+
+
+function openActivityProject(project){
+
+  currentActivityProject = project;
+  recordsReturnLevel = "projects";
+
+  classificationToolbar
+    ?.classList.remove("active");
+
+  clearRecordFilters();
+
+  recordsTitle.textContent =
+    "📁 " + project;
+
+  showArchiveView("records");
+
+  renderCurrentRecords();
+  renderBreadcrumb();
+}
+
+
+function openStandardFolder(folder){
+
+  currentMainFolder = folder;
+  currentActivityDomain = null;
+  currentActivityProject = null;
+  recordsReturnLevel = "main";
+
+  classificationToolbar
+    ?.classList.remove("active");
+
+  clearRecordFilters();
+
+  recordsTitle.textContent =
+    folderConfig[folder]?.title ||
+    "السجلات";
+
+  showArchiveView("records");
+
+  renderCurrentRecords();
+  renderBreadcrumb();
+}
+
+
+function handleBackButton(){
+
+  if(currentMainFolder === "activities"){
+
+    if(currentActivityProject){
+
+      openActivityDomain(
+        currentActivityDomain
+      );
+
+      return;
+    }
+
+    if(currentActivityDomain){
+
+      openActivityDomains();
+      return;
+    }
+
+    openMainArchive();
+    return;
+  }
+
+  openMainArchive();
+}
+
+
+function getCurrentRecords(){
+
+  if(currentMainFolder === "activities"){
+
+    if(currentActivityProject){
+
+      return getActivityProjectRecords(
+        currentActivityDomain,
+        currentActivityProject
+      );
+    }
+
+    if(currentActivityDomain){
+
+      return getActivityDomainRecords(
+        currentActivityDomain
+      );
+    }
+
+    return getAllActivityRecords();
+  }
+
+  if(currentMainFolder){
+
+    const types =
+      folderConfig[currentMainFolder]?.types ||
+      [];
+
+    return allRecords.filter(
+      record=>
+        types.includes(record.type) &&
+        recordMatchesSelectedSchoolYear(record)
+    );
+  }
+
+  return [];
+}
+
 
 function getRecordUrl(record){
 
-  if(
-    record.type ===
-    "activity"
-  ){
+  if(record.type === "activity"){
 
     return (
       "../activities/report.html?id=" +
-      encodeURIComponent(
-        record.id
-      )
+      encodeURIComponent(record.id)
     );
-
   }
 
-
-  if(
-    record.type ===
-    "meeting"
-  ){
+  if(record.type === "meeting"){
 
     return (
       "../meetings/minutes.html?id=" +
-      encodeURIComponent(
-        record.id
-      )
+      encodeURIComponent(record.id)
     );
-
   }
 
-
-  if(
-    record.type ===
-    "invitation"
-  ){
+  if(record.type === "invitation"){
 
     return (
       "../meetings/invitation.html?id=" +
-      encodeURIComponent(
-        record.id
-      )
+      encodeURIComponent(record.id)
     );
-
   }
 
-
-  if(
-    record.type ===
-    "certificate"
-  ){
+  if(record.type === "certificate"){
 
     return (
       "../certificates/create.html?id=" +
-      encodeURIComponent(
-        record.id
-      )
+      encodeURIComponent(record.id)
     );
-
   }
 
-
-  if(
-    record.type ===
-    "exchange_visit"
-  ){
-
-    /*
-      صفحة الزيارات الحالية نفسها
-      تعرض السجل حسب الصلاحية.
-    */
+  if(record.type === "exchange_visit"){
 
     return "../exchange-visits/index.html";
-
   }
 
-
-  if(
-    record.type ===
-    "classroom_visit"
-  ){
+  if(record.type === "classroom_visit"){
 
     return "../classroom-visits/index.html";
-
   }
 
-
-  if(
-    record.type ===
-    "permission_request"
-  ){
+  if(record.type === "permission_request"){
 
     return "../permissions/index.html";
-
   }
 
-
-  if(
-    record.type ===
-    "lesson_plan"
-  ){
+  if(record.type === "lesson_plan"){
 
     return (
       "../lesson-plans/index.html?id=" +
-      encodeURIComponent(
-        record.id
-      )
+      encodeURIComponent(record.id)
     );
-
   }
 
-
-  if(
-    record.type ===
-    "grade_sheet"
-  ){
+  if(record.type === "grade_sheet"){
 
     return "../grades/index.html";
-
   }
 
-
   return "#";
-
 }
 
-
-/* =========================================================
-   اسم النوع
-   ========================================================= */
 
 function getTypeLabel(type){
 
   return ({
-
-    activity:
-      "فعالية",
-
-    meeting:
-      "محضر اجتماع",
-
-    invitation:
-      "دعوة اجتماع",
-
-    certificate:
-      "شهادة",
-
-    exchange_visit:
-      "زيارة تبادلية",
-
-    classroom_visit:
-      "زيارة صفية",
-
-    permission_request:
-      "طلب استئذان",
-
-    lesson_plan:
-      "تحضير درس",
-
-    grade_sheet:
-      "سجل درجات"
-
-  })[type] ||
-  type;
-
+    activity:"فعالية / توثيق",
+    meeting:"محضر اجتماع",
+    invitation:"دعوة اجتماع",
+    certificate:"شهادة",
+    exchange_visit:"زيارة تبادلية",
+    classroom_visit:"زيارة صفية",
+    permission_request:"طلب استئذان",
+    lesson_plan:"تحضير درس",
+    grade_sheet:"سجل درجات"
+  })[type] || type;
 }
 
-
-/* =========================================================
-   سجلات المجلد
-   ========================================================= */
-
-function getFolderRecords(folder){
-
-  const types =
-    folderConfig[
-      folder
-    ]?.types ||
-    [];
-
-
-  return allRecords
-    .filter(
-      record =>
-        types.includes(
-          record.type
-        ) &&
-        recordMatchesSelectedSchoolYear(
-          record
-        )
-    );
-
-}
-
-
-/* =========================================================
-   تحديث أعداد المجلدات
-   ========================================================= */
-
-function updateCounts(){
-
-  document.getElementById(
-    "countActivities"
-  ).textContent =
-    getFolderRecords(
-      "activities"
-    ).length;
-
-
-  document.getElementById(
-    "countMeetings"
-  ).textContent =
-    getFolderRecords(
-      "meetings"
-    ).length;
-
-
-  document.getElementById(
-    "countCertificates"
-  ).textContent =
-    getFolderRecords(
-      "certificates"
-    ).length;
-
-
-  document.getElementById(
-    "countExchange"
-  ).textContent =
-    getFolderRecords(
-      "exchange"
-    ).length;
-
-
-  document.getElementById(
-    "countClassroom"
-  ).textContent =
-    getFolderRecords(
-      "classroom"
-    ).length;
-
-
-  document.getElementById(
-    "countPermissions"
-  ).textContent =
-    getFolderRecords(
-      "permissions"
-    ).length;
-
-
-  document.getElementById(
-    "countLessonPlans"
-  ).textContent =
-    getFolderRecords(
-      "lessonPlans"
-    ).length;
-
-
-  document.getElementById(
-    "countGrades"
-  ).textContent =
-    getFolderRecords(
-      "grades"
-    ).length;
-
-}
-
-
-/* =========================================================
-   فتح مجلد
-   ========================================================= */
-
-function openFolder(folder){
-
-  currentFolder =
-    folder;
-
-
-  searchInput.value =
-    "";
-
-
-  dateFrom.value =
-    "";
-
-
-  dateTo.value =
-    "";
-
-
-  foldersView.style.display =
-    "none";
-
-
-  recordsArea
-    .classList
-    .add(
-      "open"
-    );
-
-
-  folderTitle.textContent =
-    folderConfig[
-      folder
-    ]?.title ||
-    "السجلات";
-
-
-  renderCurrentFolder();
-
-}
-
-
-/* =========================================================
-   الرجوع إلى المجلدات
-   ========================================================= */
-
-function showFolders(){
-
-  currentFolder =
-    null;
-
-
-  recordsArea
-    .classList
-    .remove(
-      "open"
-    );
-
-
-  foldersView.style.display =
-    "grid";
-
-}
-/* =========================================================
-   تنسيق التاريخ
-   ========================================================= */
 
 function formatArchiveDate(value){
 
   if(!value){
-
     return "—";
-
   }
-
 
   try{
 
     const date =
-      new Date(
-        value
-      );
+      new Date(value);
 
-
-    if(
-      Number.isNaN(
-        date.getTime()
-      )
-    ){
-
-      return String(
-        value
-      );
-
+    if(Number.isNaN(date.getTime())){
+      return String(value);
     }
 
-
-    return date
-      .toLocaleDateString(
-        "ar-BH",
-        {
-          year:"numeric",
-          month:"long",
-          day:"numeric"
-        }
-      );
+    return date.toLocaleDateString(
+      "ar-BH",
+      {
+        year:"numeric",
+        month:"long",
+        day:"numeric"
+      }
+    );
 
   }catch(error){
 
-    return String(
-      value
-    );
-
+    return String(value);
   }
-
 }
 
-
-/* =========================================================
-   تاريخ السجل
-   ========================================================= */
 
 function getRecordDate(record){
 
   return (
-
     record?.record_date ||
-
     record?.visit_date ||
-
     record?.request_date ||
-
     record?.lesson_date ||
-
     record?.exam_date ||
-
     record?.created_at ||
-
     record?.payload?.date ||
-
     record?.payload?.visit_date ||
-
     record?.payload?.request_date ||
-
     record?.payload?.lesson_date ||
-
     record?.payload?.exam_date ||
-
-    record?.payload?.created_at ||
-
     ""
-
   );
-
 }
 
-
-/* =========================================================
-   عنوان السجل
-   ========================================================= */
 
 function getRecordTitle(record){
 
-  const payload =
-    record?.payload ||
-    {};
-
-
   return (
-
     record?.title ||
-
-    payload?.title ||
-
-    payload?.name ||
-
-    payload?.activity_name ||
-
-    payload?.meeting_title ||
-
-    payload?.subject ||
-
-    payload?.lesson_title ||
-
-    payload?.exam_name ||
-
-    payload?.student_name ||
-
-    getTypeLabel(
-      record?.type
-    )
-
+    record?.payload?.title ||
+    record?.payload?.name ||
+    getTypeLabel(record.type) ||
+    "سجل"
   );
-
 }
 
-
-/* =========================================================
-   اسم صاحبة / منفذة السجل
-   ========================================================= */
 
 function getRecordPerson(record){
 
-  const payload =
-    record?.payload ||
-    {};
-
-
-  return (
-
-    payload?.executor ||
-
-    payload?.owner_name ||
-
-    payload?.teacher_name ||
-
-    payload?.visitor_name ||
-
-    payload?.created_by_name ||
-
+  return String(
+    record?.executor ||
+    record?.executor_name ||
     record?.teacher_name ||
-
     record?.visitor_name ||
-
-    record?.user_name ||
-
+    record?.full_name ||
+    record?.payload?.executor ||
+    record?.payload?.executorName ||
+    record?.payload?.teacher_name ||
+    record?.payload?.teacherName ||
+    record?.payload?.visitor_name ||
     ""
-
-  );
-
+  ).trim();
 }
 
-
-/* =========================================================
-   القسم
-   ========================================================= */
 
 function getRecordDepartment(record){
 
-  const payload =
-    record?.payload ||
-    {};
-
-
-  return (
-
-    payload?.department ||
-
-    payload?.department_name ||
-
+  return String(
     record?.department_name ||
-
+    record?.department ||
+    record?.payload?.department_name ||
+    record?.payload?.departmentName ||
+    record?.payload?.department ||
     ""
-
-  );
-
+  ).trim();
 }
 
 
-/* =========================================================
-   نص البحث في السجل
-   ========================================================= */
+function getRecordTargets(record){
 
-function getRecordSearchText(record){
-
-  const payload =
-    record?.payload ||
-    {};
-
-
-  let payloadText =
+  const value =
+    record?.target_groups ||
+    record?.payload?.targetGroups ||
+    record?.payload?.target_groups ||
+    record?.payload?.targetGroup ||
+    record?.payload?.target_group ||
     "";
 
-
-  try{
-
-    payloadText =
-      JSON.stringify(
-        payload
-      );
-
-  }catch(error){
-
-    payloadText =
-      "";
-
+  if(Array.isArray(value)){
+    return value.join("، ");
   }
 
-
-  return [
-
-    getRecordTitle(
-      record
-    ),
-
-    getTypeLabel(
-      record?.type
-    ),
-
-    getRecordPerson(
-      record
-    ),
-
-    getRecordDepartment(
-      record
-    ),
-
-    getRecordDate(
-      record
-    ),
-
-    recordSchoolYear(
-      record
-    ),
-
-    payloadText
-
-  ]
-    .join(
-      " "
-    )
-    .toLowerCase();
-
+  return String(value || "").trim();
 }
 
 
-/* =========================================================
-   فلترة البحث والتاريخ
-   ========================================================= */
+function getRecordCoExecutors(record){
 
-function filterFolderRecords(records){
+  const value =
+    record?.co_executors ||
+    record?.payload?.coExecutors ||
+    record?.payload?.co_executors ||
+    [];
+
+  if(Array.isArray(value)){
+
+    return value
+      .map(item=>{
+
+        if(typeof item === "string"){
+          return item;
+        }
+
+        return (
+          item?.name ||
+          item?.full_name ||
+          item?.label ||
+          ""
+        );
+      })
+      .filter(Boolean);
+  }
+
+  return [];
+}
+
+
+function getRecordBeneficiaryCount(record){
+
+  const value =
+    record?.beneficiary_count ??
+    record?.payload?.beneficiaryCount ??
+    record?.payload?.beneficiary_count ??
+    null;
+
+  return value;
+}
+
+
+function getRecordBenefitTimes(record){
+
+  const value =
+    record?.benefit_times ??
+    record?.payload?.benefitTimes ??
+    record?.payload?.benefit_times ??
+    record?.payload?.count ??
+    null;
+
+  return value;
+}
+
+
+function filterRecords(records){
 
   const search =
     String(
-      searchInput.value ||
-      ""
+      searchInput.value || ""
     )
       .trim()
       .toLowerCase();
 
-
   const from =
-    String(
-      dateFrom.value ||
-      ""
-    );
-
+    dateFrom.value || "";
 
   const to =
-    String(
-      dateTo.value ||
-      ""
-    );
+    dateTo.value || "";
 
+  return records.filter(record=>{
 
-  return records.filter(
-    record => {
+    if(search){
 
-      if(search){
+      const text = [
+        getRecordTitle(record),
+        getRecordPerson(record),
+        getRecordDepartment(record),
+        getActivityProject(record),
+        getActivityCategory(record),
+        DOMAIN_LABELS[
+          getActivityDomain(record)
+        ] || ""
+      ]
+        .join(" ")
+        .toLowerCase();
 
-        const text =
-          getRecordSearchText(
-            record
-          );
-
-
-        if(
-          !text.includes(
-            search
-          )
-        ){
-
-          return false;
-
-        }
-
-      }
-
-
-      const recordDate =
-        String(
-          getRecordDate(
-            record
-          ) ||
-          ""
-        )
-          .slice(
-            0,
-            10
-          );
-
-
-      if(
-        from &&
-        (
-          !recordDate ||
-          recordDate < from
-        )
-      ){
-
+      if(!text.includes(search)){
         return false;
-
       }
-
-
-      if(
-        to &&
-        (
-          !recordDate ||
-          recordDate > to
-        )
-      ){
-
-        return false;
-
-      }
-
-
-      return true;
-
     }
-  );
 
+    const rawDate =
+      String(
+        getRecordDate(record) ||
+        ""
+      ).slice(0,10);
+
+    if(from && rawDate && rawDate < from){
+      return false;
+    }
+
+    if(to && rawDate && rawDate > to){
+      return false;
+    }
+
+    return true;
+  });
 }
 
-
-/* =========================================================
-   ترتيب السجلات من الأحدث
-   ========================================================= */
 
 function sortArchiveRecords(records){
 
-  return [
-    ...records
-  ]
-    .sort(
-      (
-        a,
-        b
-      ) => {
+  return [...records].sort(
+    (a,b)=>{
 
-        const aDate =
-          new Date(
-            getRecordDate(
-              a
-            ) ||
-            0
-          )
-            .getTime();
+      const dateA =
+        new Date(
+          getRecordDate(a) ||
+          0
+        ).getTime() || 0;
 
+      const dateB =
+        new Date(
+          getRecordDate(b) ||
+          0
+        ).getTime() || 0;
 
-        const bDate =
-          new Date(
-            getRecordDate(
-              b
-            ) ||
-            0
-          )
-            .getTime();
-
-
-        return (
-          bDate -
-          aDate
-        );
-
-      }
-    );
-
+      return dateB - dateA;
+    }
+  );
 }
 
 
-/* =========================================================
-   رسم سجلات المجلد
-   ========================================================= */
+function setupClassificationToolbar(){
 
-function renderCurrentFolder(){
+  classificationToolbar
+    .classList.add("active");
 
-  if(
-    !currentFolder
-  ){
+  bulkDomain.innerHTML =
+    '<option value="">اختاري المجال</option>' +
+
+    Object.entries(DOMAIN_LABELS)
+      .filter(
+        ([key])=>
+          key !== "unclassified"
+      )
+      .map(
+        ([key,label])=>
+          `<option value="${esc(key)}">${esc(label)}</option>`
+      )
+      .join("");
+
+  bulkProject.innerHTML =
+    '<option value="">اختاري المشروع</option>';
+
+  bulkCategory.value = "";
+
+  selectAllUnclassified.checked = false;
+}
+
+
+function refreshBulkProjects(){
+
+  const domain =
+    bulkDomain.value;
+
+  const projects =
+    DOMAIN_PROJECTS[domain] ||
+    [];
+
+  bulkProject.innerHTML =
+    '<option value="">اختاري المشروع</option>' +
+
+    projects
+      .map(
+        project=>
+          `<option value="${esc(project)}">${esc(project)}</option>`
+      )
+      .join("");
+}
+
+
+async function classifyArchiveRecords(ids){
+
+  const recordIds =
+    [...new Set(
+      (ids || [])
+        .filter(Boolean)
+        .map(String)
+    )];
+
+  if(!recordIds.length){
+
+    alert(
+      "حددي سجلًا واحدًا على الأقل للتصنيف."
+    );
 
     return;
-
   }
 
+  const domain =
+    bulkDomain.value || "";
+
+  const project =
+    bulkProject.value || "";
+
+  const category =
+    String(
+      bulkCategory.value || ""
+    ).trim();
+
+  if(!domain){
+
+    alert(
+      "اختاري المجال الرئيسي أولًا."
+    );
+
+    return;
+  }
+
+  if(!project){
+
+    alert(
+      "اختاري المشروع المدرسي."
+    );
+
+    return;
+  }
+
+  if(!category){
+
+    alert(
+      "اكتبي نوع التوثيق."
+    );
+
+    return;
+  }
+
+  const targets =
+    allRecords.filter(
+      record=>
+        record.type === "activity" &&
+        recordIds.includes(
+          String(record.id)
+        ) &&
+        canManageArchiveRecord(record)
+    );
+
+  if(!targets.length){
+
+    alert(
+      "لا توجد سجلات مسموح بتصنيفها."
+    );
+
+    return;
+  }
+
+  const confirmed =
+    confirm(
+      `سيتم تصنيف ونقل ${targets.length} سجل/سجلات.\n\nمتابعة؟`
+    );
+
+  if(!confirmed){
+    return;
+  }
+
+  bulkClassifyButton.disabled = true;
+
+  try{
+
+    for(const record of targets){
+
+      const oldPayload =
+        record?.payload &&
+        typeof record.payload === "object"
+
+          ? record.payload
+
+          : {};
+
+      const newPayload = {
+        ...oldPayload,
+
+        documentationDomain:domain,
+        documentation_domain:domain,
+
+        schoolProject:project,
+        school_project:project,
+
+        activityCategory:category,
+        activity_category:category
+      };
+
+      const {
+        error
+      } =
+        await sb
+          .from("records")
+          .update({
+            documentation_domain:domain,
+            school_project:project,
+            activity_category:category,
+            payload:newPayload
+          })
+          .eq(
+            "id",
+            record.id
+          );
+
+      if(error){
+        throw error;
+      }
+    }
+
+    await loadAllRecords();
+
+    currentMainFolder = "activities";
+    currentActivityDomain = "unclassified";
+    currentActivityProject = null;
+
+    recordsTitle.textContent =
+      "📂 التوثيقات غير المصنفة";
+
+    setupClassificationToolbar();
+
+    showArchiveView("records");
+    renderCurrentRecords();
+    renderBreadcrumb();
+
+    alert(
+      "تم التصنيف والنقل بنجاح."
+    );
+
+  }catch(error){
+
+    console.error(
+      "Classification error:",
+      error
+    );
+
+    alert(
+      "تعذر التصنيف: " +
+      (
+        error.message ||
+        error
+      )
+    );
+
+  }finally{
+
+    bulkClassifyButton.disabled = false;
+  }
+}
+
+
+async function deleteArchiveRecord(id){
+
+  const record =
+    allRecords.find(
+      item=>
+        String(item.id) ===
+        String(id)
+    );
+
+  if(!record){
+    return;
+  }
+
+  if(!canManageArchiveRecord(record)){
+
+    alert(
+      "ليس لديكِ صلاحية حذف هذا السجل."
+    );
+
+    return;
+  }
+
+  if(record.type !== "activity"){
+
+    alert(
+      "الحذف المباشر من الأرشيف متاح حاليًا للتوثيقات والفعاليات فقط."
+    );
+
+    return;
+  }
+
+  const confirmed =
+    confirm(
+      "هل تريدين حذف هذا السجل نهائيًا؟\n\nلا يمكن التراجع بعد الحذف."
+    );
+
+  if(!confirmed){
+    return;
+  }
+
+  try{
+
+    const {
+      error
+    } =
+      await sb
+        .from("records")
+        .delete()
+        .eq(
+          "id",
+          record.id
+        );
+
+    if(error){
+      throw error;
+    }
+
+    await loadAllRecords();
+
+    renderCurrentRecords();
+
+    alert(
+      "تم حذف السجل."
+    );
+
+  }catch(error){
+
+    console.error(
+      "Delete error:",
+      error
+    );
+
+    alert(
+      "تعذر الحذف: " +
+      (
+        error.message ||
+        error
+      )
+    );
+  }
+}
+
+
+function renderCurrentRecords(){
 
   let records =
-    getFolderRecords(
-      currentFolder
-    );
-
+    getCurrentRecords();
 
   records =
-    filterFolderRecords(
-      records
-    );
-
+    filterRecords(records);
 
   records =
-    sortArchiveRecords(
-      records
-    );
+    sortArchiveRecords(records);
 
-
-  if(
-    !records.length
-  ){
+  if(!records.length){
 
     recordsList.innerHTML = `
-
       <div class="empty">
-
-        لا توجد سجلات في هذا المجلد
-
+        لا توجد سجلات مطابقة
         ${
           selectedSchoolYear &&
           selectedSchoolYear !== "all"
 
-            ? ` للعام الدراسي <strong>${esc(selectedSchoolYear)}</strong>`
+            ? ` في العام الدراسي <strong>${esc(selectedSchoolYear)}</strong>`
 
             : ""
         }.
-
       </div>
-
     `;
 
-
     return;
-
   }
 
-
   recordsList.innerHTML =
-    records
-      .map(
-        record => {
+    records.map(record=>{
 
+      const title =
+        getRecordTitle(record);
 
-          const title =
-            getRecordTitle(
-              record
-            );
+      const typeLabel =
+        getTypeLabel(record.type);
 
+      const date =
+        getRecordDate(record);
 
-          const typeLabel =
-            getTypeLabel(
-              record.type
-            );
+      const person =
+        getRecordPerson(record);
 
+      const department =
+        getRecordDepartment(record);
 
-          const date =
-            getRecordDate(
-              record
-            );
+      const year =
+        recordSchoolYear(record);
 
+      const url =
+        getRecordUrl(record);
 
-          const person =
-            getRecordPerson(
-              record
-            );
+      const isActivity =
+        record.type === "activity";
 
+      const domainKey =
+        isActivity
+          ? getActivityDomain(record)
+          : "";
 
-          const department =
-            getRecordDepartment(
-              record
-            );
+      const domainLabel =
+        isActivity
+          ? DOMAIN_LABELS[domainKey] || ""
+          : "";
 
+      const project =
+        isActivity
+          ? getActivityProject(record)
+          : "";
 
-          const year =
-            recordSchoolYear(
-              record
-            );
+      const category =
+        isActivity
+          ? getActivityCategory(record)
+          : "";
 
+      const targets =
+        isActivity
+          ? getRecordTargets(record)
+          : "";
 
-          const url =
-            getRecordUrl(
-              record
-            );
+      const coExecutors =
+        isActivity
+          ? getRecordCoExecutors(record)
+          : [];
 
+      const beneficiaryCount =
+        isActivity
+          ? getRecordBeneficiaryCount(record)
+          : null;
 
-          return `
+      const benefitTimes =
+        isActivity
+          ? getRecordBenefitTimes(record)
+          : null;
 
-            <article class="record-card">
+      const manageable =
+        canManageArchiveRecord(record);
 
-              <h3>
-                ${esc(title)}
-              </h3>
+      const showClassification =
+        isActivity &&
+        currentActivityDomain === "unclassified" &&
+        manageable;
 
+      return `
+        <article class="record-card">
 
-              <div class="record-meta">
+          ${
+            showClassification
 
-                <div>
-                  <strong>النوع:</strong>
-                  ${esc(typeLabel)}
-                </div>
+              ? `
+                <label class="record-select-wrap">
+                  <input
+                    class="record-select"
+                    type="checkbox"
+                    data-record-id="${esc(record.id)}"
+                  >
+                  تحديد للتصنيف
+                </label>
+              `
 
+              : ""
+          }
 
-                <div>
-                  <strong>التاريخ:</strong>
-                  ${esc(
-                    formatArchiveDate(
-                      date
-                    )
-                  )}
-                </div>
+          <h3>${esc(title)}</h3>
 
+          <div class="record-badges">
 
-                ${
-                  year
+            <span class="record-badge">
+              ${esc(typeLabel)}
+            </span>
 
-                    ? `
+            ${
+              isActivity && domainLabel
 
-                      <div>
-                        <strong>العام الدراسي:</strong>
-                        ${esc(year)}
-                      </div>
+                ? `
+                  <span
+                    class="record-badge ${
+                      domainKey === "unclassified"
+                        ? "unclassified"
+                        : "domain"
+                    }"
+                  >
+                    ${esc(domainLabel)}
+                  </span>
+                `
 
-                    `
+                : ""
+            }
 
-                    : ""
-                }
+            ${
+              isActivity && project
 
+                ? `
+                  <span class="record-badge project">
+                    ${esc(project)}
+                  </span>
+                `
 
-                ${
-                  person
+                : ""
+            }
 
-                    ? `
+            ${
+              isActivity && category
 
-                      <div>
-                        <strong>الاسم:</strong>
-                        ${esc(person)}
-                      </div>
+                ? `
+                  <span class="record-badge">
+                    ${esc(category)}
+                  </span>
+                `
 
-                    `
+                : ""
+            }
 
-                    : ""
-                }
+          </div>
 
+          <div class="record-meta">
 
-                ${
-                  department
+            <div>
+              <strong>التاريخ:</strong>
+              ${esc(
+                formatArchiveDate(date)
+              )}
+            </div>
 
-                    ? `
+            ${
+              year
+                ? `
+                  <div>
+                    <strong>العام الدراسي:</strong>
+                    ${esc(year)}
+                  </div>
+                `
+                : ""
+            }
 
-                      <div>
-                        <strong>القسم:</strong>
-                        ${esc(department)}
-                      </div>
+            ${
+              person
+                ? `
+                  <div>
+                    <strong>المنفذة الرئيسية:</strong>
+                    ${esc(person)}
+                  </div>
+                `
+                : ""
+            }
 
-                    `
+            ${
+              coExecutors.length
+                ? `
+                  <div>
+                    <strong>المشاركات في التنفيذ:</strong>
+                    ${esc(
+                      coExecutors.join("، ")
+                    )}
+                  </div>
+                `
+                : ""
+            }
 
-                    : ""
-                }
+            ${
+              department
+                ? `
+                  <div>
+                    <strong>القسم:</strong>
+                    ${esc(department)}
+                  </div>
+                `
+                : ""
+            }
 
-              </div>
+            ${
+              targets
+                ? `
+                  <div>
+                    <strong>الفئة المستهدفة:</strong>
+                    ${esc(targets)}
+                  </div>
+                `
+                : ""
+            }
 
+            ${
+              beneficiaryCount !== null
+                ? `
+                  <div>
+                    <strong>عدد المستفيدين المسجل:</strong>
+                    ${esc(beneficiaryCount)}
+                  </div>
+                `
+                : ""
+            }
 
-              <div class="record-actions">
+            ${
+              benefitTimes !== null
+                ? `
+                  <div>
+                    <strong>إجمالي مرات الاستفادة:</strong>
+                    ${esc(benefitTimes)}
+                  </div>
+                `
+                : ""
+            }
 
-                ${
-                  url !== "#"
+          </div>
 
-                    ? `
+          <div class="record-actions">
 
-                      <a
-                        class="btn-open"
-                        href="${esc(url)}"
-                      >
-                        فتح السجل
-                      </a>
+            ${
+              url !== "#"
+                ? `
+                  <a
+                    class="btn-report"
+                    href="${esc(url)}"
+                  >
+                    عرض التقرير
+                  </a>
+                `
+                : ""
+            }
 
-                    `
+            ${
+              url !== "#" && manageable
+                ? `
+                  <a
+                    class="btn-edit"
+                    href="${esc(url)}"
+                  >
+                    تعديل
+                  </a>
+                `
+                : ""
+            }
 
-                    : ""
-                }
+            ${
+              showClassification
+                ? `
+                  <button
+                    class="btn-classify"
+                    type="button"
+                    data-classify-one="${esc(record.id)}"
+                  >
+                    تصنيف
+                  </button>
+                `
+                : ""
+            }
 
-              </div>
+            ${
+              isActivity && manageable
+                ? `
+                  <button
+                    class="btn-delete"
+                    type="button"
+                    data-delete-record="${esc(record.id)}"
+                  >
+                    حذف
+                  </button>
+                `
+                : ""
+            }
 
-            </article>
+          </div>
 
-          `;
+        </article>
+      `;
 
-        }
-      )
-      .join(
-        ""
+    }).join("");
+
+  recordsList
+    .querySelectorAll("[data-delete-record]")
+    .forEach(button=>{
+
+      button.addEventListener(
+        "click",
+        ()=>deleteArchiveRecord(
+          button.dataset.deleteRecord
+        )
       );
+    });
 
+  recordsList
+    .querySelectorAll("[data-classify-one]")
+    .forEach(button=>{
+
+      button.addEventListener(
+        "click",
+        ()=>classifyArchiveRecords([
+          String(
+            button.dataset.classifyOne
+          )
+        ])
+      );
+    });
 }
 
-
-/* =========================================================
-   تحويل سجلات records العامة
-   ========================================================= */
 
 function normalizeMainRecord(row){
 
   const payload =
     row?.payload &&
-    typeof row.payload ===
-      "object"
+    typeof row.payload === "object"
 
       ? row.payload
 
       : {};
 
-
   return {
-
     ...row,
 
     payload,
@@ -2722,16 +2977,41 @@ function normalizeMainRecord(row){
       row?.created_by ||
       payload?.created_by ||
       payload?.owner_id ||
+      null,
+
+    documentation_domain:
+      row?.documentation_domain ||
+      payload?.documentationDomain ||
+      payload?.documentation_domain ||
+      "",
+
+    school_project:
+      row?.school_project ||
+      payload?.schoolProject ||
+      payload?.school_project ||
+      "",
+
+    activity_category:
+      row?.activity_category ||
+      payload?.activityCategory ||
+      payload?.activity_category ||
+      "",
+
+    beneficiary_count:
+      row?.beneficiary_count ??
+      payload?.beneficiaryCount ??
+      payload?.beneficiary_count ??
+      null,
+
+    benefit_times:
+      row?.benefit_times ??
+      payload?.benefitTimes ??
+      payload?.benefit_times ??
+      payload?.count ??
       null
-
   };
-
 }
 
-
-/* =========================================================
-   تحميل records
-   ========================================================= */
 
 async function loadMainRecords(){
 
@@ -2740,14 +3020,8 @@ async function loadMainRecords(){
     const records =
       await WRGraph.fetchRecords();
 
-
-    return (
-      records ||
-      []
-    )
-      .map(
-        normalizeMainRecord
-      );
+    return (records || [])
+      .map(normalizeMainRecord);
 
   }catch(error){
 
@@ -2756,19 +3030,18 @@ async function loadMainRecords(){
       error
     );
 
-
     return [];
-
   }
-
 }
 
 
-/* =========================================================
-   تحميل الزيارات التبادلية
-   ========================================================= */
-
-async function loadExchangeVisits(){
+async function safeTableLoad(
+  table,
+  type,
+  titleFallback,
+  dateFields=[],
+  ownerFields=[]
+){
 
   try{
 
@@ -2777,331 +3050,67 @@ async function loadExchangeVisits(){
       error
     } =
       await sb
-        .from(
-          "exchange_visits"
-        )
-        .select("*")
-        .order(
-          "created_at",
-          {
-            ascending:false
-          }
-        );
-
+        .from(table)
+        .select("*");
 
     if(error){
-
       throw error;
-
     }
 
+    return (data || [])
+      .map(row=>{
 
-    return (
-      data ||
-      []
-    )
-      .map(
-        row => ({
+        const recordDate =
+          dateFields
+            .map(field=>row[field])
+            .find(Boolean) ||
+          row.record_date ||
+          row.created_at ||
+          "";
 
+        const ownerId =
+          ownerFields
+            .map(field=>row[field])
+            .find(Boolean) ||
+          row.created_by ||
+          row.user_id ||
+          null;
+
+        return {
           ...row,
 
-          type:
-            "exchange_visit",
+          type,
 
           title:
             row.title ||
+            row.name ||
+            row.subject ||
+            row.lesson_title ||
             row.visit_title ||
-            row.subject ||
-            "زيارة تبادلية",
-
-          record_date:
-            row.visit_date ||
-            row.record_date ||
-            row.created_at ||
-            "",
-
-          created_by:
-            row.created_by ||
-            row.teacher_id ||
-            row.user_id ||
-            null,
-
-          payload:{
-            ...row
-          }
-
-        })
-      );
-
-  }catch(error){
-
-    console.warn(
-      "تعذر تحميل الزيارات التبادلية:",
-      error
-    );
-
-
-    return [];
-
-  }
-
-}
-
-
-/* =========================================================
-   تحميل الزيارات الصفية
-   ========================================================= */
-
-async function loadClassroomVisits(){
-
-  try{
-
-    const {
-      data,
-      error
-    } =
-      await sb
-        .from(
-          "classroom_visits"
-        )
-        .select("*")
-        .order(
-          "created_at",
-          {
-            ascending:false
-          }
-        );
-
-
-    if(error){
-
-      throw error;
-
-    }
-
-
-    return (
-      data ||
-      []
-    )
-      .map(
-        row => ({
-
-          ...row,
-
-          type:
-            "classroom_visit",
-
-          title:
-            row.title ||
-            row.lesson_title ||
-            row.subject ||
-            "زيارة صفية",
-
-          record_date:
-            row.visit_date ||
-            row.record_date ||
-            row.created_at ||
-            "",
-
-          created_by:
-            row.created_by ||
-            row.visitor_id ||
-            row.user_id ||
-            null,
-
-          payload:{
-            ...row
-          }
-
-        })
-      );
-
-  }catch(error){
-
-    console.warn(
-      "تعذر تحميل الزيارات الصفية:",
-      error
-    );
-
-
-    return [];
-
-  }
-
-}
-
-
-/* =========================================================
-   تحميل طلبات الاستئذان
-   ========================================================= */
-
-async function loadPermissionRequests(){
-
-  try{
-
-    const {
-      data,
-      error
-    } =
-      await sb
-        .from(
-          "permission_requests"
-        )
-        .select("*")
-        .order(
-          "created_at",
-          {
-            ascending:false
-          }
-        );
-
-
-    if(error){
-
-      throw error;
-
-    }
-
-
-    return (
-      data ||
-      []
-    )
-      .map(
-        row => ({
-
-          ...row,
-
-          type:
-            "permission_request",
-
-          title:
-            row.title ||
             row.reason ||
-            "طلب استئذان",
+            titleFallback,
 
-          record_date:
-            row.request_date ||
-            row.record_date ||
-            row.created_at ||
-            "",
+          record_date:recordDate,
 
-          created_by:
-            row.created_by ||
-            row.user_id ||
-            row.teacher_id ||
-            null,
+          created_by:ownerId,
 
           payload:{
             ...row
           }
-
-        })
-      );
-
-  }catch(error){
-
-    console.warn(
-      "تعذر تحميل طلبات الاستئذان:",
-      error
-    );
-
-
-    return [];
-
-  }
-
-}
-
-
-/* =========================================================
-   تحميل دفتر التحضير
-   ========================================================= */
-
-async function loadLessonPlans(){
-
-  try{
-
-    const {
-      data,
-      error
-    } =
-      await sb
-        .from(
-          "lesson_plans"
-        )
-        .select("*")
-        .order(
-          "created_at",
-          {
-            ascending:false
-          }
-        );
-
-
-    if(error){
-
-      throw error;
-
-    }
-
-
-    return (
-      data ||
-      []
-    )
-      .map(
-        row => ({
-
-          ...row,
-
-          type:
-            "lesson_plan",
-
-          title:
-            row.title ||
-            row.lesson_title ||
-            row.subject ||
-            "تحضير درس",
-
-          record_date:
-            row.lesson_date ||
-            row.record_date ||
-            row.created_at ||
-            "",
-
-          created_by:
-            row.created_by ||
-            row.teacher_id ||
-            row.user_id ||
-            null,
-
-          payload:{
-            ...row
-          }
-
-        })
-      );
+        };
+      });
 
   }catch(error){
 
     console.warn(
-      "تعذر تحميل دفتر التحضير:",
+      `تعذر تحميل ${table}:`,
       error
     );
 
-
     return [];
-
   }
-
 }
 
-
-/* =========================================================
-   تحميل الدرجات والاختبارات
-   ========================================================= */
 
 async function loadGrades(){
 
@@ -3112,159 +3121,52 @@ async function loadGrades(){
       error
     } =
       await sb
-        .from(
-          "student_grades"
-        )
-        .select("*")
-        .order(
-          "created_at",
-          {
-            ascending:false
-          }
-        );
-
-
-    if(error){
-
-      throw error;
-
-    }
-
-
-    return (
-      data ||
-      []
-    )
-      .map(
-        row => ({
-
-          ...row,
-
-          type:
-            "grade_sheet",
-
-          title:
-            row.title ||
-            row.exam_name ||
-            row.subject ||
-            "سجل درجات",
-
-          record_date:
-            row.exam_date ||
-            row.record_date ||
-            row.created_at ||
-            "",
-
-          created_by:
-            row.created_by ||
-            row.teacher_id ||
-            row.user_id ||
-            null,
-
-          payload:{
-            ...row
-          }
-
-        })
-      );
-
-  }catch(error){
-
-    console.warn(
-      "تعذر تحميل الدرجات والاختبارات:",
-      error
-    );
-
-
-    return [];
-
-  }
-
-}
-/* =========================================================
-   تحميل الدرجات والاختبارات
-   النسخة الصحيحة المعتمدة في المنصة
-   ========================================================= */
-
-async function loadGrades(){
-
-  try{
-
-    const {
-      data,
-      error
-    } =
-      await sb
-        .from(
-          "grade_sheets"
-        )
+        .from("grade_sheets")
         .select("*")
         .order(
           "exam_date",
-          {
-            ascending:false
-          }
+          {ascending:false}
         );
 
-
     if(error){
-
       throw error;
-
     }
 
+    return (data || [])
+      .map(row=>({
 
-    return (
-      data ||
-      []
-    )
-      .map(
-        row => ({
+        ...row,
 
-          ...row,
+        type:"grade_sheet",
 
-          type:
-            "grade_sheet",
+        title:
+          "درجات: " +
+          (row.subject || "مادة") +
+          " — " +
+          (row.exam_type || "اختبار") +
+          " — " +
+          (row.teacher_name || "معلمة"),
 
-          title:
-            "درجات: " +
-            (
-              row.subject ||
-              "مادة"
-            ) +
-            " — " +
-            (
-              row.exam_type ||
-              "اختبار"
-            ) +
-            " — " +
-            (
-              row.teacher_name ||
-              "معلمة"
-            ),
+        record_date:
+          row.exam_date ||
+          row.record_date ||
+          row.created_at ||
+          "",
 
-          record_date:
-            row.exam_date ||
-            row.record_date ||
-            row.created_at ||
-            "",
+        teacher_id:
+          row.teacher_id ||
+          null,
 
-          teacher_id:
-            row.teacher_id ||
-            null,
+        created_by:
+          row.created_by ||
+          row.teacher_id ||
+          row.user_id ||
+          null,
 
-          created_by:
-            row.created_by ||
-            row.teacher_id ||
-            row.user_id ||
-            null,
-
-          payload:{
-            ...row
-          }
-
-        })
-      );
+        payload:{
+          ...row
+        }
+      }));
 
   }catch(error){
 
@@ -3273,40 +3175,14 @@ async function loadGrades(){
       error
     );
 
-
     return [];
-
   }
-
 }
 
-
-/* =========================================================
-   تحميل جميع سجلات الأرشيف
-   ========================================================= */
 
 async function loadAllRecords(){
 
   try{
-
-
-    const results =
-      await Promise.all([
-
-        loadMainRecords(),
-
-        loadExchangeVisits(),
-
-        loadClassroomVisits(),
-
-        loadPermissionRequests(),
-
-        loadLessonPlans(),
-
-        loadGrades()
-
-      ]);
-
 
     const [
       mainRecords,
@@ -3316,126 +3192,96 @@ async function loadAllRecords(){
       lessonPlans,
       grades
     ] =
-      results;
+      await Promise.all([
 
+        loadMainRecords(),
 
-    /*
-      حذف الأنواع التي ألغيناها
-      من المنصة.
-    */
+        safeTableLoad(
+          "exchange_visits",
+          "exchange_visit",
+          "زيارة تبادلية",
+          ["visit_date"],
+          ["teacher_id"]
+        ),
+
+        safeTableLoad(
+          "classroom_visits",
+          "classroom_visit",
+          "زيارة صفية",
+          ["visit_date"],
+          ["visitor_id"]
+        ),
+
+        safeTableLoad(
+          "permission_requests",
+          "permission_request",
+          "طلب استئذان",
+          ["request_date"],
+          ["teacher_id"]
+        ),
+
+        safeTableLoad(
+          "lesson_plans",
+          "lesson_plan",
+          "تحضير درس",
+          ["lesson_date"],
+          ["teacher_id"]
+        ),
+
+        loadGrades()
+      ]);
 
     const cleanedMainRecords =
-      (
-        mainRecords ||
-        []
-      )
+      (mainRecords || [])
         .filter(
-          record =>
+          record=>
             ![
               "attendance",
               "recommendation"
-            ].includes(
-              record.type
-            )
+            ].includes(record.type)
         );
 
-
-    /*
-      دمج كل مصادر البيانات.
-    */
-
-    const merged =
-      [
-
-        ...cleanedMainRecords,
-
-        ...exchangeVisits,
-
-        ...classroomVisits,
-
-        ...permissionRequests,
-
-        ...lessonPlans,
-
-        ...grades
-
-      ];
-
-
-    /*
-      تطبيق صلاحيات الحساب:
-      admin = الكل
-      coordinator = أقسامها
-      teacher = سجلاتها
-    */
+    const merged = [
+      ...cleanedMainRecords,
+      ...exchangeVisits,
+      ...classroomVisits,
+      ...permissionRequests,
+      ...lessonPlans,
+      ...grades
+    ];
 
     allRecords =
-      applyClientScope(
-        merged
-      );
-
-
-    /*
-      ترتيب عام من الأحدث.
-    */
+      applyClientScope(merged);
 
     allRecords =
-      sortArchiveRecords(
-        allRecords
-      );
-
-
-    /*
-      بناء قائمة الأعوام الدراسية
-      من البيانات الموجودة.
-    */
+      sortArchiveRecords(allRecords);
 
     setupSchoolYearFilter();
 
-
-    /*
-      تحديث أعداد المجلدات
-      حسب العام المختار.
-    */
-
-    updateCounts();
-
-
-    /*
-      لو المستخدم داخل مجلد بالفعل،
-      نعيد رسمه.
-    */
+    updateMainFolderCounts();
 
     if(
-      currentFolder
+      recordsView.classList.contains("active")
     ){
-
-      renderCurrentFolder();
-
+      renderCurrentRecords();
     }
 
+    if(
+      projectsView.classList.contains("active") &&
+      currentActivityDomain
+    ){
 
-    console.log(
-      "Archive loaded:",
-      {
-        records:
-          allRecords.length,
-
-        activeSchoolYear,
-
-        selectedSchoolYear
-      }
-    );
-
+      renderProjects(
+        currentActivityDomain
+      );
+    }
 
   }catch(error){
-
 
     console.error(
       "Archive load error:",
       error
     );
-
 
     alert(
       "تعذر تحميل بعض بيانات الأرشيف: " +
@@ -3444,210 +3290,339 @@ async function loadAllRecords(){
         error
       )
     );
-
   }
-
 }
 
 
-/* =========================================================
-   تغيير العام الدراسي
-   ========================================================= */
+function updateDomainCounts(){
 
-if(
-  schoolYearFilter
-){
+  const mapping = {
+    achievement:"countDomainAchievement",
+    teaching_learning_assessment:"countDomainTeaching",
+    personal_development:"countDomainPersonal",
+    leadership_management:"countDomainLeadership",
+    unclassified:"countDomainUnclassified"
+  };
 
-  schoolYearFilter
-    .addEventListener(
-      "change",
-      () => {
+  Object.entries(mapping)
+    .forEach(([domain,id])=>{
 
+      const element =
+        document.getElementById(id);
 
-        selectedSchoolYear =
-          schoolYearFilter.value ||
-          "all";
+      if(element){
 
-
-        updateSchoolYearHint();
-
-
-        /*
-          الأعداد الموجودة على المجلدات
-          تتغير تلقائيًا حسب السنة.
-        */
-
-        updateCounts();
-
-
-        /*
-          إذا كان المستخدم داخل مجلد
-          نعرض سجلات السنة الجديدة فورًا.
-        */
-
-        if(
-          currentFolder
-        ){
-
-          renderCurrentFolder();
-
-        }
-
+        element.textContent =
+          getActivityDomainRecords(
+            domain
+          ).length;
       }
+    });
+}
+
+
+function updateMainFolderCounts(){
+
+  const yearRecords =
+    allRecords.filter(
+      record=>
+        recordMatchesSelectedSchoolYear(record)
     );
 
+  const setCount =
+    (id,value)=>{
+
+      const element =
+        document.getElementById(id);
+
+      if(element){
+        element.textContent = value;
+      }
+    };
+
+  setCount(
+    "countActivities",
+    yearRecords.filter(
+      r=>r.type === "activity"
+    ).length
+  );
+
+  setCount(
+    "countMeetings",
+    yearRecords.filter(
+      r=>
+        r.type === "meeting" ||
+        r.type === "invitation"
+    ).length
+  );
+
+  setCount(
+    "countCertificates",
+    yearRecords.filter(
+      r=>r.type === "certificate"
+    ).length
+  );
+
+  setCount(
+    "countExchange",
+    yearRecords.filter(
+      r=>r.type === "exchange_visit"
+    ).length
+  );
+
+  setCount(
+    "countClassroom",
+    yearRecords.filter(
+      r=>r.type === "classroom_visit"
+    ).length
+  );
+
+  setCount(
+    "countPermissions",
+    yearRecords.filter(
+      r=>r.type === "permission_request"
+    ).length
+  );
+
+  setCount(
+    "countLessonPlans",
+    yearRecords.filter(
+      r=>r.type === "lesson_plan"
+    ).length
+  );
+
+  setCount(
+    "countGrades",
+    yearRecords.filter(
+      r=>r.type === "grade_sheet"
+    ).length
+  );
+
+  updateDomainCounts();
 }
 
 
-/* =========================================================
-   فتح المجلدات
-   ========================================================= */
+/* أحداث المجلدات */
 
 document
-  .querySelectorAll(
-    ".folder-card"
-  )
-  .forEach(
-    card => {
+  .querySelectorAll("[data-main-folder]")
+  .forEach(card=>{
 
-      card.addEventListener(
-        "click",
-        () => {
+    card.addEventListener(
+      "click",
+      ()=>{
 
-          openFolder(
-            card.dataset.folder
-          );
+        const folder =
+          card.dataset.mainFolder;
 
+        if(folder === "activities"){
+
+          openActivityDomains();
+          return;
+        }
+
+        openStandardFolder(folder);
+      }
+    );
+  });
+
+
+/* أحداث المجالات */
+
+document
+  .querySelectorAll("[data-domain]")
+  .forEach(card=>{
+
+    card.addEventListener(
+      "click",
+      ()=>{
+
+        openActivityDomain(
+          card.dataset.domain
+        );
+      }
+    );
+  });
+
+
+searchInput.addEventListener(
+  "input",
+  ()=>{
+
+    if(
+      recordsView.classList.contains("active")
+    ){
+      renderCurrentRecords();
+    }
+  }
+);
+
+
+dateFrom.addEventListener(
+  "change",
+  ()=>{
+
+    if(
+      recordsView.classList.contains("active")
+    ){
+      renderCurrentRecords();
+    }
+  }
+);
+
+
+dateTo.addEventListener(
+  "change",
+  ()=>{
+
+    if(
+      recordsView.classList.contains("active")
+    ){
+      renderCurrentRecords();
+    }
+  }
+);
+
+
+schoolYearFilter.addEventListener(
+  "change",
+  ()=>{
+
+    selectedSchoolYear =
+      schoolYearFilter.value ||
+      "all";
+
+    updateSchoolYearHint();
+    updateMainFolderCounts();
+
+    if(
+      currentActivityDomain &&
+      currentActivityDomain !== "unclassified" &&
+      projectsView.classList.contains("active")
+    ){
+
+      renderProjects(
+        currentActivityDomain
+      );
+    }
+
+    if(
+      recordsView.classList.contains("active")
+    ){
+      renderCurrentRecords();
+    }
+  }
+);
+
+
+backButton.addEventListener(
+  "click",
+  handleBackButton
+);
+
+
+bulkDomain.addEventListener(
+  "change",
+  refreshBulkProjects
+);
+
+
+selectAllUnclassified.addEventListener(
+  "change",
+  ()=>{
+
+    recordsList
+      .querySelectorAll(".record-select")
+      .forEach(
+        checkbox=>{
+          checkbox.checked =
+            selectAllUnclassified.checked;
         }
       );
-
-    }
-  );
-
-
-/* =========================================================
-   الرجوع للمجلدات
-   ========================================================= */
-
-backFoldersBtn
-  .addEventListener(
-    "click",
-    showFolders
-  );
+  }
+);
 
 
-/* =========================================================
-   البحث
-   ========================================================= */
+bulkClassifyButton.addEventListener(
+  "click",
+  ()=>{
 
-searchInput
-  .addEventListener(
-    "input",
-    renderCurrentFolder
-  );
-
-
-/* =========================================================
-   من تاريخ
-   ========================================================= */
-
-dateFrom
-  .addEventListener(
-    "change",
-    renderCurrentFolder
-  );
-
-
-/* =========================================================
-   إلى تاريخ
-   ========================================================= */
-
-dateTo
-  .addEventListener(
-    "change",
-    renderCurrentFolder
-  );
-
-
-/* =========================================================
-   تشغيل الأرشيف
-   ========================================================= */
-
-document
-  .addEventListener(
-    "DOMContentLoaded",
-    async () => {
-
-      try{
-
-
-        /*
-          أولًا:
-          التحقق من المستخدم والصلاحيات.
-        */
-
-        const allowed =
-          await loadArchiveAccess();
-
-
-        if(
-          !allowed
-        ){
-
-          return;
-
-        }
-
-
-        /*
-          ثانيًا:
-          قراءة العام الدراسي النشط
-          من app_settings.
-        */
-
-        await loadActiveSchoolYear();
-
-
-        /*
-          ثالثًا:
-          تحميل كل بيانات الأرشيف.
-        */
-
-        await loadAllRecords();
-
-
-      }catch(error){
-
-
-        console.error(
-          "Archive access error:",
-          error
+    const selectedIds =
+      [
+        ...recordsList.querySelectorAll(
+          ".record-select:checked"
+        )
+      ]
+        .map(
+          checkbox=>
+            String(
+              checkbox.dataset.recordId
+            )
         );
 
-
-        alert(
-          "تعذر التحقق من صلاحية الأرشيف: " +
-          (
-            error.message ||
-            error
-          )
-        );
+    classifyArchiveRecords(
+      selectedIds
+    );
+  }
+);
 
 
-      }finally{
+async function initArchive(){
 
+  try{
 
-        accessLoader.style.display =
-          "none";
-
-      }
-
+    if(
+      window.WRGraph &&
+      typeof WRGraph.init === "function"
+    ){
+      await WRGraph.init();
     }
-  );
+
+    const allowed =
+      await loadArchiveAccess();
+
+    if(!allowed){
+      return;
+    }
+
+    await loadActiveSchoolYear();
+
+    await loadAllRecords();
+
+    openMainArchive();
+
+  }catch(error){
+
+    console.error(
+      "Archive init error:",
+      error
+    );
+
+    alert(
+      "تعذر تشغيل الأرشيف: " +
+      (
+        error.message ||
+        error
+      )
+    );
+
+  }finally{
+
+    if(accessLoader){
+
+      accessLoader.style.display =
+        "none";
+    }
+  }
+}
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  initArchive
+);
 
 </script>
 
-
 </body>
-
 </html>
