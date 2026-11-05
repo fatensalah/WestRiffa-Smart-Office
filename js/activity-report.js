@@ -2422,6 +2422,9 @@ function createActivityId() {
 async function uploadNewImages(
   activityId
 ) {
+  if (remoteImagePaths.length + selectedFiles.length > 3) {
+    throw new Error("الحد الأقصى 3 صور لكل تقرير.");
+  }
 
   if (!selectedFiles.length) {
 
@@ -2832,28 +2835,20 @@ async function saveActivity() {
    اختيار الصور
    ========================================================= */
 
-function handleImageSelection(
-  event
-) {
-
-  const files =
-    [
-      ...(
-        event?.target?.files ||
-        []
-      )
-    ];
-
-  selectedFiles =
-    files.filter(
-      file =>
-        file.type.startsWith(
-          "image/"
-        )
-    );
-
+function handleImageSelection(event) {
+  const MAX_IMAGES = 3;
+  const available = Math.max(0, MAX_IMAGES - remoteImagePaths.length);
+  const files = [...(event?.target?.files || [])];
+  const valid = files.filter(file => file.type.startsWith("image/"));
+  if (valid.length > available) {
+    showMessage(available === 0
+      ? "التقرير يحتوي بالفعل على 3 صور."
+      : `يمكن إضافة ${available} صورة فقط؛ لأن الحد الأقصى 3 صور للتقرير.`);
+  }
+  selectedFiles = valid.slice(0, available);
+  // Reset the native file picker so it does not imply that rejected files were selected.
+  if (event?.target) event.target.value = "";
   renderImages();
-
   scheduleDraft();
 }
 
@@ -3117,6 +3112,9 @@ async function renderImages() {
     ++imageRenderVersion;
 
   container.innerHTML = "";
+  const noImages = byId("noImages");
+  if (noImages) noImages.style.display =
+    (remoteImagePaths.length + selectedFiles.length) ? "none" : "";
 
   const imagePromises = [];
 
